@@ -1,0 +1,946 @@
+﻿<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Las OS 3.0 | Clinical Command Center</title>
+  <style>
+    :root {
+      --ink: #f4efe6;
+      --muted: #b8afa2;
+      --faint: #81786b;
+      --bg: #0f1110;
+      --panel: #171918;
+      --panel-2: #1f211f;
+      --line: #343832;
+      --green: #7fb069;
+      --green-2: #a8d08d;
+      --gold: #d8a657;
+      --red: #d36b62;
+      --blue: #75a7c8;
+      --shadow: 0 24px 70px rgba(0,0,0,.38);
+    }
+
+    * { box-sizing: border-box; }
+    html { color-scheme: dark; }
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background:
+        radial-gradient(circle at top left, rgba(127,176,105,.12), transparent 34rem),
+        linear-gradient(135deg, #0c0e0d 0%, #131512 52%, #0f1110 100%);
+      color: var(--ink);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      letter-spacing: 0;
+    }
+
+    button, input, textarea, select { font: inherit; }
+    button { cursor: pointer; }
+    .app { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
+
+    .side {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 22px 18px;
+      border-right: 1px solid var(--line);
+      background: rgba(18,20,18,.82);
+      backdrop-filter: blur(22px);
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .brand { display: flex; align-items: center; gap: 12px; padding: 4px 6px 16px; border-bottom: 1px solid var(--line); }
+    .mark {
+      width: 42px; height: 42px; border-radius: 12px;
+      background: linear-gradient(145deg, rgba(127,176,105,.28), rgba(216,166,87,.16));
+      display: grid; place-items: center; border: 1px solid rgba(127,176,105,.34);
+    }
+    .mark svg { width: 26px; height: 26px; }
+    .brand strong { display: block; font-family: Georgia, serif; font-size: 20px; line-height: 1; }
+    .brand span { color: var(--green-2); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .16em; }
+
+    .client-switcher { display: grid; gap: 10px; }
+    .label { color: var(--faint); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; }
+    select, input, textarea {
+      width: 100%;
+      color: var(--ink);
+      background: var(--panel-2);
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 11px 12px;
+      outline: none;
+    }
+    textarea { min-height: 94px; resize: vertical; }
+    select:focus, input:focus, textarea:focus { border-color: rgba(127,176,105,.7); box-shadow: 0 0 0 3px rgba(127,176,105,.12); }
+
+    .nav { display: grid; gap: 7px; }
+    .nav button {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid transparent;
+      border-radius: 12px;
+      background: transparent;
+      color: var(--muted);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 12px;
+      text-align: left;
+      font-weight: 800;
+    }
+    .nav button.active { color: var(--ink); background: rgba(127,176,105,.13); border-color: rgba(127,176,105,.26); }
+    .nav svg { width: 18px; height: 18px; flex: 0 0 auto; }
+
+    .side-card {
+      margin-top: auto;
+      border: 1px solid var(--line);
+      background: rgba(31,33,31,.72);
+      border-radius: 14px;
+      padding: 14px;
+    }
+    .side-card strong { display: block; font-size: 13px; }
+    .side-card p { margin: 6px 0 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+
+    .main { min-width: 0; }
+    .topbar {
+      position: sticky;
+      top: 0;
+      z-index: 10;
+      min-height: 72px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 18px;
+      padding: 16px 28px;
+      border-bottom: 1px solid var(--line);
+      background: rgba(15,17,16,.78);
+      backdrop-filter: blur(22px);
+    }
+    .title h1 { margin: 0; font-size: 20px; line-height: 1.15; font-family: Georgia, serif; font-weight: 700; }
+    .title p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
+    .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; }
+
+    .btn {
+      min-height: 40px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel-2);
+      color: var(--ink);
+      padding: 10px 13px;
+      font-weight: 900;
+      font-size: 13px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+    .btn.primary { background: var(--green); border-color: var(--green); color: #071008; }
+    .btn.warning { background: rgba(216,166,87,.15); border-color: rgba(216,166,87,.38); color: #f1c981; }
+    .btn.danger { background: rgba(211,107,98,.14); border-color: rgba(211,107,98,.36); color: #f1aaa3; }
+
+    .content { max-width: 1320px; margin: 0 auto; padding: 26px; display: grid; gap: 18px; }
+    .grid { display: grid; gap: 16px; }
+    .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .cols-3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    .cols-2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .span-2 { grid-column: span 2; }
+
+    .panel {
+      background: rgba(23,25,24,.88);
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      box-shadow: var(--shadow);
+      padding: 18px;
+    }
+    .panel.soft { box-shadow: none; background: rgba(31,33,31,.62); }
+    .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
+    .panel h2, .panel h3 { margin: 0; }
+    .panel h2 { font-family: Georgia, serif; font-size: 22px; }
+    .panel h3 { font-size: 14px; text-transform: uppercase; letter-spacing: .1em; color: var(--muted); }
+    .panel p { color: var(--muted); line-height: 1.55; }
+
+    .kpi { min-height: 124px; display: flex; flex-direction: column; justify-content: space-between; }
+    .kpi .value { font-size: 34px; font-weight: 950; letter-spacing: 0; line-height: 1; }
+    .kpi .trend { color: var(--muted); font-size: 12px; font-weight: 800; }
+    .good { color: var(--green-2); }
+    .warn { color: var(--gold); }
+    .bad { color: var(--red); }
+    .info { color: var(--blue); }
+
+    .client-row, .session-row, .task-row {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(31,33,31,.56);
+      padding: 13px;
+      display: grid;
+      gap: 8px;
+    }
+    .client-row { grid-template-columns: 1fr auto; align-items: center; }
+    .client-row button { text-align: left; }
+    .name { color: var(--ink); font-weight: 950; }
+    .meta { color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      width: fit-content;
+      border-radius: 999px;
+      padding: 5px 8px;
+      border: 1px solid var(--line);
+      color: var(--muted);
+      background: rgba(15,17,16,.48);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      white-space: nowrap;
+    }
+    .pill.green { color: var(--green-2); border-color: rgba(127,176,105,.38); background: rgba(127,176,105,.12); }
+    .pill.gold { color: #f1c981; border-color: rgba(216,166,87,.38); background: rgba(216,166,87,.12); }
+    .pill.red { color: #f1aaa3; border-color: rgba(211,107,98,.38); background: rgba(211,107,98,.12); }
+    .pill.blue { color: #a6cce4; border-color: rgba(117,167,200,.38); background: rgba(117,167,200,.12); }
+
+    .progress-line { display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px; }
+    .step {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      min-height: 104px;
+      background: rgba(31,33,31,.5);
+    }
+    .step.active { border-color: rgba(127,176,105,.65); background: rgba(127,176,105,.12); }
+    .step.done { border-color: rgba(127,176,105,.3); }
+    .step strong { display: block; margin-top: 8px; font-size: 13px; }
+    .step span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.35; }
+
+    .timeline { display: grid; gap: 10px; }
+    .session-row { grid-template-columns: 120px 1fr auto; align-items: start; }
+    .session-main { display: grid; gap: 8px; }
+    .session-metrics { display: flex; gap: 8px; flex-wrap: wrap; }
+
+    .chart {
+      width: 100%;
+      height: 170px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+      overflow: hidden;
+    }
+    .chart svg { width: 100%; height: 100%; display: block; }
+
+    .report {
+      white-space: pre-wrap;
+      color: var(--ink);
+      background: #111310;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 16px;
+      min-height: 260px;
+      line-height: 1.55;
+      font-size: 14px;
+    }
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.62);
+      display: none;
+      align-items: center;
+      justify-content: center;
+      z-index: 40;
+      padding: 18px;
+    }
+    .modal.open { display: flex; }
+    .modal-box {
+      width: min(760px, 100%);
+      max-height: min(860px, 92vh);
+      overflow: auto;
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 16px;
+      box-shadow: var(--shadow);
+      padding: 20px;
+    }
+    .form-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px; }
+    .form-field { display: grid; gap: 7px; }
+    .full { grid-column: 1 / -1; }
+
+    .toast {
+      position: fixed;
+      right: 18px;
+      bottom: 18px;
+      background: var(--panel-2);
+      color: var(--ink);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px 14px;
+      display: none;
+      box-shadow: var(--shadow);
+      font-weight: 800;
+      z-index: 50;
+    }
+    .toast.show { display: block; }
+
+    .only-mobile { display: none; }
+    @media (max-width: 980px) {
+      .app { grid-template-columns: 1fr; }
+      .side { position: static; height: auto; }
+      .nav { grid-template-columns: repeat(5, 1fr); }
+      .nav button { justify-content: center; padding: 10px 8px; }
+      .nav span { display: none; }
+      .cols-4, .cols-3, .cols-2 { grid-template-columns: 1fr; }
+      .span-2 { grid-column: auto; }
+      .session-row { grid-template-columns: 1fr; }
+      .progress-line { grid-template-columns: 1fr 1fr; }
+      .topbar { align-items: flex-start; flex-direction: column; }
+    }
+    @media (max-width: 620px) {
+      .content, .topbar { padding: 16px; }
+      .form-grid { grid-template-columns: 1fr; }
+      .progress-line { grid-template-columns: 1fr; }
+      .actions { width: 100%; }
+      .btn { flex: 1; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="side">
+      <div class="brand">
+        <div class="mark" aria-hidden="true">
+          <svg viewBox="0 0 36 36" fill="none">
+            <path d="M18 3 L26 16 H22 L28 26 H20 L20 33 H16 L16 26 H8 L14 16 H10 Z" fill="var(--green-2)"/>
+            <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <div><strong>Studio Las</strong><span>Clinical OS 3.0</span></div>
+      </div>
+
+      <div class="client-switcher">
+        <label class="label" for="clientSelect">Aktywny klient</label>
+        <select id="clientSelect"></select>
+      </div>
+
+      <nav class="nav" aria-label="GĹ‚Ăłwna nawigacja">
+        <button data-view="command" class="active"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 12h18M12 3v18"/></svg><span>Centrum</span></button>
+        <button data-view="client"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg><span>Klient</span></button>
+        <button data-view="process"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Proces</span></button>
+        <button data-view="sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V4a2 2 0 0 1 2-2h11l3 3v14.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg><span>Sesje</span></button>
+        <button data-view="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span>Raport</span></button>
+      </nav>
+
+      <div class="side-card">
+        <strong>Szorstka prawda</strong>
+        <p>Dashboard nie ma byÄ‡ Ĺ‚adny. Ma skracaÄ‡ drogÄ™ od obserwacji do decyzji i zostawiaÄ‡ czytelny Ĺ›lad procesu.</p>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title">
+          <h1 id="screenTitle">Clinical Command Center</h1>
+          <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki i procesu 12 tygodni.</p>
+        </div>
+        <div class="actions">
+          <button class="btn" id="importLegacyBtn">Import v1.3</button>
+          <button class="btn" id="newClientBtn">Nowy klient</button>
+          <button class="btn primary" id="newSessionBtn">Nowa sesja</button>
+        </div>
+      </header>
+      <section class="content" id="view"></section>
+    </main>
+  </div>
+
+  <div class="modal" id="clientModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="panel-head">
+        <div>
+          <h2>Nowy klient</h2>
+          <p>Minimum danych, maksimum uĹĽytecznoĹ›ci. ResztÄ™ dopisujesz po diagnostyce.</p>
+        </div>
+        <button class="btn" data-close="clientModal">Zamknij</button>
+      </div>
+      <form id="clientForm" class="form-grid">
+        <div class="form-field"><label class="label">ImiÄ™ i nazwisko</label><input name="name" required /></div>
+        <div class="form-field"><label class="label">Kontakt</label><input name="contact" /></div>
+        <div class="form-field"><label class="label">Pakiet</label><select name="package"><option>Diagnostyka</option><option>FUNDAMENT</option><option>ROZWĂ“J</option><option>VIP Clinical</option></select></div>
+        <div class="form-field"><label class="label">Etap</label><select name="stage"><option value="1">1. Punkt startowy</option><option value="2">2. Fundament ruchu</option><option value="3">3. SiĹ‚a i stabilnoĹ›Ä‡</option><option value="4">4. Autonomia</option></select></div>
+        <div class="form-field full"><label class="label">Status zdrowia</label><input name="healthStatus" placeholder="np. L4/L5, kolano po artroskopii, powrĂłt po leczeniu" /></div>
+        <div class="form-field"><label class="label">Neurotyp / styl komunikacji</label><input name="neuroType" placeholder="np. Typ 1 - Dopaminowy" /></div>
+        <div class="form-field"><label class="label">Cel 12 tygodni</label><input name="goal" placeholder="np. wrĂłciÄ‡ do treningu bez bĂłlu plecĂłw" /></div>
+        <div class="form-field full"><label class="label">Logika decyzyjna</label><textarea name="decisionLogic" placeholder="Co wiemy? Czego nie wiemy? Jaka hipoteza prowadzi kolejny tydzieĹ„?"></textarea></div>
+        <button class="btn primary full" type="submit">Dodaj klienta</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal" id="sessionModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="panel-head">
+        <div>
+          <h2>Nowa sesja</h2>
+          <p id="sessionClientName">Zapis obserwacji, decyzji i reakcji klienta.</p>
+        </div>
+        <button class="btn" data-close="sessionModal">Zamknij</button>
+      </div>
+      <form id="sessionForm" class="form-grid">
+        <div class="form-field"><label class="label">Data</label><input type="date" name="date" required /></div>
+        <div class="form-field"><label class="label">GotowoĹ›Ä‡ / energia 1-10</label><input type="number" min="1" max="10" name="readiness" value="7" /></div>
+        <div class="form-field"><label class="label">VAS przed 0-10</label><input type="number" min="0" max="10" name="vasBefore" value="5" /></div>
+        <div class="form-field"><label class="label">VAS po 0-10</label><input type="number" min="0" max="10" name="vasAfter" value="3" /></div>
+        <div class="form-field"><label class="label">MobilnoĹ›Ä‡ %</label><input type="number" min="0" max="100" name="mobilityIndex" value="60" /></div>
+        <div class="form-field"><label class="label">Sen</label><select name="sleepQuality"><option>Bardzo sĹ‚aby</option><option>SĹ‚aby</option><option>PrzeciÄ™tny</option><option selected>Dobry</option><option>Bardzo dobry</option></select></div>
+        <div class="form-field full"><label class="label">Ä†wiczenia</label><textarea name="exercises" placeholder="KaĹĽde Ä‡wiczenie w nowej linii"></textarea></div>
+        <div class="form-field full"><label class="label">Obserwacje kliniczne</label><textarea name="notes" placeholder="Co siÄ™ zmieniĹ‚o? Co prowokuje objawy? Co dziaĹ‚a?"></textarea></div>
+        <div class="form-field full"><label class="label">Decyzja na kolejny krok</label><textarea name="decision" placeholder="KontynuowaÄ‡, regresowaÄ‡, progresowaÄ‡, konsultowaÄ‡?"></textarea></div>
+        <div class="form-field full"><label class="label">KamieĹ„ milowy</label><input name="milestone" placeholder="np. pierwszy hip hinge bez lÄ™ku i bĂłlu" /></div>
+        <button class="btn primary full" type="submit">Zapisz sesjÄ™</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "studioLasOS_v3";
+    const LEGACY_KEY = "studioLasOS_v1";
+
+    const steps = [
+      ["Punkt startowy", "Ankieta, wywiad, testy i hipoteza kliniczna."],
+      ["Fundament ruchu", "Oddech, kontrola, tolerancja pozycji i bazowe wzorce."],
+      ["SiĹ‚a i stabilnoĹ›Ä‡", "Progres obciÄ…ĹĽeĹ„ bez utraty jakoĹ›ci i poczucia bezpieczeĹ„stwa."],
+      ["Autonomia", "Raport, plan samodzielny, kryteria nawrotu i dalszy standard."]
+    ];
+
+    const seed = {
+      activeClientId: "SL-2026-001",
+      clients: [
+        {
+          id: "SL-2026-001",
+          name: "Marek Jankowski",
+          contact: "+48 600 100 200",
+          package: "FUNDAMENT",
+          stage: 2,
+          healthStatus: "ZwiÄ™kszona czujnoĹ›Ä‡ L4/L5",
+          neuroType: "Typ 1 - Dopaminowy",
+          goal: "WrĂłciÄ‡ do treningu siĹ‚owego bez porannego bĂłlu i lÄ™ku przed zgiÄ™ciem.",
+          nextMilestone: "KlÄ™k jednonĂłĹĽ bez kompensacji",
+          decisionLogic: "Marek zaczyna ufaÄ‡ biodru. Nie Ĺ›cigamy ciÄ™ĹĽaru, dopĂłki poranny bĂłl nie utrzyma siÄ™ poniĹĽej 3/10 przez minimum tydzieĹ„.",
+          tasks: [
+            { text: "SprawdziÄ‡ poranny bĂłl po hip hinge", done: false },
+            { text: "Nagranie techniki przysiadu do skrzynki", done: false }
+          ],
+          sessions: [
+            { id: "s1", date: "2026-03-18", vasBefore: 7, vasAfter: 4, mobilityIndex: 55, readiness: 5, sleepQuality: "SĹ‚aby", exercises: ["Oddychanie przeponowe", "Aktywacja poĹ›ladka leĹĽÄ…c"], notes: "DuĹĽy lÄ™k przed ruchem. Tempo wolne, duĹĽo edukacji.", decision: "BudowaÄ‡ bezpieczeĹ„stwo w niskich pozycjach.", milestone: "" },
+            { id: "s2", date: "2026-03-25", vasBefore: 6, vasAfter: 3, mobilityIndex: 60, readiness: 6, sleepQuality: "SĹ‚aby", exercises: ["Dead Bug", "Mobilizacja biodra 90/90"], notes: "Lepsza kontrola oddechu.", decision: "DodaÄ‡ hip hinge z kijkiem.", milestone: "" },
+            { id: "s3", date: "2026-04-01", vasBefore: 5, vasAfter: 3, mobilityIndex: 64, readiness: 7, sleepQuality: "Dobry", exercises: ["Clamshells", "Hip Hinge", "Dead Bug"], notes: "BĂłl rano mniejszy, wiÄ™ksza pewnoĹ›Ä‡.", decision: "Powoli przechodziÄ‡ do pozycji wyĹĽszych.", milestone: "Bez bĂłlu przy wstawaniu ze stoĹ‚u" },
+            { id: "s4", date: "2026-04-10", vasBefore: 3, vasAfter: 2, mobilityIndex: 68, readiness: 8, sleepQuality: "Dobry", exercises: ["Hip Hinge", "Przysiad do skrzynki", "90/90"], notes: "Gotowy do klÄ™ku jednonĂłĹĽ za 2 sesje.", decision: "Nie zwiÄ™kszaÄ‡ objÄ™toĹ›ci, zwiÄ™kszyÄ‡ precyzjÄ™.", milestone: "" }
+          ]
+        },
+        {
+          id: "SL-2026-002",
+          name: "Anna Kowalska",
+          contact: "+48 601 200 300",
+          package: "FUNDAMENT",
+          stage: 1,
+          healthStatus: "Po artroskopii kolana prawego",
+          neuroType: "Typ 3 - Serotoninowy",
+          goal: "WchodziÄ‡ po schodach bez lÄ™ku i bez reakcji bĂłlowej nastÄ™pnego dnia.",
+          nextMilestone: "Przysiad do Ĺ‚awki z kontrolÄ… kolana",
+          decisionLogic: "Potrzebuje przewidywalnoĹ›ci. KaĹĽda progresja dopiero po jasnym kryterium bezpieczeĹ„stwa.",
+          tasks: [{ text: "UstaliÄ‡ tolerancjÄ™ schodĂłw", done: false }],
+          sessions: [
+            { id: "s1", date: "2026-04-08", vasBefore: 5, vasAfter: 4, mobilityIndex: 50, readiness: 5, sleepQuality: "PrzeciÄ™tny", exercises: ["Oddychanie", "Aktywacja VMO"], notes: "OstroĹĽna, dobrze reaguje na spokojne instrukcje.", decision: "Na razie nie dokĹ‚adaÄ‡ tempa.", milestone: "" }
+          ]
+        }
+      ]
+    };
+
+    let state = load();
+    let viewName = "command";
+
+    const $ = (sel) => document.querySelector(sel);
+    const view = $("#view");
+    const clientSelect = $("#clientSelect");
+
+    function load() {
+      try {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        if (saved) return JSON.parse(saved);
+      } catch (e) {}
+      return structuredClone(seed);
+    }
+
+    function save() {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+    }
+
+    function activeClient() {
+      return state.clients.find(c => c.id === state.activeClientId) || state.clients[0];
+    }
+
+    function latest(c = activeClient()) {
+      return c.sessions[c.sessions.length - 1] || null;
+    }
+
+    function first(c = activeClient()) {
+      return c.sessions[0] || null;
+    }
+
+    function risk(c) {
+      const last = latest(c);
+      if (!last) return { level: "gold", label: "Brak danych", reason: "Najpierw diagnostyka i pierwsza sesja." };
+      if (last.vasAfter >= 7 || last.vasAfter > last.vasBefore) return { level: "red", label: "Wysokie ryzyko", reason: "BĂłl po sesji jest wysoki albo roĹ›nie." };
+      if (last.readiness <= 4 || ["Bardzo sĹ‚aby", "SĹ‚aby"].includes(last.sleepQuality)) return { level: "gold", label: "ObciÄ…ĹĽenie ostroĹĽnie", reason: "GotowoĹ›Ä‡ lub sen ogranicza progresjÄ™." };
+      return { level: "green", label: "Stabilny", reason: "MoĹĽna rozwaĹĽyÄ‡ maĹ‚Ä… progresjÄ™." };
+    }
+
+    function metrics(c = activeClient()) {
+      const l = latest(c), f = first(c);
+      return {
+        vasNow: l ? l.vasAfter : null,
+        vasDelta: l && f ? f.vasBefore - l.vasAfter : null,
+        mobility: l ? l.mobilityIndex : null,
+        mobilityDelta: l && f ? l.mobilityIndex - f.mobilityIndex : null,
+        sessions: c.sessions.length
+      };
+    }
+
+    function escapeHtml(str = "") {
+      return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[s]));
+    }
+
+    function pill(text, level = "") {
+      return `<span class="pill ${level}">${escapeHtml(text)}</span>`;
+    }
+
+    function renderShell() {
+      clientSelect.innerHTML = state.clients.map(c => `<option value="${c.id}" ${c.id === state.activeClientId ? "selected" : ""}>${escapeHtml(c.name)} Â· ${escapeHtml(c.package)}</option>`).join("");
+      document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.view === viewName));
+      render();
+    }
+
+    function render() {
+      const c = activeClient();
+      const titles = {
+        command: ["Clinical Command Center", "Dzisiejsze decyzje, ryzyka i priorytety pracy."],
+        client: ["Profil klienta", "Jedno miejsce na hipotezÄ™, cel, komunikacjÄ™ i czerwone flagi."],
+        process: ["Proces 12 tygodni", "Nie etap dla ozdoby, tylko logika przejĹ›cia do kolejnego standardu."],
+        sessions: ["Sesje i trend", "Historia obserwacji, bĂłlu, gotowoĹ›ci i decyzji."],
+        report: ["Raport dobrostanu", "Gotowy jÄ™zyk dla klienta bez rÄ™cznego skĹ‚adania notatek."]
+      };
+      $("#screenTitle").textContent = titles[viewName][0];
+      $("#screenSubtitle").textContent = titles[viewName][1];
+      if (viewName === "command") renderCommand();
+      if (viewName === "client") renderClient();
+      if (viewName === "process") renderProcess();
+      if (viewName === "sessions") renderSessions();
+      if (viewName === "report") renderReport();
+    }
+
+    function renderCommand() {
+      const allSessions = state.clients.reduce((sum, c) => sum + c.sessions.length, 0);
+      const stable = state.clients.filter(c => risk(c).level === "green").length;
+      const active = activeClient();
+      const m = metrics(active);
+      const milestones = state.clients.flatMap(c => c.sessions.filter(s => s.milestone).map(s => ({ client: c.name, date: s.date, text: s.milestone }))).sort((a,b) => b.date.localeCompare(a.date)).slice(0, 5);
+      view.innerHTML = `
+        <div class="grid cols-4">
+          ${kpi("Klienci aktywni", state.clients.length, `${stable} stabilnych klinicznie`, "good")}
+          ${kpi("Sesje Ĺ‚Ä…cznie", allSessions, "peĹ‚ny Ĺ›lad pracy", "info")}
+          ${kpi("VAS teraz", m.vasNow ?? "â€“", m.vasDelta !== null ? `zmiana od startu: -${m.vasDelta}` : "potrzebne dane", m.vasNow <= 3 ? "good" : m.vasNow <= 6 ? "warn" : "bad")}
+          ${kpi("MobilnoĹ›Ä‡", m.mobility !== null ? `${m.mobility}%` : "â€“", m.mobilityDelta !== null ? `+${m.mobilityDelta}% od startu` : "potrzebne dane", "good")}
+        </div>
+        <div class="grid cols-3">
+          <section class="panel span-2">
+            <div class="panel-head"><div><h2>Lista kliniczna</h2><p>Nie kto jest w bazie, tylko kto wymaga Twojej uwagi.</p></div>${pill("triage", "blue")}</div>
+            <div class="grid">
+              ${state.clients.map(clientCard).join("")}
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><div><h2>Priorytet dziĹ›</h2><p>${escapeHtml(active.name)}</p></div>${pill(risk(active).label, risk(active).level)}</div>
+            ${priorityBlock(active)}
+          </section>
+        </div>
+        <div class="grid cols-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Kamienie milowe</h2>${pill("dowody postÄ™pu", "green")}</div>
+            <div class="grid">${milestones.length ? milestones.map(m => `<div class="task-row"><div class="name">${escapeHtml(m.text)}</div><div class="meta">${escapeHtml(m.client)} Â· ${m.date}</div></div>`).join("") : `<p>Jeszcze brak kamieni milowych.</p>`}</div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Trend aktywnego klienta</h2>${pill("VAS + mobilnoĹ›Ä‡", "blue")}</div>
+            ${chart(active)}
+          </section>
+        </div>
+      `;
+      bindClientCards();
+    }
+
+    function kpi(label, value, trend, tone) {
+      return `<section class="panel kpi"><span class="label">${label}</span><div class="value ${tone || ""}">${value}</div><div class="trend">${escapeHtml(trend)}</div></section>`;
+    }
+
+    function clientCard(c) {
+      const r = risk(c);
+      const m = metrics(c);
+      return `
+        <div class="client-row">
+          <button class="btn client-open" data-id="${c.id}">
+            <span>
+              <span class="name">${escapeHtml(c.name)}</span><br>
+              <span class="meta">${escapeHtml(c.package)} Â· Krok ${c.stage} Â· ${m.sessions} sesji Â· ${escapeHtml(c.healthStatus || "bez statusu")}</span>
+            </span>
+          </button>
+          <div>${pill(r.label, r.level)}</div>
+        </div>`;
+    }
+
+    function priorityBlock(c) {
+      const r = risk(c);
+      const l = latest(c);
+      const tasks = c.tasks || [];
+      return `
+        <div class="grid">
+          <div class="panel soft"><div class="label">Interpretacja</div><p>${escapeHtml(r.reason)}</p></div>
+          <div class="panel soft"><div class="label">NastÄ™pny milestone</div><p>${escapeHtml(c.nextMilestone || "Brak. To jest luka, nie neutralny brak.")}</p></div>
+          <div class="panel soft"><div class="label">Ostatnia decyzja</div><p>${escapeHtml(l?.decision || c.decisionLogic || "Brak decyzji. Bez decyzji dashboard jest notatnikiem, nie systemem.")}</p></div>
+          <div>
+            <div class="label" style="margin-bottom:8px">Zadania</div>
+            <div class="grid">${tasks.length ? tasks.map((t,i) => `<div class="task-row"><label><input type="checkbox" data-task="${i}" ${t.done ? "checked" : ""}> ${escapeHtml(t.text)}</label></div>`).join("") : `<p>Brak zadaĹ„. Dodaj konkret po sesji.</p>`}</div>
+          </div>
+        </div>`;
+    }
+
+    function renderClient() {
+      const c = activeClient();
+      const m = metrics(c);
+      view.innerHTML = `
+        <div class="grid cols-4">
+          ${kpi("VAS", m.vasNow ?? "â€“", m.vasDelta !== null ? `-${m.vasDelta} od startu` : "brak trendu", m.vasNow <= 3 ? "good" : "warn")}
+          ${kpi("MobilnoĹ›Ä‡", m.mobility !== null ? `${m.mobility}%` : "â€“", m.mobilityDelta !== null ? `+${m.mobilityDelta}%` : "brak trendu", "good")}
+          ${kpi("Etap", `Krok ${c.stage}`, steps[c.stage - 1]?.[0] || "Proces", "info")}
+          ${kpi("Sesje", c.sessions.length, "jakoĹ›Ä‡ danych > iloĹ›Ä‡", "info")}
+        </div>
+        <section class="panel">
+          <div class="panel-head"><div><h2>${escapeHtml(c.name)}</h2><p>${escapeHtml(c.contact || "brak kontaktu")} Â· ${escapeHtml(c.package)}</p></div>${pill(risk(c).label, risk(c).level)}</div>
+          <div class="grid cols-2">
+            ${fieldBlock("Cel 12 tygodni", c.goal)}
+            ${fieldBlock("Status zdrowia", c.healthStatus)}
+            ${fieldBlock("Neurotyp / komunikacja", c.neuroType)}
+            ${fieldBlock("NastÄ™pny milestone", c.nextMilestone)}
+            <div class="panel soft span-2"><div class="label">Logika decyzyjna</div><p>${escapeHtml(c.decisionLogic || "Brak. I tu trzeba byÄ‡ brutalnie uczciwym: bez hipotezy roboczej zbierasz dane, ale nie prowadzisz procesu.")}</p></div>
+          </div>
+        </section>
+      `;
+    }
+
+    function fieldBlock(label, value) {
+      return `<div class="panel soft"><div class="label">${label}</div><p>${escapeHtml(value || "â€“")}</p></div>`;
+    }
+
+    function renderProcess() {
+      const c = activeClient();
+      view.innerHTML = `
+        <section class="panel">
+          <div class="panel-head"><div><h2>Proces klienta</h2><p>${escapeHtml(c.name)} Â· aktualnie krok ${c.stage}</p></div>${pill("zmiana etapu zapisuje decyzjÄ™", "blue")}</div>
+          <div class="progress-line">
+            ${steps.map((s, i) => `<button class="step ${c.stage === i + 1 ? "active" : ""} ${c.stage > i + 1 ? "done" : ""}" data-stage="${i + 1}">
+              ${pill(`Krok ${i + 1}`, c.stage >= i + 1 ? "green" : "")}
+              <strong>${s[0]}</strong><span>${s[1]}</span>
+            </button>`).join("")}
+          </div>
+        </section>
+        <section class="panel">
+          <div class="panel-head"><h2>Kryteria przejĹ›cia</h2>${pill("bez tego etap to dekoracja", "gold")}</div>
+          <div class="grid cols-2">
+            ${fieldBlock("Krok 1 â†’ 2", "Rozumiemy problem, mamy baseline VAS/mobilnoĹ›Ä‡, wiemy co prowokuje objawy i co daje ulgÄ™.")}
+            ${fieldBlock("Krok 2 â†’ 3", "Klient toleruje bazowe wzorce, bĂłl po sesji nie roĹ›nie, a lÄ™k przed ruchem spada.")}
+            ${fieldBlock("Krok 3 â†’ 4", "ObciÄ…ĹĽenie roĹ›nie bez utraty jakoĹ›ci, sen i gotowoĹ›Ä‡ nie lecÄ… w dĂłĹ‚.")}
+            ${fieldBlock("Krok 4 â†’ koniec", "Klient zna wĹ‚asny standard, ma plan samodzielny i kryteria, kiedy wrĂłciÄ‡ po pomoc.")}
+          </div>
+        </section>
+      `;
+      document.querySelectorAll("[data-stage]").forEach(btn => btn.addEventListener("click", () => {
+        c.stage = Number(btn.dataset.stage);
+        c.decisionLogic = `${today()} Â· etap zmieniony na krok ${c.stage}: ${steps[c.stage - 1][0]}.\n\n${c.decisionLogic || ""}`.trim();
+        save();
+        toast("Etap procesu zaktualizowany");
+        renderShell();
+      }));
+    }
+
+    function renderSessions() {
+      const c = activeClient();
+      view.innerHTML = `
+        <div class="grid cols-2">
+          <section class="panel">
+            <div class="panel-head"><h2>Trend</h2>${pill("obiektywizacja", "blue")}</div>
+            ${chart(c)}
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h2>Ostatnia decyzja</h2>${pill(latest(c)?.date || "brak", "gold")}</div>
+            <p>${escapeHtml(latest(c)?.decision || "Brak decyzji w ostatniej sesji.")}</p>
+          </section>
+        </div>
+        <section class="panel">
+          <div class="panel-head"><h2>Historia sesji</h2><button class="btn primary" id="inlineSessionBtn">Nowa sesja</button></div>
+          <div class="timeline">
+            ${c.sessions.length ? [...c.sessions].reverse().map(sessionRow).join("") : "<p>Brak sesji.</p>"}
+          </div>
+        </section>
+      `;
+      $("#inlineSessionBtn")?.addEventListener("click", openSessionModal);
+    }
+
+    function sessionRow(s) {
+      return `
+        <div class="session-row">
+          <div>${pill(s.date, "blue")}</div>
+          <div class="session-main">
+            <div class="session-metrics">
+              ${pill(`VAS ${s.vasBefore} â†’ ${s.vasAfter}`, s.vasAfter <= 3 ? "green" : s.vasAfter <= 6 ? "gold" : "red")}
+              ${pill(`MobilnoĹ›Ä‡ ${s.mobilityIndex}%`, "green")}
+              ${pill(`GotowoĹ›Ä‡ ${s.readiness || "â€“"}/10`, (s.readiness || 0) >= 7 ? "green" : "gold")}
+              ${pill(s.sleepQuality || "sen â€“", "blue")}
+            </div>
+            <div class="meta">${escapeHtml(s.notes || "Brak obserwacji.")}</div>
+            ${s.decision ? `<div class="name">Decyzja: ${escapeHtml(s.decision)}</div>` : ""}
+            ${s.exercises?.length ? `<div class="meta">Ä†wiczenia: ${s.exercises.map(escapeHtml).join(", ")}</div>` : ""}
+          </div>
+          <div>${s.milestone ? pill(s.milestone, "green") : ""}</div>
+        </div>`;
+    }
+
+    function renderReport() {
+      const c = activeClient();
+      view.innerHTML = `
+        <section class="panel">
+          <div class="panel-head"><div><h2>Raport dla klienta</h2><p>JÄ™zyk spokojny, konkretny i premium. Bez medycznego zadÄ™cia.</p></div><button class="btn primary" id="copyReportBtn">Kopiuj raport</button></div>
+          <div class="report" id="reportText">${escapeHtml(buildReport(c))}</div>
+        </section>
+      `;
+      $("#copyReportBtn").addEventListener("click", async () => {
+        await navigator.clipboard.writeText($("#reportText").innerText);
+        toast("Raport skopiowany");
+      });
+    }
+
+    function buildReport(c) {
+      const m = metrics(c);
+      const l = latest(c);
+      const milestones = c.sessions.filter(s => s.milestone).map(s => `- ${s.milestone} (${s.date})`).join("\n") || "- jeszcze bez formalnego kamienia milowego";
+      return `Raport procesu Studio Las
+
+Klient: ${c.name}
+Pakiet: ${c.package}
+Aktualny etap: Krok ${c.stage} - ${steps[c.stage - 1]?.[0] || "proces indywidualny"}
+
+Cel pracy:
+${c.goal || "Do doprecyzowania po diagnostyce."}
+
+Co widzimy w danych:
+- VAS aktualnie: ${m.vasNow ?? "brak danych"}
+- Zmiana bĂłlu od startu: ${m.vasDelta !== null ? "-" + m.vasDelta + " pkt" : "brak danych"}
+- MobilnoĹ›Ä‡ aktualnie: ${m.mobility !== null ? m.mobility + "%" : "brak danych"}
+- Zmiana mobilnoĹ›ci od startu: ${m.mobilityDelta !== null ? "+" + m.mobilityDelta + "%" : "brak danych"}
+
+Ostatnia obserwacja:
+${l?.notes || "Brak ostatniej obserwacji."}
+
+Decyzja na kolejny krok:
+${l?.decision || c.decisionLogic || "Do ustalenia po kolejnej sesji."}
+
+Kamienie milowe:
+${milestones}
+
+Komentarz:
+Proces idzie wtedy dobrze, gdy ciaĹ‚o nie tylko wykonuje wiÄ™cej, ale reaguje spokojniej. Dlatego patrzymy jednoczeĹ›nie na bĂłl, mobilnoĹ›Ä‡, sen, gotowoĹ›Ä‡ i jakoĹ›Ä‡ ruchu.`;
+    }
+
+    function chart(c) {
+      if (c.sessions.length < 2) return `<p>Potrzebne minimum dwie sesje, ĹĽeby trend miaĹ‚ sens.</p>`;
+      const w = 640, h = 170, pad = 24;
+      const vas = c.sessions.map((s, i) => point(i, c.sessions.length, s.vasAfter, 0, 10, w, h, pad, true)).join(" ");
+      const mob = c.sessions.map((s, i) => point(i, c.sessions.length, s.mobilityIndex, 0, 100, w, h, pad, false)).join(" ");
+      const dots = c.sessions.map((s, i) => {
+        const p1 = pointParts(i, c.sessions.length, s.vasAfter, 0, 10, w, h, pad, true);
+        const p2 = pointParts(i, c.sessions.length, s.mobilityIndex, 0, 100, w, h, pad, false);
+        return `<circle cx="${p1.x}" cy="${p1.y}" r="4" fill="var(--red)"/><circle cx="${p2.x}" cy="${p2.y}" r="4" fill="var(--green-2)"/>`;
+      }).join("");
+      return `<div class="chart"><svg viewBox="0 0 ${w} ${h}" role="img" aria-label="Trend VAS i mobilnoĹ›ci">
+        <path d="M${pad} ${h-pad}H${w-pad}" stroke="var(--line)"/><path d="M${pad} ${pad}V${h-pad}" stroke="var(--line)"/>
+        <polyline points="${vas}" fill="none" stroke="var(--red)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        <polyline points="${mob}" fill="none" stroke="var(--green-2)" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+        ${dots}
+        <text x="${w-pad}" y="${pad}" text-anchor="end" fill="var(--muted)" font-size="12">zielony: mobilnoĹ›Ä‡ Â· czerwony: VAS</text>
+      </svg></div>`;
+    }
+
+    function point(i, len, value, min, max, w, h, pad, invert) {
+      const p = pointParts(i, len, value, min, max, w, h, pad, invert);
+      return `${p.x},${p.y}`;
+    }
+
+    function pointParts(i, len, value, min, max, w, h, pad, invert) {
+      const x = pad + (i / (len - 1)) * (w - pad * 2);
+      const ratio = (value - min) / (max - min || 1);
+      const normalized = invert ? ratio : ratio;
+      const y = h - pad - normalized * (h - pad * 2);
+      return { x: Math.round(x), y: Math.round(y) };
+    }
+
+    function bindClientCards() {
+      document.querySelectorAll(".client-open").forEach(btn => btn.addEventListener("click", () => {
+        state.activeClientId = btn.dataset.id;
+        viewName = "client";
+        save();
+        renderShell();
+      }));
+      document.querySelectorAll("[data-task]").forEach(input => input.addEventListener("change", () => {
+        const c = activeClient();
+        c.tasks[Number(input.dataset.task)].done = input.checked;
+        save();
+        toast("Zadanie zaktualizowane");
+      }));
+    }
+
+    function openClientModal() {
+      $("#clientModal").classList.add("open");
+      $("#clientModal").setAttribute("aria-hidden", "false");
+    }
+
+    function openSessionModal() {
+      const c = activeClient();
+      $("#sessionClientName").textContent = `${c.name} Â· ${c.package}`;
+      $("#sessionForm").date.value = today();
+      $("#sessionForm").mobilityIndex.value = latest(c)?.mobilityIndex || 60;
+      $("#sessionModal").classList.add("open");
+      $("#sessionModal").setAttribute("aria-hidden", "false");
+    }
+
+    function closeModal(id) {
+      $("#" + id).classList.remove("open");
+      $("#" + id).setAttribute("aria-hidden", "true");
+    }
+
+    function today() {
+      return new Date().toISOString().slice(0, 10);
+    }
+
+    function toast(msg) {
+      const el = $("#toast");
+      el.textContent = msg;
+      el.classList.add("show");
+      setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    function importLegacy() {
+      try {
+        const raw = localStorage.getItem(LEGACY_KEY);
+        if (!raw) return toast("Nie znaleziono danych v1.3 w tej przeglÄ…darce");
+        const legacy = JSON.parse(raw);
+        state = {
+          activeClientId: legacy.activeClientId,
+          clients: legacy.clients.map(c => ({
+            ...c,
+            neuroType: c.neuroType || c.neuroProfile || "",
+            goal: c.goal || c.nextMilestone || "",
+            tasks: c.tasks || [],
+            sessions: (c.sessions || []).map(s => ({
+              readiness: s.readiness || s.energy || 7,
+              decision: s.decision || "",
+              ...s,
+              sleepQuality: s.sleepQuality || s.sleep || "Dobry"
+            }))
+          }))
+        };
+        save();
+        renderShell();
+        toast("Zaimportowano dane z v1.3");
+      } catch (e) {
+        toast("Import nieudany");
+      }
+    }
+
+    clientSelect.addEventListener("change", e => {
+      state.activeClientId = e.target.value;
+      save();
+      render();
+    });
+
+    document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => {
+      viewName = btn.dataset.view;
+      renderShell();
+    }));
+
+    $("#newClientBtn").addEventListener("click", openClientModal);
+    $("#newSessionBtn").addEventListener("click", openSessionModal);
+    $("#importLegacyBtn").addEventListener("click", importLegacy);
+
+    document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("click", () => closeModal(btn.dataset.close)));
+    document.querySelectorAll(".modal").forEach(modal => modal.addEventListener("click", e => {
+      if (e.target === modal) closeModal(modal.id);
+    }));
+
+    $("#clientForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const fd = new FormData(e.currentTarget);
+      const c = {
+        id: `SL-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
+        name: fd.get("name").trim(),
+        contact: fd.get("contact").trim(),
+        package: fd.get("package"),
+        stage: Number(fd.get("stage")),
+        healthStatus: fd.get("healthStatus").trim(),
+        neuroType: fd.get("neuroType").trim(),
+        goal: fd.get("goal").trim(),
+        nextMilestone: "",
+        decisionLogic: fd.get("decisionLogic").trim(),
+        tasks: [],
+        sessions: []
+      };
+      state.clients.push(c);
+      state.activeClientId = c.id;
+      save();
+      e.currentTarget.reset();
+      closeModal("clientModal");
+      viewName = "client";
+      renderShell();
+      toast("Dodano klienta");
+    });
+
+    $("#sessionForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const c = activeClient();
+      const fd = new FormData(e.currentTarget);
+      const session = {
+        id: `s${Date.now()}`,
+        date: fd.get("date"),
+        readiness: Number(fd.get("readiness")),
+        vasBefore: Number(fd.get("vasBefore")),
+        vasAfter: Number(fd.get("vasAfter")),
+        mobilityIndex: Number(fd.get("mobilityIndex")),
+        sleepQuality: fd.get("sleepQuality"),
+        exercises: String(fd.get("exercises")).split("\n").map(x => x.trim()).filter(Boolean),
+        notes: fd.get("notes").trim(),
+        decision: fd.get("decision").trim(),
+        milestone: fd.get("milestone").trim()
+      };
+      c.sessions.push(session);
+      if (session.decision) c.decisionLogic = `${session.date} Â· ${session.decision}\n\n${c.decisionLogic || ""}`.trim();
+      if (session.milestone) c.nextMilestone = "";
+      save();
+      e.currentTarget.reset();
+      closeModal("sessionModal");
+      viewName = "sessions";
+      renderShell();
+      toast("Sesja zapisana");
+    });
+
+    renderShell();
+  </script>
+</body>
+</html>
