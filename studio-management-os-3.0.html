@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 6.3 | Premium Print Report</title>
+  <title>Studio Las OS 6.4 | Report Intelligence & Client Language</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -485,7 +485,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 6.3</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 6.4</span></div>
       </div>
 
       <div class="client-switcher">
@@ -521,7 +521,7 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 6.3</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 6.4</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="importLegacyBtn">Import v1.3</button>
           <button class="btn" id="newClientBtn">Nowy klient</button>
@@ -671,7 +671,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "6.3";
+    const APP_VERSION = "6.4";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
@@ -2721,6 +2721,56 @@
         .trim();
     }
 
+    function friendlyMissingData(context = "report") {
+      return {
+        startMap: "Na tym etapie nie oceniamy jeszcze trendu. Celem jest ustalenie punktu wyjścia i bezpiecznego kierunku pracy.",
+        tanita: "Pomiar Tanita traktujemy jako punkt odniesienia. Wnioski trendowe będą możliwe po kolejnym pomiarze.",
+        polar: "Reakcję na obciążenie ocenimy po pierwszych odczytach i obserwacji po sesjach.",
+        sessions: "Obserwacje z sesji pojawią się po rozpoczęciu pracy treningowej.",
+        tasks: "Na tym etapie budujemy dopiero rytm pracy między sesjami.",
+        process: "Ustalenia z procesu pojawią się po pierwszych zapisanych decyzjach przed sesją i po sesji.",
+        report: "Ten raport powstał na wczesnym etapie procesu, dlatego część trendów będzie widoczna dopiero po kolejnych sesjach."
+      }[context] || "Dane uzupełnimy, kiedy pojawi się kolejny punkt odniesienia w procesie.";
+    }
+
+    function clientSafeText(text = "") {
+      return String(text || "")
+        .replace(/stany depresyjne\s*\/\s*lękowe/gi, "czynniki wpływające na samopoczucie, regenerację i poczucie bezpieczeństwa")
+        .replace(/stany depresyjne\s*\/\s*lekowe/gi, "czynniki wpływające na samopoczucie, regenerację i poczucie bezpieczeństwa")
+        .replace(/czerwone flagi/gi, "kontekst bezpieczeństwa")
+        .replace(/red flags?/gi, "kontekst bezpieczeństwa")
+        .replace(/PDF Tanita:\s*załączony\.?/gi, "")
+        .replace(/PDF załączony\.?/gi, "")
+        .replace(/monitorowane w systemie/gi, "uwzględniane jako punkty odniesienia")
+        .replace(/\b[01]\s*\/\s*1\b/g, "do omówienia")
+        .split("\n")
+        .filter(line => !/riskLevel|parseStatus|inputMethod|Widok trenera|Studio Las OS 6\.4/i.test(line))
+        .join("\n")
+        .replace(/Brak zapisanych ustaleń z procesu\./gi, friendlyMissingData("process"))
+        .replace(/[ \t]{2,}/g, " ")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+    }
+
+    function formatGoalList(text = "") {
+      const clean = String(text || "").replace(/;(?=\S)/g, "; ").replace(/[ \t]{2,}/g, " ").trim();
+      if (!clean) return "Do doprecyzowania po diagnostyce.";
+      const parts = clean.split(";").map(part => part.trim()).filter(Boolean);
+      if (parts.length <= 1) return clean;
+      if (parts.length === 2) return `${parts[0]} oraz ${lowerFirst(parts[1])}`;
+      return parts.map(part => `- ${part}`).join("\n");
+    }
+
+    function inlineGoalText(text = "") {
+      return formatGoalList(text).replace(/\n-\s*/g, ", ").replace(/^-\s*/, "").replace(/[ \t]{2,}/g, " ").trim();
+    }
+
+    function lowerFirst(text = "") {
+      const clean = String(text || "").trim();
+      if (!clean) return "";
+      return clean.charAt(0).toLowerCase() + clean.slice(1);
+    }
+
     let printReportCleanupTimer = null;
 
     function clearPrintingReportMode() {
@@ -2739,103 +2789,438 @@
     }
 
     function buildReport(c) {
-      return generatePremiumReport(c, "fourWeeks");
+      return generatePremiumReport(c, "fourWeeks", "client");
     }
 
     function generatePremiumReport(c, reportType = "fourWeeks", audience = "client") {
-      const m = metrics(c);
-      const l = latest(c);
-      const milestones = c.sessions.filter(s => s.milestone).map(s => `- ${s.milestone} (${s.date})`).join("\n") || "- jeszcze bez formalnego kamienia milowego";
+      const builders = {
+        startMap: generateStartMapReport,
+        fourWeeks: generateFourWeeksReport,
+        twelveWeeks: generateTwelveWeeksReport,
+        continuation: generateContinuationReport
+      };
+      const builder = builders[reportType] || builders.fourWeeks;
+      const text = builder(c, audience);
+      return audience === "client" ? clientSafeText(text) : formatReportTextForDisplay(text);
+    }
+
+    function generateStartMapReport(c, audience = "client") {
+      return `Podsumowanie w 5 zdaniach
+${generateReportExecutiveSummary(c, "startMap", audience)}
+
+Punkt wyjścia klienta
+${buildStartPointSection(c, audience)}
+
+Główny cel
+${formatGoalList(reportGoal(c))}
+
+Najważniejsze ograniczenia i kontekst bezpieczeństwa
+${buildSafetyContext(c, audience)}
+
+Pierwsza hipoteza robocza
+${buildWorkingHypothesis(c, audience)}
+
+Priorytety pierwszych 2–4 tygodni
+${buildInitialPriorities(c)}
+
+Czego nie przyspieszamy
+${buildDoNotAccelerateSection(c, audience)}
+
+Jak będziemy monitorować proces
+${buildMonitoringSection(c, audience)}
+
+Uwaga końcowa
+${buildReportClosingNote("startMap")}`;
+    }
+
+    function generateFourWeeksReport(c, audience = "client") {
       const decision = generateWeeklyDecision(c);
-      const clientVersion = audience !== "trainer";
-      const earlyProcessNote = "Ten raport powstał na wczesnym etapie procesu, dlatego część trendów będzie widoczna dopiero po kolejnych sesjach.";
-      const startPointNote = "Na tym etapie traktujemy dane jako punkt startowy, nie jako ocenę końcową.";
-      const trendLaterNote = "Trend będzie możliwy do oceny po zebraniu kolejnych punktów pomiarowych.";
-      const sessionNotes = c.sessions.length
-        ? c.sessions.slice(-4).map(s => `- ${s.date}: ${s.notes || s.decision || "Brak szczegółowej obserwacji."}`).join("\n")
-        : earlyProcessNote;
-      const start = first(c);
-      return `1. Cel procesu
-${c.goal || "Do doprecyzowania po diagnostyce."}
+      return `Podsumowanie w 5 zdaniach
+${generateReportExecutiveSummary(c, "fourWeeks", audience)}
 
-2. Mapa startowa z ankiety
-${buildIntakeReportSection(c, audience)}
+Co monitorowaliśmy
+${buildMonitoringSection(c, audience)}
 
-3. Punkt startowy
-${start ? `Pierwsza sesja: ${start.date}. VAS przed: ${start.vasBefore ?? "brak danych"}, VAS po: ${start.vasAfter ?? "brak danych"}, mobilność: ${start.mobilityIndex ?? "brak danych"}%. ${startPointNote}` : earlyProcessNote}
+Co już wiemy
+${buildWhatWeKnowSection(c, audience)}
 
-4. Co monitorowaliśmy
-- Ból / VAS: ${m.vasNow ?? "brak danych"}
-- Mobilność: ${m.mobility !== null ? m.mobility + "%" : "brak danych"}
-- Gotowość i sen: ${l ? `${l.readiness ?? "brak danych"} / ${l.sleepQuality || "brak danych"}` : "do uzupełnienia po kolejnych spotkaniach"}
-- Zadania domowe: ${(c.tasks || []).filter(t => t.done).length}/${(c.tasks || []).length}
-- Dane Tanita i Polar: ${latestMeasurement(c) || latestPolarSession(c) ? "monitorowane w systemie" : trendLaterNote}
+Co działa
+${buildWhatWorksSection(c, audience)}
 
-5. Najważniejsze obserwacje z sesji
-${sessionNotes}
+Co nadal ogranicza proces
+${buildWhatLimitsSection(c, audience)}
 
-6. Dane Tanita
-${buildTanitaReportSection(c, audience)}
+Dane Tanita
+${generateTanitaNarrative(c, "fourWeeks", audience)}
 
-7. Dane Polar
-${buildPolarReportSection(c, audience)}
+Dane Polar
+${generatePolarNarrative(c, "fourWeeks", audience)}
 
-8. Kamienie milowe
-${milestones}
+Decyzja na kolejny etap
+${buildDecisionReportSection(c, decision, audience)}
 
-9. Aktualna decyzja
-${clientVersion ? `${decision.label}. ${decision.clientMessage}` : `${decision.label} (${decisionLabel(decision.recommendation)}). ${decision.trainerAction}`}
-
-10. Rekomendacja dalszej pracy
-${decision.clientMessage}
-
-11. Ustalenia z procesu
-${buildProcessAgreementsSection(c, audience)}
-
-12. Plan na kolejne 4 tygodnie
+Plan na kolejne 4 tygodnie
 ${buildNextFourWeeksPlan(c, decision)}
 
-Uwaga:
-To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medycznej i nie zastępuje konsultacji medycznej, jeśli pojawiają się niepokojące objawy.`;
+Uwaga końcowa
+${buildReportClosingNote("fourWeeks")}`;
+    }
+
+    function generateTwelveWeeksReport(c, audience = "client") {
+      const decision = generateWeeklyDecision(c);
+      return `Podsumowanie w 5 zdaniach
+${generateReportExecutiveSummary(c, "twelveWeeks", audience)}
+
+Punkt startowy vs obecny etap
+${buildCurrentVsStartSection(c, audience)}
+
+Najważniejsze zmiany
+${buildKeyChangesSection(c, audience)}
+
+Kamienie milowe
+${buildMilestonesSection(c)}
+
+Dane Tanita
+${generateTanitaNarrative(c, "twelveWeeks", audience)}
+
+Dane Polar
+${generatePolarNarrative(c, "twelveWeeks", audience)}
+
+Compliance i zadania domowe
+${buildComplianceSection(c, audience)}
+
+Decyzja: kontynuacja / autonomia / zmiana strategii
+${buildContinuationDecisionSection(c, decision, audience)}
+
+Rekomendacja dalszej pracy
+${buildLongTermRecommendation(c, decision)}
+
+Uwaga końcowa
+${buildReportClosingNote("twelveWeeks")}`;
+    }
+
+    function generateContinuationReport(c, audience = "client") {
+      const decision = generateWeeklyDecision(c);
+      return `Podsumowanie w 5 zdaniach
+${generateReportExecutiveSummary(c, "continuation", audience)}
+
+Co utrzymać
+${buildKeepSection(c, decision)}
+
+Co robić samodzielnie
+${buildSelfWorkSection(c)}
+
+Czego unikać
+${buildAvoidSection(c, decision)}
+
+Kiedy zwiększać obciążenie
+${buildWhenProgressSection(c)}
+
+Kiedy wrócić do kontroli
+${buildWhenReturnSection(c)}
+
+Kiedy nie czekać i skonsultować problem
+${buildConsultSection(c, audience)}
+
+Plan na 4 tygodnie
+${buildNextFourWeeksPlan(c, decision)}
+
+Uwaga końcowa
+${buildReportClosingNote("continuation")}`;
+    }
+
+    function generateReportExecutiveSummary(c, reportType = "fourWeeks", audience = "client") {
+      const decision = generateWeeklyDecision(c);
+      const goal = inlineGoalText(reportGoal(c));
+      const focus = reportIntake(c).firstSessionFocus || steps[c.stage - 1]?.[0] || "ustalenie bezpiecznego punktu startowego";
+      const tanita = latestMeasurement(c);
+      const polar = latestPolarSession(c);
+      const sessions = c.sessions || [];
+      const milestone = lastMilestone(c);
+      const summaries = {
+        startMap: [
+          `${c.name} rozpoczyna proces od uporządkowania punktu wyjścia i potwierdzenia informacji z ankiety.`,
+          `Głównym celem pracy jest ${lowerFirst(goal)}.`,
+          `Pierwszym priorytetem jest ${lowerFirst(focus)}.`,
+          "Na starcie nie oceniamy jeszcze efektów, tylko budujemy bezpieczny punkt odniesienia dla ruchu, obciążenia i pracy między sesjami.",
+          "Tempo progresji będzie wynikało z reakcji organizmu, a nie z pośpiechu."
+        ],
+        fourWeeks: [
+          `${c.name} jest na etapie, na którym najważniejsze są pierwsze wnioski z reakcji po sesjach i pracy domowej.`,
+          sessions.length ? `Mamy już ${sessions.length} zapisanych sesji, więc można ostrożnie nazwać kierunek procesu.` : friendlyMissingData("sessions"),
+          `Aktualna decyzja na kolejny etap to: ${decision.label.toLowerCase()}.`,
+          tanita || polar ? "Dane pomiarowe traktujemy jako wsparcie decyzji, a nie samodzielną ocenę wyniku." : "Kluczowe w kolejnym etapie będzie zebranie kolejnych punktów obserwacji.",
+          "Najbliższy etap powinien utrzymać czytelne kryteria progresji i prosty rytm działań między sesjami."
+        ],
+        twelveWeeks: [
+          `${c.name} ma za sobą etap, który pozwala zestawić punkt startowy z obecną reakcją organizmu.`,
+          milestone ? `Najmocniejszym dowodem postępu jest: ${milestone}.` : "Najważniejsze zmiany warto opierać na sesjach, zadaniach i pomiarach, które faktycznie zostały zapisane.",
+          `Aktualna rekomendacja to: ${decision.label.toLowerCase()}.`,
+          "Dalsza praca powinna wzmacniać samodzielność, ale zostawiać jasne kryteria cofnięcia bodźca.",
+          "Nie traktujemy pojedynczego wyniku jako oceny końcowej, tylko jako element całego procesu."
+        ],
+        continuation: [
+          `${c.name} dostaje plan kontynuacji, który ma wspierać samodzielność bez gubienia granic bezpieczeństwa.`,
+          `Najważniejszy kierunek to nadal ${lowerFirst(goal)}.`,
+          "Obciążenie można zwiększać wtedy, gdy reakcja po sesji i w kolejnych dniach pozostaje przewidywalna.",
+          "Warto monitorować ból po aktywności, sen, gotowość i regularność zadań.",
+          "Plan określa, co utrzymać, czego unikać i kiedy wrócić do kontroli."
+        ]
+      };
+      return summaries[reportType].join(" ");
+    }
+
+    function reportGoal(c) {
+      const intake = reportIntake(c);
+      return intake.mainGoal || c.goal || intake.goals?.join("; ") || "Do doprecyzowania po diagnostyce.";
+    }
+
+    function reportIntake(c) {
+      return c.intake || defaultIntake();
+    }
+
+    function buildStartPointSection(c, audience = "client") {
+      const start = first(c);
+      const intake = reportIntake(c);
+      const parts = [];
+      if (hasImportedIntake(c)) {
+        parts.push(`Ankieta startowa wskazuje cel: ${inlineGoalText(intake.mainGoal || c.goal || "")}.`);
+        parts.push(`Pierwszy fokus diagnostyczny: ${intake.firstSessionFocus || "potwierdzić dane z ankiety i ustalić baseline ruchu"}.`);
+      } else {
+        parts.push(friendlyMissingData("startMap"));
+      }
+      if (start) {
+        parts.push(`Pierwsza zapisana sesja: ${formatDate(start.date)}. VAS przed: ${formatMetric(start.vasBefore, "")}, VAS po: ${formatMetric(start.vasAfter, "")}, mobilność: ${formatMetric(start.mobilityIndex, "%")}.`);
+      } else {
+        parts.push("Pierwsza obserwacja ruchowa zostanie dopisana po rozpoczęciu pracy treningowej.");
+      }
+      return parts.join("\n");
+    }
+
+    function buildSafetyContext(c, audience = "client") {
+      const intake = reportIntake(c);
+      const flags = intakeAllFlags(intake).filter(Boolean);
+      if (!hasImportedIntake(c) && !flags.length && !String(c.contraindications || c.redFlags || "").trim()) {
+        return "Kontekst bezpieczeństwa zostanie potwierdzony w rozmowie i w pierwszej diagnostyce ruchowej.";
+      }
+      if (audience === "trainer") {
+        const manual = [c.contraindications, c.redFlags].filter(Boolean).join("; ");
+        return `- Dane z ankiety: ${flags.length ? flags.join("; ") : "bez istotnych flag w ankiecie"}
+- Dane ręczne: ${manual || "brak dodatkowych wpisów"}
+- Poziom ostrożności: ${intakeRiskLabel(intake.riskLevel || "low")}`;
+      }
+      return "W ankiecie i rozmowie sprawdzamy informacje, które mogą wpływać na samopoczucie, regenerację, zakres ruchu i poczucie bezpieczeństwa. Nie przyspieszamy obciążenia, dopóki ten kontekst nie jest potwierdzony w praktyce.";
+    }
+
+    function buildWorkingHypothesis(c, audience = "client") {
+      const intake = reportIntake(c);
+      const focus = intake.firstSessionFocus || steps[c.stage - 1]?.[0] || "ustalić baseline ruchu i tolerancję obciążenia";
+      const logic = String(c.decisionLogic || "").split("\n")[0].trim();
+      if (audience === "trainer" && logic) return `${focus}. Robocza logika procesu: ${logic}`;
+      return `${focus}. To hipoteza robocza, nie diagnoza - będzie potwierdzana przez ruch, reakcję po sesji i rozmowę z klientem.`;
+    }
+
+    function buildInitialPriorities(c) {
+      const goal = inlineGoalText(reportGoal(c));
+      return `- Potwierdzić dane z ankiety i aktualny punkt startowy.
+- Ustalić 1-2 mierzalne kryteria dla celu: ${goal}.
+- Dobrać mały plan domowy, który klient realnie wykona.
+- Sprawdzić reakcję po sesji zanim zwiększymy trudność.`;
+    }
+
+    function buildDoNotAccelerateSection(c, audience = "client") {
+      const intake = reportIntake(c);
+      const decision = generateWeeklyDecision(c);
+      const items = uniqueList([
+        intakeDoNotAccelerate(intake),
+        ...(decision.doNotDo || [])
+      ]).filter(Boolean);
+      return items.map(item => `- ${item}`).join("\n");
+    }
+
+    function buildMonitoringSection(c, audience = "client") {
+      const m = metrics(c);
+      const l = latest(c);
+      const tasks = c.tasks || [];
+      const lines = [
+        `- Reakcja po sesji: VAS i gotowość${l ? ` (ostatnio VAS po ${formatMetric(l.vasAfter, "")}, gotowość ${formatMetric(l.readiness, "")})` : " - do uzupełnienia po pierwszych sesjach"}.`,
+        `- Jakość ruchu i mobilność${m.mobility !== null ? ` (obecnie ${m.mobility}%)` : " - punkt odniesienia powstanie w procesie"}.`,
+        `- Zadania domowe: ${tasks.length ? `${tasks.filter(t => t.done).length}/${tasks.length} wykonane` : friendlyMissingData("tasks")}.`,
+        `- Tanita: ${latestMeasurement(c) ? "punkt pomiarowy jest zapisany i będzie porównywany z kolejnymi." : friendlyMissingData("tanita")}`,
+        `- Polar: ${latestPolarSession(c) ? "reakcja na obciążenie jest uwzględniana przy decyzji o tempie pracy." : friendlyMissingData("polar")}`
+      ];
+      if (audience === "trainer") lines.push(`- Etap procesu: ${steps[c.stage - 1]?.[0] || "proces indywidualny"}.`);
+      return lines.join("\n");
+    }
+
+    function buildWhatWeKnowSection(c, audience = "client") {
+      const decision = generateWeeklyDecision(c);
+      const latestSession = latest(c);
+      const parts = [];
+      if (latestSession) {
+        parts.push(`Ostatnia sesja (${formatDate(latestSession.date)}) pokazuje reakcję VAS ${formatMetric(latestSession.vasBefore, "")}→${formatMetric(latestSession.vasAfter, "")} i decyzję: ${latestSession.decision || decision.label}.`);
+      } else {
+        parts.push(friendlyMissingData("sessions"));
+      }
+      parts.push(audience === "trainer" ? decision.trainerAction : decision.clientMessage);
+      return parts.join("\n");
+    }
+
+    function buildWhatWorksSection(c, audience = "client") {
+      const tasks = c.tasks || [];
+      const done = tasks.filter(t => t.done).length;
+      const decision = generateWeeklyDecision(c);
+      const positives = [];
+      if (done) positives.push(`Regularność zadań domowych ma już punkt odniesienia: ${done}/${tasks.length} wykonane.`);
+      if (decision.recommendation === "progress") positives.push("Reakcja organizmu pozwala rozważyć małą progresję jednego parametru.");
+      if (latestPolarSession(c)?.clientSummary) positives.push(latestPolarSession(c).clientSummary);
+      if (!positives.length) positives.push("Na tym etapie sprawdzamy dopiero, które bodźce są najlepiej tolerowane i najłatwiejsze do powtórzenia.");
+      return positives.map(item => `- ${item}`).join("\n");
+    }
+
+    function buildWhatLimitsSection(c, audience = "client") {
+      const decision = generateWeeklyDecision(c);
+      const risks = (decision.risks || []).slice(0, 3);
+      if (!risks.length) return "Najważniejszym ograniczeniem jest jeszcze mała liczba punktów obserwacji. Nie wyciągamy wniosków szybciej niż pozwalają dane.";
+      return risks.map(item => `- ${audience === "client" ? clientSafeText(item) : item}`).join("\n");
+    }
+
+    function buildDecisionReportSection(c, decision = generateWeeklyDecision(c), audience = "client") {
+      if (audience === "trainer") {
+        return `${decision.label} (${decisionLabel(decision.recommendation)}).
+Powody:
+${decision.reasons.slice(0, 4).map(reason => `- ${reason}`).join("\n") || "- decyzja wymaga kolejnych danych"}
+Działanie trenera: ${decision.trainerAction}`;
+      }
+      return `${decision.label}. ${decision.clientMessage}
+Czego teraz nie przyspieszamy:
+${(decision.doNotDo || []).slice(0, 3).map(item => `- ${item}`).join("\n")}`;
+    }
+
+    function buildCurrentVsStartSection(c, audience = "client") {
+      const start = first(c);
+      const last = latest(c);
+      if (!start || !last || start.id === last.id) return "Na tym etapie zestawienie punktu startowego z obecnym etapem będzie pełniejsze po kolejnych zapisanych sesjach.";
+      return `Punkt startowy: ${formatDate(start.date)} · VAS po ${formatMetric(start.vasAfter, "")} · mobilność ${formatMetric(start.mobilityIndex, "%")}.
+Obecny etap: ${formatDate(last.date)} · VAS po ${formatMetric(last.vasAfter, "")} · mobilność ${formatMetric(last.mobilityIndex, "%")}.
+Zmiana VAS po: ${formatDelta(last.vasAfter, start.vasAfter, "pkt")}. Zmiana mobilności: ${formatDelta(last.mobilityIndex, start.mobilityIndex, "%")}.`;
+    }
+
+    function buildKeyChangesSection(c, audience = "client") {
+      const items = [];
+      const milestone = lastMilestone(c);
+      if (milestone) items.push(milestone);
+      const tanita = latestMeasurement(c);
+      if (tanita) items.push(`Dodano punkt odniesienia Tanita z ${formatDate(tanita.date)}.`);
+      const polar = latestPolarSession(c);
+      if (polar) items.push(`Dodano odczyty reakcji na obciążenie; ostatnia decyzja: ${loadDecisionLabel(polar.loadDecision)}.`);
+      if (!items.length) return "Najważniejsze zmiany będą czytelniejsze po większej liczbie sesji, zadań i punktów pomiarowych.";
+      return items.map(item => `- ${item}`).join("\n");
+    }
+
+    function buildMilestonesSection(c) {
+      const milestones = (c.sessions || []).filter(s => s.milestone).map(s => `- ${s.milestone} (${formatDate(s.date)})`);
+      return milestones.length ? milestones.join("\n") : "Kamienie milowe zostaną nazwane, kiedy pojawią się konkretne, zapisane zmiany w procesie.";
+    }
+
+    function buildComplianceSection(c, audience = "client") {
+      const tasks = c.tasks || [];
+      if (!tasks.length) return friendlyMissingData("tasks");
+      const done = tasks.filter(t => t.done).length;
+      const latestPost = latestPostSessionNote(c);
+      return `Zadania domowe: ${done}/${tasks.length} wykonane.
+${latestPost?.homeTask ? `Ostatnie zadanie domowe: ${latestPost.homeTask}` : "Plan domowy będzie doprecyzowywany po kolejnych sesjach."}`;
+    }
+
+    function buildContinuationDecisionSection(c, decision = generateWeeklyDecision(c), audience = "client") {
+      const label = decisionLabel(decision.recommendation);
+      if (decision.recommendation === "progress") return `${label}: kontynuować proces z małą progresją i jasnym kryterium cofnięcia bodźca.`;
+      if (decision.recommendation === "maintain") return `${label}: utrzymać strategię, zebrać kolejne punkty danych i wzmacniać samodzielność.`;
+      if (decision.recommendation === "regress") return `${label}: czasowo uprościć bodziec i wrócić do progresji dopiero po spokojniejszej reakcji.`;
+      return `${label}: zatrzymać progresję i wyjaśnić reakcję przed kolejnym etapem pracy.`;
+    }
+
+    function buildLongTermRecommendation(c, decision = generateWeeklyDecision(c)) {
+      return `${decision.clientMessage}
+Najbliższy kierunek: ${c.nextMilestone || inlineGoalText(reportGoal(c))}
+Kryterium kontroli: reakcja po sesji, sen, gotowość i wykonywanie planu domowego.`;
+    }
+
+    function buildKeepSection(c, decision = generateWeeklyDecision(c)) {
+      return `- Utrzymać rytm pracy domowej i prosty zapis reakcji po aktywności.
+- Utrzymać ćwiczenia, które nie nasilają objawów po sesji.
+- Utrzymać zasadę jednej zmiany naraz: zakres, obciążenie albo tempo.`;
+    }
+
+    function buildSelfWorkSection(c) {
+      const plan = c.homePlan || {};
+      if (Array.isArray(plan.exercises) && plan.exercises.length) {
+        return plan.exercises.map(ex => `- ${ex.name}: ${ex.dosage || "wg ustaleń"}${ex.note ? ` (${ex.note})` : ""}`).join("\n");
+      }
+      return "Plan samodzielny będzie najbezpieczniejszy, jeśli zostanie oparty na ostatnim tolerowanym zestawie zadań domowych.";
+    }
+
+    function buildAvoidSection(c, decision = generateWeeklyDecision(c)) {
+      const items = decision.doNotDo?.length ? decision.doNotDo : ["Nie zwiększać kilku parametrów naraz.", "Nie ignorować wyraźnego pogorszenia reakcji po aktywności."];
+      return items.map(item => `- ${item}`).join("\n");
+    }
+
+    function buildWhenProgressSection(c) {
+      return "- Gdy VAS po aktywności nie rośnie względem punktu wyjścia.\n- Gdy sen i gotowość są stabilne przez kilka dni.\n- Gdy aktualny wariant ćwiczeń jest powtarzalny technicznie.";
+    }
+
+    function buildWhenReturnSection(c) {
+      return "- Po wyraźnym spadku gotowości lub regularnym wzroście bólu po aktywności.\n- Gdy plan domowy staje się niejasny albo trudny do utrzymania.\n- Przed większą zmianą celu, obciążenia lub częstotliwości.";
+    }
+
+    function buildConsultSection(c, audience = "client") {
+      if (audience === "trainer") return "Nie czekać, jeśli pojawia się szybkie pogorszenie objawów, nietypowa reakcja po obciążeniu, obawa o bezpieczeństwo albo dane z ankiety wymagają potwierdzenia poza treningiem.";
+      return "Nie czekać, jeśli reakcja organizmu jest nietypowa, szybko się pogarsza albo pojawia się obawa o bezpieczeństwo. Wtedy najpierw wyjaśniamy sytuację, a dopiero potem wracamy do progresji.";
+    }
+
+    function buildReportClosingNote(reportType = "fourWeeks") {
+      if (reportType === "startMap") return "To dokument startowy. Jego celem jest uporządkowanie kierunku pracy, a nie ocena efektów.";
+      if (reportType === "continuation") return "To plan dalszego działania. Ma pomagać w samodzielności, ale zostawia jasne granice, kiedy warto wrócić do kontroli.";
+      return "To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medycznej i nie zastępuje konsultacji medycznej, jeśli pojawiają się niepokojące objawy.";
     }
 
     function buildProcessAgreementsSection(c, audience = "trainer") {
       const pre = latestPreSessionCheck(c);
       const post = latestPostSessionNote(c);
-      if (!pre && !post) return "Brak zapisanych ustaleń z procesu.";
+      if (!pre && !post) return audience === "trainer" ? "Brak zapisanych ustaleń z procesu." : friendlyMissingData("process");
       const parts = [];
       if (pre) {
         const context = [];
         if (pre.painIncreased) context.push("ból był wyższy od ostatniej sesji");
         if (pre.poorSleep) context.push("regeneracja była słabsza");
         if (pre.homePlanDone) context.push("plan domowy został wykonany");
-        if (pre.newSymptoms) context.push("pojawiły się nowe objawy");
+        if (pre.newSymptoms) context.push(audience === "trainer" ? "pojawiły się nowe objawy" : "pojawił się nowy kontekst do omówienia");
         if (pre.redFlagConcern && audience === "trainer") context.push("potrzebna była dodatkowa ostrożność");
-        parts.push(`Przed ostatnią sesją (${pre.date}) kontekst był następujący: ${context.length ? context.join(", ") : "bez dodatkowych sygnałów ograniczających"}. Planowany kierunek: ${decisionLabel(pre.plannedDecision)}.${pre.note ? ` Notatka: ${pre.note}` : ""}`);
+        parts.push(`Przed ostatnią sesją (${formatDate(pre.date)}) kontekst był następujący: ${context.length ? context.join(", ") : "bez dodatkowych sygnałów ograniczających"}. Planowany kierunek: ${decisionLabel(pre.plannedDecision)}.${pre.note && audience === "trainer" ? ` Notatka: ${pre.note}` : ""}`);
       }
       if (post) {
         const details = [
-          post.whatWeDid ? `zrobiliśmy: ${post.whatWeDid}` : "",
-          post.clientResponse ? `reakcja klienta: ${post.clientResponse}` : "",
+          post.whatWeDid && audience === "trainer" ? `zrobiliśmy: ${post.whatWeDid}` : "",
+          post.clientResponse && audience === "trainer" ? `reakcja klienta: ${post.clientResponse}` : "",
           post.clientMessage ? `komunikat dla klienta: ${post.clientMessage}` : "",
           post.homeTask ? `zadanie domowe: ${post.homeTask}` : ""
         ].filter(Boolean).join("; ");
-        parts.push(`Po ostatniej sesji (${post.date}) ustalono: ${decisionLabel(post.decision)}.${details ? ` ${details}.` : ""}`);
+        parts.push(`Po ostatniej sesji (${formatDate(post.date)}) ustalono: ${decisionLabel(post.decision)}.${details ? ` ${details}.` : ""}`);
       }
       return parts.join("\n");
     }
 
     function buildIntakeReportSection(c, audience = "client") {
-      const intake = c.intake || defaultIntake();
-      if (!hasImportedIntake(c)) return "Brak zaimportowanej ankiety.";
+      const intake = reportIntake(c);
+      if (!hasImportedIntake(c)) return "Brak zaimportowanej ankiety. Punkt startowy zostanie opisany po rozmowie i diagnostyce.";
       const limitations = intakeAllFlags(intake).slice(0, 5);
       if (audience !== "trainer") {
-        return `- Główny cel: ${intake.mainGoal || c.goal || "Brak jednoznacznego celu."}
-- Najważniejszy kontekst startowy: ${intake.painAreas || "Dane z ankiety traktujemy jako punkt startowy do rozmowy i diagnostyki."}
+        return `- Główny cel: ${inlineGoalText(intake.mainGoal || c.goal || "Do doprecyzowania.")}
+- Najważniejszy kontekst startowy: informacje z ankiety traktujemy jako punkt startowy do rozmowy i diagnostyki.
 - Pierwszy fokus diagnostyczny: ${intake.firstSessionFocus || "Potwierdzić dane z ankiety i baseline ruchu."}
 - Styl prowadzenia: ${intake.communicationStyle || "Jasne kryteria, spokojne tempo i prosty język."}`;
       }
-      return `- Główny cel: ${intake.mainGoal || c.goal || "Brak jednoznacznego celu."}
+      return `- Główny cel: ${inlineGoalText(intake.mainGoal || c.goal || "Brak jednoznacznego celu.")}
 - Najważniejsze ograniczenia: ${limitations.length ? limitations.join("; ") : "Brak istotnych flag w ankiecie."}
 - Pierwszy fokus diagnostyczny: ${intake.firstSessionFocus || "Potwierdzić dane z ankiety i baseline ruchu."}
 - Styl prowadzenia: ${intake.communicationStyle || "Jasne kryteria, spokojne tempo i prosty język."}`;
@@ -2849,7 +3234,7 @@ To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medyc
         regress: "Cofnąć bodziec do lepiej tolerowanego wariantu, skrócić ekspozycję lub zmniejszyć trudność, a potem wrócić do progresji po uspokojeniu reakcji.",
         consult: "Zatrzymać progresję i najpierw wyjaśnić reakcję organizmu. Kolejne 4 tygodnie planować dopiero po dodatkowej weryfikacji."
       }[decision.recommendation];
-      return `${base}\nPriorytet procesu: ${c.nextMilestone || c.goal || steps[c.stage - 1]?.[0] || "ustalić najbliższy mierzalny krok"}.`;
+      return `${base}\nPriorytet procesu: ${c.nextMilestone || inlineGoalText(reportGoal(c)) || steps[c.stage - 1]?.[0] || "ustalić najbliższy mierzalny krok"}.`;
     }
 
     function renderReportHistory(c) {
@@ -2887,44 +3272,52 @@ To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medyc
     }
 
     function buildTanitaReportSection(c, audience = "client") {
-      const first = firstMeasurement(c);
-      const latest = latestMeasurement(c);
-      if (!latest) return "Pomiar Tanita nie został jeszcze dodany. Skład ciała można potraktować jako osobny punkt odniesienia po pierwszym pomiarze.";
-      const count = (c.measurements || []).length;
-      const intro = `Tanita — kompozycja ciała
-- Najnowszy pomiar: ${latest.date || "brak daty"} · waga ${formatMetric(latest.weightKg, "kg")} · fat ${formatMetric(latest.fatPercent, "%")} · masa mięśniowa ${formatMetric(latest.muscleMassKg, "kg")} · body water ${formatMetric(latest.bodyWaterPercent, "%")}
-- PDF Tanita: ${latest.pdfDataUrl ? "załączony" : "brak załącznika"}`;
-      if (count < 2) {
-        return `${intro}
-- To jest punkt odniesienia. Wnioski trendowe pojawią się po kolejnym pomiarze.`;
-      }
-      const trainerLine = audience === "trainer" ? `\n- Interpretacja trenera: ${latest.trainerInterpretation || "Brak interpretacji trenera."}` : "";
-      return `${intro}
-- Pierwszy pomiar: ${first?.date || "brak daty"} · waga ${formatMetric(first?.weightKg, "kg")} · fat ${formatMetric(first?.fatPercent, "%")} · masa mięśniowa ${formatMetric(first?.muscleMassKg, "kg")} · body water ${formatMetric(first?.bodyWaterPercent, "%")}
-- Różnica wagi: ${formatDelta(latest.weightKg, first?.weightKg, "kg")}
-- Różnica fat %: ${formatDelta(latest.fatPercent, first?.fatPercent, "%")}
-- Różnica masy mięśniowej: ${formatDelta(latest.muscleMassKg, first?.muscleMassKg, "kg")}
-- Różnica body water %: ${formatDelta(latest.bodyWaterPercent, first?.bodyWaterPercent, "%")}${trainerLine}`;
+      return generateTanitaNarrative(c, "fourWeeks", audience);
     }
 
     function buildPolarReportSection(c, audience = "client") {
+      return generatePolarNarrative(c, "fourWeeks", audience);
+    }
+
+    function generateTanitaNarrative(c, reportType = "fourWeeks", audience = "client") {
+      const measurements = sortedMeasurements(c);
+      const latest = measurements[0];
+      if (!latest) return reportType === "startMap" ? friendlyMissingData("tanita") : "Pomiar Tanita może zostać wykorzystany jako punkt odniesienia, kiedy pojawi się pierwszy zapis.";
+      const first = measurements[measurements.length - 1];
+      const latestLine = `Najnowszy pomiar (${formatDate(latest.date)}): waga ${formatMetric(latest.weightKg, "kg")}, fat ${formatMetric(latest.fatPercent, "%")}, masa mięśniowa ${formatMetric(latest.muscleMassKg, "kg")}, body water ${formatMetric(latest.bodyWaterPercent, "%")}.`;
+      if (measurements.length < 2) {
+        const trainerLine = audience === "trainer" && latest.trainerInterpretation ? `\nInterpretacja trenera: ${latest.trainerInterpretation}` : "";
+        const summary = latest.clientSummary ? `\nDla klienta: ${latest.clientSummary}` : "";
+        return `${latestLine}
+To jest punkt odniesienia, nie ocena końcowa. Decyzje treningowe nie wynikają z jednego pomiaru, tylko z połączenia danych Tanita, reakcji po sesjach, testów ruchowych i celu: ${inlineGoalText(reportGoal(c))}.${summary}${trainerLine}`;
+      }
+      const trend = `Trend od ${formatDate(first.date)} do ${formatDate(latest.date)}: waga ${formatDelta(latest.weightKg, first.weightKg, "kg")}, fat ${formatDelta(latest.fatPercent, first.fatPercent, "%")}, masa mięśniowa ${formatDelta(latest.muscleMassKg, first.muscleMassKg, "kg")}, body water ${formatDelta(latest.bodyWaterPercent, first.bodyWaterPercent, "%")}.`;
+      const neutral = "Interpretujemy trend neutralnie: nie oceniamy ciała klienta, tylko sprawdzamy, czy kierunek pracy wspiera cel i tolerancję obciążenia.";
+      const trainerLine = audience === "trainer" && latest.trainerInterpretation ? `\nInterpretacja trenera: ${latest.trainerInterpretation}` : "";
+      return `${latestLine}
+${trend}
+${neutral}${trainerLine}`;
+    }
+
+    function generatePolarNarrative(c, reportType = "fourWeeks", audience = "client") {
       const sessions = sortedPolarSessions(c);
-      if (!sessions.length) return "Odczyty Polar nie zostały jeszcze dodane. Reakcję na obciążenie oceniamy na razie z rozmowy i obserwacji po sesji.";
+      if (!sessions.length) {
+        return reportType === "startMap"
+          ? "Odczyty Polar mogą zostać wykorzystane później do oceny reakcji organizmu na obciążenie."
+          : "Reakcję na obciążenie ocenimy po zebraniu pierwszych odczytów.";
+      }
       const latest = sessions[0];
       const avgRpe = average(sessions.map(s => s.rpe));
       const avgVasAfter = average(sessions.map(s => s.vasAfter));
       const first = sessions[sessions.length - 1];
       const readinessTrend = formatDelta(latest.readiness, first?.readiness, "");
       const tolerance = assessLoadTolerance(latest);
-      const conclusion = audience === "trainer"
-        ? (latest.trainerNote || tolerance.explanation)
-        : (latest.clientSummary || "Te dane pomagają dobrać tempo pracy do reakcji organizmu, a nie oceniać formę.");
-      return `- Liczba odczytów: ${sessions.length}
-- Średni RPE: ${formatAverage(avgRpe)}
-- Średni VAS po: ${formatAverage(avgVasAfter)}
-- Trend gotowości: ${readinessTrend}
-- Ostatnia decyzja: ${loadDecisionLabel(latest.loadDecision)}
-- Wniosek: ${conclusion}`;
+      const clientLine = latest.clientSummary || "Te dane pomagają dobrać tempo progresji. Nie oceniamy formy, tylko reakcję organizmu.";
+      const trainerHr = audience === "trainer" ? `\nKontekst HR: ostatnio HR avg ${formatMetric(latest.hrAvg, "")}, HR max ${formatMetric(latest.hrMax, "")}, czas w wysokiej strefie ${formatMetric(latest.zoneHighMin, "min")}.` : "";
+      const trainerNote = audience === "trainer" && latest.trainerNote ? `\nNotatka trenera: ${latest.trainerNote}` : "";
+      return `Ostatni odczyt (${formatDate(latest.date)}): RPE ${formatMetric(latest.rpe, "")}, VAS po ${formatMetric(latest.vasAfter, "")}, gotowość ${formatMetric(latest.readiness, "")}, decyzja ${loadDecisionLabel(latest.loadDecision)}.
+Średnio z odczytów: RPE ${formatAverage(avgRpe)}, VAS po ${formatAverage(avgVasAfter)}, trend gotowości ${readinessTrend}.
+Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? tolerance.explanation : clientLine}${trainerHr}${trainerNote}`;
     }
 
     function average(values = []) {
