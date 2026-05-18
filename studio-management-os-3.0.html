@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 6.2 | Intake Import & Start Map</title>
+  <title>Studio Las OS 6.3 | Premium Print Report</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -292,6 +292,20 @@
       line-height: 1.55;
       font-size: 14px;
     }
+    .print-report-document { display: grid; gap: 14px; }
+    .print-report-header {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(31,33,31,.56);
+      padding: 16px;
+      display: grid;
+      gap: 12px;
+    }
+    .print-report-brand { font-family: Georgia, serif; font-size: 25px; line-height: 1; color: var(--ink); }
+    .print-report-kicker { color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; }
+    .print-report-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
+    .print-report-meta div { color: var(--muted); font-size: 13px; line-height: 1.45; }
+    .print-report-meta strong { color: var(--ink); display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; }
 
     .modal {
       position: fixed;
@@ -356,6 +370,109 @@
       .actions { width: 100%; }
       .btn { flex: 1; }
     }
+    @media print {
+      body.printing-report .side,
+      body.printing-report .topbar,
+      body.printing-report .nav,
+      body.printing-report .actions,
+      body.printing-report .client-switcher,
+      body.printing-report .side-card,
+      body.printing-report .report-actions,
+      body.printing-report .report-history,
+      body.printing-report .report-shell > .panel-head,
+      body.printing-report button,
+      body.printing-report select,
+      body.printing-report input,
+      body.printing-report textarea {
+        display: none !important;
+      }
+
+      body.printing-report {
+        background: #ffffff !important;
+        color: #1f1f1f !important;
+      }
+
+      body.printing-report .app {
+        display: block !important;
+      }
+
+      body.printing-report .main,
+      body.printing-report .content {
+        display: block !important;
+        max-width: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      body.printing-report .report-shell {
+        display: block !important;
+        background: transparent !important;
+        border: 0 !important;
+        box-shadow: none !important;
+        padding: 0 !important;
+        margin: 0 !important;
+      }
+
+      body.printing-report .print-report-document {
+        display: block !important;
+        background: #ffffff !important;
+        color: #1f1f1f !important;
+        max-width: 190mm;
+        margin: 0 auto;
+        padding: 18mm 16mm;
+        font-family: Georgia, "Times New Roman", serif;
+        line-height: 1.55;
+      }
+
+      body.printing-report .print-report-document * {
+        color: #1f1f1f !important;
+        box-shadow: none !important;
+      }
+
+      body.printing-report .print-report-header,
+      body.printing-report .report {
+        background: #ffffff !important;
+        border: 0 !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+      }
+
+      body.printing-report .print-report-header {
+        border-bottom: 1px solid #d9d3ca !important;
+        margin-bottom: 8mm;
+        padding-bottom: 7mm !important;
+      }
+
+      body.printing-report .print-report-brand {
+        font-size: 24pt;
+        margin-bottom: 4mm;
+      }
+
+      body.printing-report .print-report-kicker {
+        font-size: 10pt;
+        letter-spacing: .08em;
+      }
+
+      body.printing-report .print-report-meta {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 3mm 8mm;
+      }
+
+      body.printing-report .report {
+        min-height: 0 !important;
+        white-space: pre-wrap !important;
+        font-size: 11pt !important;
+      }
+
+      body.printing-report .panel:not(.print-report-document) {
+        box-shadow: none !important;
+      }
+
+      @page {
+        size: A4;
+        margin: 12mm;
+      }
+    }
   </style>
 </head>
 <body>
@@ -368,7 +485,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 6.2</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 6.3</span></div>
       </div>
 
       <div class="client-switcher">
@@ -404,7 +521,7 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 6.2</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 6.3</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="importLegacyBtn">Import v1.3</button>
           <button class="btn" id="newClientBtn">Nowy klient</button>
@@ -554,7 +671,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "6.2";
+    const APP_VERSION = "6.3";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
@@ -2507,45 +2624,61 @@
     function renderReport() {
       const c = activeClient();
       const currentType = "fourWeeks";
+      const currentAudience = "client";
       view.innerHTML = `
-        <section class="panel">
+        <section class="panel report-shell">
           <div class="panel-head">
             <div><h2>Raport premium</h2><p>Język spokojny, konkretny i oparty o realne dane procesu.</p></div>
             ${pill("Decision & Report Engine", "blue")}
           </div>
-          <div class="task-form" style="margin-bottom:12px">
-            <select id="reportTypeSelect" aria-label="Typ raportu">
-              ${Object.entries(REPORT_TYPES).map(([value, label]) => `<option value="${value}" ${value === currentType ? "selected" : ""}>${escapeHtml(label)}</option>`).join("")}
-            </select>
-            <button class="btn primary" id="copyReportBtn">Kopiuj raport</button>
+          <div class="report-actions">
+            <div class="form-grid" style="margin-bottom:12px">
+              <div class="form-field">
+                <label class="label" for="reportTypeSelect">Typ raportu</label>
+                <select id="reportTypeSelect" aria-label="Typ raportu">
+                  ${Object.entries(REPORT_TYPES).map(([value, label]) => `<option value="${value}" ${value === currentType ? "selected" : ""}>${escapeHtml(label)}</option>`).join("")}
+                </select>
+              </div>
+              <div class="form-field">
+                <label class="label" for="reportAudienceSelect">Wersja raportu</label>
+                <select id="reportAudienceSelect" aria-label="Wersja raportu">
+                  <option value="client" selected>Dla klienta</option>
+                  <option value="trainer">Dla trenera</option>
+                </select>
+              </div>
+            </div>
+            <div class="actions" style="justify-content:flex-start; margin-bottom:12px">
+              <button class="btn primary" id="copyReportBtn">Kopiuj raport</button>
+              <button class="btn" id="printReportBtn">Drukuj / zapisz jako PDF</button>
+              <button class="btn warning" id="saveReportBtn">Zapisz raport w historii klienta</button>
+            </div>
           </div>
-          <div class="actions" style="justify-content:flex-start; margin-bottom:12px">
-            <button class="btn" id="printReportBtn">Drukuj / zapisz jako PDF</button>
-            <button class="btn warning" id="saveReportBtn">Zapisz raport w historii klienta</button>
+          <div id="printReportDocument">
+            ${renderPrintReportDocument(c, currentType, currentAudience)}
           </div>
-          <div class="report" id="reportText">${escapeHtml(generatePremiumReport(c, currentType))}</div>
         </section>
-        <section class="panel">
+        <section class="panel report-history">
           <div class="panel-head"><h2>Historia raportów</h2>${pill(`${(c.reports || []).length} zapisanych`, (c.reports || []).length ? "green" : "gold")}</div>
           ${renderReportHistory(c)}
         </section>
       `;
       const updateReport = () => {
-        $("#reportText").textContent = generatePremiumReport(c, $("#reportTypeSelect").value);
+        $("#printReportDocument").innerHTML = renderPrintReportDocument(c, $("#reportTypeSelect").value, $("#reportAudienceSelect").value);
       };
       $("#reportTypeSelect").addEventListener("change", updateReport);
+      $("#reportAudienceSelect").addEventListener("change", updateReport);
       $("#copyReportBtn").addEventListener("click", async () => {
-        const copied = await copyReportText($("#reportText").innerText);
+        const copied = await copyReportText($("#printReportDocument").innerText);
         toast(copied ? "Raport skopiowany" : "Nie udało się skopiować raportu");
       });
-      $("#printReportBtn").addEventListener("click", () => window.print());
+      $("#printReportBtn").addEventListener("click", printPremiumReport);
       $("#saveReportBtn").addEventListener("click", () => {
         c.reports = Array.isArray(c.reports) ? c.reports : [];
         c.reports.push(migrateReport({
           id: `r${Date.now()}`,
           date: today(),
           type: $("#reportTypeSelect").value,
-          content: $("#reportText").innerText
+          content: $("#printReportDocument").innerText
         }));
         save();
         renderReport();
@@ -2553,72 +2686,120 @@
       });
     }
 
+    function renderPrintReportDocument(c, reportType, audience = "client") {
+      const reportText = formatReportTextForDisplay(generatePremiumReport(c, reportType, audience));
+      return `
+        <article class="print-report-document">
+          <header class="print-report-header">
+            <div>
+              <div class="print-report-brand">Studio Las</div>
+              <div class="print-report-kicker">Raport procesu treningowego</div>
+            </div>
+            <div class="print-report-meta">
+              <div><strong>Typ raportu</strong>${escapeHtml(REPORT_TYPES[reportType] || reportType)}</div>
+              <div><strong>Klient</strong>${escapeHtml(c.name)}${c.email ? ` · ${escapeHtml(c.email)}` : ""}</div>
+              <div><strong>Pakiet</strong>${escapeHtml(c.package || "do ustalenia")}</div>
+              <div><strong>Etap</strong>Krok ${escapeHtml(c.stage)} · ${escapeHtml(steps[c.stage - 1]?.[0] || "proces indywidualny")}</div>
+              <div><strong>Data wygenerowania</strong>${escapeHtml(formatDate(today()))}</div>
+              <div><strong>Wersja raportu</strong>${audience === "trainer" ? "Dla trenera" : "Dla klienta"}</div>
+            </div>
+          </header>
+          <div class="report" id="reportText">${escapeHtml(reportText)}</div>
+        </article>
+      `;
+    }
+
+    function formatReportTextForDisplay(text = "") {
+      return String(text || "")
+        .replace(/;(?=\S)/g, "; ")
+        .replace(/Przeciwwskazania:\s*\d+(?:[.,]\d+)?/gi, "Przeciwwskazania lekarskie wymagają potwierdzenia w rozmowie.")
+        .replace(/Przeciwwskazania lekarskie wymagają potwierdzenia w rozmowie\.\s*;?/gi, "Przeciwwskazania lekarskie wymagają potwierdzenia w rozmowie.")
+        .replace(/[ \t]{2,}/g, " ")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n[ \t]+/g, "\n")
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+    }
+
+    let printReportCleanupTimer = null;
+
+    function clearPrintingReportMode() {
+      document.body.classList.remove("printing-report");
+      if (printReportCleanupTimer) {
+        clearTimeout(printReportCleanupTimer);
+        printReportCleanupTimer = null;
+      }
+    }
+
+    function printPremiumReport() {
+      document.body.classList.add("printing-report");
+      window.print();
+      if (printReportCleanupTimer) clearTimeout(printReportCleanupTimer);
+      printReportCleanupTimer = setTimeout(clearPrintingReportMode, 1500);
+    }
+
     function buildReport(c) {
       return generatePremiumReport(c, "fourWeeks");
     }
 
-    function generatePremiumReport(c, reportType = "fourWeeks") {
+    function generatePremiumReport(c, reportType = "fourWeeks", audience = "client") {
       const m = metrics(c);
       const l = latest(c);
       const milestones = c.sessions.filter(s => s.milestone).map(s => `- ${s.milestone} (${s.date})`).join("\n") || "- jeszcze bez formalnego kamienia milowego";
       const decision = generateWeeklyDecision(c);
+      const clientVersion = audience !== "trainer";
+      const earlyProcessNote = "Ten raport powstał na wczesnym etapie procesu, dlatego część trendów będzie widoczna dopiero po kolejnych sesjach.";
+      const startPointNote = "Na tym etapie traktujemy dane jako punkt startowy, nie jako ocenę końcową.";
+      const trendLaterNote = "Trend będzie możliwy do oceny po zebraniu kolejnych punktów pomiarowych.";
       const sessionNotes = c.sessions.length
         ? c.sessions.slice(-4).map(s => `- ${s.date}: ${s.notes || s.decision || "Brak szczegółowej obserwacji."}`).join("\n")
-        : "Brak wystarczających danych do oceny trendu.";
+        : earlyProcessNote;
       const start = first(c);
-      const reportTitle = REPORT_TYPES[reportType] || REPORT_TYPES.fourWeeks;
-      return `${reportTitle}
-Studio Las OS ${APP_VERSION}
-
-Klient: ${c.name}
-Pakiet: ${c.package}
-Aktualny etap: Krok ${c.stage} - ${steps[c.stage - 1]?.[0] || "proces indywidualny"}
-
-1. Cel procesu
+      return `1. Cel procesu
 ${c.goal || "Do doprecyzowania po diagnostyce."}
 
 2. Mapa startowa z ankiety
-${buildIntakeReportSection(c)}
+${buildIntakeReportSection(c, audience)}
 
 3. Punkt startowy
-${start ? `Pierwsza sesja: ${start.date}. VAS przed: ${start.vasBefore ?? "brak danych"}, VAS po: ${start.vasAfter ?? "brak danych"}, mobilność: ${start.mobilityIndex ?? "brak danych"}%.` : "Brak wystarczających danych do oceny trendu."}
+${start ? `Pierwsza sesja: ${start.date}. VAS przed: ${start.vasBefore ?? "brak danych"}, VAS po: ${start.vasAfter ?? "brak danych"}, mobilność: ${start.mobilityIndex ?? "brak danych"}%. ${startPointNote}` : earlyProcessNote}
 
 4. Co monitorowaliśmy
 - Ból / VAS: ${m.vasNow ?? "brak danych"}
 - Mobilność: ${m.mobility !== null ? m.mobility + "%" : "brak danych"}
-- Gotowość i sen: ${l ? `${l.readiness ?? "brak danych"} / ${l.sleepQuality || "brak danych"}` : "Brak wystarczających danych do oceny trendu."}
+- Gotowość i sen: ${l ? `${l.readiness ?? "brak danych"} / ${l.sleepQuality || "brak danych"}` : "do uzupełnienia po kolejnych spotkaniach"}
 - Zadania domowe: ${(c.tasks || []).filter(t => t.done).length}/${(c.tasks || []).length}
-- Dane Tanita i Polar: ${latestMeasurement(c) || latestPolarSession(c) ? "monitorowane w systemie" : "Brak wystarczających danych do oceny trendu."}
+- Dane Tanita i Polar: ${latestMeasurement(c) || latestPolarSession(c) ? "monitorowane w systemie" : trendLaterNote}
 
 5. Najważniejsze obserwacje z sesji
 ${sessionNotes}
 
 6. Dane Tanita
-${buildTanitaReportSection(c)}
+${buildTanitaReportSection(c, audience)}
 
 7. Dane Polar
-${buildPolarReportSection(c)}
+${buildPolarReportSection(c, audience)}
 
 8. Kamienie milowe
 ${milestones}
 
 9. Aktualna decyzja
-${decision.label} (${decisionLabel(decision.recommendation)}). ${decision.trainerAction}
+${clientVersion ? `${decision.label}. ${decision.clientMessage}` : `${decision.label} (${decisionLabel(decision.recommendation)}). ${decision.trainerAction}`}
 
 10. Rekomendacja dalszej pracy
 ${decision.clientMessage}
 
 11. Ustalenia z procesu
-${buildProcessAgreementsSection(c)}
+${buildProcessAgreementsSection(c, audience)}
 
 12. Plan na kolejne 4 tygodnie
 ${buildNextFourWeeksPlan(c, decision)}
 
 Uwaga:
-To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medycznej i nie zastępuje konsultacji, jeśli pojawiają się czerwone flagi.`;
+To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medycznej i nie zastępuje konsultacji medycznej, jeśli pojawiają się niepokojące objawy.`;
     }
 
-    function buildProcessAgreementsSection(c) {
+    function buildProcessAgreementsSection(c, audience = "trainer") {
       const pre = latestPreSessionCheck(c);
       const post = latestPostSessionNote(c);
       if (!pre && !post) return "Brak zapisanych ustaleń z procesu.";
@@ -2629,7 +2810,7 @@ To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medyc
         if (pre.poorSleep) context.push("regeneracja była słabsza");
         if (pre.homePlanDone) context.push("plan domowy został wykonany");
         if (pre.newSymptoms) context.push("pojawiły się nowe objawy");
-        if (pre.redFlagConcern) context.push("potrzebna była dodatkowa ostrożność");
+        if (pre.redFlagConcern && audience === "trainer") context.push("potrzebna była dodatkowa ostrożność");
         parts.push(`Przed ostatnią sesją (${pre.date}) kontekst był następujący: ${context.length ? context.join(", ") : "bez dodatkowych sygnałów ograniczających"}. Planowany kierunek: ${decisionLabel(pre.plannedDecision)}.${pre.note ? ` Notatka: ${pre.note}` : ""}`);
       }
       if (post) {
@@ -2644,10 +2825,16 @@ To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medyc
       return parts.join("\n");
     }
 
-    function buildIntakeReportSection(c) {
+    function buildIntakeReportSection(c, audience = "client") {
       const intake = c.intake || defaultIntake();
       if (!hasImportedIntake(c)) return "Brak zaimportowanej ankiety.";
       const limitations = intakeAllFlags(intake).slice(0, 5);
+      if (audience !== "trainer") {
+        return `- Główny cel: ${intake.mainGoal || c.goal || "Brak jednoznacznego celu."}
+- Najważniejszy kontekst startowy: ${intake.painAreas || "Dane z ankiety traktujemy jako punkt startowy do rozmowy i diagnostyki."}
+- Pierwszy fokus diagnostyczny: ${intake.firstSessionFocus || "Potwierdzić dane z ankiety i baseline ruchu."}
+- Styl prowadzenia: ${intake.communicationStyle || "Jasne kryteria, spokojne tempo i prosty język."}`;
+      }
       return `- Główny cel: ${intake.mainGoal || c.goal || "Brak jednoznacznego celu."}
 - Najważniejsze ograniczenia: ${limitations.length ? limitations.join("; ") : "Brak istotnych flag w ankiecie."}
 - Pierwszy fokus diagnostyczny: ${intake.firstSessionFocus || "Potwierdzić dane z ankiety i baseline ruchu."}
@@ -2655,7 +2842,7 @@ To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medyc
     }
 
     function buildNextFourWeeksPlan(c, decision) {
-      if (!decision) return "Brak wystarczających danych do oceny trendu.";
+      if (!decision) return "Plan kolejnych tygodni będzie bardziej precyzyjny po zebraniu pierwszych danych z procesu.";
       const base = {
         progress: "Kontynuować obecny kierunek i dodać jedną małą progresję naraz. Po każdej zmianie sprawdzić VAS, gotowość, sen i reakcję po 24 godzinach.",
         maintain: "Utrzymać obecny bodziec, dopracować regularność zadań domowych i zebrać kolejny punkt danych przed większą progresją.",
@@ -2699,10 +2886,10 @@ To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medyc
       return copied;
     }
 
-    function buildTanitaReportSection(c) {
+    function buildTanitaReportSection(c, audience = "client") {
       const first = firstMeasurement(c);
       const latest = latestMeasurement(c);
-      if (!latest) return "Brak pomiarów Tanita dla tego klienta.";
+      if (!latest) return "Pomiar Tanita nie został jeszcze dodany. Skład ciała można potraktować jako osobny punkt odniesienia po pierwszym pomiarze.";
       const count = (c.measurements || []).length;
       const intro = `Tanita — kompozycja ciała
 - Najnowszy pomiar: ${latest.date || "brak daty"} · waga ${formatMetric(latest.weightKg, "kg")} · fat ${formatMetric(latest.fatPercent, "%")} · masa mięśniowa ${formatMetric(latest.muscleMassKg, "kg")} · body water ${formatMetric(latest.bodyWaterPercent, "%")}
@@ -2711,30 +2898,33 @@ To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medyc
         return `${intro}
 - To jest punkt odniesienia. Wnioski trendowe pojawią się po kolejnym pomiarze.`;
       }
+      const trainerLine = audience === "trainer" ? `\n- Interpretacja trenera: ${latest.trainerInterpretation || "Brak interpretacji trenera."}` : "";
       return `${intro}
 - Pierwszy pomiar: ${first?.date || "brak daty"} · waga ${formatMetric(first?.weightKg, "kg")} · fat ${formatMetric(first?.fatPercent, "%")} · masa mięśniowa ${formatMetric(first?.muscleMassKg, "kg")} · body water ${formatMetric(first?.bodyWaterPercent, "%")}
 - Różnica wagi: ${formatDelta(latest.weightKg, first?.weightKg, "kg")}
 - Różnica fat %: ${formatDelta(latest.fatPercent, first?.fatPercent, "%")}
 - Różnica masy mięśniowej: ${formatDelta(latest.muscleMassKg, first?.muscleMassKg, "kg")}
-- Różnica body water %: ${formatDelta(latest.bodyWaterPercent, first?.bodyWaterPercent, "%")}
-- Interpretacja trenera: ${latest.trainerInterpretation || "Brak interpretacji trenera."}`;
+- Różnica body water %: ${formatDelta(latest.bodyWaterPercent, first?.bodyWaterPercent, "%")}${trainerLine}`;
     }
 
-    function buildPolarReportSection(c) {
+    function buildPolarReportSection(c, audience = "client") {
       const sessions = sortedPolarSessions(c);
-      if (!sessions.length) return "Brak odczytów Polar dla tego klienta.";
+      if (!sessions.length) return "Odczyty Polar nie zostały jeszcze dodane. Reakcję na obciążenie oceniamy na razie z rozmowy i obserwacji po sesji.";
       const latest = sessions[0];
       const avgRpe = average(sessions.map(s => s.rpe));
       const avgVasAfter = average(sessions.map(s => s.vasAfter));
       const first = sessions[sessions.length - 1];
       const readinessTrend = formatDelta(latest.readiness, first?.readiness, "");
       const tolerance = assessLoadTolerance(latest);
+      const conclusion = audience === "trainer"
+        ? (latest.trainerNote || tolerance.explanation)
+        : (latest.clientSummary || "Te dane pomagają dobrać tempo pracy do reakcji organizmu, a nie oceniać formę.");
       return `- Liczba odczytów: ${sessions.length}
 - Średni RPE: ${formatAverage(avgRpe)}
 - Średni VAS po: ${formatAverage(avgVasAfter)}
 - Trend gotowości: ${readinessTrend}
 - Ostatnia decyzja: ${loadDecisionLabel(latest.loadDecision)}
-- Wniosek trenera: ${latest.trainerNote || tolerance.explanation}`;
+- Wniosek: ${conclusion}`;
     }
 
     function average(values = []) {
@@ -3953,6 +4143,7 @@ Initial 83.45 64.95 18.10
     $("#newPolarBtn").addEventListener("click", openPolarModal);
     $("#tanitaDemoBtn").addEventListener("click", applyDemoTanitaData);
     $("#importLegacyBtn").addEventListener("click", importLegacy);
+    window.addEventListener("afterprint", clearPrintingReportMode);
 
     document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("click", () => closeModal(btn.dataset.close)));
     document.querySelectorAll(".modal").forEach(modal => modal.addEventListener("click", e => {
