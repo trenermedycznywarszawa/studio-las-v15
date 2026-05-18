@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 6.4 | Report Intelligence & Client Language</title>
+  <title>Studio Las OS 6.5 | Report Readiness & Quality Gate</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -306,6 +306,19 @@
     .print-report-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
     .print-report-meta div { color: var(--muted); font-size: 13px; line-height: 1.45; }
     .print-report-meta strong { color: var(--ink); display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; }
+    .report-quality-gate {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(31,33,31,.55);
+      padding: 14px;
+      margin-bottom: 14px;
+      display: grid;
+      gap: 10px;
+    }
+    .report-quality-gate .gate-meta { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+    .report-quality-gate ul { margin: 0; padding-left: 18px; color: var(--muted); }
+    .report-quality-gate li { margin: 4px 0; }
+    .report-quality-gate .warning { color: var(--gold); font-weight: 800; }
 
     .modal {
       position: fixed;
@@ -378,6 +391,7 @@
       body.printing-report .client-switcher,
       body.printing-report .side-card,
       body.printing-report .report-actions,
+      body.printing-report .report-quality-gate,
       body.printing-report .report-history,
       body.printing-report .report-shell > .panel-head,
       body.printing-report button,
@@ -485,7 +499,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 6.4</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 6.5</span></div>
       </div>
 
       <div class="client-switcher">
@@ -521,7 +535,7 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 6.4</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 6.5</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="importLegacyBtn">Import v1.3</button>
           <button class="btn" id="newClientBtn">Nowy klient</button>
@@ -671,7 +685,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "6.4";
+    const APP_VERSION = "6.5";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
@@ -922,7 +936,62 @@
     };
 
     function defaultHomePlan() {
-      return { title: "", frequency: "", duration: "", instructions: "", exercises: [] };
+      return { title: "", focus: "", updatedAt: "", frequency: "", duration: "", instructions: "", exercises: [] };
+    }
+
+    function migrateHomePlan(plan = {}) {
+      const source = plan && typeof plan === "object" ? plan : defaultHomePlan();
+      const exercises = Array.isArray(source.exercises)
+        ? source.exercises.map(migrateHomePlanExercise).filter(ex => ex.name || ex.exerciseId || ex.dosage || ex.clientCue)
+        : [];
+      return {
+        ...source,
+        title: source.title || "",
+        focus: source.focus || "",
+        updatedAt: source.updatedAt || "",
+        frequency: source.frequency || "",
+        duration: source.duration || "",
+        instructions: source.instructions || "",
+        exercises
+      };
+    }
+
+    function migrateHomePlanExercise(exercise = {}) {
+      const addedAt = exercise.addedAt || today();
+      return {
+        ...exercise,
+        id: exercise.id || `hp${String(exercise.exerciseId || exercise.name || Date.now()).replace(/\s+/g, "-").toLowerCase()}`,
+        exerciseId: exercise.exerciseId || "",
+        name: exercise.name || "",
+        category: exercise.category || "",
+        region: exercise.region || "",
+        dosage: exercise.dosage || "",
+        frequency: exercise.frequency || "",
+        clientCue: exercise.clientCue || exercise.note || "",
+        stopCriteria: exercise.stopCriteria || "",
+        videoUrl: exercise.videoUrl || "",
+        status: exercise.status === "archived" ? "archived" : "active",
+        addedAt,
+        note: exercise.note || ""
+      };
+    }
+
+    function migrateTestResult(result = {}) {
+      return {
+        ...result,
+        id: result.id || `test${result.date || Date.now()}`,
+        testId: result.testId || "",
+        testName: result.testName || "",
+        date: result.date || "",
+        region: result.region || "",
+        side: result.side || "",
+        score: result.score || "",
+        pain: result.pain || "",
+        finding: result.finding || "",
+        notes: result.notes || "",
+        decision: result.decision || "",
+        recommendedExerciseIds: Array.isArray(result.recommendedExerciseIds) ? result.recommendedExerciseIds : []
+      };
     }
 
     function defaultIntake() {
@@ -1104,15 +1173,13 @@
     }
 
     function migrateClient(client = {}) {
-      const plan = client.homePlan && typeof client.homePlan === "object" ? client.homePlan : defaultHomePlan();
-      const exercises = Array.isArray(plan.exercises)
-        ? plan.exercises.map(ex => ({
-          name: ex?.name || "",
-          dosage: ex?.dosage || "",
-          note: ex?.note || ""
-        })).filter(ex => ex.name || ex.dosage || ex.note)
-        : [];
+      const plan = migrateHomePlan(client.homePlan);
 
+      // Future Studio Las OS 7.0:
+      // Exercise Prescription Foundation
+      // Global exerciseLibrary should stay separate from client.homePlan.
+      // Client sees only assigned homePlan exercises, never the full atlas.
+      // Diagnostic tests should link to exercises later, but trainer must approve prescription.
       return {
         ...client,
         id: client.id || `SL-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
@@ -1142,14 +1209,9 @@
         reports: Array.isArray(client.reports) ? client.reports.map(migrateReport) : [],
         preSessionChecks: Array.isArray(client.preSessionChecks) ? client.preSessionChecks.map(migratePreSessionCheck) : [],
         postSessionNotes: Array.isArray(client.postSessionNotes) ? client.postSessionNotes.map(migratePostSessionNote) : [],
+        testResults: Array.isArray(client.testResults) ? client.testResults.map(migrateTestResult) : [],
         intake: migrateIntake(client.intake),
-        homePlan: {
-          title: plan.title || "",
-          frequency: plan.frequency || "",
-          duration: plan.duration || "",
-          instructions: plan.instructions || "",
-          exercises
-        },
+        homePlan: plan,
         sessions: Array.isArray(client.sessions) ? client.sessions.map(migrateSession) : []
       };
     }
@@ -2653,6 +2715,9 @@
               <button class="btn warning" id="saveReportBtn">Zapisz raport w historii klienta</button>
             </div>
           </div>
+          <div id="reportQualityGate" class="report-quality-gate">
+            ${renderReportQualityGate(c, currentType)}
+          </div>
           <div id="printReportDocument">
             ${renderPrintReportDocument(c, currentType, currentAudience)}
           </div>
@@ -2663,8 +2728,20 @@
         </section>
       `;
       const updateReport = () => {
-        $("#printReportDocument").innerHTML = renderPrintReportDocument(c, $("#reportTypeSelect").value, $("#reportAudienceSelect").value);
+        const selectedType = $("#reportTypeSelect").value;
+        $("#reportQualityGate").innerHTML = renderReportQualityGate(c, selectedType);
+        $("#printReportDocument").innerHTML = renderPrintReportDocument(c, selectedType, $("#reportAudienceSelect").value);
+        bindReportQualityGate();
       };
+      const bindReportQualityGate = () => {
+        $("#recommendedReportBtn")?.addEventListener("click", () => {
+          const readiness = assessReportReadiness(c, $("#reportTypeSelect").value);
+          $("#reportTypeSelect").value = readiness.recommendedReportType;
+          updateReport();
+          toast("Przełączono na rekomendowany typ raportu");
+        });
+      };
+      bindReportQualityGate();
       $("#reportTypeSelect").addEventListener("change", updateReport);
       $("#reportAudienceSelect").addEventListener("change", updateReport);
       $("#copyReportBtn").addEventListener("click", async () => {
@@ -2684,6 +2761,194 @@
         renderReport();
         toast("Raport zapisany w historii klienta");
       });
+    }
+
+    function renderReportQualityGate(c, reportType) {
+      const readiness = assessReportReadiness(c, reportType);
+      const recommendedLabel = REPORT_TYPES[readiness.recommendedReportType] || readiness.recommendedReportType;
+      const statusText = { ready: "gotowy", limited: "ograniczony", premature: "przedwczesny" }[readiness.status] || readiness.status;
+      const switchButton = readiness.recommendedReportType !== reportType
+        ? `<button class="btn warning" id="recommendedReportBtn" type="button">Przełącz na rekomendowany raport</button>`
+        : "";
+      return `
+        <div class="panel-head">
+          <div>
+            <h2>Gotowość raportu</h2>
+            <p>Quality gate operatora: sprawdza, czy typ raportu pasuje do dojrzałości procesu.</p>
+          </div>
+          ${pill(statusText, reportReadinessTone(readiness.status))}
+        </div>
+        <div class="gate-meta">
+          ${pill(`Score ${readiness.score}/100`, reportReadinessTone(readiness.status))}
+          ${pill(`Rekomendacja: ${recommendedLabel}`, "blue")}
+          ${switchButton}
+        </div>
+        <strong>${escapeHtml(readiness.label)}</strong>
+        ${readiness.warning ? `<p class="warning">${escapeHtml(readiness.warning)}</p>` : ""}
+        <div class="grid cols-2">
+          <div>
+            <div class="label">Dlaczego</div>
+            <ul>${readiness.reasons.length ? readiness.reasons.map(item => `<li>${escapeHtml(item)}</li>`).join("") : "<li>Brak dodatkowych uwag.</li>"}</ul>
+          </div>
+          <div>
+            <div class="label">Co zebrać</div>
+            <ul>${readiness.missingData.length ? readiness.missingData.map(item => `<li>${escapeHtml(item)}</li>`).join("") : "<li>Najważniejsze dane są wystarczające dla tego typu raportu.</li>"}</ul>
+          </div>
+        </div>
+      `;
+    }
+
+    function reportReadinessTone(status) {
+      if (status === "ready") return "green";
+      if (status === "premature") return "red";
+      return "gold";
+    }
+
+    function assessReportReadiness(client, reportType) {
+      const c = migrateClient(client);
+      const sessionCount = (c.sessions || []).length;
+      const postCount = (c.postSessionNotes || []).length;
+      const processCount = Math.max(sessionCount, postCount);
+      const hasIntake = hasImportedIntake(c);
+      const hasGoal = Boolean(String(c.goal || c.intake?.mainGoal || "").trim());
+      const hasFocus = Boolean(String(c.intake?.firstSessionFocus || "").trim());
+      const hasDecision = Boolean(generateWeeklyDecision(c));
+      const hasTanitaOrPolar = Boolean((c.measurements || []).length || (c.polarSessions || []).length);
+      const hasHomePlan = activeHomePlanExercises(c).length > 0;
+      const hasTwelveWeekReport = (c.reports || []).some(report => report.type === "twelveWeeks");
+      const recommendedReportType = recommendedReportTypeForClient(c);
+      const reasons = [];
+      const missingData = [];
+      let status = "limited";
+      let score = 50;
+      let label = "Raport możliwy, ale wymaga ostrożnego języka.";
+      let warning = "";
+
+      if (reportType === "startMap") {
+        if (hasIntake && hasGoal && hasFocus) {
+          status = "ready";
+          score = 90;
+          label = "Mapa Startowa pasuje do aktualnego punktu procesu.";
+          reasons.push("Jest ankieta, cel i pierwszy fokus diagnostyczny.");
+        } else if (hasGoal) {
+          status = "limited";
+          score = 62;
+          label = "Mapa Startowa jest możliwa, ale bez pełnej ankiety będzie mniej mocna.";
+          reasons.push("Cel jest zapisany.");
+          missingData.push("Zaimportuj lub uzupełnij ankietę startową.");
+          if (!hasFocus) missingData.push("Dopisz pierwszy fokus diagnostyczny.");
+        } else {
+          status = "premature";
+          score = 24;
+          label = "Mapa Startowa jest przedwczesna bez celu i ankiety.";
+          missingData.push("Ustal główny cel klienta.");
+          missingData.push("Zaimportuj ankietę lub uzupełnij punkt startowy.");
+        }
+      }
+
+      if (reportType === "fourWeeks") {
+        if (Number(c.stage || 1) <= 1) {
+          status = "premature";
+          score = Math.max(28, processCount * 12);
+          label = "Raport 4 tygodnie jest przedwczesny procesowo na pierwszym etapie.";
+          warning = "Ten raport można wygenerować technicznie, ale nie jest jeszcze mocny biznesowo ani procesowo.";
+          missingData.push("Zbierz minimum 3 sesje albo 2 notatki po sesji.");
+          missingData.push("Nazwij pierwszą decyzję procesu po realnej obserwacji.");
+        } else if ((sessionCount >= 3 || postCount >= 2) && hasDecision) {
+          status = "ready";
+          score = 86;
+          label = "Raport 4 tygodnie ma wystarczający ślad procesu.";
+          reasons.push(`Sesje: ${sessionCount}, notatki po sesji: ${postCount}.`);
+          reasons.push("Jest bieżąca decyzja tygodniowa.");
+        } else if (sessionCount >= 1 || postCount >= 1) {
+          status = "limited";
+          score = 55;
+          label = "Raport 4 tygodnie jest możliwy jako wstępny, ale trend jest jeszcze słaby.";
+          reasons.push("Jest co najmniej jeden zapis procesu.");
+          missingData.push("Zbierz minimum 3 sesje albo 2 notatki po sesji.");
+        } else {
+          status = "premature";
+          score = 18;
+          label = "Raport 4 tygodnie jest przedwczesny bez sesji i ustaleń po sesji.";
+          missingData.push("Dodaj pierwszą sesję lub notatkę po sesji.");
+        }
+      }
+
+      if (reportType === "twelveWeeks") {
+        if ((sessionCount >= 8 || postCount >= 8) && hasTanitaOrPolar) {
+          status = "ready";
+          score = 90;
+          label = "Raport 12 tygodni ma dojrzałość procesu i punkt danych pomiarowych.";
+          reasons.push(`Ślad procesu: ${Math.max(sessionCount, postCount)} punktów.`);
+          reasons.push("Jest Tanita albo Polar jako punkt odniesienia.");
+        } else if (sessionCount >= 4) {
+          status = "limited";
+          score = 60;
+          label = "Raport 12 tygodni jest jeszcze ograniczony, ale ma już część historii procesu.";
+          reasons.push(`Sesje: ${sessionCount}.`);
+          if (!hasTanitaOrPolar) missingData.push("Dodaj minimum jeden pomiar Tanita albo odczyt Polar.");
+          missingData.push("Dla mocnego raportu 12 tygodni zbierz około 8 sesji lub notatek po sesji.");
+        } else {
+          status = "premature";
+          score = Math.max(15, sessionCount * 10);
+          label = "Raport 12 tygodni jest przedwczesny przy mniej niż 4 sesjach.";
+          missingData.push("Zbierz minimum 4 sesje, a docelowo około 8 punktów procesu.");
+          missingData.push("Dodaj Tanita albo Polar, jeśli raport ma zawierać warstwę danych.");
+        }
+      }
+
+      if (reportType === "continuation") {
+        if (Number(c.stage || 1) <= 1 || sessionCount === 0) {
+          status = "premature";
+          score = 16;
+          label = "Plan Kontynuacji jest przedwczesny bez dojrzałego procesu.";
+          warning = "Ten raport można wygenerować technicznie, ale nie jest jeszcze mocny biznesowo ani procesowo.";
+          missingData.push("Zbierz historię sesji i reakcję organizmu na obciążenie.");
+          missingData.push("Uzupełnij aktualny plan domowy przed finalizacją samodzielnej pracy.");
+        } else if (Number(c.stage || 1) >= 4 || sessionCount >= 8 || hasTwelveWeekReport) {
+          status = "ready";
+          score = 88;
+          label = "Plan Kontynuacji pasuje do etapu autonomii albo długiego śladu procesu.";
+          reasons.push(`Etap: ${c.stage}, sesje: ${sessionCount}.`);
+          if (hasTwelveWeekReport) reasons.push("Istnieje zapisany raport 12 tygodni.");
+        } else if (sessionCount >= 4 && hasHomePlan) {
+          status = "limited";
+          score = 62;
+          label = "Plan Kontynuacji może powstać jako szkic, ale wymaga ostrożnego zakresu.";
+          reasons.push("Jest kilka sesji i aktywny plan domowy.");
+          missingData.push("Dla mocnego planu kontynuacji zbierz dłuższy trend lub przejdź do etapu autonomii.");
+        } else {
+          status = "premature";
+          score = 30;
+          label = "Plan Kontynuacji jest jeszcze za wczesny.";
+          missingData.push("Uzupełnij plan domowy i zbierz minimum 4 sesje.");
+        }
+      }
+
+      if (status === "limited" && !warning) warning = "Raport można wygenerować, ale powinien jasno mówić o ograniczonej liczbie danych.";
+      if (status === "premature" && !warning) warning = "Ten raport można wygenerować technicznie, ale nie jest jeszcze mocny biznesowo ani procesowo.";
+      if (recommendedReportType !== reportType) reasons.push(`Rekomendowany typ teraz: ${REPORT_TYPES[recommendedReportType]}.`);
+      return {
+        status,
+        score: Math.max(0, Math.min(100, Math.round(score))),
+        label,
+        recommendedReportType,
+        reasons,
+        missingData,
+        warning,
+        canGenerate: true
+      };
+    }
+
+    function recommendedReportTypeForClient(c) {
+      const sessionCount = (c.sessions || []).length;
+      const postCount = (c.postSessionNotes || []).length;
+      const processCount = Math.max(sessionCount, postCount);
+      if (Number(c.stage || 1) >= 4) return "continuation";
+      if (Number(c.stage || 1) <= 1 && hasImportedIntake(c)) return "startMap";
+      if (processCount >= 8) return "twelveWeeks";
+      if (processCount >= 3) return "fourWeeks";
+      return hasImportedIntake(c) || c.goal ? "startMap" : "fourWeeks";
     }
 
     function renderPrintReportDocument(c, reportType, audience = "client") {
@@ -2744,12 +3009,53 @@
         .replace(/monitorowane w systemie/gi, "uwzględniane jako punkty odniesienia")
         .replace(/\b[01]\s*\/\s*1\b/g, "do omówienia")
         .split("\n")
-        .filter(line => !/riskLevel|parseStatus|inputMethod|Widok trenera|Studio Las OS 6\.4/i.test(line))
+        .filter(line => !/riskLevel|parseStatus|inputMethod|Widok trenera|Studio Las OS \d+\.\d+/i.test(line))
         .join("\n")
         .replace(/Brak zapisanych ustaleń z procesu\./gi, friendlyMissingData("process"))
         .replace(/[ \t]{2,}/g, " ")
         .replace(/\n{3,}/g, "\n\n")
         .trim();
+    }
+
+    function cleanReportLanguage(text = "", audience = "client") {
+      let clean = String(text || "")
+        .replace(/fat/gi, "tkanka tłuszczowa")
+        .replace(/body water/gi, "woda w organizmie")
+        .replace(/Zadania domowe:\s*do omówienia wykonane/gi, "Zadania domowe: do omówienia po pierwszych sesjach")
+        .replace(/Zadania domowe:\s*0\s*\/\s*1 wykonane/gi, "Zadania domowe: rytm pracy domowej wymaga jeszcze potwierdzenia")
+        .replace(/PDF załączony\.?/gi, "")
+        .replace(/monitorowane w systemie/gi, "uwzględniane jako punkty odniesienia")
+        .replace(/\.\.+/g, ".")
+        .replace(/[ \t]{2,}/g, " ")
+        .replace(/[ \t]+\n/g, "\n")
+        .replace(/\n[ \t]+/g, "\n");
+      if (audience === "client") {
+        clean = clean
+          .replace(/\bVAS\b/g, "reakcja bólu")
+          .replace(/czerwone flagi/gi, "kontekst bezpieczeństwa")
+          .replace(/brak danych/gi, "do uzupełnienia")
+          .replace(/systemie/gi, "procesie")
+          .replace(/\bsystem\b/gi, "proces")
+          .replace(/dashboard/gi, "panel")
+          .replace(/operatora?/gi, "trenera")
+          .split("\n")
+          .filter(line => !/parseStatus|inputMethod|riskLevel|PDF załączony|monitorowane w systemie/i.test(line))
+          .join("\n");
+      }
+      return removeRepeatedReportLines(clean)
+        .replace(/\n{3,}/g, "\n\n")
+        .trim();
+    }
+
+    function removeRepeatedReportLines(text = "") {
+      const seen = new Set();
+      return String(text || "").split("\n").filter(line => {
+        const key = line.trim();
+        if (!key || /^[-\d. ]+$/.test(key)) return true;
+        if (key.length > 45 && seen.has(key)) return false;
+        if (key.length > 45) seen.add(key);
+        return true;
+      }).join("\n");
     }
 
     function formatGoalList(text = "") {
@@ -2801,12 +3107,15 @@
       };
       const builder = builders[reportType] || builders.fourWeeks;
       const text = builder(c, audience);
-      return audience === "client" ? clientSafeText(text) : formatReportTextForDisplay(text);
+      return cleanReportLanguage(audience === "client" ? clientSafeText(text) : formatReportTextForDisplay(text), audience);
     }
 
     function generateStartMapReport(c, audience = "client") {
       return `Podsumowanie w 5 zdaniach
 ${generateReportExecutiveSummary(c, "startMap", audience)}
+
+Najważniejsza decyzja
+${buildMostImportantDecisionSection(c, "startMap", audience)}
 
 Punkt wyjścia klienta
 ${buildStartPointSection(c, audience)}
@@ -2821,7 +3130,7 @@ Pierwsza hipoteza robocza
 ${buildWorkingHypothesis(c, audience)}
 
 Priorytety pierwszych 2–4 tygodni
-${buildInitialPriorities(c)}
+${buildInitialPriorities(c, "startMap", audience)}
 
 Czego nie przyspieszamy
 ${buildDoNotAccelerateSection(c, audience)}
@@ -2835,8 +3144,13 @@ ${buildReportClosingNote("startMap")}`;
 
     function generateFourWeeksReport(c, audience = "client") {
       const decision = generateWeeklyDecision(c);
-      return `Podsumowanie w 5 zdaniach
+      const readiness = assessReportReadiness(c, "fourWeeks");
+      return `${buildReportReadinessIntro("fourWeeks", readiness)}
+Podsumowanie w 5 zdaniach
 ${generateReportExecutiveSummary(c, "fourWeeks", audience)}
+
+Najważniejsza decyzja
+${buildMostImportantDecisionSection(c, "fourWeeks", audience)}
 
 Co monitorowaliśmy
 ${buildMonitoringSection(c, audience)}
@@ -2846,9 +3160,11 @@ ${buildWhatWeKnowSection(c, audience)}
 
 Co działa
 ${buildWhatWorksSection(c, audience)}
+${buildHomePlanReportSection(c, "fourWeeks", audience)}
 
 Co nadal ogranicza proces
 ${buildWhatLimitsSection(c, audience)}
+${buildDiagnosticTestsSection(c, audience)}
 
 Dane Tanita
 ${generateTanitaNarrative(c, "fourWeeks", audience)}
@@ -2871,6 +3187,9 @@ ${buildReportClosingNote("fourWeeks")}`;
       return `Podsumowanie w 5 zdaniach
 ${generateReportExecutiveSummary(c, "twelveWeeks", audience)}
 
+Najważniejsza decyzja
+${buildMostImportantDecisionSection(c, "twelveWeeks", audience)}
+
 Punkt startowy vs obecny etap
 ${buildCurrentVsStartSection(c, audience)}
 
@@ -2888,6 +3207,8 @@ ${generatePolarNarrative(c, "twelveWeeks", audience)}
 
 Compliance i zadania domowe
 ${buildComplianceSection(c, audience)}
+${buildHomePlanReportSection(c, "twelveWeeks", audience)}
+${buildDiagnosticTestsSection(c, audience)}
 
 Decyzja: kontynuacja / autonomia / zmiana strategii
 ${buildContinuationDecisionSection(c, decision, audience)}
@@ -2901,8 +3222,13 @@ ${buildReportClosingNote("twelveWeeks")}`;
 
     function generateContinuationReport(c, audience = "client") {
       const decision = generateWeeklyDecision(c);
-      return `Podsumowanie w 5 zdaniach
+      const readiness = assessReportReadiness(c, "continuation");
+      return `${buildReportReadinessIntro("continuation", readiness)}
+Podsumowanie w 5 zdaniach
 ${generateReportExecutiveSummary(c, "continuation", audience)}
+
+Najważniejsza decyzja
+${buildMostImportantDecisionSection(c, "continuation", audience)}
 
 Co utrzymać
 ${buildKeepSection(c, decision)}
@@ -2970,6 +3296,63 @@ ${buildReportClosingNote("continuation")}`;
       return summaries[reportType].join(" ");
     }
 
+    function buildReportReadinessIntro(reportType, readiness) {
+      if (reportType === "fourWeeks" && readiness.status === "premature") {
+        return "Ten raport ma charakter wstępny, ponieważ proces nie ma jeszcze wystarczającej liczby sesji do oceny trendu.\n\n";
+      }
+      if (reportType === "continuation" && readiness.status === "premature") {
+        return "To jest szkic planu kontynuacji, nie finalny plan samodzielnej pracy.\n\n";
+      }
+      return "";
+    }
+
+    function buildMostImportantDecisionSection(c, reportType = "fourWeeks", audience = "client") {
+      const decision = generateWeeklyDecision(c);
+      const why = (decision.reasons || [])[0] || friendlyMissingData(reportType === "startMap" ? "startMap" : "sessions");
+      const doNot = (decision.doNotDo || [])[0] || "Nie przyspieszamy kilku parametrów pracy naraz.";
+      return `- Co robimy teraz: ${audience === "trainer" ? decision.trainerAction : decision.clientMessage}
+- Dlaczego: ${audience === "trainer" ? why : clientSafeText(why)}
+- Czego nie przyspieszamy: ${audience === "trainer" ? doNot : clientSafeText(doNot)}
+- Następny dowód postępu: ${nextProgressEvidence(c)}`;
+    }
+
+    function nextProgressEvidence(c) {
+      const evidence = [];
+      if (!(c.sessions || []).length) evidence.push("pierwsza obserwacja reakcji po sesji");
+      if ((c.sessions || []).length) evidence.push(lastMilestone(c) || "stabilizacja reakcji bólu i gotowości");
+      if ((c.measurements || []).length) evidence.push("kolejny pomiar porównawczy Tanita");
+      if ((c.polarSessions || []).length) evidence.push("kolejny odczyt tolerancji obciążenia");
+      if ((c.tasks || []).length || activeHomePlanExercises(c).length) evidence.push("powtarzalne wykonanie planu domowego przez minimum tydzień");
+      return uniqueList(evidence).slice(0, 2).join(" oraz ") || "pierwsza spokojna obserwacja reakcji organizmu";
+    }
+
+    function activeHomePlanExercises(c) {
+      const exercises = c?.homePlan?.exercises;
+      if (!Array.isArray(exercises)) return [];
+      return exercises.filter(ex => (ex.status || "active") === "active" && (ex.name || ex.exerciseId));
+    }
+
+    function buildHomePlanReportSection(c, reportType = "fourWeeks", audience = "client") {
+      const exercises = activeHomePlanExercises(c);
+      if (exercises.length) {
+        const label = audience === "trainer" ? "Plan domowy / zadania ruchowe" : "Plan domowy";
+        const items = exercises.slice(0, 4).map(ex => `${ex.name}${ex.dosage ? ` · ${ex.dosage}` : ""}${ex.frequency ? ` · ${ex.frequency}` : ""}`).join("; ");
+        return `${label}: ${items}.`;
+      }
+      if (reportType === "startMap") return "Plan domowy zostanie dobrany po potwierdzeniu punktu wyjścia.";
+      if (reportType === "fourWeeks") return "Plan domowy wymaga doprecyzowania po kolejnych obserwacjach.";
+      if (reportType === "continuation") return "Plan kontynuacji nie powinien być finalizowany bez aktualnego planu domowego.";
+      return "Plan domowy warto odświeżyć przed kolejnym etapem procesu.";
+    }
+
+    function buildDiagnosticTestsSection(c, audience = "client") {
+      const results = Array.isArray(c.testResults) ? c.testResults : [];
+      if (!results.length) return "Testy diagnostyczne zostaną dodane po wykonaniu oceny ruchowej.";
+      const latestResult = [...results].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))[0];
+      const finding = latestResult?.finding || latestResult?.decision || "najważniejszy wniosek wymaga doprecyzowania";
+      return `Testy diagnostyczne: zapisano ${results.length}. Najważniejszy wniosek: ${finding}.`;
+    }
+
     function reportGoal(c) {
       const intake = reportIntake(c);
       return intake.mainGoal || c.goal || intake.goals?.join("; ") || "Do doprecyzowania po diagnostyce.";
@@ -3020,12 +3403,13 @@ ${buildReportClosingNote("continuation")}`;
       return `${focus}. To hipoteza robocza, nie diagnoza - będzie potwierdzana przez ruch, reakcję po sesji i rozmowę z klientem.`;
     }
 
-    function buildInitialPriorities(c) {
+    function buildInitialPriorities(c, reportType = "startMap", audience = "client") {
       const goal = inlineGoalText(reportGoal(c));
       return `- Potwierdzić dane z ankiety i aktualny punkt startowy.
 - Ustalić 1-2 mierzalne kryteria dla celu: ${goal}.
 - Dobrać mały plan domowy, który klient realnie wykona.
-- Sprawdzić reakcję po sesji zanim zwiększymy trudność.`;
+- Sprawdzić reakcję po sesji zanim zwiększymy trudność.
+- ${buildHomePlanReportSection(c, reportType, audience)}`;
     }
 
     function buildDoNotAccelerateSection(c, audience = "client") {
@@ -3047,7 +3431,8 @@ ${buildReportClosingNote("continuation")}`;
         `- Jakość ruchu i mobilność${m.mobility !== null ? ` (obecnie ${m.mobility}%)` : " - punkt odniesienia powstanie w procesie"}.`,
         `- Zadania domowe: ${tasks.length ? `${tasks.filter(t => t.done).length}/${tasks.length} wykonane` : friendlyMissingData("tasks")}.`,
         `- Tanita: ${latestMeasurement(c) ? "punkt pomiarowy jest zapisany i będzie porównywany z kolejnymi." : friendlyMissingData("tanita")}`,
-        `- Polar: ${latestPolarSession(c) ? "reakcja na obciążenie jest uwzględniana przy decyzji o tempie pracy." : friendlyMissingData("polar")}`
+        `- Polar: ${latestPolarSession(c) ? "reakcja na obciążenie jest uwzględniana przy decyzji o tempie pracy." : friendlyMissingData("polar")}`,
+        `- Ocena ruchowa: ${buildDiagnosticTestsSection(c, audience)}`
       ];
       if (audience === "trainer") lines.push(`- Etap procesu: ${steps[c.stage - 1]?.[0] || "proces indywidualny"}.`);
       return lines.join("\n");
@@ -3154,10 +3539,11 @@ Kryterium kontroli: reakcja po sesji, sen, gotowość i wykonywanie planu domowe
 
     function buildSelfWorkSection(c) {
       const plan = c.homePlan || {};
-      if (Array.isArray(plan.exercises) && plan.exercises.length) {
-        return plan.exercises.map(ex => `- ${ex.name}: ${ex.dosage || "wg ustaleń"}${ex.note ? ` (${ex.note})` : ""}`).join("\n");
+      const exercises = activeHomePlanExercises(c);
+      if (exercises.length) {
+        return exercises.map(ex => `- ${ex.name}: ${ex.dosage || "wg ustaleń"}${ex.frequency ? ` · ${ex.frequency}` : ""}${ex.clientCue ? ` (${ex.clientCue})` : ""}`).join("\n");
       }
-      return "Plan samodzielny będzie najbezpieczniejszy, jeśli zostanie oparty na ostatnim tolerowanym zestawie zadań domowych.";
+      return buildHomePlanReportSection(c, "continuation", "client");
     }
 
     function buildAvoidSection(c, decision = generateWeeklyDecision(c)) {
