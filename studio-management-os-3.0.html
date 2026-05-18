@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 6.5 | Report Readiness & Quality Gate</title>
+  <title>Studio Las OS 6.6 | Premium Report Presentation Layer</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -292,20 +292,86 @@
       line-height: 1.55;
       font-size: 14px;
     }
-    .print-report-document { display: grid; gap: 14px; }
-    .print-report-header {
-      border: 1px solid var(--line);
-      border-radius: 12px;
-      background: rgba(31,33,31,.56);
-      padding: 16px;
+    .print-report-document {
       display: grid;
-      gap: 12px;
+      gap: 14px;
+      background: #f6f3ec;
+      color: #24251f;
+      border: 1px solid #d8d0bf;
+      border-radius: 14px;
+      padding: 18px;
     }
-    .print-report-brand { font-family: Georgia, serif; font-size: 25px; line-height: 1; color: var(--ink); }
-    .print-report-kicker { color: var(--muted); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; }
-    .print-report-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px 16px; }
-    .print-report-meta div { color: var(--muted); font-size: 13px; line-height: 1.45; }
-    .print-report-meta strong { color: var(--ink); display: block; font-size: 12px; text-transform: uppercase; letter-spacing: .08em; margin-bottom: 2px; }
+    .print-report-hero {
+      border: 1px solid #cfc7b7;
+      border-radius: 14px;
+      background: linear-gradient(135deg, #fffdf8 0%, #eef4e8 100%);
+      padding: 22px;
+      display: grid;
+      gap: 8px;
+    }
+    .print-report-brand { font-family: Georgia, serif; font-size: 28px; line-height: 1; color: #203524; }
+    .print-report-hero h1 { margin: 0; color: #1f241e; font-size: 24px; letter-spacing: 0; }
+    .print-report-subtitle { color: #5c6355; font-size: 14px; line-height: 1.45; margin: 0; }
+    .print-report-meta-bar {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 8px;
+    }
+    .print-report-meta-item,
+    .print-highlight-card,
+    .print-priority,
+    .print-success-list li,
+    .print-report-note {
+      background: #fffefb;
+      border: 1px solid #ddd5c5;
+      border-radius: 10px;
+      box-shadow: 0 10px 22px rgba(30, 36, 28, .06);
+    }
+    .print-report-meta-item { padding: 10px; color: #34382f; font-size: 13px; line-height: 1.35; }
+    .print-report-meta-item strong,
+    .print-highlight-card .label {
+      color: #6b735f;
+      display: block;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: .08em;
+      margin-bottom: 4px;
+    }
+    .print-report-section { display: grid; gap: 10px; }
+    .print-report-section h2 { margin: 0; color: #203524; font-size: 17px; letter-spacing: 0; }
+    .print-highlight-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .print-highlight-card { padding: 13px; display: grid; gap: 5px; min-height: 92px; }
+    .print-highlight-card strong { color: #1f241e; font-size: 18px; line-height: 1.2; }
+    .print-highlight-card .change { color: #557348; font-weight: 800; font-size: 12px; }
+    .print-highlight-card p { color: #52584d; margin: 0; line-height: 1.42; font-size: 13px; }
+    .print-report-note { border-left: 4px solid #6f8f5e; padding: 14px; color: #30362d; line-height: 1.55; }
+    .print-priority-list { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; counter-reset: priorities; }
+    .print-priority { padding: 13px; display: grid; gap: 6px; position: relative; }
+    .print-priority strong { color: #1f241e; }
+    .print-priority p { margin: 0; color: #52584d; line-height: 1.42; font-size: 13px; }
+    .print-priority::before {
+      counter-increment: priorities;
+      content: counter(priorities);
+      width: 24px;
+      height: 24px;
+      border-radius: 999px;
+      display: grid;
+      place-items: center;
+      background: #e8f0de;
+      color: #35522f;
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .print-success-list { list-style: none; padding: 0; margin: 0; display: grid; gap: 8px; }
+    .print-success-list li { padding: 10px 12px; color: #30362d; line-height: 1.4; }
+    .print-report-document .report {
+      background: #fffefb;
+      color: #24251f;
+      border-color: #ddd5c5;
+      border-radius: 10px;
+      min-height: 0;
+    }
+    .print-report-footer { color: #6b735f; font-size: 12px; text-align: center; padding-top: 4px; }
     .report-quality-gate {
       border: 1px solid var(--line);
       border-radius: 12px;
@@ -439,11 +505,12 @@
       }
 
       body.printing-report .print-report-document * {
-        color: #1f1f1f !important;
         box-shadow: none !important;
       }
 
-      body.printing-report .print-report-header,
+      body.printing-report .print-report-hero,
+      body.printing-report .print-report-meta-bar,
+      body.printing-report .print-report-section,
       body.printing-report .report {
         background: #ffffff !important;
         border: 0 !important;
@@ -451,7 +518,7 @@
         padding: 0 !important;
       }
 
-      body.printing-report .print-report-header {
+      body.printing-report .print-report-hero {
         border-bottom: 1px solid #d9d3ca !important;
         margin-bottom: 8mm;
         padding-bottom: 7mm !important;
@@ -462,14 +529,39 @@
         margin-bottom: 4mm;
       }
 
-      body.printing-report .print-report-kicker {
-        font-size: 10pt;
-        letter-spacing: .08em;
+      body.printing-report .print-report-hero h1 {
+        font-size: 18pt;
       }
 
-      body.printing-report .print-report-meta {
+      body.printing-report .print-report-subtitle {
+        font-size: 10.5pt;
+      }
+
+      body.printing-report .print-report-meta-bar,
+      body.printing-report .print-highlight-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 3mm 8mm;
+      }
+
+      body.printing-report .print-priority-list {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 3mm;
+      }
+
+      body.printing-report .print-report-meta-item,
+      body.printing-report .print-highlight-card,
+      body.printing-report .print-priority,
+      body.printing-report .print-success-list li,
+      body.printing-report .print-report-note {
+        border: 1px solid #d9d3ca !important;
+        box-shadow: none !important;
+        break-inside: avoid;
+        padding: 3mm !important;
+      }
+
+      body.printing-report .print-report-section {
+        margin-bottom: 5mm;
+        break-inside: avoid;
       }
 
       body.printing-report .report {
@@ -499,7 +591,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 6.5</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 6.6</span></div>
       </div>
 
       <div class="client-switcher">
@@ -535,7 +627,7 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 6.5</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 6.6</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="importLegacyBtn">Import v1.3</button>
           <button class="btn" id="newClientBtn">Nowy klient</button>
@@ -685,7 +777,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "6.5";
+    const APP_VERSION = "6.6";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
@@ -2951,27 +3043,275 @@
       return hasImportedIntake(c) || c.goal ? "startMap" : "fourWeeks";
     }
 
+    function reportDocumentSubtitle(reportType) {
+      return {
+        startMap: "Punkt wyjścia i bezpieczny kierunek pracy",
+        fourWeeks: "Pierwsze obserwacje, decyzje i kierunek dalszej pracy",
+        twelveWeeks: "Podsumowanie procesu, zmian i rekomendacji",
+        continuation: "Plan dalszego działania i granice samodzielnej pracy"
+      }[reportType] || "Raport procesu treningowego";
+    }
+
     function renderPrintReportDocument(c, reportType, audience = "client") {
       const reportText = formatReportTextForDisplay(generatePremiumReport(c, reportType, audience));
+      const highlightCards = generateReportHighlightCards(c, reportType, audience);
+      const practicalMeaning = generatePracticalMeaning(c, reportType, audience);
+      const priorities = generateNextPriorities(c, reportType, audience);
+      const successCriteria = generateSuccessCriteria(c, reportType, audience);
       return `
         <article class="print-report-document">
-          <header class="print-report-header">
-            <div>
-              <div class="print-report-brand">Studio Las</div>
-              <div class="print-report-kicker">Raport procesu treningowego</div>
-            </div>
-            <div class="print-report-meta">
-              <div><strong>Typ raportu</strong>${escapeHtml(REPORT_TYPES[reportType] || reportType)}</div>
-              <div><strong>Klient</strong>${escapeHtml(c.name)}${c.email ? ` · ${escapeHtml(c.email)}` : ""}</div>
-              <div><strong>Pakiet</strong>${escapeHtml(c.package || "do ustalenia")}</div>
-              <div><strong>Etap</strong>Krok ${escapeHtml(c.stage)} · ${escapeHtml(steps[c.stage - 1]?.[0] || "proces indywidualny")}</div>
-              <div><strong>Data wygenerowania</strong>${escapeHtml(formatDate(today()))}</div>
-              <div><strong>Wersja raportu</strong>${audience === "trainer" ? "Dla trenera" : "Dla klienta"}</div>
-            </div>
+          <header class="print-report-hero">
+            <div class="print-report-brand">Studio Las</div>
+            <h1>Raport procesu treningowego</h1>
+            <p class="print-report-subtitle">${escapeHtml(reportDocumentSubtitle(reportType))}</p>
           </header>
-          <div class="report" id="reportText">${escapeHtml(reportText)}</div>
+          <section class="print-report-meta-bar" aria-label="Metadane raportu">
+            ${renderReportMetaItem("Klient", `${c.name}${c.email ? ` · ${c.email}` : ""}`)}
+            ${renderReportMetaItem("Typ raportu", REPORT_TYPES[reportType] || reportType)}
+            ${renderReportMetaItem("Etap", `Krok ${c.stage} · ${steps[c.stage - 1]?.[0] || "proces indywidualny"}`)}
+            ${renderReportMetaItem("Data wygenerowania", formatDate(today()))}
+            ${c.package ? renderReportMetaItem("Pakiet", c.package) : ""}
+          </section>
+          <section class="print-report-section">
+            <h2>Najważniejsze w 60 sekund</h2>
+            <div class="print-highlight-grid">
+              ${highlightCards.map(card => renderReportHighlightCard(card, audience)).join("")}
+            </div>
+          </section>
+          <section class="print-report-section">
+            <h2>Co to oznacza w praktyce?</h2>
+            <div class="print-report-note">${escapeHtml(reportPresentationText(practicalMeaning, audience))}</div>
+          </section>
+          <section class="print-report-section">
+            <h2>3 priorytety na kolejny etap</h2>
+            <div class="print-priority-list">
+              ${priorities.map(priority => renderReportPriority(priority, audience)).join("")}
+            </div>
+          </section>
+          <section class="print-report-section">
+            <h2>Jak będziemy mierzyć sukces</h2>
+            <ul class="print-success-list">
+              ${successCriteria.map(item => `<li>${escapeHtml(reportPresentationText(item, audience))}</li>`).join("")}
+            </ul>
+          </section>
+          <section class="print-report-section">
+            <h2>Szczegóły raportu</h2>
+            <div class="report" id="reportText">${escapeHtml(reportText)}</div>
+          </section>
+          <footer class="print-report-footer">Studio Las · Trening medyczny i proces ruchowy</footer>
         </article>
       `;
+    }
+
+    function renderReportMetaItem(label, value) {
+      return `<div class="print-report-meta-item"><strong>${escapeHtml(label)}</strong>${escapeHtml(value || "do uzupełnienia")}</div>`;
+    }
+
+    function renderReportHighlightCard(card, audience = "client") {
+      return `<div class="print-highlight-card">
+        <div class="label">${escapeHtml(reportPresentationText(card.label, audience))}</div>
+        <strong>${escapeHtml(reportPresentationText(card.value, audience))}</strong>
+        ${card.change ? `<div class="change">${escapeHtml(reportPresentationText(card.change, audience))}</div>` : ""}
+        ${card.description ? `<p>${escapeHtml(reportPresentationText(card.description, audience))}</p>` : ""}
+      </div>`;
+    }
+
+    function renderReportPriority(priority, audience = "client") {
+      return `<div class="print-priority">
+        <strong>${escapeHtml(reportPresentationText(priority.title, audience))}</strong>
+        <p>${escapeHtml(reportPresentationText(priority.description, audience))}</p>
+      </div>`;
+    }
+
+    function reportPresentationText(text = "", audience = "client") {
+      return cleanReportLanguage(audience === "client" ? clientSafeText(text) : formatReportTextForDisplay(text), audience);
+    }
+
+    function generateReportHighlightCards(c, reportType = "fourWeeks", audience = "client") {
+      const cards = [];
+      const decision = generateWeeklyDecision(c);
+      const lastSession = latest(c);
+      const firstSession = first(c);
+      const latestTanita = latestMeasurement(c);
+      const latestPolar = latestPolarSession(c);
+      const homeExercises = activeHomePlanExercises(c);
+      const intake = reportIntake(c);
+      const tasks = c.tasks || [];
+
+      if (reportType === "startMap") {
+        cards.push({
+          label: "Cel główny",
+          value: inlineGoalText(reportGoal(c)),
+          description: "To punkt orientacyjny dla pierwszych decyzji, nie obietnica szybkiego efektu."
+        });
+        cards.push({
+          label: "Punkt startowy",
+          value: hasImportedIntake(c) ? "Ankieta i rozmowa" : "Do potwierdzenia",
+          description: hasImportedIntake(c) ? "Dane startowe porządkują kierunek diagnostyki." : "Najpierw trzeba potwierdzić cel, kontekst i punkt wyjścia."
+        });
+        cards.push({
+          label: "Priorytet diagnostyczny",
+          value: intake.firstSessionFocus || "Ustalić baseline ruchu",
+          description: "Sprawdzamy, które ruchy są bezpieczne, powtarzalne i dobrze tolerowane."
+        });
+        cards.push({
+          label: "Czego nie przyspieszamy",
+          value: "Tempa progresji",
+          description: intakeDoNotAccelerate(intake)
+        });
+      }
+
+      if (reportType === "fourWeeks") {
+        cards.push({
+          label: "Aktualna decyzja",
+          value: decision.label,
+          description: audience === "trainer" ? decision.trainerAction : decision.clientMessage
+        });
+        cards.push({
+          label: "Plan domowy",
+          value: homeExercises.length ? `${homeExercises.length} aktywne zadania ruchowe` : "Do doprecyzowania",
+          description: homeExercises.length ? "Plan domowy ma wspierać powtarzalność między sesjami." : "Plan domowy wymaga doprecyzowania po kolejnych obserwacjach."
+        });
+        if (latestTanita) {
+          cards.push({
+            label: "Tanita",
+            value: "Punkt odniesienia",
+            change: latestTanita.date ? formatDate(latestTanita.date) : "",
+            description: `Waga ${formatMetric(latestTanita.weightKg, "kg")}, tkanka tłuszczowa ${formatMetric(latestTanita.fatPercent, "%")}, masa mięśniowa ${formatMetric(latestTanita.muscleMassKg, "kg")}.`
+          });
+        }
+        if (lastSession) {
+          cards.push({
+            label: "Reakcja po sesjach",
+            value: `${formatMetric(lastSession.vasBefore, "")}→${formatMetric(lastSession.vasAfter, "")}`,
+            change: lastSession.date ? formatDate(lastSession.date) : "",
+            description: "To pierwsze obserwacje reakcji organizmu, nie pełny trend."
+          });
+        }
+        if (!lastSession && !latestTanita) {
+          cards.push({
+            label: "Punkt odniesienia",
+            value: "Proces wstępny",
+            description: "Karty pokazują kierunek pracy, dopóki nie ma wystarczającej historii sesji."
+          });
+        }
+      }
+
+      if (reportType === "twelveWeeks") {
+        cards.push({
+          label: "Największa zmiana",
+          value: lastMilestone(c) || (firstSession && lastSession && firstSession !== lastSession ? `Reakcja bólu ${formatDelta(lastSession.vasAfter, firstSession.vasAfter, "pkt")}` : "Do nazwania po kolejnych obserwacjach"),
+          description: "W raporcie podsumowującym opieramy się na zapisanych zmianach, nie na wrażeniu."
+        });
+        cards.push({
+          label: "Regularność planu domowego",
+          value: tasks.length ? `${tasks.filter(t => t.done).length} z ${tasks.length}` : "Do zbudowania",
+          description: tasks.length ? "Regularność między sesjami pokazuje, czy proces jest możliwy do utrzymania." : friendlyMissingData("tasks")
+        });
+        if (latestTanita || latestPolar) {
+          cards.push({
+            label: "Dane procesu",
+            value: latestTanita && latestPolar ? "Tanita i Polar" : (latestTanita ? "Tanita" : "Polar"),
+            description: latestTanita ? "Pomiar składu ciała traktujemy jako porównanie, nie ocenę." : "Odczyty Polar wspierają decyzję o tempie obciążenia."
+          });
+        }
+        cards.push({
+          label: "Rekomendacja",
+          value: decision.label,
+          description: decision.clientMessage
+        });
+      }
+
+      if (reportType === "continuation") {
+        cards.push({
+          label: "Główna zasada",
+          value: "Jedna zmiana naraz",
+          description: "Obciążenie, tempo albo zakres zwiększamy pojedynczo i obserwujemy reakcję organizmu."
+        });
+        cards.push({
+          label: "Co utrzymać",
+          value: homeExercises.length ? "Plan domowy" : "Rytm pracy",
+          description: homeExercises.length ? `${homeExercises.length} aktywne zadania ruchowe.` : "Utrzymać prosty zapis reakcji i regularność ruchu."
+        });
+        cards.push({
+          label: "Czego unikać",
+          value: "Skoków obciążenia",
+          description: (decision.doNotDo || [])[0] || "Nie zwiększać kilku parametrów naraz."
+        });
+        cards.push({
+          label: "Kiedy wrócić do kontroli",
+          value: "Przy nietypowej reakcji",
+          description: "Wróć do kontroli, jeśli reakcja bólu, sen albo gotowość pogarszają się po aktywności."
+        });
+      }
+
+      return cards.filter(card => card.label && card.value).slice(0, 4);
+    }
+
+    function generatePracticalMeaning(c, reportType = "fourWeeks", audience = "client") {
+      if (reportType === "startMap") {
+        return "Na tym etapie nie chodzi o szybkie zwiększanie obciążeń, tylko o potwierdzenie, które ruchy są bezpieczne, powtarzalne i dobrze tolerowane. Dopiero z tego punktu można budować kierunek pracy.";
+      }
+      if (reportType === "fourWeeks") {
+        const readiness = assessReportReadiness(c, "fourWeeks");
+        if (readiness.status === "premature") return "Ten raport porządkuje pierwszy kierunek pracy, ale nie jest jeszcze oceną trendu. Najważniejsze jest zebrać kilka spokojnych obserwacji po sesjach i sprawdzić, czy plan domowy zaczyna być powtarzalny.";
+        return "Najważniejsze jest teraz sprawdzenie, czy pierwsze zadania zaczynają być powtarzalne między sesjami i czy reakcja organizmu pozwala spokojnie zwiększać wymagania.";
+      }
+      if (reportType === "twelveWeeks") {
+        return "Ten raport zestawia punkt startowy z obecną reakcją organizmu. W praktyce pomaga zdecydować, czy kontynuujemy progresję, wzmacniamy samodzielność, czy zmieniamy strategię pracy.";
+      }
+      return "Ten plan ma pomagać w samodzielności, ale nie ma zachęcać do ignorowania sygnałów ostrzegawczych. Granice powrotu do kontroli są równie ważne jak same zadania.";
+    }
+
+    function generateNextPriorities(c, reportType = "fourWeeks", audience = "client") {
+      const decision = generateWeeklyDecision(c);
+      const homeExercises = activeHomePlanExercises(c);
+      const intake = reportIntake(c);
+      const hasTanita = Boolean(latestMeasurement(c));
+      const hasPolar = Boolean(latestPolarSession(c));
+      const hasTests = Array.isArray(c.testResults) && c.testResults.length > 0;
+
+      if (reportType === "startMap") {
+        return [
+          { title: "Potwierdzić punkt startowy", description: intake.firstSessionFocus || "Ustalić baseline ruchu, reakcję bólu i bezpieczny zakres pierwszej pracy." },
+          { title: "Ustalić tolerancję obciążenia", description: "Sprawdzić, jak organizm reaguje po sesji i w kolejnym dniu." },
+          { title: "Zbudować rytm planu domowego", description: "Wybrać mały zestaw zadań, który da się realnie powtarzać." }
+        ];
+      }
+
+      if (reportType === "continuation") {
+        return [
+          { title: "Utrzymać sprawdzone zadania", description: homeExercises.length ? "Kontynuować aktywny plan domowy bez dokładania kilku zmian naraz." : "Najpierw doprecyzować aktualny plan domowy." },
+          { title: "Zwiększać obciążenie warunkowo", description: "Progres tylko wtedy, gdy reakcja organizmu pozostaje przewidywalna." },
+          { title: "Wrócić do kontroli we właściwym momencie", description: "Nie czekać, jeśli reakcja bólu, sen albo gotowość wyraźnie się pogarszają." }
+        ];
+      }
+
+      const priorities = [
+        { title: "Wykonać decyzję tygodniową", description: audience === "trainer" ? decision.trainerAction : decision.clientMessage },
+        { title: homeExercises.length ? "Utrzymać plan domowy" : "Doprecyzować plan domowy", description: homeExercises.length ? "Sprawdzić powtarzalność zadań między sesjami." : "Dobrać zadania ruchowe po kolejnych obserwacjach." },
+        { title: "Zebrać kolejny dowód postępu", description: nextProgressEvidence(c) }
+      ];
+      if (reportType === "twelveWeeks") {
+        priorities[0] = { title: "Ustalić strategię dalszej pracy", description: buildContinuationDecisionSection(c, decision, audience) };
+      }
+      if ((hasTanita || hasPolar || hasTests) && reportType === "fourWeeks") {
+        priorities[2] = { title: "Porównać punkty odniesienia", description: hasTanita ? "Kolejny pomiar Tanita traktować jako porównanie, nie ocenę." : (hasPolar ? "Kolejne odczyty Polar wykorzystać do tempa progresji." : "Wyniki oceny ruchowej zestawić z tolerancją obciążenia.") };
+      }
+      return priorities.slice(0, 3);
+    }
+
+    function generateSuccessCriteria(c, reportType = "fourWeeks", audience = "client") {
+      const criteria = [
+        "Reakcja bólu po aktywności nie rośnie względem punktu wyjścia.",
+        "Plan domowy jest wykonany minimum 2 razy w tygodniu albo zgodnie z ustalonym rytmem.",
+        "Klient potrafi nazwać, które ruchy są bezpieczne, powtarzalne i dobrze tolerowane."
+      ];
+      if (latestPolarSession(c) || reportType !== "startMap") criteria.push("Odczyty Polar lub obserwacje po sesjach pokazują tolerancję obciążenia.");
+      if (latestMeasurement(c)) criteria.push("Kolejny pomiar Tanita służy jako porównanie, nie ocena.");
+      if (Array.isArray(c.testResults) && c.testResults.length) criteria.push("Wnioski z oceny ruchowej przekładają się na dobór zadań ruchowych.");
+      if (reportType === "continuation") criteria.push("Klient wie, kiedy zwiększać obciążenie, a kiedy wrócić do kontroli.");
+      return uniqueList(criteria).slice(0, 5);
     }
 
     function formatReportTextForDisplay(text = "") {
