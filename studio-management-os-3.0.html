@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.1.2 | UX Simplification & Focus Mode</title>
+  <title>Studio Las OS 7.1.3 | Exercise Video Links</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -258,7 +258,7 @@
     .doc-card { min-height: 118px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
     .exercise-list { display: grid; gap: 10px; }
     .task-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; }
-    .filter-bar { display: grid; grid-template-columns: minmax(220px, 1fr) repeat(6, minmax(130px, 170px)); gap: 10px; align-items: end; }
+    .filter-bar { display: grid; grid-template-columns: minmax(220px, 1fr) repeat(7, minmax(120px, 160px)); gap: 10px; align-items: end; }
     .quick-filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .quick-filter-row .btn { min-height: 32px; padding: 7px 10px; font-size: 12px; border-radius: 999px; }
     .quick-filter-row .btn.active { border-color: rgba(127,176,105,.68); background: rgba(127,176,105,.18); color: var(--green-2); }
@@ -696,7 +696,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.1.2</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.1.3</span></div>
       </div>
 
       <div class="client-switcher">
@@ -744,7 +744,7 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.1.2</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.1.3</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -970,7 +970,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.1.2";
+    const APP_VERSION = "7.1.3";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -1051,8 +1051,14 @@
     ];
     const EXERCISE_LIBRARY_SEED_VERSION_KEY = "studioLasExerciseLibrarySeedVersion";
     const EXERCISE_LIBRARY_CORE_VERSION = "core-v3-expanded";
+    const EXERCISE_VIDEO_SEED_VERSION_KEY = "studioLasExerciseVideoSeedVersion";
+    const EXERCISE_VIDEO_SEED_VERSION = "video-v1";
     const CORE_EXERCISE_SOURCE = "Plan początkujący";
     const TRAINER_ATLAS_SOURCE = "Atlas trenerski";
+    const STUDIO_LAS_EXERCISE_VIDEO_LINKS = {
+      // Atlas Excel file was not available locally during the 7.1.3 pass.
+      // Add only verified exercise.id -> https video links here.
+    };
     const SEED_EXERCISES = [
       {
         id: "rolowanie-stop",
@@ -2498,6 +2504,35 @@
       return Array.from(byId.values()).map(entry => migrateExercise(entry.exercise));
     }
 
+    function isValidVideoUrl(url = "") {
+      const value = String(url || "").trim();
+      if (!value) return false;
+      try {
+        const parsed = new URL(value);
+        if (parsed.protocol !== "https:") return false;
+        const host = parsed.hostname.toLowerCase();
+        if (!host || host === "localhost" || host === "127.0.0.1" || host === "0.0.0.0" || host.endsWith(".local")) return false;
+        if (/^(10\.|192\.168\.|172\.(1[6-9]|2\d|3[0-1])\.)/.test(host)) return false;
+        return true;
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function hasExerciseVideo(exercise = {}) {
+      return isValidVideoUrl(exercise.videoUrl);
+    }
+
+    function mergeExerciseVideoLinks(library, videoMap) {
+      const links = videoMap && typeof videoMap === "object" ? videoMap : {};
+      return (Array.isArray(library) ? library : []).map(item => {
+        const exercise = migrateExercise(item);
+        if (hasExerciseVideo(exercise)) return exercise;
+        const url = String(links[exercise.id] || "").trim();
+        return isValidVideoUrl(url) ? { ...exercise, videoUrl: url } : exercise;
+      });
+    }
+
     function mergeCoreExercisesIntoLibrary(existingLibrary, coreExercises) {
       return mergeSeedExercisesIntoLibrary(existingLibrary, coreExercises);
     }
@@ -2505,10 +2540,17 @@
     function upgradeExerciseLibraryToCoreV2() {
       const existing = getExerciseLibrary();
       const seedVersion = localStorage.getItem(EXERCISE_LIBRARY_SEED_VERSION_KEY);
-      if (seedVersion === EXERCISE_LIBRARY_CORE_VERSION && existing.length) return saveExerciseLibrary(existing);
       const seedExercises = [...getStudioLasCoreExercises(), ...getStudioLasTrainerAtlasExercises()];
-      const merged = mergeSeedExercisesIntoLibrary(existing, seedExercises);
-      localStorage.setItem(EXERCISE_LIBRARY_SEED_VERSION_KEY, EXERCISE_LIBRARY_CORE_VERSION);
+      let merged = seedVersion === EXERCISE_LIBRARY_CORE_VERSION && existing.length
+        ? existing.map(migrateExercise)
+        : mergeSeedExercisesIntoLibrary(existing, seedExercises);
+      if (seedVersion !== EXERCISE_LIBRARY_CORE_VERSION) localStorage.setItem(EXERCISE_LIBRARY_SEED_VERSION_KEY, EXERCISE_LIBRARY_CORE_VERSION);
+
+      const videoSeedVersion = localStorage.getItem(EXERCISE_VIDEO_SEED_VERSION_KEY);
+      if (videoSeedVersion !== EXERCISE_VIDEO_SEED_VERSION) {
+        merged = mergeExerciseVideoLinks(merged, STUDIO_LAS_EXERCISE_VIDEO_LINKS);
+        localStorage.setItem(EXERCISE_VIDEO_SEED_VERSION_KEY, EXERCISE_VIDEO_SEED_VERSION);
+      }
       return saveExerciseLibrary(merged);
     }
 
@@ -2804,7 +2846,7 @@
     let pendingIntakeRows = [];
     let exerciseLibrary = [];
     exerciseLibrary = seedExerciseLibraryIfEmpty();
-    let exerciseAtlasFilters = { q: "", trainingBlock: "", category: "", region: "", stage: "", qualityStatus: "reviewed", sort: "process", quick: "", viewMode: "compact" };
+    let exerciseAtlasFilters = { q: "", trainingBlock: "", category: "", region: "", stage: "", qualityStatus: "reviewed", video: "", sort: "process", quick: "", viewMode: "compact" };
     let expandedHomePlanExerciseId = "";
     let clientPortalShowAllHomeTasks = false;
 
@@ -3572,6 +3614,7 @@
             <div class="form-field"><label class="label" for="exerciseSearch">Szukaj</label><input id="exerciseSearch" value="${escapeHtml(exerciseAtlasFilters.q)}" placeholder="Nazwa, cel, tag..." /></div>
             <div class="form-field"><label class="label" for="exerciseBlockFilter">Blok</label><select id="exerciseBlockFilter">${filterOptions(EXERCISE_TRAINING_BLOCKS, exerciseAtlasFilters.trainingBlock, "Wszystkie")}</select></div>
             <div class="form-field"><label class="label" for="exerciseStatusFilter">Status</label><select id="exerciseStatusFilter">${qualityStatusOptions(exerciseAtlasFilters.qualityStatus)}</select></div>
+            <div class="form-field"><label class="label" for="exerciseVideoFilter">Video</label><select id="exerciseVideoFilter">${videoFilterOptions(exerciseAtlasFilters.video)}</select></div>
             <div class="form-field"><label class="label" for="exerciseCategoryFilter">Kategoria</label><select id="exerciseCategoryFilter">${filterOptions(EXERCISE_CATEGORIES, exerciseAtlasFilters.category, "Wszystkie")}</select></div>
             <div class="form-field"><label class="label" for="exerciseRegionFilter">Region</label><select id="exerciseRegionFilter">${filterOptions(EXERCISE_REGIONS, exerciseAtlasFilters.region, "Wszystkie")}</select></div>
             <div class="form-field"><label class="label" for="exerciseStageFilter">Etap</label><select id="exerciseStageFilter">${filterOptions(EXERCISE_STAGES, exerciseAtlasFilters.stage, "Wszystkie")}</select></div>
@@ -3608,6 +3651,10 @@
       $("#exerciseStatusFilter")?.addEventListener("change", e => {
         exerciseAtlasFilters.qualityStatus = e.target.value;
         exerciseAtlasFilters.quick = "";
+        renderExerciseAtlas();
+      });
+      $("#exerciseVideoFilter")?.addEventListener("change", e => {
+        exerciseAtlasFilters.video = e.target.value;
         renderExerciseAtlas();
       });
       $("#exerciseCategoryFilter")?.addEventListener("change", e => {
@@ -3662,6 +3709,8 @@
         if (q && !haystack.includes(q)) return false;
         if (exerciseAtlasFilters.trainingBlock && ex.trainingBlock !== exerciseAtlasFilters.trainingBlock) return false;
         if (exerciseAtlasFilters.qualityStatus && normalizeExerciseQualityStatus(ex.qualityStatus) !== exerciseAtlasFilters.qualityStatus) return false;
+        if (exerciseAtlasFilters.video === "with" && !hasExerciseVideo(ex)) return false;
+        if (exerciseAtlasFilters.video === "without" && hasExerciseVideo(ex)) return false;
         if (exerciseAtlasFilters.category && ex.category !== exerciseAtlasFilters.category) return false;
         if (exerciseAtlasFilters.region && ex.region !== exerciseAtlasFilters.region) return false;
         if (exerciseAtlasFilters.stage && ex.stage !== exerciseAtlasFilters.stage) return false;
@@ -3707,6 +3756,15 @@
       return `<option value="">Wszystkie</option>${EXERCISE_QUALITY_STATUSES.map(status => `<option value="${escapeHtml(status)}" ${status === selected ? "selected" : ""}>${escapeHtml(qualityStatusLabel(status))}</option>`).join("")}`;
     }
 
+    function videoFilterOptions(selected = "") {
+      const options = [
+        ["", "Wszystkie"],
+        ["with", "Z video"],
+        ["without", "Bez video"]
+      ];
+      return options.map(([value, label]) => `<option value="${value}" ${value === selected ? "selected" : ""}>${escapeHtml(label)}</option>`).join("");
+    }
+
     function sortExerciseLibrary(library) {
       const sorted = [...library];
       const sortMode = exerciseAtlasFilters.sort || "process";
@@ -3722,6 +3780,7 @@
 
     function renderExerciseAtlasCard(ex) {
       const needsReview = normalizeExerciseQualityStatus(ex.qualityStatus) === "needs_review";
+      const hasVideo = hasExerciseVideo(ex);
       return `<div class="exercise-card">
         <div>
           <div class="name">${escapeHtml(ex.clientName || ex.name)}</div>
@@ -3734,6 +3793,7 @@
           ${pill(ex.region, "green")}
           ${pill(ex.stage, "gold")}
           ${pill(ex.level, "")}
+          ${pill(hasVideo ? "Video" : "Brak video", hasVideo ? "green" : "")}
         </div>
         ${needsReview ? `<div class="portal-info"><div class="label">Status</div><p>Najpierw dopracuj instrukcję.</p></div>` : ""}
         <div class="portal-info"><div class="label">Dawka</div><p>${escapeHtml(ex.dosageDefault || "Do ustalenia")}</p></div>
@@ -3748,6 +3808,7 @@
 
     function renderExerciseCompactRow(ex) {
       const needsReview = normalizeExerciseQualityStatus(ex.qualityStatus) === "needs_review";
+      const hasVideo = hasExerciseVideo(ex);
       return `<div class="exercise-compact-row">
         <div>
           <div class="name">${escapeHtml(ex.clientName || ex.name)}</div>
@@ -3761,6 +3822,7 @@
           ${pill(ex.region, "green")}
           ${pill(ex.stage, "gold")}
           ${pill(ex.level, "")}
+          ${pill(hasVideo ? "Video" : "Brak video", hasVideo ? "green" : "")}
         </div>
         <div class="card-actions">
           <button class="btn ${needsReview ? "warning" : "primary"}" data-add-exercise="${escapeHtml(ex.id)}">Dodaj</button>
@@ -3854,6 +3916,7 @@
     function renderHomePlanExerciseEditor(ex) {
       const archived = ex.status === "archived";
       const expanded = expandedHomePlanExerciseId === ex.id;
+      const videoUrl = hasExerciseVideo(ex) ? String(ex.videoUrl).trim() : "";
       return `<div class="home-plan-card ${archived ? "task-row done" : "task-row"}">
         <div class="panel-head">
           <div>
@@ -3877,6 +3940,7 @@
           <div class="form-field full"><label class="label">Video URL</label><input data-home-id="${escapeHtml(ex.id)}" data-home-field="videoUrl" value="${escapeHtml(ex.videoUrl || "")}" /></div>
         </div>` : ""}
         <div class="home-plan-actions">
+          ${videoUrl ? `<a class="btn" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">Zobacz video</a>` : `<span class="meta">Brak video</span>`}
           ${archived ? `<button class="btn primary" data-home-restore="${escapeHtml(ex.id)}">Przywróć</button>` : `<button class="btn" data-home-edit="${escapeHtml(ex.id)}">${expanded ? "Zamknij szczegóły" : "Edytuj szczegóły"}</button><button class="btn warning" data-home-archive="${escapeHtml(ex.id)}">Archiwizuj</button>`}
           ${expanded || archived ? `<button class="btn danger" data-home-delete="${escapeHtml(ex.id)}">Usuń</button>` : ""}
         </div>
@@ -4182,6 +4246,7 @@
     function renderPortalNow(c) {
       const firstTask = activeHomePlanExercises(c)[0];
       if (!firstTask) return `<p>Plan domowy zostanie dobrany po potwierdzeniu punktu wyjścia.</p>`;
+      const videoUrl = hasExerciseVideo(firstTask) ? String(firstTask.videoUrl).trim() : "";
       return `
         <div class="measurement-card measurement-main">
           <div class="panel-head">
@@ -4196,6 +4261,7 @@
             <div class="portal-info"><div class="label">Częstotliwość</div><p>${escapeHtml(firstTask.frequency || "Do ustalenia")}</p></div>
             <div class="portal-info"><div class="label">Wskazówka</div><p>${escapeHtml(firstTask.clientCue || "Wykonuj spokojnie i bez pośpiechu.")}</p></div>
           </div>
+          ${videoUrl ? `<div style="margin-top:12px"><a class="btn" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">Zobacz video</a></div>` : ""}
         </div>
       `;
     }
@@ -4303,7 +4369,7 @@
                 <div class="portal-info"><div class="label">Wskazówka</div><p>${escapeHtml(ex.clientCue || "Wykonuj spokojnie i bez pośpiechu.")}</p></div>
                 <div class="portal-info"><div class="label">Kiedy przerwać / zgłosić</div><p>${escapeHtml(ex.stopCriteria || "Przerwij, jeśli objawy wyraźnie narastają po aktywności.")}</p></div>
               </div>
-              ${ex.videoUrl ? `<a class="btn" href="${escapeHtml(ex.videoUrl)}" target="_blank" rel="noopener">Video</a>` : ""}
+              ${hasExerciseVideo(ex) ? `<a class="btn" href="${escapeHtml(String(ex.videoUrl).trim())}" target="_blank" rel="noopener noreferrer">Zobacz video</a>` : ""}
             </div>`).join("")}
           ${active.length > 3 ? `<button class="btn" id="clientPortalShowAllPlanBtn" type="button">${clientPortalShowAllHomeTasks ? "Pokaż mniej" : "Pokaż wszystkie zadania"}</button>` : ""}
         </div>
@@ -5887,7 +5953,7 @@ ${buildReportClosingNote("continuation", context)}`;
       const doneTasks = tasks.filter(task => task.done).length;
       if (exercises.length) {
         const label = "Plan domowy / zadania ruchowe";
-        const items = exercises.slice(0, 4).map(ex => `${ex.name}${ex.dosage ? ` · ${ex.dosage}` : ""}${ex.frequency ? ` · ${ex.frequency}` : ""}`).join("; ");
+        const items = exercises.slice(0, 4).map(ex => `${ex.name}${ex.dosage ? ` · ${ex.dosage}` : ""}${ex.frequency ? ` · ${ex.frequency}` : ""}${hasExerciseVideo(ex) ? " · Video" : ""}`).join("; ");
         return `${label}: ${items}.`;
       }
       if (reportType === "continuation") return "Plan kontynuacji nie powinien być finalizowany bez aktualnego planu domowego.";
@@ -5907,7 +5973,8 @@ ${buildReportClosingNote("continuation", context)}`;
           ex.dosage ? `dawkowanie: ${ex.dosage}` : "",
           ex.frequency ? `częstotliwość: ${ex.frequency}` : "",
           ex.clientCue ? `wskazówka: ${ex.clientCue}` : "",
-          ex.stopCriteria ? `kiedy przerwać: ${ex.stopCriteria}` : ""
+          ex.stopCriteria ? `kiedy przerwać: ${ex.stopCriteria}` : "",
+          hasExerciseVideo(ex) ? "Video" : ""
         ].filter(Boolean).join("; ");
         return `- ${ex.name}${parts ? ` — ${parts}` : ""}`;
       }).join("\n");
