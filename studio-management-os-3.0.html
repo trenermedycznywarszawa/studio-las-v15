@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.1 | Core Exercise Library Expansion</title>
+  <title>Studio Las OS 7.1.1 | Expanded Exercise Seed</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -231,7 +231,7 @@
     .doc-card { min-height: 118px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
     .exercise-list { display: grid; gap: 10px; }
     .task-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; }
-    .filter-bar { display: grid; grid-template-columns: minmax(220px, 1fr) repeat(5, minmax(140px, 180px)); gap: 10px; align-items: end; }
+    .filter-bar { display: grid; grid-template-columns: minmax(220px, 1fr) repeat(6, minmax(130px, 170px)); gap: 10px; align-items: end; }
     .quick-filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .quick-filter-row .btn { min-height: 32px; padding: 7px 10px; font-size: 12px; border-radius: 999px; }
     .quick-filter-row .btn.active { border-color: rgba(127,176,105,.68); background: rgba(127,176,105,.18); color: var(--green-2); }
@@ -634,7 +634,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.1</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.1.1</span></div>
       </div>
 
       <div class="client-switcher">
@@ -687,7 +687,7 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.1</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.1.1</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="importLegacyBtn">Import v1.3</button>
           <button class="btn" id="newClientBtn">Nowy klient</button>
@@ -870,7 +870,7 @@
         <div class="form-field"><label class="label">Tagi</label><input name="tags" placeholder="np. oddech; biodro; start" /></div>
         <div class="form-field full"><h3>Metadane</h3></div>
         <div class="form-field"><label><input type="checkbox" name="beginnerFriendly" checked /> Przyjazne dla początkujących</label></div>
-        <div class="form-field"><label class="label">Status jakości</label><select name="qualityStatus"><option value="reviewed">reviewed</option><option value="draft">draft</option><option value="needs-review">needs-review</option></select></div>
+        <div class="form-field"><label class="label">Status jakości</label><select name="qualityStatus"><option value="reviewed">reviewed</option><option value="needs_review">needs_review</option><option value="draft">draft</option></select></div>
         <div class="form-field"><label class="label">Źródło</label><input name="source" /></div>
         <div class="form-field"><label class="label">Kolejność źródła</label><input type="number" step="1" min="0" name="sourceOrder" /></div>
         <div class="form-field full"><label class="label">Powiązane testy</label><textarea name="linkedTests" placeholder="np. test-przysiad; test-biodro"></textarea></div>
@@ -905,7 +905,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.1";
+    const APP_VERSION = "7.1.1";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -971,6 +971,13 @@
     const EXERCISE_STAGES = ["1 Punkt startowy", "2 Kontrola", "3 Siła i stabilność", "4 Integracja", "5 Samodzielność"];
     const EXERCISE_LEVELS = ["łatwy", "średni", "trudny"];
     const EXERCISE_TRAINING_BLOCKS = ["Przygotowanie ciała", "Mobilność", "Aktywacja i kontrola", "Siła", "Wyciszenie", "Inne"];
+    const EXERCISE_QUALITY_STATUSES = ["reviewed", "needs_review", "draft"];
+    const EXERCISE_QUALITY_LABELS = {
+      reviewed: "Gotowe",
+      needs_review: "Do opracowania",
+      draft: "Szkic"
+    };
+    const EXERCISE_QUALITY_ORDER = { reviewed: 0, needs_review: 1, draft: 2 };
     const EXERCISE_SORT_OPTIONS = [
       { value: "process", label: "Kolejność procesu" },
       { value: "name", label: "Nazwa" },
@@ -978,8 +985,9 @@
       { value: "category", label: "Kategoria" }
     ];
     const EXERCISE_LIBRARY_SEED_VERSION_KEY = "studioLasExerciseLibrarySeedVersion";
-    const EXERCISE_LIBRARY_CORE_VERSION = "core-v2";
-    const CORE_EXERCISE_SOURCE = "Szczegółowy plan treningowy dla początkujących";
+    const EXERCISE_LIBRARY_CORE_VERSION = "core-v3-expanded";
+    const CORE_EXERCISE_SOURCE = "Plan początkujący";
+    const TRAINER_ATLAS_SOURCE = "Atlas trenerski";
     const SEED_EXERCISES = [
       {
         id: "rolowanie-stop",
@@ -1974,6 +1982,107 @@
       ];
     }
 
+    function getStudioLasTrainerAtlasExercises() {
+      const trainerExercise = (exercise) => {
+        const sourceCategory = exercise.sourceCategory || exercise.subcategory || "Atlas trenerski";
+        return migrateExercise({
+          id: exercise.id,
+          name: exercise.name,
+          clientName: exercise.clientName || exercise.name,
+          category: exercise.category || "Kontrola ruchu",
+          subcategory: sourceCategory,
+          trainingBlock: exercise.trainingBlock || "Inne",
+          region: exercise.region || "całe ciało",
+          pattern: exercise.pattern || "",
+          stage: exercise.stage || "3 Siła i stabilność",
+          level: exercise.level || "średni",
+          equipment: exercise.equipment || "",
+          goal: exercise.goal || `Pozycja z atlasu trenerskiego: ${sourceCategory}. Wymaga doprecyzowania celu przed przypisaniem klientowi.`,
+          dosageDefault: exercise.dosageDefault || "Do ustalenia przez trenera.",
+          tempo: exercise.tempo || "Do ustalenia przez trenera.",
+          breathing: exercise.breathing || "Nie wstrzymuj oddechu; doprecyzuj cue oddechowy przed przypisaniem.",
+          clientInstruction: "Instrukcja klienta wymaga dopracowania przed przypisaniem do planu.",
+          coachNotes: exercise.coachNotes || `Seed statyczny z kategorii atlasu: ${sourceCategory}. Uzupełnij technikę, regresję i dawkę przed wysłaniem klientowi.`,
+          commonMistakes: exercise.commonMistakes || "Do uzupełnienia przez trenera po wyborze wariantu.",
+          stopCriteria: "Nie przypisuj klientowi bez doprecyzowania techniki, dawkowania i kryteriów przerwania.",
+          regressions: exercise.regressions || "",
+          progressions: exercise.progressions || "",
+          contraindications: exercise.contraindications || "Do uzupełnienia przed przypisaniem klientowi.",
+          videoUrl: "",
+          tags: uniqueList([sourceCategory, exercise.trainingBlock, exercise.category, exercise.region, ...(exercise.tags || [])]),
+          linkedTests: [],
+          beginnerFriendly: exercise.beginnerFriendly === true,
+          source: TRAINER_ATLAS_SOURCE,
+          sourceOrder: exercise.sourceOrder,
+          qualityStatus: "needs_review"
+        });
+      };
+
+      const trainerSeed = [
+        { id: "atlas-goblet-squat-box", name: "Goblet squat do boxa", category: "Siła", sourceCategory: "WZORCE RUCHOWE", trainingBlock: "Siła", region: "całe ciało", pattern: "squat", equipment: "hantel lub kettlebell, box", stage: "3 Siła i stabilność", level: "średni", beginnerFriendly: true },
+        { id: "atlas-reverse-lunge-bodyweight", name: "Wykrok w tył z masą ciała", category: "Siła", sourceCategory: "WZORCE RUCHOWE", trainingBlock: "Siła", region: "biodro", pattern: "lunge", equipment: "masa własnego ciała", stage: "3 Siła i stabilność", level: "średni", beginnerFriendly: true },
+        { id: "atlas-step-up-low-box", name: "Wejście na niskie podwyższenie", category: "Siła", sourceCategory: "WZORCE RUCHOWE", trainingBlock: "Siła", region: "całe ciało", pattern: "step up", equipment: "box lub stopień", stage: "3 Siła i stabilność", level: "średni", beginnerFriendly: true },
+        { id: "atlas-hip-hinge-dowel", name: "Hip hinge z kijem", category: "Kontrola ruchu", sourceCategory: "WZORCE RUCHOWE", trainingBlock: "Aktywacja i kontrola", region: "biodro", pattern: "hip hinge", equipment: "kij", stage: "2 Kontrola", level: "łatwy", beginnerFriendly: true },
+
+        { id: "atlas-miniband-hip-abduction", name: "Odwodzenie biodra z miniband", category: "Siła", sourceCategory: "IZOLACJE", trainingBlock: "Aktywacja i kontrola", region: "biodro", pattern: "abdukcja biodra", equipment: "miniband", stage: "2 Kontrola", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-band-hamstring-curl", name: "Uginanie kolana z gumą", category: "Siła", sourceCategory: "IZOLACJE", trainingBlock: "Siła", region: "udo", pattern: "zgięcie kolana", equipment: "guma oporowa", stage: "3 Siła i stabilność", level: "średni" },
+        { id: "atlas-standing-calf-raise", name: "Wspięcia na palce stojąc", category: "Siła", sourceCategory: "IZOLACJE", trainingBlock: "Siła", region: "łydka", pattern: "wspięcie na palce", equipment: "masa własnego ciała", stage: "3 Siła i stabilność", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-band-face-pull", name: "Face pull z gumą", category: "Siła", sourceCategory: "IZOLACJE", trainingBlock: "Siła", region: "bark", pattern: "przyciąganie", equipment: "guma oporowa", stage: "3 Siła i stabilność", level: "średni" },
+
+        { id: "atlas-dead-bug", name: "Dead bug", category: "Core", sourceCategory: "CORE", trainingBlock: "Aktywacja i kontrola", region: "core", pattern: "antywyprost", equipment: "mata", stage: "2 Kontrola", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-side-plank-knees", name: "Side plank z kolan", category: "Core", sourceCategory: "CORE", trainingBlock: "Aktywacja i kontrola", region: "core", pattern: "antyzgięcie boczne", equipment: "mata", stage: "2 Kontrola", level: "średni", beginnerFriendly: true },
+        { id: "atlas-pallof-press-band", name: "Pallof press z gumą", category: "Core", sourceCategory: "CORE", trainingBlock: "Aktywacja i kontrola", region: "core", pattern: "antyrotacja", equipment: "guma oporowa", stage: "3 Siła i stabilność", level: "średni" },
+        { id: "atlas-single-arm-farmer-carry", name: "Farmer carry jednorącz", category: "Core", sourceCategory: "CORE", trainingBlock: "Siła", region: "core", pattern: "carry", equipment: "hantel lub kettlebell", stage: "3 Siła i stabilność", level: "średni" },
+
+        { id: "atlas-low-pogo-jumps", name: "Niskie pogo jumps", category: "Siła", sourceCategory: "PLYOMETRIA", trainingBlock: "Siła", region: "łydka", pattern: "sprężynowanie", equipment: "masa własnego ciała", stage: "4 Integracja", level: "trudny" },
+        { id: "atlas-snap-down", name: "Snap down", category: "Kontrola ruchu", sourceCategory: "PLYOMETRIA", trainingBlock: "Siła", region: "całe ciało", pattern: "lądowanie", equipment: "masa własnego ciała", stage: "4 Integracja", level: "trudny" },
+        { id: "atlas-med-ball-slam", name: "Rzut piłką lekarską o ziemię", category: "Siła", sourceCategory: "PLYOMETRIA", trainingBlock: "Siła", region: "całe ciało", pattern: "rzut", equipment: "piłka lekarska", stage: "4 Integracja", level: "trudny" },
+        { id: "atlas-med-ball-chest-throw", name: "Rzut piłką lekarską z klatki", category: "Siła", sourceCategory: "PLYOMETRIA", trainingBlock: "Siła", region: "całe ciało", pattern: "rzut", equipment: "piłka lekarska", stage: "4 Integracja", level: "trudny" },
+
+        { id: "atlas-ankle-wall-mobility", name: "Mobilizacja stawu skokowego przy ścianie", category: "Mobilizacja", sourceCategory: "MOBILNOŚĆ", trainingBlock: "Mobilność", region: "łydka", pattern: "dorsiflexion", equipment: "ściana", stage: "1 Punkt startowy", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-open-book", name: "Otwieranie książki w leżeniu bokiem", category: "Mobilizacja", sourceCategory: "MOBILNOŚĆ", trainingBlock: "Mobilność", region: "kręgosłup piersiowy", pattern: "rotacja piersiowa", equipment: "mata", stage: "1 Punkt startowy", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-9090-torso-rotation", name: "90/90 z rotacją tułowia", category: "Mobilizacja", sourceCategory: "MOBILNOŚĆ", trainingBlock: "Mobilność", region: "biodro", pattern: "rotacja", equipment: "mata", stage: "2 Kontrola", level: "średni" },
+        { id: "atlas-wall-slides", name: "Wall slides", category: "Mobilizacja", sourceCategory: "MOBILNOŚĆ", trainingBlock: "Mobilność", region: "bark", pattern: "ręce nad głową", equipment: "ściana", stage: "2 Kontrola", level: "łatwy", beginnerFriendly: true },
+
+        { id: "atlas-farmer-walk", name: "Chód farmera", category: "Siła", sourceCategory: "PORUSZANIE", trainingBlock: "Siła", region: "całe ciało", pattern: "carry", equipment: "hantle lub kettlebell", stage: "3 Siła i stabilność", level: "średni" },
+        { id: "atlas-bear-crawl", name: "Bear crawl", category: "Core", sourceCategory: "PORUSZANIE", trainingBlock: "Aktywacja i kontrola", region: "core", pattern: "crawl", equipment: "masa własnego ciała", stage: "3 Siła i stabilność", level: "trudny" },
+        { id: "atlas-miniband-lateral-walk", name: "Spacer boczny z miniband", category: "Stabilizacja", sourceCategory: "PORUSZANIE", trainingBlock: "Aktywacja i kontrola", region: "biodro", pattern: "chód boczny", equipment: "miniband", stage: "2 Kontrola", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-high-knee-march", name: "Marsz z wysokim kolanem", category: "Kontrola ruchu", sourceCategory: "PORUSZANIE", trainingBlock: "Aktywacja i kontrola", region: "całe ciało", pattern: "march", equipment: "masa własnego ciała", stage: "1 Punkt startowy", level: "łatwy", beginnerFriendly: true },
+
+        { id: "atlas-one-arm-db-row", name: "Wiosłowanie hantlą jednorącz", category: "Siła", sourceCategory: "STRENGTH EXERCISES", trainingBlock: "Siła", region: "bark", pattern: "pull", equipment: "hantel", stage: "3 Siła i stabilność", level: "średni" },
+        { id: "atlas-db-bench-press", name: "Wyciskanie hantli na ławce", category: "Siła", sourceCategory: "STRENGTH EXERCISES", trainingBlock: "Siła", region: "bark", pattern: "push", equipment: "hantle, ławka", stage: "3 Siła i stabilność", level: "średni" },
+        { id: "atlas-db-romanian-deadlift", name: "Rumuński martwy ciąg z hantlami", category: "Siła", sourceCategory: "STRENGTH EXERCISES", trainingBlock: "Siła", region: "całe ciało", pattern: "hip hinge", equipment: "hantle", stage: "4 Integracja", level: "trudny" },
+        { id: "atlas-split-squat", name: "Split squat", category: "Siła", sourceCategory: "STRENGTH EXERCISES", trainingBlock: "Siła", region: "biodro", pattern: "lunge", equipment: "masa własnego ciała lub hantle", stage: "3 Siła i stabilność", level: "średni" },
+
+        { id: "atlas-biceps-curl", name: "Biceps curl", category: "Siła", sourceCategory: "ISOLATION", trainingBlock: "Siła", region: "bark", pattern: "zgięcie łokcia", equipment: "hantle lub guma", stage: "3 Siła i stabilność", level: "łatwy" },
+        { id: "atlas-band-triceps-pressdown", name: "Triceps pressdown z gumą", category: "Siła", sourceCategory: "ISOLATION", trainingBlock: "Siła", region: "bark", pattern: "wyprost łokcia", equipment: "guma oporowa", stage: "3 Siła i stabilność", level: "łatwy" },
+        { id: "atlas-lateral-raise", name: "Unoszenie ramion bokiem", category: "Siła", sourceCategory: "ISOLATION", trainingBlock: "Siła", region: "bark", pattern: "odwiedzenie ramienia", equipment: "hantle", stage: "3 Siła i stabilność", level: "średni" },
+        { id: "atlas-hamstring-slider-curl", name: "Hamstring slider curl", category: "Siła", sourceCategory: "ISOLATION", trainingBlock: "Siła", region: "udo", pattern: "zgięcie kolana", equipment: "ślizgacze lub ręcznik", stage: "3 Siła i stabilność", level: "trudny" },
+
+        { id: "atlas-med-ball-rotational-throw", name: "Rotacyjny rzut piłką lekarską", category: "Siła", sourceCategory: "PLYOMETRICS & MED BALL", trainingBlock: "Siła", region: "całe ciało", pattern: "rotacja i rzut", equipment: "piłka lekarska", stage: "4 Integracja", level: "trudny" },
+        { id: "atlas-med-ball-wall-chest-pass", name: "Chest pass piłką lekarską do ściany", category: "Siła", sourceCategory: "PLYOMETRICS & MED BALL", trainingBlock: "Siła", region: "bark", pattern: "push throw", equipment: "piłka lekarska, ściana", stage: "4 Integracja", level: "trudny" },
+        { id: "atlas-lateral-bound", name: "Lateral bound", category: "Siła", sourceCategory: "PLYOMETRICS & MED BALL", trainingBlock: "Siła", region: "całe ciało", pattern: "skok boczny", equipment: "masa własnego ciała", stage: "4 Integracja", level: "trudny" },
+        { id: "atlas-low-box-jump", name: "Niski box jump", category: "Siła", sourceCategory: "PLYOMETRICS & MED BALL", trainingBlock: "Siła", region: "całe ciało", pattern: "skok", equipment: "niski box", stage: "4 Integracja", level: "trudny" },
+
+        { id: "atlas-a-skip", name: "Skip A", category: "Kontrola ruchu", sourceCategory: "SPEED", trainingBlock: "Aktywacja i kontrola", region: "całe ciało", pattern: "running drill", equipment: "masa własnego ciała", stage: "4 Integracja", level: "średni" },
+        { id: "atlas-c-skip", name: "Skip C", category: "Kontrola ruchu", sourceCategory: "SPEED", trainingBlock: "Aktywacja i kontrola", region: "całe ciało", pattern: "running drill", equipment: "masa własnego ciała", stage: "4 Integracja", level: "średni" },
+        { id: "atlas-falling-start", name: "Start z opadu", category: "Kontrola ruchu", sourceCategory: "SPEED", trainingBlock: "Siła", region: "całe ciało", pattern: "acceleration", equipment: "masa własnego ciała", stage: "4 Integracja", level: "trudny" },
+        { id: "atlas-lateral-shuffle", name: "Lateral shuffle", category: "Kontrola ruchu", sourceCategory: "SPEED", trainingBlock: "Aktywacja i kontrola", region: "całe ciało", pattern: "zmiana kierunku", equipment: "masa własnego ciała", stage: "4 Integracja", level: "średni" },
+
+        { id: "atlas-march-arm-swing", name: "Marsz w miejscu z pracą ramion", category: "Kontrola ruchu", sourceCategory: "WARM UP", trainingBlock: "Przygotowanie ciała", region: "całe ciało", pattern: "march", equipment: "masa własnego ciała", stage: "1 Punkt startowy", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-inchworm", name: "Inchworm", category: "Mobilizacja", sourceCategory: "WARM UP", trainingBlock: "Mobilność", region: "całe ciało", pattern: "walkout", equipment: "masa własnego ciała", stage: "3 Siła i stabilność", level: "średni" },
+        { id: "atlas-worlds-greatest-stretch", name: "World's greatest stretch", category: "Mobilizacja", sourceCategory: "WARM UP", trainingBlock: "Mobilność", region: "całe ciało", pattern: "wykrok i rotacja", equipment: "masa własnego ciała", stage: "2 Kontrola", level: "średni" },
+        { id: "atlas-monster-walk", name: "Monster walk z miniband", category: "Stabilizacja", sourceCategory: "WARM UP", trainingBlock: "Aktywacja i kontrola", region: "biodro", pattern: "chód z oporem", equipment: "miniband", stage: "2 Kontrola", level: "łatwy", beginnerFriendly: true },
+
+        { id: "atlas-band-pull-apart", name: "Band pull apart", category: "Stabilizacja", sourceCategory: "SOFT RESISTANCE & BODY WEIGHT", trainingBlock: "Aktywacja i kontrola", region: "bark", pattern: "retrakcja łopatek", equipment: "guma oporowa", stage: "2 Kontrola", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-chair-squat", name: "Siadanie na krzesło i wstawanie", category: "Siła", sourceCategory: "SOFT RESISTANCE & BODY WEIGHT", trainingBlock: "Siła", region: "całe ciało", pattern: "squat", equipment: "krzesło", stage: "1 Punkt startowy", level: "łatwy", beginnerFriendly: true },
+        { id: "atlas-elevated-push-up", name: "Pompka na podwyższeniu", category: "Siła", sourceCategory: "SOFT RESISTANCE & BODY WEIGHT", trainingBlock: "Siła", region: "całe ciało", pattern: "push", equipment: "podwyższenie", stage: "3 Siła i stabilność", level: "średni" },
+        { id: "atlas-trx-row", name: "Wiosłowanie na taśmach TRX", category: "Siła", sourceCategory: "SOFT RESISTANCE & BODY WEIGHT", trainingBlock: "Siła", region: "bark", pattern: "pull", equipment: "taśmy TRX", stage: "3 Siła i stabilność", level: "średni" }
+      ];
+
+      return trainerSeed.map((exercise, index) => trainerExercise({ ...exercise, sourceOrder: 1001 + index }));
+    }
+
     const INTAKE_FIELD_ALIASES = {
       submittedAt: ["Data wypełnienia", "Sygnatura czasowa", "Timestamp", "Czas przesłania"],
       name: ["Imię i nazwisko", "Imie i nazwisko", "Nazwa użytkownika"],
@@ -2209,6 +2318,8 @@
       const name = String(exercise.name || exercise.clientName || "Nowe zadanie ruchowe").trim();
       const id = exercise.id || `ex-${slugify(name)}-${String(Date.now()).slice(-5)}`;
       const sourceOrderNumber = Number(exercise.sourceOrder);
+      const rawQualityStatus = String(exercise.qualityStatus || "").trim();
+      const qualityStatus = rawQualityStatus === "needs-review" ? "needs_review" : rawQualityStatus;
       return {
         ...exercise,
         id,
@@ -2241,7 +2352,7 @@
         beginnerFriendly: exercise.beginnerFriendly === false ? false : true,
         source: exercise.source || "Studio Las",
         sourceOrder: Number.isFinite(sourceOrderNumber) ? sourceOrderNumber : "",
-        qualityStatus: exercise.qualityStatus || "reviewed"
+        qualityStatus: EXERCISE_QUALITY_STATUSES.includes(qualityStatus) ? qualityStatus : "reviewed"
       };
     }
 
@@ -2277,43 +2388,61 @@
     function shouldBackfillExerciseField(field, originalValue, currentValue) {
       if (isBlankExerciseField(originalValue)) return true;
       if (field === "trainingBlock" && currentValue === "Inne") return true;
-      if (field === "source" && currentValue === "Studio Las" && isBlankExerciseField(originalValue)) return true;
+      if (field === "source" && currentValue === "Szczegółowy plan treningowy dla początkujących") return true;
+      if (field === "source" && currentValue === "Szczegółowy plan treningowy dla osoby początkującej") return true;
       return false;
     }
 
-    function mergeCoreExercisesIntoLibrary(existingLibrary, coreExercises) {
+    function exerciseSeedMergeKey(exercise = {}) {
+      const source = exercise.source || "Studio Las";
+      const name = exercise.name || exercise.clientName || "";
+      return `${compareHeader(source)}::${compareHeader(name)}`;
+    }
+
+    function mergeSeedExercisesIntoLibrary(existingLibrary, seedExercises) {
       const byId = new Map();
+      const byNameAndSource = new Map();
       (Array.isArray(existingLibrary) ? existingLibrary : []).forEach(item => {
         const migrated = migrateExercise(item);
-        if (!byId.has(migrated.id)) byId.set(migrated.id, { original: item || {}, exercise: migrated });
+        if (!byId.has(migrated.id)) {
+          const entry = { original: item || {}, exercise: migrated };
+          byId.set(migrated.id, entry);
+          if (!byNameAndSource.has(exerciseSeedMergeKey(migrated))) byNameAndSource.set(exerciseSeedMergeKey(migrated), migrated.id);
+        }
       });
 
       const backfillFields = ["trainingBlock", "beginnerFriendly", "source", "sourceOrder", "qualityStatus", "linkedTests", "tags"];
-      (Array.isArray(coreExercises) ? coreExercises : []).map(migrateExercise).forEach(core => {
-        const entry = byId.get(core.id);
+      (Array.isArray(seedExercises) ? seedExercises : []).map(migrateExercise).forEach(seed => {
+        const duplicateId = byId.has(seed.id) ? seed.id : byNameAndSource.get(exerciseSeedMergeKey(seed));
+        const entry = duplicateId ? byId.get(duplicateId) : null;
         if (!entry) {
-          byId.set(core.id, { original: core, exercise: core });
+          byId.set(seed.id, { original: seed, exercise: seed });
+          byNameAndSource.set(exerciseSeedMergeKey(seed), seed.id);
           return;
         }
 
         const merged = { ...entry.exercise };
         backfillFields.forEach(field => {
-          if (shouldBackfillExerciseField(field, entry.original?.[field], merged[field]) && !isBlankExerciseField(core[field])) {
-            merged[field] = copyExerciseField(core[field]);
+          if (shouldBackfillExerciseField(field, entry.original?.[field], merged[field]) && !isBlankExerciseField(seed[field])) {
+            merged[field] = copyExerciseField(seed[field]);
           }
         });
-        byId.set(core.id, { original: entry.original, exercise: migrateExercise(merged) });
+        byId.set(merged.id, { original: entry.original, exercise: migrateExercise(merged) });
       });
 
       return Array.from(byId.values()).map(entry => migrateExercise(entry.exercise));
+    }
+
+    function mergeCoreExercisesIntoLibrary(existingLibrary, coreExercises) {
+      return mergeSeedExercisesIntoLibrary(existingLibrary, coreExercises);
     }
 
     function upgradeExerciseLibraryToCoreV2() {
       const existing = getExerciseLibrary();
       const seedVersion = localStorage.getItem(EXERCISE_LIBRARY_SEED_VERSION_KEY);
       if (seedVersion === EXERCISE_LIBRARY_CORE_VERSION && existing.length) return saveExerciseLibrary(existing);
-      const coreExercises = getStudioLasCoreExercises();
-      const merged = mergeCoreExercisesIntoLibrary(existing, coreExercises);
+      const seedExercises = [...getStudioLasCoreExercises(), ...getStudioLasTrainerAtlasExercises()];
+      const merged = mergeSeedExercisesIntoLibrary(existing, seedExercises);
       localStorage.setItem(EXERCISE_LIBRARY_SEED_VERSION_KEY, EXERCISE_LIBRARY_CORE_VERSION);
       return saveExerciseLibrary(merged);
     }
@@ -2610,7 +2739,7 @@
     let pendingIntakeRows = [];
     let exerciseLibrary = [];
     exerciseLibrary = seedExerciseLibraryIfEmpty();
-    let exerciseAtlasFilters = { q: "", trainingBlock: "", category: "", region: "", stage: "", sort: "process", quick: "" };
+    let exerciseAtlasFilters = { q: "", trainingBlock: "", category: "", region: "", stage: "", qualityStatus: "", sort: "process", quick: "" };
 
     const $ = (sel) => document.querySelector(sel);
     const view = $("#view");
@@ -3311,6 +3440,7 @@
           <div class="filter-bar">
             <div class="form-field"><label class="label" for="exerciseSearch">Szukaj</label><input id="exerciseSearch" value="${escapeHtml(exerciseAtlasFilters.q)}" placeholder="Nazwa, cel, tag..." /></div>
             <div class="form-field"><label class="label" for="exerciseBlockFilter">Blok</label><select id="exerciseBlockFilter">${filterOptions(EXERCISE_TRAINING_BLOCKS, exerciseAtlasFilters.trainingBlock, "Wszystkie")}</select></div>
+            <div class="form-field"><label class="label" for="exerciseStatusFilter">Status</label><select id="exerciseStatusFilter">${qualityStatusOptions(exerciseAtlasFilters.qualityStatus)}</select></div>
             <div class="form-field"><label class="label" for="exerciseCategoryFilter">Kategoria</label><select id="exerciseCategoryFilter">${filterOptions(EXERCISE_CATEGORIES, exerciseAtlasFilters.category, "Wszystkie")}</select></div>
             <div class="form-field"><label class="label" for="exerciseRegionFilter">Region</label><select id="exerciseRegionFilter">${filterOptions(EXERCISE_REGIONS, exerciseAtlasFilters.region, "Wszystkie")}</select></div>
             <div class="form-field"><label class="label" for="exerciseStageFilter">Etap</label><select id="exerciseStageFilter">${filterOptions(EXERCISE_STAGES, exerciseAtlasFilters.stage, "Wszystkie")}</select></div>
@@ -3340,6 +3470,11 @@
         exerciseAtlasFilters.trainingBlock = e.target.value;
         renderExerciseAtlas();
       });
+      $("#exerciseStatusFilter")?.addEventListener("change", e => {
+        exerciseAtlasFilters.qualityStatus = e.target.value;
+        exerciseAtlasFilters.quick = "";
+        renderExerciseAtlas();
+      });
       $("#exerciseCategoryFilter")?.addEventListener("change", e => {
         exerciseAtlasFilters.category = e.target.value;
         renderExerciseAtlas();
@@ -3357,7 +3492,14 @@
         renderExerciseAtlas();
       });
       document.querySelectorAll("[data-exercise-quick]").forEach(btn => btn.addEventListener("click", () => {
-        exerciseAtlasFilters.quick = exerciseAtlasFilters.quick === btn.dataset.exerciseQuick ? "" : btn.dataset.exerciseQuick;
+        const quick = btn.dataset.exerciseQuick;
+        if (quick === "Gotowe" || quick === "Do opracowania") {
+          const status = quick === "Gotowe" ? "reviewed" : "needs_review";
+          exerciseAtlasFilters.qualityStatus = exerciseAtlasFilters.qualityStatus === status ? "" : status;
+          exerciseAtlasFilters.quick = "";
+        } else {
+          exerciseAtlasFilters.quick = exerciseAtlasFilters.quick === quick ? "" : quick;
+        }
         renderExerciseAtlas();
       }));
       document.querySelectorAll("[data-add-exercise]").forEach(btn => btn.addEventListener("click", () => addExerciseToActiveHomePlan(btn.dataset.addExercise)));
@@ -3365,9 +3507,11 @@
     }
 
     function renderExerciseQuickFilters() {
-      const quickFilters = ["Start", "Mobilność", "Core", "Siła", "Bez sprzętu", "Roller", "Krzesło"];
+      const quickFilters = ["Gotowe", "Start", "Mobilność", "Core", "Siła", "Bez sprzętu", "Roller", "Krzesło", "Do opracowania"];
       return quickFilters.map(label => {
-        const active = exerciseAtlasFilters.quick === label;
+        const active = label === "Gotowe"
+          ? exerciseAtlasFilters.qualityStatus === "reviewed"
+          : (label === "Do opracowania" ? exerciseAtlasFilters.qualityStatus === "needs_review" : exerciseAtlasFilters.quick === label);
         return `<button class="btn ${active ? "active" : ""}" type="button" data-exercise-quick="${escapeHtml(label)}">${escapeHtml(label)}</button>`;
       }).join("");
     }
@@ -3378,6 +3522,7 @@
         const haystack = compareHeader([ex.name, ex.clientName, ex.trainingBlock, ex.category, ex.region, ex.stage, ex.goal, ex.equipment, ...(ex.tags || [])].join(" "));
         if (q && !haystack.includes(q)) return false;
         if (exerciseAtlasFilters.trainingBlock && ex.trainingBlock !== exerciseAtlasFilters.trainingBlock) return false;
+        if (exerciseAtlasFilters.qualityStatus && normalizeExerciseQualityStatus(ex.qualityStatus) !== exerciseAtlasFilters.qualityStatus) return false;
         if (exerciseAtlasFilters.category && ex.category !== exerciseAtlasFilters.category) return false;
         if (exerciseAtlasFilters.region && ex.region !== exerciseAtlasFilters.region) return false;
         if (exerciseAtlasFilters.stage && ex.stage !== exerciseAtlasFilters.stage) return false;
@@ -3403,10 +3548,32 @@
       return Number.isFinite(value) && value > 0 ? value : 9999;
     }
 
+    function normalizeExerciseQualityStatus(status = "") {
+      const normalized = String(status || "").trim() === "needs-review" ? "needs_review" : String(status || "").trim();
+      return EXERCISE_QUALITY_STATUSES.includes(normalized) ? normalized : "reviewed";
+    }
+
+    function qualityStatusLabel(status = "") {
+      return EXERCISE_QUALITY_LABELS[normalizeExerciseQualityStatus(status)] || EXERCISE_QUALITY_LABELS.reviewed;
+    }
+
+    function qualityStatusTone(status = "") {
+      const normalized = normalizeExerciseQualityStatus(status);
+      if (normalized === "reviewed") return "green";
+      if (normalized === "needs_review") return "gold";
+      return "";
+    }
+
+    function qualityStatusOptions(selected = "") {
+      return `<option value="">Wszystkie</option>${EXERCISE_QUALITY_STATUSES.map(status => `<option value="${escapeHtml(status)}" ${status === selected ? "selected" : ""}>${escapeHtml(qualityStatusLabel(status))}</option>`).join("")}`;
+    }
+
     function sortExerciseLibrary(library) {
       const sorted = [...library];
       const sortMode = exerciseAtlasFilters.sort || "process";
       return sorted.sort((a, b) => {
+        const statusOrder = (EXERCISE_QUALITY_ORDER[normalizeExerciseQualityStatus(a.qualityStatus)] ?? 9) - (EXERCISE_QUALITY_ORDER[normalizeExerciseQualityStatus(b.qualityStatus)] ?? 9);
+        if (statusOrder) return statusOrder;
         if (sortMode === "name") return String(a.clientName || a.name).localeCompare(String(b.clientName || b.name), "pl");
         if (sortMode === "stage") return (EXERCISE_STAGES.indexOf(a.stage) - EXERCISE_STAGES.indexOf(b.stage)) || String(a.clientName || a.name).localeCompare(String(b.clientName || b.name), "pl");
         if (sortMode === "category") return String(a.category || "").localeCompare(String(b.category || ""), "pl") || String(a.clientName || a.name).localeCompare(String(b.clientName || b.name), "pl");
@@ -3422,11 +3589,13 @@
         </div>
         <div class="tag-row">
           ${pill(ex.trainingBlock || "Inne", "blue")}
+          ${pill(qualityStatusLabel(ex.qualityStatus), qualityStatusTone(ex.qualityStatus))}
           ${pill(ex.category, "blue")}
           ${pill(ex.region, "green")}
           ${pill(ex.stage, "gold")}
           ${pill(ex.level, "")}
         </div>
+        ${normalizeExerciseQualityStatus(ex.qualityStatus) === "needs_review" ? `<div class="portal-info"><div class="label">Status</div><p>Wymaga dopracowania przed przypisaniem klientowi.</p></div>` : ""}
         <div class="portal-info"><div class="label">Dawka</div><p>${escapeHtml(ex.dosageDefault || "Do ustalenia")}</p></div>
         <div class="portal-info"><div class="label">Cel</div><p>${escapeHtml(shortText(ex.goal || "Cel zostanie doprecyzowany.", 150))}</p></div>
         <div class="tag-row">${(ex.tags || []).slice(0, 5).map(tag => pill(tag, "")).join("")}</div>
@@ -6168,6 +6337,8 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
       c.homePlan = migrateHomePlan(c.homePlan);
       const alreadyActive = c.homePlan.exercises.some(item => item.exerciseId === exercise.id && item.status !== "archived");
       if (alreadyActive) return toast("To zadanie jest już aktywne w planie klienta.");
+      const needsReview = normalizeExerciseQualityStatus(exercise.qualityStatus) === "needs_review";
+      if (needsReview && !window.confirm("To ćwiczenie wymaga dopracowania instrukcji przed przypisaniem klientowi. Czy mimo to chcesz dodać je do planu?")) return;
       c.homePlan.exercises.push(migrateHomePlanExercise({
         id: `hp-${exercise.id}-${Date.now()}`,
         exerciseId: exercise.id,
@@ -6176,8 +6347,8 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
         region: exercise.region,
         dosage: exercise.dosageDefault,
         frequency: "",
-        clientCue: firstClientInstructionSentence(exercise.clientInstruction),
-        stopCriteria: exercise.stopCriteria,
+        clientCue: needsReview ? "Instrukcja do doprecyzowania przez trenera." : firstClientInstructionSentence(exercise.clientInstruction),
+        stopCriteria: needsReview ? "Przerwij, jeśli pojawia się ostry ból, drętwienie, promieniowanie albo utrata kontroli ruchu." : (exercise.stopCriteria || "Przerwij, jeśli pojawia się ostry ból, drętwienie, promieniowanie albo utrata kontroli ruchu."),
         videoUrl: exercise.videoUrl,
         status: "active",
         addedAt: getTodayISODate()
