@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.2.1 | Manual UX QA Patch</title>
+  <title>Studio Las OS 7.2.2 | Navigation & Responsive Patch</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -26,10 +26,12 @@
     }
 
     * { box-sizing: border-box; }
-    html { color-scheme: dark; }
+    html { color-scheme: dark; max-width: 100%; overflow-x: hidden; }
     body {
       margin: 0;
       min-height: 100vh;
+      max-width: 100%;
+      overflow-x: hidden;
       background:
         radial-gradient(circle at top left, rgba(127,176,105,.12), transparent 34rem),
         linear-gradient(135deg, #0c0e0d 0%, #131512 52%, #0f1110 100%);
@@ -38,8 +40,13 @@
       letter-spacing: 0;
     }
 
+    img, video, iframe, table { max-width: 100%; }
+    a, p, .name, .meta, .portal-info, .doc-card, .exercise-card, .task-row { overflow-wrap: anywhere; }
     button, input, textarea, select { font: inherit; }
     button { cursor: pointer; }
+    .main, .content, .panel, .grid, .filter-bar, .form-field, .exercise-compact-row,
+    .home-plan-card, .portal-info, .doc-card, .exercise-card, .measurement-card,
+    .task-row, .panel-head, select, input, textarea { min-width: 0; }
     .app { display: grid; grid-template-columns: 280px minmax(0, 1fr); min-height: 100vh; }
 
     .side {
@@ -55,7 +62,9 @@
       gap: 12px;
     }
 
-    .brand { display: flex; align-items: center; gap: 12px; padding: 2px 6px 12px; border-bottom: 1px solid var(--line); }
+    .brand { display: flex; align-items: center; gap: 12px; padding: 2px 6px 12px; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
+    .brand:hover, .brand:focus-visible { color: var(--ink); outline: none; }
+    .brand:focus-visible { box-shadow: 0 0 0 3px rgba(127,176,105,.16); border-radius: 12px; }
     .mark {
       width: 42px; height: 42px; border-radius: 12px;
       background: linear-gradient(145deg, rgba(127,176,105,.28), rgba(216,166,87,.16));
@@ -64,6 +73,23 @@
     .mark svg { width: 26px; height: 26px; }
     .brand strong { display: block; font-family: Georgia, serif; font-size: 20px; line-height: 1; }
     .brand span { color: var(--green-2); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .16em; }
+    .home-return {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: rgba(31,33,31,.56);
+      color: var(--ink);
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      padding: 9px 11px;
+      font-weight: 900;
+      font-size: 12px;
+    }
+    .home-return:hover,
+    .home-return:focus-visible { border-color: rgba(127,176,105,.42); background: rgba(127,176,105,.12); outline: none; }
 
     .client-switcher { display: grid; gap: 8px; }
     .label { color: var(--faint); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; }
@@ -136,6 +162,8 @@
     .title p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
     .actions { display: flex; gap: 10px; flex-wrap: wrap; justify-content: flex-end; align-items: center; }
     .top-role { align-self: center; }
+    .mobile-menu-btn { display: none; flex: 0 0 auto; }
+    .top-home-link { flex: 0 0 auto; }
     [hidden] { display: none !important; }
     .add-menu-wrap { position: relative; }
     .add-menu {
@@ -258,7 +286,8 @@
     .doc-card { min-height: 118px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
     .exercise-list { display: grid; gap: 10px; }
     .task-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; }
-    .filter-bar { display: grid; grid-template-columns: minmax(220px, 1fr) repeat(7, minmax(120px, 160px)); gap: 10px; align-items: end; }
+    .filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; align-items: end; }
+    .filter-bar .form-field:first-child { grid-column: span 2; }
     .quick-filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .quick-filter-row .btn { min-height: 32px; padding: 7px 10px; font-size: 12px; border-radius: 999px; }
     .quick-filter-row .btn.active { border-color: rgba(127,176,105,.68); background: rgba(127,176,105,.18); color: var(--green-2); }
@@ -519,35 +548,111 @@
     .toast.show { display: block; }
 
     .only-mobile { display: none; }
-    @media (max-width: 980px) {
+    .drawer-backdrop { display: none; border: 0; padding: 0; }
+    @media (min-width: 768px) and (max-width: 1024px) {
+      .cols-4, .cols-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filter-bar { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .filter-bar .form-field:first-child { grid-column: 1 / -1; }
+      .exercise-compact-row { grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr); }
+      .exercise-compact-row .card-actions { grid-column: 1 / -1; justify-content: flex-start; }
+      .home-plan-summary-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    }
+    @media (max-width: 1024px) {
       .app { grid-template-columns: 1fr; }
-      .side { position: static; height: auto; }
-      .nav { grid-template-columns: repeat(12, 1fr); }
+      .side {
+        position: fixed;
+        inset: 0 auto 0 0;
+        z-index: 60;
+        width: min(86vw, 320px);
+        height: 100dvh;
+        transform: translateX(-105%);
+        transition: transform .22s ease;
+        overflow-y: auto;
+        box-shadow: 18px 0 60px rgba(0,0,0,.38);
+      }
+      body.drawer-open .side { transform: translateX(0); }
+      body.drawer-open { overflow: hidden; }
+      .drawer-backdrop {
+        position: fixed;
+        inset: 0;
+        z-index: 55;
+        background: rgba(0,0,0,.52);
+        backdrop-filter: blur(2px);
+      }
+      body.drawer-open .drawer-backdrop { display: block; }
+      .mobile-menu-btn { display: inline-flex; }
+      .only-mobile { display: inline-flex; }
+      .nav { display: grid; grid-template-columns: 1fr; padding-right: 0; }
       .nav button,
-      .nav .client-panel-link { justify-content: center; padding: 10px 8px; }
-      .nav span { display: none; }
-      .cols-4, .cols-3, .cols-2 { grid-template-columns: 1fr; }
+      .nav .client-panel-link { justify-content: flex-start; padding: 10px 12px; min-height: 44px; }
+      .nav span { display: inline; }
+      .cols-2 { grid-template-columns: 1fr; }
       .span-2 { grid-column: auto; }
       .session-row { grid-template-columns: 1fr; }
-      .exercise-compact-row,
-      .home-plan-summary-grid { grid-template-columns: 1fr; }
-      .exercise-compact-row .card-actions { justify-content: flex-start; }
       .progress-line { grid-template-columns: 1fr 1fr; }
-      .topbar { align-items: flex-start; flex-direction: column; }
+      .topbar {
+        align-items: stretch;
+        flex-direction: column;
+        gap: 12px;
+        padding: 14px 18px;
+      }
+      .title { min-width: 0; }
+      .title h1 { font-size: 18px; }
+      .title p { font-size: 12px; }
+      .actions { justify-content: flex-start; width: 100%; }
+      .top-role { font-size: 10px; }
+      .add-menu-wrap { position: static; }
+      .add-menu { left: 18px; right: 18px; width: auto; max-width: none; }
+      .content { width: 100%; }
     }
-    @media (max-width: 620px) {
+    @media (max-width: 767px) {
       .content, .topbar { padding: 16px; }
-      .form-grid, .filter-bar { grid-template-columns: 1fr; }
+      .content { gap: 14px; }
+      .panel { padding: 14px; border-radius: 12px; }
+      .panel-head { flex-direction: column; align-items: flex-start; }
+      .panel h2 { font-size: 20px; }
+      .cols-4, .cols-3, .cols-2,
+      .form-grid, .filter-bar,
+      .home-plan-summary-grid,
+      .exercise-compact-row { grid-template-columns: 1fr; }
       .progress-line { grid-template-columns: 1fr; }
       .task-form { grid-template-columns: 1fr; }
-      .actions { width: 100%; }
-      .btn { flex: 1; }
+      .filter-bar .form-field:first-child { grid-column: auto; }
+      .actions { width: 100%; gap: 8px; }
+      .btn { min-height: 44px; }
+      .actions > .btn,
+      .actions > .add-menu-wrap,
+      .actions > .add-menu-wrap > .btn,
+      .home-plan-actions .btn,
+      .exercise-card .card-actions .btn,
+      .exercise-card .card-actions a,
+      .doc-card .btn,
+      .measurement-main .btn { width: 100%; flex: 1 1 100%; }
+      .top-role { white-space: normal; }
+      .pill { white-space: normal; max-width: 100%; }
+      .quick-filter-row,
+      .view-mode-row {
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        padding-bottom: 4px;
+      }
+      .quick-filter-row .btn,
+      .view-mode-row .btn { flex: 0 0 auto; min-height: 40px; }
+      .exercise-compact-row .card-actions,
+      .exercise-card .card-actions,
+      .home-plan-actions { justify-content: stretch; }
+      .portal-info, .portal-metric, .doc-card, .exercise-card, .measurement-card { padding: 12px; }
+      input[type="date"] { min-width: 0; width: 100%; }
+      .toast { left: 14px; right: 14px; bottom: 14px; }
     }
     @media print {
       body.printing-report .side,
       body.printing-report .topbar,
       body.printing-report .nav,
       body.printing-report .actions,
+      body.printing-report .drawer-backdrop,
+      body.printing-report .mobile-menu-btn,
+      body.printing-report .home-return,
       body.printing-report .client-switcher,
       body.printing-report .side-card,
       body.printing-report .report-actions,
@@ -688,16 +793,17 @@
 </head>
 <body>
   <div class="app">
-    <aside class="side">
-      <div class="brand">
+    <aside class="side" id="appSidebar">
+      <a class="brand" href="./index.html" aria-label="Studio Las — strona główna">
         <div class="mark" aria-hidden="true">
           <svg viewBox="0 0 36 36" fill="none">
             <path d="M18 3 L26 16 H22 L28 26 H20 L20 33 H16 L16 26 H8 L14 16 H10 Z" fill="var(--green-2)"/>
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.2.1</span></div>
-      </div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.2.2</span></div>
+      </a>
+      <a class="home-return" href="./index.html">← Strona główna</a>
 
       <div class="client-switcher">
         <label class="label" for="clientSelect">Aktywny klient</label>
@@ -736,6 +842,7 @@
         </div>
       </nav>
     </aside>
+    <button class="drawer-backdrop" id="drawerBackdrop" type="button" aria-label="Zamknij menu"></button>
 
     <main class="main">
       <header class="topbar">
@@ -744,7 +851,9 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.2.1</span>
+          <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
+          <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.2.2</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -975,7 +1084,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.2.1";
+    const APP_VERSION = "7.2.2";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -3186,6 +3295,15 @@
 
     function closeAddMenu() {
       setAddMenuOpen(false);
+    }
+
+    function setDrawerOpen(open) {
+      document.body.classList.toggle("drawer-open", Boolean(open));
+      $("#mobileMenuBtn")?.setAttribute("aria-expanded", open ? "true" : "false");
+    }
+
+    function closeDrawer() {
+      setDrawerOpen(false);
     }
 
     function topbarContextAction() {
@@ -8065,7 +8183,15 @@ Initial 83.45 64.95 18.10
     document.querySelectorAll(".nav button").forEach(btn => btn.addEventListener("click", () => {
       viewName = btn.dataset.view;
       renderShell();
+      closeDrawer();
     }));
+
+    $("#mobileMenuBtn")?.addEventListener("click", e => {
+      e.stopPropagation();
+      setDrawerOpen(!document.body.classList.contains("drawer-open"));
+    });
+    $("#drawerBackdrop")?.addEventListener("click", closeDrawer);
+    document.querySelectorAll(".side a[href]").forEach(link => link.addEventListener("click", closeDrawer));
 
     $("#addMenuBtn")?.addEventListener("click", e => {
       e.stopPropagation();
@@ -8083,12 +8209,18 @@ Initial 83.45 64.95 18.10
       if (wrap && !wrap.contains(e.target)) closeAddMenu();
     });
     document.addEventListener("keydown", e => {
-      if (e.key === "Escape") closeAddMenu();
+      if (e.key === "Escape") {
+        closeAddMenu();
+        closeDrawer();
+      }
     });
     $("#tanitaDemoBtn").addEventListener("click", applyDemoTanitaData);
     $("#exerciseForm").addEventListener("submit", saveExerciseFromForm);
     $("#manualHomePlanForm").addEventListener("submit", saveManualHomePlanExercise);
     window.addEventListener("afterprint", clearPrintingReportMode);
+    window.addEventListener("resize", () => {
+      if (window.innerWidth > 1024) closeDrawer();
+    });
 
     document.querySelectorAll("[data-close]").forEach(btn => btn.addEventListener("click", () => closeModal(btn.dataset.close)));
     document.querySelectorAll(".modal").forEach(modal => modal.addEventListener("click", e => {
