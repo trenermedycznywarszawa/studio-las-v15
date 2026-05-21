@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.2 | Client Hub & Diagnostic Readiness</title>
+  <title>Studio Las OS 7.2.1 | Manual UX QA Patch</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -696,7 +696,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.2</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.2.1</span></div>
       </div>
 
       <div class="client-switcher">
@@ -744,7 +744,7 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.2</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.2.1</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -975,7 +975,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.2";
+    const APP_VERSION = "7.2.1";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -4539,23 +4539,13 @@
         return `
           <div class="measurement-card measurement-main">
             <div class="panel-head">
-              <div>
-                <div class="label">Zadanie na dziś</div>
-                <div class="name">${escapeHtml(firstTask.name || "Zadanie ruchowe")}</div>
-              </div>
-              ${pill(firstTask.frequency || "do wykonania", "green")}
+            <div>
+              <div class="label">Zadanie na dziś</div>
+              <div class="name">${escapeHtml(firstTask.name || "Zadanie ruchowe")}</div>
             </div>
-            <p>${escapeHtml(decisionMessage || "Dzisiaj najważniejsze jest spokojne wykonanie jednego zadania i obserwacja reakcji organizmu.")}</p>
-            <button class="btn" data-client-portal-plan-jump type="button">Zobacz cały plan domowy</button>
+            ${pill(firstTask.frequency || "do wykonania", "green")}
           </div>
-        `;
-      }
-      if (decisionMessage) {
-        return `
-          <div class="measurement-card measurement-main">
-            <div class="label">Najbliższy kierunek</div>
-            <div class="name">Utrzymujemy spokojne tempo pracy</div>
-            <p>${escapeHtml(decisionMessage)}</p>
+            <p>${escapeHtml(decisionMessage || "Dzisiaj skup się na jednym zadaniu z planu.")}</p>
           </div>
         `;
       }
@@ -4563,7 +4553,7 @@
         <div class="measurement-card measurement-main">
           <div class="label">Najbliższy krok</div>
           <div class="name">${hasProcessData ? "Plan domowy zostanie dobrany po potwierdzeniu punktu wyjścia." : "Najpierw potwierdzimy punkt wyjścia i dobierzemy bezpieczny kierunek pracy."}</div>
-          <p>Nie dokładamy zadań, zanim nie będzie jasne, które ruchy są dobrze tolerowane.</p>
+          <p>Najpierw sprawdzamy reakcję organizmu i dopiero potem zwiększamy wymagania.</p>
         </div>
       `;
     }
@@ -4610,10 +4600,9 @@
             ${pill(firstTask.frequency || "częstotliwość do ustalenia", "green")}
           </div>
           <div class="grid cols-2">
-            <div class="portal-info"><div class="label">Dawkowanie</div><p>${escapeHtml(firstTask.dosage || "Do ustalenia na sesji.")}</p></div>
-            <div class="portal-info"><div class="label">Częstotliwość</div><p>${escapeHtml(firstTask.frequency || "Do ustalenia na sesji.")}</p></div>
-            <div class="portal-info"><div class="label">Wskazówka</div><p>${escapeHtml(firstTask.clientCue || "Wykonuj spokojnie, bez pośpiechu i bez dociskania zakresu.")}</p></div>
-            <div class="portal-info"><div class="label">Kiedy przerwać / zgłosić reakcję</div><p>${escapeHtml(firstTask.stopCriteria || "Przerwij, jeśli objawy wyraźnie narastają albo pojawia się reakcja nietypowa dla Ciebie.")}</p></div>
+            <div class="portal-info"><div class="label">Dawka i rytm</div><p>${escapeHtml([firstTask.dosage || "Do ustalenia na sesji.", firstTask.frequency || ""].filter(Boolean).join(" · "))}</p></div>
+            <div class="portal-info"><div class="label">Jedna wskazówka</div><p>${escapeHtml(firstTask.clientCue || "Wykonuj spokojnie, bez pośpiechu i bez dociskania zakresu.")}</p></div>
+            <div class="portal-info span-2"><div class="label">Kiedy przerwać / zgłosić reakcję</div><p>${escapeHtml(firstTask.stopCriteria || "Przerwij, jeśli objawy wyraźnie narastają albo pojawia się reakcja nietypowa dla Ciebie.")}</p></div>
           </div>
           <div class="card-actions">
             ${videoUrl ? `<a class="btn" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">Zobacz video</a>` : ""}
@@ -4727,10 +4716,10 @@
       if (note?.clientMessage || note?.clientResponse || note?.whatWeDid) {
         return { title: "Mamy obserwację po sesji", text: note.clientMessage || note.clientResponse || note.whatWeDid };
       }
-      if (measurementCount > 1) return { title: "Mamy już punkt porównawczy", text: "Trend ocenimy spokojnie po zestawieniu kolejnych pomiarów, bez oceniania pojedynczego wyniku." };
-      if (measurementCount === 1) return { title: "Mamy punkt odniesienia", text: "Pomiar Tanita jest zapisany jako punkt odniesienia, nie jako ocena końcowa." };
-      if (polarCount) return { title: "Mamy pierwszą informację o tolerancji obciążenia", text: "Odczyt pomaga dobrać tempo pracy, ale decyzję opieramy na połączeniu danych i obserwacji po sesji." };
-      if (activeHomePlanExercises(c).length) return { title: "Mamy zadanie do regularnej obserwacji", text: "Najbliższy dowód postępu pojawi się po kilku spokojnych wykonaniach planu domowego." };
+      if (measurementCount > 1) return { title: "Mamy już punkt porównawczy", text: "Mamy już punkt porównawczy — teraz ważniejszy jest spokojny trend niż pojedyncza liczba." };
+      if (measurementCount === 1) return { title: "Mamy punkt odniesienia", text: "Pomiar Tanita jest punktem odniesienia. Trend ocenimy po kolejnych pomiarach." };
+      if (polarCount) return { title: "Tolerancja obciążenia", text: "Mamy pierwszą informację o tolerancji obciążenia." };
+      if (activeHomePlanExercises(c).length) return { title: "Regularność między sesjami", text: "Plan domowy daje nam pierwszy dowód regularności między sesjami." };
       return { title: "Pierwszy dowód dopiero przed nami", text: "Pierwszy dowód postępu pojawi się po zapisaniu obserwacji z sesji." };
     }
 
@@ -4773,22 +4762,22 @@
           hasTests: false,
           testCount: 0,
           lastTestDate: "",
-          label: "Ocena ruchowa do uzupełnienia",
-          message: "Ocena ruchowa zostanie dodana po wykonaniu testów podczas sesji."
+          label: "Ocena ruchowa",
+          message: "Ocena ruchowa zostanie uzupełniona po testach wykonanych podczas sesji. Na tym etapie ważniejsze jest bezpieczne potwierdzenie punktu wyjścia niż szybkie etykietowanie wyniku."
         };
       }
       return {
         hasTests: true,
         testCount: results.length,
         lastTestDate: latestResult?.date || "",
-        label: "Ocena ruchowa zapisana",
+        label: "Synteza oceny ruchowej",
         message: latestResult?.finding || latestResult?.decision || "Ocena ruchowa ma zapisany wniosek do omówienia na sesji."
       };
     }
 
     function getDiagnosticSummaryForClient(client = activeClient()) {
       const readiness = getDiagnosticReadiness(client);
-      if (!readiness.hasTests) return "Ocena ruchowa zostanie uzupełniona po sesji.";
+      if (!readiness.hasTests) return "Ocena ruchowa zostanie uzupełniona po testach wykonanych podczas sesji. Na tym etapie ważniejsze jest bezpieczne potwierdzenie punktu wyjścia niż szybkie etykietowanie wyniku.";
       return readiness.message;
     }
 
