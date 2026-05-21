@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.1.4 | Strength Exercise Set</title>
+  <title>Studio Las OS 7.2 | Client Hub & Diagnostic Readiness</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -696,7 +696,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.1.4</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.2</span></div>
       </div>
 
       <div class="client-switcher">
@@ -744,7 +744,7 @@
           <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
         </div>
         <div class="actions">
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.1.4</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.2</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -935,7 +935,7 @@
         <div class="form-field"><label class="label">Tagi</label><input name="tags" placeholder="np. oddech; biodro; start" /></div>
         <div class="form-field full"><h3>Metadane</h3></div>
         <div class="form-field"><label><input type="checkbox" name="beginnerFriendly" checked /> Przyjazne dla początkujących</label></div>
-        <div class="form-field"><label class="label">Status jakości</label><select name="qualityStatus"><option value="reviewed">reviewed</option><option value="needs_review">needs_review</option><option value="draft">draft</option></select></div>
+        <div class="form-field"><label class="label">Status jakości</label><select name="qualityStatus"><option value="reviewed">Gotowe</option><option value="needs_review">Do opracowania</option><option value="draft">Szkic</option></select></div>
         <div class="form-field"><label class="label">Źródło</label><input name="source" /></div>
         <div class="form-field"><label class="label">Kolejność źródła</label><input type="number" step="1" min="0" name="sourceOrder" /></div>
         <div class="form-field full"><label class="label">Powiązane testy</label><textarea name="linkedTests" placeholder="np. test-przysiad; test-biodro"></textarea></div>
@@ -975,7 +975,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.1.4";
+    const APP_VERSION = "7.2";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -3034,7 +3034,8 @@
         contraindications: client.contraindications || "",
         redFlags: client.redFlags || "",
         package: client.package || "Diagnostyka",
-        stage: Number(client.stage || 1),
+        stage: Number.isFinite(Number(client.stage)) ? Number(client.stage) : 1,
+        stageRaw: client.stageRaw || client.stage || "",
         healthStatus: client.healthStatus || "",
         neuroType: client.neuroType || client.neuroProfile || "",
         goal: client.goal || "",
@@ -4037,6 +4038,13 @@
       const normalized = normalizeExerciseQualityStatus(status);
       if (normalized === "reviewed") return "green";
       if (normalized === "needs_review") return "gold";
+      return "blue";
+    }
+
+    function exerciseLevelTone(level = "") {
+      if (level === "łatwy") return "green";
+      if (level === "średni") return "gold";
+      if (level === "trudny") return "red";
       return "";
     }
 
@@ -4072,22 +4080,17 @@
       return `<div class="exercise-card">
         <div>
           <div class="name">${escapeHtml(ex.clientName || ex.name)}</div>
-          <div class="meta">${escapeHtml(ex.name)}</div>
+          <div class="meta">${escapeHtml([ex.category, ex.region, ex.stage].filter(Boolean).join(" · "))}</div>
         </div>
         <div class="tag-row">
           ${pill(ex.trainingBlock || "Inne", "blue")}
           ${pill(qualityStatusLabel(ex.qualityStatus), qualityStatusTone(ex.qualityStatus))}
-          ${pill(ex.category, "blue")}
-          ${pill(ex.region, "green")}
-          ${pill(ex.stage, "gold")}
-          ${pill(ex.level, "")}
+          ${pill(ex.level, exerciseLevelTone(ex.level))}
           ${pill(hasVideo ? "Video" : "Brak video", hasVideo ? "green" : "")}
         </div>
-        ${renderExerciseMuscleSummary(ex)}
         ${needsReview ? `<div class="portal-info"><div class="label">Status</div><p>Najpierw dopracuj instrukcję.</p></div>` : ""}
         <div class="portal-info"><div class="label">Dawka</div><p>${escapeHtml(ex.dosageDefault || "Do ustalenia")}</p></div>
         <div class="portal-info"><div class="label">Cel</div><p>${escapeHtml(shortText(ex.goal || "Cel zostanie doprecyzowany.", 150))}</p></div>
-        <div class="tag-row">${(ex.tags || []).slice(0, 5).map(tag => pill(tag, "")).join("")}</div>
         <div class="card-actions">
           <button class="btn ${needsReview ? "warning" : "primary"}" data-add-exercise="${escapeHtml(ex.id)}">Dodaj do planu klienta</button>
           <button class="btn" data-edit-exercise="${escapeHtml(ex.id)}">Edytuj</button>
@@ -4102,16 +4105,12 @@
         <div>
           <div class="name">${escapeHtml(ex.clientName || ex.name)}</div>
           <div class="meta">${escapeHtml(ex.dosageDefault || "Dawka do ustalenia")}</div>
-          ${renderExerciseMuscleSummary(ex)}
           ${needsReview ? `<div class="meta warn">Najpierw dopracuj instrukcję.</div>` : ""}
         </div>
         <div class="tag-row">
           ${pill(ex.trainingBlock || "Inne", "blue")}
           ${pill(qualityStatusLabel(ex.qualityStatus), qualityStatusTone(ex.qualityStatus))}
-          ${pill(ex.category, "blue")}
-          ${pill(ex.region, "green")}
-          ${pill(ex.stage, "gold")}
-          ${pill(ex.level, "")}
+          ${pill(ex.level, exerciseLevelTone(ex.level))}
           ${pill(hasVideo ? "Video" : "Brak video", hasVideo ? "green" : "")}
         </div>
         <div class="card-actions">
@@ -4479,185 +4478,178 @@
 
     function renderClientPortal() {
       const c = activeClient();
-      const m = metrics(c);
       const l = latest(c);
-      const stageName = steps[c.stage - 1]?.[0] || "Proces indywidualny";
       view.innerHTML = `
-        <section class="panel portal-hero">
+        <section class="panel portal-focus">
           <div class="panel-head">
-            <div>
-              <h2>${escapeHtml(c.name)}</h2>
-              <p>${escapeHtml(c.package)} · ${escapeHtml(stageName)}</p>
-            </div>
+            <div><h2>Co teraz?</h2><p>${escapeHtml(c.name)} · jedno najważniejsze działanie.</p></div>
             ${pill(portalStatus(c), portalStatusTone(c))}
           </div>
-          <div class="portal-meta">
-            ${pill(`Pakiet: ${c.package || "do ustalenia"}`, "blue")}
-            ${pill(`Etap: ${stageName}`, "green")}
-            ${pill(`${m.sessions} sesji`, "blue")}
-            ${c.nextSessionDate ? pill(`Następny termin: ${formatDate(c.nextSessionDate)}`, "gold") : ""}
-            ${pill(`Status: ${portalStatus(c)}`, portalStatusTone(c))}
-          </div>
-        </section>
-
-        <section class="panel portal-focus">
-          <div class="panel-head"><div><h2>Co teraz?</h2><p>Jedno najważniejsze działanie na dziś.</p></div>${pill("następny krok", "gold")}</div>
           ${renderPortalNow(c)}
         </section>
 
         <section class="panel">
-          <div class="panel-head"><h2>Plan domowy</h2>${pill("do wykonania między sesjami", "green")}</div>
-          ${renderHomePlan(c)}
+          <div class="panel-head"><h2>Status procesu</h2>${pill(getClientStageLabel(c), "blue")}</div>
+          ${renderPortalProcessStatus(c)}
         </section>
-
-        <div class="grid cols-2">
-          <section class="panel">
-            <div class="panel-head"><h2>Ostatnia sesja</h2>${pill(l?.date ? formatDate(l.date) : "brak", "blue")}</div>
-            ${renderPortalLastSession(c)}
-          </section>
-          <section class="panel">
-            <div class="panel-head"><h2>Postęp</h2>${pill("proste metryki", "green")}</div>
-            ${renderPortalProgress(c)}
-          </section>
-        </div>
 
         <section class="panel">
-          <div class="panel-head"><h2>Dokumenty</h2>${pill("status", "blue")}</div>
-          <div class="grid cols-4">${renderPortalDocuments(c)}</div>
+          <div class="panel-head"><h2>Zadanie na dziś</h2>${pill(activeHomePlanExercises(c).length ? "jedno działanie" : "do ustalenia", activeHomePlanExercises(c).length ? "green" : "gold")}</div>
+          ${renderPortalTodayTask(c)}
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Dowód postępu</h2>${pill("spokojna interpretacja", "green")}</div>
+          ${renderPortalProgressEvidence(c)}
+        </section>
+
+        <section class="panel" id="clientPortalPlanSection">
+          <div class="panel-head"><h2>Plan domowy</h2>${pill("zadania ruchowe", "green")}</div>
+          ${renderPortalHomePlan(c)}
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Ostatnia sesja</h2>${pill(l?.date ? formatDate(l.date) : "brak zapisu", "blue")}</div>
+          ${renderPortalLastSession(c)}
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Dokumenty / Raporty</h2>${pill("krótko", "blue")}</div>
+          ${renderPortalDocuments(c)}
         </section>
       `;
+      document.querySelectorAll("[data-client-portal-plan-jump]").forEach(btn => btn.addEventListener("click", () => {
+        $("#clientPortalPlanSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
+      }));
       $("#clientPortalShowAllPlanBtn")?.addEventListener("click", () => {
         clientPortalShowAllHomeTasks = !clientPortalShowAllHomeTasks;
         renderClientPortal();
       });
-      bindPdfButtons();
+      $("#clientPortalReportBtn")?.addEventListener("click", () => {
+        viewName = "report";
+        renderShell();
+      });
     }
 
     function renderPortalNow(c) {
       const firstTask = activeHomePlanExercises(c)[0];
-      if (!firstTask) return `<p>Plan domowy zostanie dobrany po potwierdzeniu punktu wyjścia.</p>`;
+      const decisionMessage = getLastClientDecisionMessage(c);
+      const hasProcessData = Boolean(firstTask || decisionMessage || (c.sessions || []).length || (c.measurements || []).length || (c.polarSessions || []).length || c.goal);
+      if (firstTask) {
+        return `
+          <div class="measurement-card measurement-main">
+            <div class="panel-head">
+              <div>
+                <div class="label">Zadanie na dziś</div>
+                <div class="name">${escapeHtml(firstTask.name || "Zadanie ruchowe")}</div>
+              </div>
+              ${pill(firstTask.frequency || "do wykonania", "green")}
+            </div>
+            <p>${escapeHtml(decisionMessage || "Dzisiaj najważniejsze jest spokojne wykonanie jednego zadania i obserwacja reakcji organizmu.")}</p>
+            <button class="btn" data-client-portal-plan-jump type="button">Zobacz cały plan domowy</button>
+          </div>
+        `;
+      }
+      if (decisionMessage) {
+        return `
+          <div class="measurement-card measurement-main">
+            <div class="label">Najbliższy kierunek</div>
+            <div class="name">Utrzymujemy spokojne tempo pracy</div>
+            <p>${escapeHtml(decisionMessage)}</p>
+          </div>
+        `;
+      }
+      return `
+        <div class="measurement-card measurement-main">
+          <div class="label">Najbliższy krok</div>
+          <div class="name">${hasProcessData ? "Plan domowy zostanie dobrany po potwierdzeniu punktu wyjścia." : "Najpierw potwierdzimy punkt wyjścia i dobierzemy bezpieczny kierunek pracy."}</div>
+          <p>Nie dokładamy zadań, zanim nie będzie jasne, które ruchy są dobrze tolerowane.</p>
+        </div>
+      `;
+    }
+
+    function renderPortalProcessStatus(c) {
+      return `
+        <div class="grid cols-2">
+          <div class="portal-info">
+            <div class="label">Etap</div>
+            <p><strong>${escapeHtml(getClientStageLabel(c))}</strong></p>
+            <p>${escapeHtml(getClientStageExplanation(c))}</p>
+          </div>
+          <div class="portal-info">
+            <div class="label">Czego teraz nie przyspieszamy</div>
+            <p>${escapeHtml(getClientStagePaceLimit(c))}</p>
+          </div>
+          ${renderPortalDiagnosticMicro(c)}
+        </div>
+      `;
+    }
+
+    function renderPortalDiagnosticMicro(c) {
+      const readiness = getDiagnosticReadiness(c);
+      return `
+        <div class="portal-info span-2">
+          <div class="label">Ocena ruchowa</div>
+          <p><strong>${escapeHtml(readiness.label)}</strong></p>
+          <p>${escapeHtml(getDiagnosticSummaryForClient(c))}</p>
+        </div>
+      `;
+    }
+
+    function renderPortalTodayTask(c) {
+      const firstTask = activeHomePlanExercises(c)[0];
+      if (!firstTask) return `<p>Zadanie na dziś zostanie ustalone po najbliższej sesji.</p>`;
       const videoUrl = hasExerciseVideo(firstTask) ? String(firstTask.videoUrl).trim() : "";
       return `
         <div class="measurement-card measurement-main">
           <div class="panel-head">
             <div>
-              <div class="label">Zadanie na dziś</div>
+              <div class="label">Jedno zadanie</div>
               <div class="name">${escapeHtml(firstTask.name || "Zadanie ruchowe")}</div>
             </div>
-            ${pill(firstTask.frequency || "do wykonania", "green")}
+            ${pill(firstTask.frequency || "częstotliwość do ustalenia", "green")}
           </div>
-          <div class="grid cols-3">
-            <div class="portal-info"><div class="label">Dawkowanie</div><p>${escapeHtml(firstTask.dosage || "Do ustalenia")}</p></div>
-            <div class="portal-info"><div class="label">Częstotliwość</div><p>${escapeHtml(firstTask.frequency || "Do ustalenia")}</p></div>
-            <div class="portal-info"><div class="label">Wskazówka</div><p>${escapeHtml(firstTask.clientCue || "Wykonuj spokojnie i bez pośpiechu.")}</p></div>
-          </div>
-          ${videoUrl ? `<div style="margin-top:12px"><a class="btn" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">Zobacz video</a></div>` : ""}
-        </div>
-      `;
-    }
-
-    function renderPortalMeasurement(c) {
-      const m = latestMeasurement(c);
-      if (!m) return `<p>Pomiar Tanita pojawi się tutaj po pierwszym zapisie.</p>`;
-      return `
-        <div class="measurement-card measurement-main">
-        <div class="grid cols-3">
-          <div class="portal-info"><div class="label">Data</div><p>${escapeHtml(formatDate(m.date))}</p></div>
-          <div class="portal-info"><div class="label">Waga</div><p>${formatMetric(m.weightKg, "kg")}</p></div>
-          <div class="portal-info"><div class="label">Fat %</div><p>${formatMetric(m.fatPercent, "%")}</p></div>
-          <div class="portal-info"><div class="label">Masa mięśniowa</div><p>${formatMetric(m.muscleMassKg, "kg")}</p></div>
-          <div class="portal-info"><div class="label">Woda %</div><p>${formatMetric(m.bodyWaterPercent, "%")}</p></div>
-        </div>
-        <div class="portal-info" style="margin-top:12px"><div class="label">Podsumowanie</div><p>${escapeHtml(m.clientSummary || "Najważniejszy jest trend w czasie, nie pojedynczy wynik.")}</p></div>
-        ${m.pdfDataUrl ? `<div style="margin-top:12px"><button class="btn" data-open-pdf="${escapeHtml(m.id)}">Otwórz PDF Tanita</button></div>` : ""}
-        </div>
-      `;
-    }
-
-    function renderPortalIntake(c) {
-      const intake = c.intake || defaultIntake();
-      if (!hasImportedIntake(c)) return `<p>Na pierwszym etapie potwierdzamy dane z ankiety, sprawdzamy ruch i ustalamy bezpieczny punkt startowy.</p>`;
-      return `
-        <div class="measurement-card measurement-main">
           <div class="grid cols-2">
-            <div class="portal-info"><div class="label">Główny cel</div><p>${escapeHtml(intake.mainGoal || c.goal || "Doprecyzujemy cel na pierwszej sesji.")}</p></div>
-            <div class="portal-info"><div class="label">Pierwszy fokus pracy</div><p>${escapeHtml(intake.firstSessionFocus || "Sprawdzamy ruch i ustalamy punkt startowy.")}</p></div>
+            <div class="portal-info"><div class="label">Dawkowanie</div><p>${escapeHtml(firstTask.dosage || "Do ustalenia na sesji.")}</p></div>
+            <div class="portal-info"><div class="label">Częstotliwość</div><p>${escapeHtml(firstTask.frequency || "Do ustalenia na sesji.")}</p></div>
+            <div class="portal-info"><div class="label">Wskazówka</div><p>${escapeHtml(firstTask.clientCue || "Wykonuj spokojnie, bez pośpiechu i bez dociskania zakresu.")}</p></div>
+            <div class="portal-info"><div class="label">Kiedy przerwać / zgłosić reakcję</div><p>${escapeHtml(firstTask.stopCriteria || "Przerwij, jeśli objawy wyraźnie narastają albo pojawia się reakcja nietypowa dla Ciebie.")}</p></div>
           </div>
-          <p>Na pierwszym etapie potwierdzamy dane z ankiety, sprawdzamy ruch i ustalamy bezpieczny punkt startowy.</p>
+          <div class="card-actions">
+            ${videoUrl ? `<a class="btn" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">Zobacz video</a>` : ""}
+            <button class="btn" data-client-portal-plan-jump type="button">Zobacz cały plan domowy</button>
+          </div>
         </div>
       `;
     }
 
-    function renderPortalDecision(c) {
-      const decision = generateWeeklyDecision(c);
+    function renderPortalProgressEvidence(c) {
+      const message = getProgressEvidenceMessage(c);
+      const sessionCount = (c.sessions || []).length;
       return `
         <div class="measurement-card measurement-main">
-          <div class="portal-info"><div class="label">Najbliższy kierunek</div><p>${escapeHtml(decision.clientMessage)}</p></div>
-          <div class="portal-info" style="margin-top:12px"><div class="label">Czego teraz nie przyspieszamy</div><p>${escapeHtml(decision.doNotDo[0] || "Nie przyspieszamy kilku parametrów jednocześnie.")}</p></div>
-          <p>To nie jest ocena formy. To decyzja o tempie pracy na podstawie reakcji organizmu i przebiegu procesu.</p>
+          <div class="label">Najbliższy dowód</div>
+          <div class="name">${escapeHtml(message.title)}</div>
+          <p>${escapeHtml(message.text)}</p>
+          ${sessionCount ? `<p class="meta">Zapis procesu: ${escapeHtml(String(sessionCount))} ${pluralizePl(sessionCount, "sesja", "sesje", "sesji")}.</p>` : ""}
         </div>
       `;
     }
 
-    function renderPortalPostSessionNote(c) {
-      const note = latestPostSessionNote(c);
-      if (!note) return `<p>Ustalenie po ostatniej sesji pojawi się tutaj po zapisaniu notatki po sesji.</p>`;
-      const simpleDecision = {
-        progress: "Robimy spokojny krok do przodu.",
-        maintain: "Utrzymujemy obecny kierunek.",
-        regress: "Na chwilę cofamy bodziec i uspokajamy reakcję.",
-        consult: "Najpierw wyjaśniamy reakcję organizmu, potem planujemy dalej."
-      }[note.decision] || "Utrzymujemy obecny kierunek.";
-      return `
-        <div class="measurement-card measurement-main">
-          <div class="grid cols-3">
-            <div class="portal-info"><div class="label">Data</div><p>${escapeHtml(formatDate(note.date))}</p></div>
-            <div class="portal-info"><div class="label">Decyzja</div><p>${escapeHtml(simpleDecision)}</p></div>
-            <div class="portal-info"><div class="label">Zadanie ruchowe</div><p>${escapeHtml(note.homeTask || "Brak nowego zadania ruchowego.")}</p></div>
-          </div>
-          <div class="portal-info" style="margin-top:12px"><div class="label">Komunikat</div><p>${escapeHtml(note.clientMessage || "Ustalenie zostało zapisane po sesji.")}</p></div>
-        </div>
-      `;
-    }
-
-    function renderPortalPolar(c) {
-      const session = latestPolarSession(c);
-      if (!session) return `<p>Reakcja organizmu na trening pojawi się tutaj po pierwszym odczycie Polar.</p>`;
-      return `
-        <div class="measurement-card measurement-main">
-          <div class="grid cols-3">
-            <div class="portal-info"><div class="label">Data</div><p>${escapeHtml(formatDate(session.date))}</p></div>
-            <div class="portal-info"><div class="label">Typ sesji</div><p>${escapeHtml(session.sessionType || "Sesja treningowa")}</p></div>
-            <div class="portal-info"><div class="label">RPE</div><p>${formatMetric(session.rpe, "")}</p></div>
-            <div class="portal-info"><div class="label">VAS po</div><p>${formatMetric(session.vasAfter, "")}</p></div>
-            <div class="portal-info"><div class="label">Gotowość</div><p>${formatMetric(session.readiness, "")}</p></div>
-          </div>
-          <div class="portal-info" style="margin-top:12px"><div class="label">Podsumowanie</div><p>${escapeHtml(session.clientSummary || "Te dane pomagają dobrać tempo progresji. Nie oceniamy formy, tylko reakcję organizmu.")}</p></div>
-          <p>Te dane pomagają dobrać tempo progresji. Nie oceniamy formy, tylko reakcję organizmu.</p>
-        </div>
-      `;
-    }
-
-    function renderHomePlan(c) {
-      const plan = migrateHomePlan(c.homePlan);
+    function renderPortalHomePlan(c) {
       const active = activeHomePlanExercises(c);
       if (!active.length) return `<p>Plan domowy zostanie dobrany po potwierdzeniu punktu wyjścia.</p>`;
       const visibleTasks = clientPortalShowAllHomeTasks ? active : active.slice(0, 3);
       return `
-        <div class="grid cols-3">
-          <div class="portal-info"><div class="label">Nazwa</div><p>${escapeHtml(plan.title || "Plan domowy")}</p></div>
-          <div class="portal-info"><div class="label">Focus</div><p>${escapeHtml(plan.focus || "Aktualne zadania ruchowe")}</p></div>
-          ${plan.updatedAt ? `<div class="portal-info"><div class="label">Aktualizacja</div><p>Aktualizacja: ${escapeHtml(formatDatePL(plan.updatedAt))}</p></div>` : ""}
-        </div>
-        <div class="exercise-list" style="margin-top:12px">
+        <div class="exercise-list">
           ${visibleTasks.map(ex => `
             <div class="exercise-card">
-              <div class="name">${escapeHtml(ex.name)}</div>
+              <div class="name">${escapeHtml(ex.name || "Zadanie ruchowe")}</div>
               <div class="grid cols-2">
                 <div class="portal-info"><div class="label">Dawkowanie</div><p>${escapeHtml(ex.dosage || "Do ustalenia")}</p></div>
                 <div class="portal-info"><div class="label">Częstotliwość</div><p>${escapeHtml(ex.frequency || "Do ustalenia")}</p></div>
                 <div class="portal-info"><div class="label">Wskazówka</div><p>${escapeHtml(ex.clientCue || "Wykonuj spokojnie i bez pośpiechu.")}</p></div>
-                <div class="portal-info"><div class="label">Kiedy przerwać / zgłosić</div><p>${escapeHtml(ex.stopCriteria || "Przerwij, jeśli objawy wyraźnie narastają po aktywności.")}</p></div>
+                <div class="portal-info"><div class="label">Kiedy przerwać / zgłosić reakcję</div><p>${escapeHtml(ex.stopCriteria || "Przerwij, jeśli objawy wyraźnie narastają po aktywności.")}</p></div>
               </div>
               ${hasExerciseVideo(ex) ? `<a class="btn" href="${escapeHtml(String(ex.videoUrl).trim())}" target="_blank" rel="noopener noreferrer">Zobacz video</a>` : ""}
             </div>`).join("")}
@@ -4670,72 +4662,140 @@
       const l = latest(c);
       if (!l) return `<p>Ostatnia sesja pojawi się tutaj po pierwszym zapisie pracy.</p>`;
       return `
-        <div class="grid">
+        <div class="grid cols-2">
           <div class="portal-info"><div class="label">Data</div><p>${escapeHtml(formatDate(l.date))}</p></div>
-          <div class="portal-info"><div class="label">Ćwiczenia</div><p>${l.exercises?.length ? l.exercises.map(escapeHtml).join(", ") : "Brak zapisanych ćwiczeń."}</p></div>
-          <div class="portal-info"><div class="label">Obserwacje</div><p>${escapeHtml(l.notes || "Brak zapisanych obserwacji.")}</p></div>
-          <div class="portal-info"><div class="label">Decyzja</div><p>${escapeHtml(l.decision || c.decisionLogic || "Decyzja zostanie dopisana po sesji.")}</p></div>
-          ${l.milestone ? `<div class="portal-info"><div class="label">Milestone</div><p>${escapeHtml(l.milestone)}</p></div>` : ""}
+          <div class="portal-info"><div class="label">Co było najważniejsze</div><p>${l.exercises?.length ? escapeHtml(l.exercises.slice(0, 3).join(", ")) : "Zapis ćwiczeń zostanie uzupełniony po sesji."}</p></div>
+          <div class="portal-info"><div class="label">Obserwacja</div><p>${escapeHtml(l.notes || "Brak zapisanej obserwacji.")}</p></div>
+          <div class="portal-info"><div class="label">Najbliższy kierunek</div><p>${escapeHtml(shortText(l.decision || c.decisionLogic || "Decyzja zostanie dopisana po sesji.", 220))}</p></div>
+          ${l.milestone ? `<div class="portal-info span-2"><div class="label">Dowód</div><p>${escapeHtml(l.milestone)}</p></div>` : ""}
         </div>
       `;
     }
 
-    function renderPortalProgress(c) {
-      const m = metrics(c);
-      const milestone = lastMilestone(c);
-      const items = [
-        ["VAS teraz", m.vasNow ?? "–"],
-        ["Zmiana VAS od startu", m.vasDelta !== null ? formatPainChange(m.vasDelta) : "–"],
-        ["Mobilność teraz", m.mobility !== null ? `${m.mobility}%` : "–"],
-        ["Zmiana mobilności od startu", m.mobilityDelta !== null ? formatMobilityChange(m.mobilityDelta) : "–"],
-        ["Liczba sesji", m.sessions],
-        ["Ostatni milestone", milestone || "–"]
-      ];
-      return `<div class="grid cols-3">${items.map(item => `<div class="portal-metric"><div class="label">${escapeHtml(item[0])}</div><strong>${escapeHtml(item[1])}</strong></div>`).join("")}</div>`;
-    }
-
     function renderPortalDocuments(c) {
-      return portalDocuments(c).map(doc => `
+      const report = latestReport(c);
+      if (!report) {
+        return `
+          <div class="doc-card">
+            <div>
+              <div class="name">Raport procesu</div>
+              <p>Raport przygotujemy, gdy zapis procesu będzie gotowy do spokojnego podsumowania.</p>
+            </div>
+            <button class="btn" id="clientPortalReportBtn" type="button">Przygotuj raport</button>
+          </div>
+        `;
+      }
+      return `
         <div class="doc-card">
           <div>
-            <div class="name">${escapeHtml(doc.title)}</div>
-            <p>${escapeHtml(doc.description)}</p>
+            <div class="name">${escapeHtml(REPORT_TYPES[report.type] || report.type || "Raport")}</div>
+            <p>${escapeHtml(formatDate(report.date))}</p>
+            <p>${escapeHtml(shortText(report.content || "Najnowszy raport jest zapisany w historii trenera.", 180))}</p>
           </div>
-          ${pill(doc.status, documentTone(doc.status))}
-        </div>`).join("");
+          <button class="btn" id="clientPortalReportBtn" type="button">Zobacz najnowszy raport</button>
+        </div>
+      `;
     }
 
-    function portalDocuments(c) {
-      const hasHomePlan = activeHomePlanExercises(c).length >= 1;
-      const sessionCount = c.sessions.length;
-      return [
-        {
-          title: "Mapa Startowa Ciała",
-          status: c.goal && c.healthStatus ? "gotowy" : (c.goal || c.healthStatus ? "aktywny" : "w przygotowaniu"),
-          description: "Punkt startowy, cel i najważniejsze informacje o ciele."
-        },
-        {
-          title: "Plan Domowy",
-          status: hasHomePlan ? "gotowy" : (c.homePlan?.title || c.homePlan?.instructions ? "aktywny" : "w przygotowaniu"),
-          description: "Zadania ruchowe i dawki do pracy między spotkaniami."
-        },
-        {
-          title: "Raport 12 Tygodni",
-          status: sessionCount >= 8 ? "gotowy" : (sessionCount > 0 ? "aktywny" : "w przygotowaniu"),
-          description: "Podsumowanie danych, decyzji i zmian w procesie."
-        },
-        {
-          title: "Plan Kontynuacji",
-          status: sessionCount >= 8 ? "gotowy" : "w przygotowaniu",
-          description: "Co dalej po pierwszym większym cyklu pracy."
-        }
-      ];
+    function latestReport(c = activeClient()) {
+      return [...(c?.reports || [])].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.id || "").localeCompare(String(a.id || "")))[0] || null;
     }
 
-    function documentTone(status) {
-      if (status === "gotowy") return "green";
-      if (status === "aktywny") return "blue";
-      return "gold";
+    function getLastClientDecisionMessage(c) {
+      const note = latestPostSessionNote(c);
+      if (note?.clientMessage) return note.clientMessage;
+      if (note?.decision) {
+        return {
+          progress: "Robimy spokojny krok do przodu, bez skoku intensywności.",
+          maintain: "Utrzymujemy obecny kierunek i obserwujemy reakcję organizmu.",
+          regress: "Na chwilę cofamy bodziec, żeby uspokoić reakcję organizmu.",
+          consult: "Najpierw wyjaśniamy reakcję organizmu, potem planujemy kolejny krok."
+        }[note.decision] || "";
+      }
+      const l = latest(c);
+      if (l?.decision) return shortText(l.decision, 220);
+      if (c.decisionLogic) return shortText(c.decisionLogic, 220);
+      return "";
+    }
+
+    function getProgressEvidenceMessage(c) {
+      const milestone = lastMilestone(c);
+      const note = latestPostSessionNote(c);
+      const measurementCount = (c.measurements || []).length;
+      const polarCount = (c.polarSessions || []).length;
+      if (milestone) return { title: "Mamy zapisany konkretny krok", text: milestone };
+      if (note?.clientMessage || note?.clientResponse || note?.whatWeDid) {
+        return { title: "Mamy obserwację po sesji", text: note.clientMessage || note.clientResponse || note.whatWeDid };
+      }
+      if (measurementCount > 1) return { title: "Mamy już punkt porównawczy", text: "Trend ocenimy spokojnie po zestawieniu kolejnych pomiarów, bez oceniania pojedynczego wyniku." };
+      if (measurementCount === 1) return { title: "Mamy punkt odniesienia", text: "Pomiar Tanita jest zapisany jako punkt odniesienia, nie jako ocena końcowa." };
+      if (polarCount) return { title: "Mamy pierwszą informację o tolerancji obciążenia", text: "Odczyt pomaga dobrać tempo pracy, ale decyzję opieramy na połączeniu danych i obserwacji po sesji." };
+      if (activeHomePlanExercises(c).length) return { title: "Mamy zadanie do regularnej obserwacji", text: "Najbliższy dowód postępu pojawi się po kilku spokojnych wykonaniach planu domowego." };
+      return { title: "Pierwszy dowód dopiero przed nami", text: "Pierwszy dowód postępu pojawi się po zapisaniu obserwacji z sesji." };
+    }
+
+    function getClientStageLabel(client = activeClient()) {
+      const raw = String(client?.stageRaw || client?.stage || client?.stageLabel || "").trim().toLowerCase();
+      const stageNumber = Number(client?.stage);
+      if (Number.isFinite(stageNumber) && steps[stageNumber - 1]) return steps[stageNumber - 1][0];
+      if (raw.includes("fundament") || raw.includes("kontrola")) return "Fundament ruchu";
+      if (raw.includes("sił") || raw.includes("sila") || raw.includes("stabil")) return "Siła i stabilność";
+      if (raw.includes("autonom") || raw.includes("samodziel")) return "Autonomia";
+      return "Punkt startowy";
+    }
+
+    function getClientStageExplanation(client = activeClient()) {
+      const label = getClientStageLabel(client);
+      return {
+        "Punkt startowy": "Na tym etapie potwierdzamy, które ruchy są bezpieczne i dobrze tolerowane. Nie chodzi jeszcze o szybkie zwiększanie obciążeń.",
+        "Fundament ruchu": "Budujemy przewidywalną kontrolę ruchu, oddechu i pozycji. Najważniejsza jest powtarzalna reakcja organizmu.",
+        "Siła i stabilność": "Dokładamy siłę stopniowo, wtedy gdy jakość ruchu i reakcja po sesji są stabilne.",
+        "Autonomia": "Porządkujemy zasady samodzielnej pracy, kryteria cofnięcia i najbliższy plan kontynuacji."
+      }[label] || "Proces prowadzimy krok po kroku, zgodnie z tolerancją ruchu i reakcją po sesji.";
+    }
+
+    function getClientStagePaceLimit(client = activeClient()) {
+      const label = getClientStageLabel(client);
+      return {
+        "Punkt startowy": "Nie przyspieszamy obciążeń ani liczby zadań przed potwierdzeniem punktu wyjścia.",
+        "Fundament ruchu": "Nie dokładamy wielu nowych bodźców naraz. Najpierw utrwalamy jakość i spokojną reakcję.",
+        "Siła i stabilność": "Nie zwiększamy jednocześnie ciężaru, tempa i objętości.",
+        "Autonomia": "Nie przechodzimy do pełnej samodzielności bez jasnych zasad reakcji na objawy."
+      }[label] || "Nie przyspieszamy kilku parametrów pracy jednocześnie.";
+    }
+
+    function getDiagnosticReadiness(client = activeClient()) {
+      const results = Array.isArray(client?.testResults) ? client.testResults : [];
+      const sorted = [...results].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.id || "").localeCompare(String(a.id || "")));
+      const latestResult = sorted[0] || null;
+      if (!results.length) {
+        return {
+          hasTests: false,
+          testCount: 0,
+          lastTestDate: "",
+          label: "Ocena ruchowa do uzupełnienia",
+          message: "Ocena ruchowa zostanie dodana po wykonaniu testów podczas sesji."
+        };
+      }
+      return {
+        hasTests: true,
+        testCount: results.length,
+        lastTestDate: latestResult?.date || "",
+        label: "Ocena ruchowa zapisana",
+        message: latestResult?.finding || latestResult?.decision || "Ocena ruchowa ma zapisany wniosek do omówienia na sesji."
+      };
+    }
+
+    function getDiagnosticSummaryForClient(client = activeClient()) {
+      const readiness = getDiagnosticReadiness(client);
+      if (!readiness.hasTests) return "Ocena ruchowa zostanie uzupełniona po sesji.";
+      return readiness.message;
+    }
+
+    function getDiagnosticSummaryForTrainer(client = activeClient()) {
+      const readiness = getDiagnosticReadiness(client);
+      if (!readiness.hasTests) return "Brak zapisanych testów diagnostycznych. Moduł testów zostanie dodany w kolejnym etapie.";
+      return `Zapisano ${readiness.testCount} ${pluralizePl(readiness.testCount, "wynik oceny ruchowej", "wyniki oceny ruchowej", "wyników oceny ruchowej")}. Ostatni zapis: ${readiness.lastTestDate ? formatDate(readiness.lastTestDate) : "brak daty"}.`;
     }
 
     function portalStatus(c) {
@@ -4751,23 +4811,6 @@
       if (status === "spokojny postęp") return "green";
       if (status === "zwalniamy tempo") return "gold";
       return "blue";
-    }
-
-    function portalPriority(c) {
-      return c.nextMilestone || c.goal || steps[c.stage - 1]?.[0] || "Ustalić najbliższy, konkretny krok.";
-    }
-
-    function portalPaceLimit(c, l) {
-      if (!l) return "Nie przyspieszamy przed diagnostyką i pierwszą spokojną obserwacją reakcji ciała.";
-      if (l.vasAfter > l.vasBefore) return "Nie dokładamy intensywności, dopóki reakcja po sesji nie będzie spokojniejsza.";
-      if ((l.readiness || 0) <= 4) return "Nie dokładamy objętości przy słabej gotowości lub regeneracji.";
-      if (c.stage <= 2) return "Nie ścigamy ciężaru, tempa ani zakresu za cenę jakości ruchu.";
-      return "Nie pomijamy rozgrzewki, kontroli jakości ruchu i ustalonego tempa progresji.";
-    }
-
-    function portalExplanation(c, l) {
-      if (l?.decision) return "Najbliższy krok wynika z ostatniej sesji. Trzymamy się go, żeby ciało miało czas zareagować przewidywalnie, bez niepotrzebnego pośpiechu.";
-      return "Ten panel pokazuje tylko to, co jest potrzebne klientowi teraz: kierunek pracy, plan domowy, ostatnią sesję i prosty postęp.";
     }
 
     function lastMilestone(c) {
@@ -6272,11 +6315,9 @@ ${buildReportClosingNote("continuation", context)}`;
     }
 
     function buildDiagnosticTestsSection(c, audience = "client") {
-      const results = Array.isArray(c.testResults) ? c.testResults : [];
-      if (!results.length) return "Testy diagnostyczne zostaną dodane po wykonaniu oceny ruchowej.";
-      const latestResult = [...results].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")))[0];
-      const finding = latestResult?.finding || latestResult?.decision || "najważniejszy wniosek wymaga doprecyzowania";
-      return `Testy diagnostyczne: zapisano ${results.length}. Najważniejszy wniosek: ${finding}.`;
+      return audience === "trainer"
+        ? getDiagnosticSummaryForTrainer(c)
+        : getDiagnosticSummaryForClient(c);
     }
 
     function reportGoal(c) {
