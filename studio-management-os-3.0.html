@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.2.2 | Navigation & Responsive Patch</title>
+  <title>Studio Las OS 7.3 | Diagnostic Test Layer from Atlas</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -338,6 +338,46 @@
     .task-row label { display: flex; gap: 10px; align-items: flex-start; }
     .task-row.done .name, .task-row.done .meta { color: var(--faint); text-decoration: line-through; }
     .measurement-list { display: grid; gap: 10px; }
+    .diagnostic-toolbar { display: grid; gap: 12px; }
+    .diagnostic-preview {
+      border: 1px solid rgba(117,167,200,.3);
+      border-radius: 12px;
+      background: rgba(117,167,200,.08);
+      padding: 13px;
+      display: grid;
+      gap: 8px;
+    }
+    .diagnostic-library-list,
+    .diagnostic-result-list { display: grid; gap: 10px; }
+    .diagnostic-test-row {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(31,33,31,.5);
+      padding: 12px;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+    }
+    .diagnostic-test-row .tag-row,
+    .diagnostic-result-card .tag-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .diagnostic-result-card {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(31,33,31,.56);
+      padding: 13px;
+      display: grid;
+      gap: 10px;
+    }
+    .diagnostic-warning {
+      border: 1px solid rgba(216,166,87,.42);
+      border-radius: 12px;
+      background: rgba(216,166,87,.1);
+      padding: 11px 12px;
+      color: #f1c981;
+      font-size: 13px;
+      line-height: 1.45;
+    }
     .measurement-card {
       border: 1px solid var(--line);
       border-radius: 12px;
@@ -614,7 +654,8 @@
       .cols-4, .cols-3, .cols-2,
       .form-grid, .filter-bar,
       .home-plan-summary-grid,
-      .exercise-compact-row { grid-template-columns: 1fr; }
+      .exercise-compact-row,
+      .diagnostic-test-row { grid-template-columns: 1fr; }
       .progress-line { grid-template-columns: 1fr; }
       .task-form { grid-template-columns: 1fr; }
       .filter-bar .form-field:first-child { grid-column: auto; }
@@ -627,7 +668,9 @@
       .exercise-card .card-actions .btn,
       .exercise-card .card-actions a,
       .doc-card .btn,
-      .measurement-main .btn { width: 100%; flex: 1 1 100%; }
+      .measurement-main .btn,
+      .diagnostic-result-card .btn,
+      .diagnostic-test-row .btn { width: 100%; flex: 1 1 100%; }
       .top-role { white-space: normal; }
       .pill { white-space: normal; max-width: 100%; }
       .quick-filter-row,
@@ -801,7 +844,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.2.2</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -824,6 +867,7 @@
           <button data-view="decision"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-5"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Decyzja</span></button>
           <button data-view="process"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Proces</span></button>
           <button data-view="sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V4a2 2 0 0 1 2-2h11l3 3v14.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg><span>Sesje</span></button>
+          <button data-view="diagnosticTests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16"/><path d="M4 12h10"/><path d="M4 19h7"/><path d="m15 17 2 2 4-5"/></svg><span>Testy</span></button>
         </div>
         <div class="nav-section">
           <div class="nav-label">Klient</div>
@@ -853,7 +897,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.2.2</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -863,6 +907,7 @@
               <button type="button" role="menuitem" data-add-action="session">Nowa sesja</button>
               <button type="button" role="menuitem" data-add-action="measurement">Nowy pomiar Tanita</button>
               <button type="button" role="menuitem" data-add-action="polar">Nowy odczyt Polar</button>
+              <button type="button" role="menuitem" data-add-action="diagnosticResult">Nowy wynik testu</button>
               <button type="button" role="menuitem" data-add-action="task">Nowe zadanie</button>
               <button type="button" role="menuitem" data-add-action="homePlanManual">Dodaj zadanie ruchowe ręcznie</button>
               <button type="button" role="menuitem" data-add-action="intakeCsv">Import ankiety CSV</button>
@@ -1081,10 +1126,41 @@
     </div>
   </div>
 
+  <div class="modal" id="diagnosticResultModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="panel-head">
+        <div>
+          <h2 id="diagnosticResultModalTitle">Nowy wynik testu</h2>
+          <p>Wynik testu porządkuje obserwację. Decyzję podejmuje trener.</p>
+        </div>
+        <button class="btn" data-close="diagnosticResultModal">Zamknij</button>
+      </div>
+      <form id="diagnosticResultForm" class="form-grid">
+        <input type="hidden" name="id" />
+        <div class="form-field full">
+          <label class="label">Test</label>
+          <select name="testId" required></select>
+        </div>
+        <div class="form-field full" id="diagnosticTestPreview"></div>
+        <div class="form-field"><label class="label">Data testu</label><input type="date" name="date" required /></div>
+        <div class="form-field"><label class="label">Strona</label><select name="side"><option value="">brak</option><option value="lewa">lewa</option><option value="prawa">prawa</option><option value="obie">obie</option></select></div>
+        <div class="form-field full"><label class="label">Wynik</label><input name="result" placeholder="np. zakres komfortowy, powtórzenia, obserwacja jakości" /></div>
+        <div class="form-field"><label class="label">Ból przed 0-10</label><input type="number" min="0" max="10" step="1" name="painBefore" /></div>
+        <div class="form-field"><label class="label">Ból po 0-10</label><input type="number" min="0" max="10" step="1" name="painAfter" /></div>
+        <div class="form-field"><label class="label">Jakość / tolerancja</label><select name="quality"><option>dobrze tolerowane</option><option>ograniczone</option><option>do obserwacji</option><option>przerwać i skonsultować</option></select></div>
+        <div class="form-field"><label class="label">Decyzja trenera</label><select name="trainerDecision"><option value="obserwuj">obserwuj</option><option value="utrzymaj">utrzymaj</option><option value="regresuj">regresuj</option><option value="progresuj ostrożnie">progresuj ostrożnie</option><option value="skonsultuj">skonsultuj</option></select></div>
+        <div class="form-field full"><label class="label">Interpretacja</label><textarea name="interpretation" placeholder="Krótki wniosek trenera bez etykietowania klienta."></textarea></div>
+        <div class="form-field full"><label class="label">Następny krok</label><textarea name="nextStep" placeholder="Co sprawdzamy albo utrzymujemy dalej?"></textarea></div>
+        <div class="form-field full"><label class="label">Notatka trenera</label><textarea name="notes"></textarea></div>
+        <button class="btn primary full" type="submit">Zapisz wynik testu</button>
+      </form>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.2.2";
+    const APP_VERSION = "7.3";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -1139,6 +1215,14 @@
       regress: "Cofnij",
       consult: "Konsultacja"
     };
+    const DIAGNOSTIC_SOURCES = ["Atlas TESTY", "Studio Las Core"];
+    const DIAGNOSTIC_QUALITY_STATUSES = ["reviewed", "needs_review"];
+    const DIAGNOSTIC_QUALITY_LABELS = {
+      reviewed: "Gotowe",
+      needs_review: "Do opracowania"
+    };
+    const DIAGNOSTIC_RESULT_QUALITIES = ["dobrze tolerowane", "ograniczone", "do obserwacji", "przerwać i skonsultować"];
+    const DIAGNOSTIC_TRAINER_DECISIONS = ["obserwuj", "utrzymaj", "regresuj", "progresuj ostrożnie", "skonsultuj"];
     const REPORT_TYPES = {
       startMap: "Mapa Startowa Ciała",
       fourWeeks: "Raport 4 tygodnie",
@@ -1209,6 +1293,255 @@
       "strength-wykroki-boczne": "https://youtu.be/ik5h53Ghrgo",
       "strength-zuraw": "https://youtu.be/RwsKhIIkNIM"
     };
+    const DIAGNOSTIC_ATLAS_AUDIT = {
+      atlasTests: 27,
+      atlasVideo: 23,
+      coreAdded: 9,
+      coreSkippedAsDuplicate: 2,
+      sections: ["KOŃCZYNA DOLNA", "KOŃCZYNA GÓRNA", "TUŁÓW"],
+      sampleTests: [
+        "Ocena aktywnego uniesienia wyprostowanej nogi",
+        "Ocena kontroli motorycznej stawu kolanowego jednonóż",
+        "Ocena napięcia przywodzicieli kończyny dolnej",
+        "Ocena skłonu do ziemi",
+        "Zmodyfikowany test Thomasa",
+        "Ocena rotacji wewnętrznej w stawie ramiennym",
+        "Ocena rytmu ramienno-łopatkowego bokiem",
+        "Ocena zgięcia stawu ramiennego",
+        "Test brzuszka",
+        "Test kontroli motorycznej i ciśnienia wewnątrzbrzusznego (IAP)"
+      ]
+    };
+
+    function getStudioLasDiagnosticTests() {
+      const atlasRows = [
+        ["KOŃCZYNA DOLNA", "Ocena aktywnego uniesienia wyprostowanej nogi", "https://youtu.be/-9IBW0pK7Rc"],
+        ["KOŃCZYNA GÓRNA", "Ocena rotacji wewnętrznej w stawie ramiennym", "https://youtu.be/qUtpa7tXeDA"],
+        ["TUŁÓW", "Test brzuszka", ""],
+        ["KOŃCZYNA DOLNA", "Ocena kontroli motorycznej stawu kolanowego jednonóż", "https://youtu.be/Ci1CZXAURdA"],
+        ["KOŃCZYNA GÓRNA", "Ocena rotacji zewnętrznej w stawie ramiennym", "https://youtu.be/uP7Ix-dFZq8"],
+        ["TUŁÓW", "Test kontroli motorycznej i ciśnienia wewnątrzbrzusznego (IAP)", ""],
+        ["KOŃCZYNA DOLNA", "Ocena kontroli motorycznej stawu kolanowego jednonóż z przenoszeniem nogi", "https://youtu.be/IBopZSlJDEs"],
+        ["KOŃCZYNA GÓRNA", "Ocena rotacji wewnętrznej w stawie ramiennym stojąc przy ścianie", "https://youtu.be/04L4p93qGSY"],
+        ["KOŃCZYNA DOLNA", "Ocena napięcia przywodzicieli kończyny dolnej", "https://youtu.be/mpTo1hQ6kM0"],
+        ["KOŃCZYNA GÓRNA", "Ocena rotacji zewnętrznej w stawie ramiennym w leżeniu przodem", "https://youtu.be/WnYTho2LVBk"],
+        ["KOŃCZYNA DOLNA", "Ocena obwodzenia kończyny dolnej", "https://youtu.be/9h8C3MLCqhc"],
+        ["KOŃCZYNA GÓRNA", "Ocena rytmu ramienno-łopatkowego bokiem", ""],
+        ["KOŃCZYNA DOLNA", "Ocena przyciągnięcia pięt w kierunku pośladków", "https://youtu.be/kWy-phufeTY"],
+        ["KOŃCZYNA GÓRNA", "Ocena rytmu ramienno-łopatkowego tyłem", ""],
+        ["KOŃCZYNA DOLNA", "Ocena przywiedzenia biodra w leżeniu bokiem", "https://youtu.be/R_NOF2Ywb2o"],
+        ["KOŃCZYNA GÓRNA", "Ocena zgięcia stawu ramiennego", "https://youtu.be/ST5Lt3yi30Q"],
+        ["KOŃCZYNA DOLNA", "Ocena rotacji wewnętrznej w stawie biodrowym leżąc", "https://youtu.be/4sy9tPdiDAM"],
+        ["KOŃCZYNA GÓRNA", "Ocena zgięcia stawu ramiennego w oparciu o ścianę", "https://youtu.be/4c6ZNuaq1f0"],
+        ["KOŃCZYNA DOLNA", "Ocena rotacji zewnętrznej w stawie biodrowym leżąc", "https://youtu.be/msCegPLa3Z8"],
+        ["KOŃCZYNA DOLNA", "Ocena skłonu do ziemi", "https://youtu.be/iVRuYBXPrKE"],
+        ["KOŃCZYNA DOLNA", "Ocena wyprostu stawu biodrowego w leżeniu przodem", "https://youtu.be/vSKKkrgxhFQ"],
+        ["KOŃCZYNA DOLNA", "Ocena wyprostu stawu biodrowego w leżeniu przodem (krótka dźwignia)", "https://youtu.be/HiaXHX5K1PI"],
+        ["KOŃCZYNA DOLNA", "Ocena wyprostu stawu biodrowego w leżeniu przodem na podwyższeniu (krótka dźwignia)", "https://youtu.be/XZ-N8Uzzom0"],
+        ["KOŃCZYNA DOLNA", "Ocena zgięcia kolana i rotacji tułowia do wewnątrz", "https://youtu.be/xpeFSdl6Idw"],
+        ["KOŃCZYNA DOLNA", "Ocena zgięcia kolana i rotacji tułowia na zewnątrz", "https://youtu.be/botIwL1ragM"],
+        ["KOŃCZYNA DOLNA", "Ocena zgięcia stawu biodrowego leżąc", "https://youtu.be/E01UXuEoiGA"],
+        ["KOŃCZYNA DOLNA", "Zmodyfikowany test Thomasa", "https://youtu.be/x609WM5mHa4"]
+      ];
+      const atlasTests = atlasRows.map(([section, name, videoUrl], index) => createAtlasDiagnosticTest({ section, name, videoUrl, sourceOrder: index + 1 }));
+      const atlasKeys = new Set(atlasTests.map(test => diagnosticDedupeKey(test.name)));
+      const studioCoreCandidates = [
+        createCoreDiagnosticTest({
+          id: "core-przysiad-komfortowy-zakres",
+          name: "Przysiad do komfortowego zakresu",
+          category: "Kontrola ruchu",
+          region: "całe ciało",
+          pattern: "przysiad",
+          goal: "Ocenić komfort podstawowego zejścia i powrotu do stania bez wymuszania głębokości.",
+          instruction: "Stań stabilnie. Zejdź tylko do zakresu, który jest komfortowy. Wróć do stania spokojnie, bez rywalizacji z zakresem.",
+          coachNotes: "Obserwuj kontrolę stóp, kolan, tułowia i reakcję po ruchu. Nie oceniaj głębokości bez kontekstu.",
+          scoringType: "qualitative",
+          tags: ["punkt startowy", "przysiad", "całe ciało"]
+        }),
+        createCoreDiagnosticTest({
+          id: "core-hinge-sklon-biodrowy",
+          name: "Hinge / skłon biodrowy",
+          category: "Kontrola ruchu",
+          region: "biodro",
+          pattern: "hinge",
+          goal: "Sprawdzić, czy klient potrafi rozpocząć ruch z bioder i utrzymać spokojną kontrolę tułowia.",
+          instruction: "Stań stabilnie. Cofnij biodra lekko do tyłu, jakbyś chciał dotknąć ściany za sobą. Zakres ma być komfortowy.",
+          coachNotes: "Obserwuj strategię ruchu, oddech i reakcję pleców. To nie jest test głębokości skłonu.",
+          scoringType: "qualitative",
+          tags: ["hinge", "biodro", "plecy"]
+        }),
+        createCoreDiagnosticTest({
+          id: "core-mobilnosc-stawu-skokowego-przy-scianie",
+          name: "Mobilność stawu skokowego przy ścianie",
+          category: "Mobilność",
+          region: "staw skokowy",
+          pattern: "zgięcie grzbietowe",
+          goal: "Ocenić tolerancję ruchu kolana nad stopą w prostym ustawieniu.",
+          instruction: "Ustaw stopę przed ścianą. Prowadź kolano w kierunku ściany bez odrywania pięty. Zatrzymaj się przed bólem.",
+          coachNotes: "Porównaj strony i zapisz różnicę jakościową albo odległość, jeśli mierzysz ją świadomie.",
+          scoringType: "leftRight",
+          tags: ["staw skokowy", "mobilność", "przysiad"]
+        }),
+        createCoreDiagnosticTest({
+          id: "core-stanie-jednonoz",
+          name: "Stanie jednonóż",
+          category: "Równowaga",
+          region: "kończyna dolna",
+          pattern: "podpór jednonóż",
+          goal: "Sprawdzić spokojną tolerancję obciążenia jednej nogi i reakcję równowagi.",
+          instruction: "Stań przy stabilnym wsparciu. Unieś jedną stopę tylko tyle, żeby poczuć obciążenie drugiej nogi. Oddychaj spokojnie.",
+          coachNotes: "Zapisz różnice stron, strategię stopy, biodra i poziom pewności klienta.",
+          scoringType: "leftRight",
+          tags: ["równowaga", "kończyna dolna", "start"]
+        }),
+        createCoreDiagnosticTest({
+          id: "core-bird-dog-kontrola-tulowia",
+          name: "Bird dog — kontrola tułowia",
+          category: "Kontrola tułowia",
+          region: "tułów",
+          pattern: "antyrotacja",
+          goal: "Ocenić kontrolę tułowia w prostym ruchu naprzemiennym.",
+          instruction: "Ustaw się w klęku podpartym. Wydłuż przeciwną rękę i nogę tylko do zakresu, w którym tułów zostaje spokojny.",
+          coachNotes: "Obserwuj rotację miednicy, oddech i jakość powrotu. Regresuj zakres, jeśli ruch staje się chaotyczny.",
+          scoringType: "qualitative",
+          tags: ["tułów", "kontrola", "antyrotacja"]
+        }),
+        createCoreDiagnosticTest({
+          id: "core-bear-hover-tolerancja-podporu",
+          name: "Podpór / bear hover — tolerancja podporu",
+          category: "Tolerancja podporu",
+          region: "całe ciało",
+          pattern: "podpór",
+          goal: "Sprawdzić tolerancję podporu dłoni, barków i tułowia bez długiego utrzymania pozycji.",
+          instruction: "Ustaw klęk podparty. Unieś kolana minimalnie nad podłoże na krótki moment i wróć. Zatrzymaj, jeśli tracisz kontrolę.",
+          coachNotes: "Obserwuj barki, nadgarstki, oddech i reakcję po próbie. Czas nie jest ważniejszy niż jakość.",
+          scoringType: "passLimited",
+          tags: ["podpór", "bark", "tułów"]
+        }),
+        createCoreDiagnosticTest({
+          id: "core-rotacja-piersiowa-klek-podparty",
+          name: "Rotacja odcinka piersiowego w klęku podpartym",
+          category: "Mobilność",
+          region: "kręgosłup piersiowy",
+          pattern: "rotacja",
+          goal: "Ocenić komfort rotacji górnej części pleców bez wymuszania zakresu.",
+          instruction: "W klęku podpartym połóż jedną dłoń przy głowie. Obróć klatkę piersiową w komfortowym zakresie i wróć spokojnie.",
+          coachNotes: "Obserwuj różnice stron, kompensacje lędźwiowe i oddech. Nie dociskaj zakresu.",
+          scoringType: "leftRight",
+          tags: ["piersiowy", "rotacja", "mobilność"]
+        }),
+        createCoreDiagnosticTest({
+          id: "core-wykrok-w-miejscu",
+          name: "Wykrok w miejscu",
+          category: "Kontrola ruchu",
+          region: "kończyna dolna",
+          pattern: "wykrok",
+          goal: "Sprawdzić tolerancję rozkroku, kontroli kolana i spokojnego obciążenia.",
+          instruction: "Ustaw wykrok w miejscu. Zejdź tylko trochę w dół i wróć. Użyj podparcia, jeśli zwiększa poczucie bezpieczeństwa.",
+          coachNotes: "Obserwuj reakcję kolana, biodra, stopy i pewność ruchu po obu stronach.",
+          scoringType: "leftRight",
+          tags: ["wykrok", "kończyna dolna", "kontrola"]
+        }),
+        createCoreDiagnosticTest({
+          id: "core-chod-obserwacja-kroku",
+          name: "Chód / obserwacja kroku",
+          category: "Obserwacja funkcjonalna",
+          region: "całe ciało",
+          pattern: "chód",
+          goal: "Zebrać prostą obserwację sposobu poruszania się bez etykietowania wyniku.",
+          instruction: "Przejdź kilka spokojnych długości sali w naturalnym tempie. Nie poprawiaj ruchu na siłę podczas próby.",
+          coachNotes: "Zapisz rytm, pewność, obciążenie stron i reakcję klienta. To obserwacja procesu, nie ocena osoby.",
+          scoringType: "qualitative",
+          tags: ["chód", "obserwacja", "całe ciało"]
+        })
+      ];
+      const studioCore = studioCoreCandidates.filter(test => !atlasKeys.has(diagnosticDedupeKey(test.name)));
+      return [...atlasTests, ...studioCore];
+    }
+
+    function createAtlasDiagnosticTest({ section, name, videoUrl = "", sourceOrder = 0 }) {
+      const region = diagnosticRegionFromSection(section);
+      const pattern = inferDiagnosticPattern(name, region);
+      return {
+        id: `atlas-testy-${slugify(name)}`,
+        name,
+        clientName: name,
+        source: "Atlas TESTY",
+        category: "Ocena ruchu",
+        region,
+        pattern,
+        stage: "1 Punkt startowy",
+        goal: `Ocenić ${lowerFirst(name.replace(/^Ocena\s+/i, "").replace(/^Test\s+/i, "test "))} w spokojnym, kontrolowanym zakresie.`,
+        instruction: "Wykonaj test spokojnie, bez dociskania zakresu i bez rywalizacji z wynikiem. Zatrzymaj próbę, jeśli pojawia się wyraźnie narastająca reakcja.",
+        coachNotes: videoUrl ? "Szczegóły wykonania zweryfikuj na video i podczas sesji." : "Brak linku video w arkuszu TESTY. Zweryfikuj ustawienie testu przed zapisem wyniku.",
+        scoringType: "qualitative",
+        resultOptions: ["dobrze tolerowane", "ograniczone", "do obserwacji", "przerwać i skonsultować"],
+        redFlags: ["ostry ból", "drętwienie", "promieniowanie", "utrata kontroli ruchu", "nietypowa reakcja po teście"],
+        interpretationRules: [
+          "Zapisz reakcję i tolerancję, nie etykietę klienta.",
+          "Porównuj wynik z celem procesu i reakcją po sesji.",
+          "Nie podejmuj decyzji o progresji na podstawie pojedynczego testu bez kontekstu."
+        ],
+        videoUrl,
+        tags: uniqueList(["TESTY", region, pattern, videoUrl ? "video" : "bez video"]),
+        qualityStatus: "needs_review"
+      };
+    }
+
+    function createCoreDiagnosticTest(test) {
+      return {
+        id: test.id,
+        name: test.name,
+        clientName: test.name,
+        source: "Studio Las Core",
+        category: test.category,
+        region: test.region,
+        pattern: test.pattern,
+        stage: "1 Punkt startowy",
+        goal: test.goal,
+        instruction: test.instruction,
+        coachNotes: test.coachNotes,
+        scoringType: test.scoringType || "qualitative",
+        resultOptions: ["dobrze tolerowane", "ograniczone", "do obserwacji", "przerwać i skonsultować"],
+        redFlags: ["ostry ból", "drętwienie", "promieniowanie", "zawroty głowy", "nietypowa reakcja po teście"],
+        interpretationRules: [
+          "Najpierw nazwij tolerancję ruchu.",
+          "Zapisz, czy reakcja po teście jest spokojna i powtarzalna.",
+          "Decyzję o kolejnym kroku podejmuje trener."
+        ],
+        videoUrl: "",
+        tags: uniqueList(test.tags || []),
+        qualityStatus: "reviewed"
+      };
+    }
+
+    function diagnosticRegionFromSection(section = "") {
+      const clean = String(section || "").toLowerCase();
+      if (clean.includes("górna")) return "kończyna górna";
+      if (clean.includes("tułów")) return "tułów";
+      return "kończyna dolna";
+    }
+
+    function inferDiagnosticPattern(name = "", region = "") {
+      const clean = compareHeader(name);
+      if (clean.includes("rotac")) return "rotacja";
+      if (clean.includes("zgiecia") || clean.includes("zgięcia")) return "zgięcie";
+      if (clean.includes("wyprostu")) return "wyprost";
+      if (clean.includes("sklonu")) return "skłon";
+      if (clean.includes("kolan")) return "kontrola kolana";
+      if (clean.includes("ramienno")) return "rytm łopatki";
+      if (clean.includes("iap") || clean.includes("brzuszka")) return "kontrola tułowia";
+      if (clean.includes("thomasa")) return "mobilność biodra";
+      return region || "obserwacja ruchu";
+    }
+
+    function diagnosticDedupeKey(name = "") {
+      return compareHeader(name)
+        .replace(/\bocena\b/g, "")
+        .replace(/\btest\b/g, "")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
     const SEED_EXERCISES = [
       {
         id: "rolowanie-stop",
@@ -2923,21 +3256,33 @@
     }
 
     function migrateTestResult(result = {}) {
+      const quality = DIAGNOSTIC_RESULT_QUALITIES.includes(result.quality) ? result.quality : (result.quality || result.finding || "do obserwacji");
+      const trainerDecision = DIAGNOSTIC_TRAINER_DECISIONS.includes(result.trainerDecision)
+        ? result.trainerDecision
+        : (DIAGNOSTIC_TRAINER_DECISIONS.includes(result.decision) ? result.decision : "obserwuj");
       return {
         ...result,
         id: result.id || `test${result.date || Date.now()}`,
         testId: result.testId || "",
         testName: result.testName || "",
-        date: result.date || "",
-        region: result.region || "",
+        date: result.date || today(),
         side: result.side || "",
-        score: result.score || "",
-        pain: result.pain || "",
-        finding: result.finding || "",
+        result: result.result ?? result.score ?? "",
+        painBefore: normalizeOptionalPain(result.painBefore ?? result.pain),
+        painAfter: normalizeOptionalPain(result.painAfter ?? result.pain),
+        quality: DIAGNOSTIC_RESULT_QUALITIES.includes(quality) ? quality : "do obserwacji",
+        interpretation: result.interpretation || result.finding || "",
+        trainerDecision,
+        nextStep: result.nextStep || "",
         notes: result.notes || "",
-        decision: result.decision || "",
-        recommendedExerciseIds: Array.isArray(result.recommendedExerciseIds) ? result.recommendedExerciseIds : []
+        createdAt: result.createdAt || today()
       };
+    }
+
+    function normalizeOptionalPain(value) {
+      if (value === "" || value === null || value === undefined) return "";
+      const number = Number(value);
+      return Number.isFinite(number) && number >= 0 && number <= 10 ? number : "";
     }
 
     function defaultIntake() {
@@ -3121,11 +3466,9 @@
     function migrateClient(client = {}) {
       const plan = migrateHomePlan(client.homePlan);
 
-      // Future Studio Las OS 7.2/7.1:
-      // Diagnostic Test Layer stays separate from this core exercise library expansion.
-      // Tests should not be isolated checklists.
-      // Test result -> interpretation -> trainer decision -> suggested exercises.
-      // Trainer must approve before exercises enter the client home plan.
+      // Future Studio Las OS 7.4:
+      // Diagnostic result -> interpretation -> trainer decision -> suggested exercises.
+      // Trainer must approve before anything enters the client home plan.
       // Global exerciseLibrary should stay separate from client.homePlan.
       // Client sees only assigned homePlan exercises, never the full atlas.
       return {
@@ -3212,7 +3555,9 @@
     let exerciseLibrary = [];
     exerciseLibrary = seedExerciseLibraryIfEmpty();
     let exerciseAtlasFilters = { q: "", trainingBlock: "", category: "", region: "", stage: "", qualityStatus: "reviewed", video: "", muscle: "", sort: "process", quick: "", viewMode: "compact" };
+    let diagnosticTestFilters = { category: "", region: "", source: "", qualityStatus: "", video: "", selectedTestId: "" };
     let expandedHomePlanExerciseId = "";
+    let editingDiagnosticResultId = "";
     let clientPortalShowAllHomeTasks = false;
 
     const $ = (sel) => document.querySelector(sel);
@@ -3309,6 +3654,7 @@
     function topbarContextAction() {
       if (viewName === "exerciseAtlas") return { label: "Dodaj ćwiczenie", action: () => openExerciseModal() };
       if (viewName === "homePlanView") return { label: "Dodaj ręcznie", action: () => openManualHomePlanExerciseModal() };
+      if (viewName === "diagnosticTests") return { label: "Nowy wynik testu", action: () => openDiagnosticResultModal() };
       if (viewName === "report") {
         return {
           label: "Kopiuj raport",
@@ -3340,6 +3686,7 @@
       if (action === "session") return openSessionModal();
       if (action === "measurement") return openMeasurementModal();
       if (action === "polar") return openPolarModal();
+      if (action === "diagnosticResult") return openDiagnosticResultModal();
       if (action === "homePlanManual") return openManualHomePlanExerciseModal();
       if (action === "task") {
         viewName = "tasks";
@@ -3385,6 +3732,7 @@
         polar: ["Polar Load Response", "Tolerancja obciążenia z Polar Verity Sense wpisywana po sesji."],
         homePlanView: ["Plan domowy", "Aktywne i archiwalne zadania ruchowe dla wybranego klienta."],
         exerciseAtlas: ["Atlas ruchu", "Baza zadań ruchowych dla trenera. Klient widzi tylko ćwiczenia przypisane do jego planu domowego."],
+        diagnosticTests: ["Testy", "Obserwacje ruchowe zapisane jako wskazówki do decyzji trenera."],
         decision: ["Decyzja tygodniowa", "Silnik rekomendacji na podstawie procesu, sesji, Polar, Tanita i zadań."],
         report: ["Raport dobrostanu", "Gotowy język dla klienta bez ręcznego składania notatek."],
         clientPortal: ["Panel klienta", "Prosty widok procesu dla aktualnie wybranego klienta."]
@@ -3408,6 +3756,7 @@
       if (viewName === "polar") renderPolar();
       if (viewName === "homePlanView") renderHomePlanView();
       if (viewName === "exerciseAtlas") renderExerciseAtlas();
+      if (viewName === "diagnosticTests") renderDiagnosticTests();
       if (viewName === "decision") renderDecision();
       if (viewName === "report") renderReport();
       if (viewName === "clientPortal") renderClientPortal();
@@ -3534,6 +3883,11 @@
         </section>
 
         <section class="panel">
+          <div class="panel-head"><h2>Ocena ruchowa</h2>${pill("testy", "blue")}</div>
+          ${renderTodayDiagnosticBrief(c)}
+        </section>
+
+        <section class="panel">
           <div class="panel-head"><h2>Rekomendacja na dziś</h2>${pill(decision.label, decisionTone(decision.recommendation))}</div>
           <div class="grid cols-2">
             ${fieldBlock("Rekomendacja", decisionLabel(decision.recommendation))}
@@ -3584,6 +3938,11 @@
       $("#todayNewSessionBtn")?.addEventListener("click", openSessionModal);
       $("#todayNewPolarBtn")?.addEventListener("click", openPolarModal);
       $("#todayNewMeasurementBtn")?.addEventListener("click", openMeasurementModal);
+      $("#todayAddDiagnosticBtn")?.addEventListener("click", () => openDiagnosticResultModal());
+      $("#todayDiagnosticViewBtn")?.addEventListener("click", () => {
+        viewName = "diagnosticTests";
+        renderShell();
+      });
       $("#todayReportBtn")?.addEventListener("click", () => {
         viewName = "report";
         renderShell();
@@ -3594,6 +3953,28 @@
       });
       $("#preSessionCheckForm")?.addEventListener("submit", savePreSessionCheck);
       $("#postSessionNoteForm")?.addEventListener("submit", savePostSessionNote);
+    }
+
+    function renderTodayDiagnosticBrief(c) {
+      const latestResult = latestDiagnosticResult(c);
+      const summary = getDiagnosticSummaryForTrainer(c);
+      return `
+        <div class="grid cols-2">
+          <div class="portal-info">
+            <div class="label">Ostatni wynik</div>
+            <p>${latestResult ? `${escapeHtml(formatDate(latestResult.date))} · ${escapeHtml(latestResult.testName)}${latestResult.side ? ` · ${escapeHtml(latestResult.side)}` : ""}` : "Brak zapisanego wyniku testu."}</p>
+            ${latestResult ? `<p>${escapeHtml(latestResult.interpretation || latestResult.quality || "Wynik wymaga interpretacji trenera.")}</p>` : ""}
+          </div>
+          <div class="portal-info">
+            <div class="label">Najbliższy krok diagnostyczny</div>
+            <p>${escapeHtml(summary.nextDiagnosticStep)}</p>
+          </div>
+        </div>
+        <div class="actions" style="justify-content:flex-start; margin-top:12px">
+          <button class="btn primary" id="todayAddDiagnosticBtn" type="button">Dodaj wynik testu</button>
+          <button class="btn" id="todayDiagnosticViewBtn" type="button">Przejdź do Testów</button>
+        </div>
+      `;
     }
 
     function savePreSessionCheck(e) {
@@ -4242,6 +4623,212 @@
       return `<option value="">${escapeHtml(emptyLabel)}</option>${values.map(value => `<option value="${escapeHtml(value)}" ${value === selected ? "selected" : ""}>${escapeHtml(value)}</option>`).join("")}`;
     }
 
+    function renderDiagnosticTests() {
+      const c = activeClient();
+      const tests = getStudioLasDiagnosticTests();
+      const filtered = filterDiagnosticTests(tests);
+      if (diagnosticTestFilters.selectedTestId && !tests.some(test => test.id === diagnosticTestFilters.selectedTestId)) diagnosticTestFilters.selectedTestId = "";
+      if (diagnosticTestFilters.selectedTestId && !filtered.some(test => test.id === diagnosticTestFilters.selectedTestId)) diagnosticTestFilters.selectedTestId = filtered[0]?.id || "";
+      if (!diagnosticTestFilters.selectedTestId && filtered[0]) diagnosticTestFilters.selectedTestId = filtered[0].id;
+      const selectedTest = diagnosticTestById(diagnosticTestFilters.selectedTestId) || filtered[0] || tests[0];
+      const results = sortedDiagnosticResults(c);
+      const summary = getDiagnosticSummaryForTrainer(c);
+      view.innerHTML = `
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Testy diagnostyczne</h2>
+              <p>Testy pomagają uporządkować obserwacje ruchowe. Wynik testu nie jest etykietą klienta — jest wskazówką do decyzji trenera.</p>
+            </div>
+            ${pill(`${tests.length} testów`, "blue")}
+          </div>
+          <div class="grid cols-4">
+            <div class="portal-info"><div class="label">Atlas TESTY</div><p>${escapeHtml(String(tests.filter(test => test.source === "Atlas TESTY").length))}</p></div>
+            <div class="portal-info"><div class="label">Studio Las Core</div><p>${escapeHtml(String(tests.filter(test => test.source === "Studio Las Core").length))}</p></div>
+            <div class="portal-info"><div class="label">Z video</div><p>${escapeHtml(String(tests.filter(test => test.videoUrl).length))}</p></div>
+            <div class="portal-info"><div class="label">Wyniki klienta</div><p>${escapeHtml(String(results.length))}</p></div>
+          </div>
+        </section>
+
+        <section class="panel diagnostic-toolbar">
+          <div class="panel-head"><h2>Filtry biblioteki</h2>${pill(`${filtered.length} widoczne`, filtered.length ? "green" : "gold")}</div>
+          <div class="filter-bar">
+            <div class="form-field"><label class="label">Kategoria</label><select id="diagnosticCategoryFilter">${filterOptions(uniqueList(tests.map(test => test.category)).sort(), diagnosticTestFilters.category)}</select></div>
+            <div class="form-field"><label class="label">Region</label><select id="diagnosticRegionFilter">${filterOptions(uniqueList(tests.map(test => test.region)).sort(), diagnosticTestFilters.region)}</select></div>
+            <div class="form-field"><label class="label">Źródło</label><select id="diagnosticSourceFilter">${filterOptions(DIAGNOSTIC_SOURCES, diagnosticTestFilters.source)}</select></div>
+            <div class="form-field"><label class="label">Status</label><select id="diagnosticStatusFilter">${filterOptions(["reviewed", "needs_review"], diagnosticTestFilters.qualityStatus, "Wszystkie statusy").replace(">reviewed<", ">Gotowe<").replace(">needs_review<", ">Do opracowania<")}</select></div>
+            <div class="form-field"><label class="label">Video</label><select id="diagnosticVideoFilter"><option value="" ${!diagnosticTestFilters.video ? "selected" : ""}>Wszystkie</option><option value="with" ${diagnosticTestFilters.video === "with" ? "selected" : ""}>Z video</option><option value="without" ${diagnosticTestFilters.video === "without" ? "selected" : ""}>Bez video</option></select></div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Wybór testu</h2><button class="btn primary" id="newDiagnosticResultBtn" type="button">Nowy wynik testu</button></div>
+          <div class="form-grid">
+            <div class="form-field full">
+              <label class="label">Test</label>
+              <select id="diagnosticTestSelect">
+                ${filtered.map(test => `<option value="${escapeHtml(test.id)}" ${test.id === selectedTest?.id ? "selected" : ""}>${escapeHtml(test.name)} · ${escapeHtml(test.source)}</option>`).join("")}
+              </select>
+            </div>
+            <div class="form-field full">${renderDiagnosticTestPreview(selectedTest)}</div>
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Biblioteka testów</h2>${pill("widok trenera", "blue")}</div>
+          <div class="diagnostic-library-list">
+            ${filtered.length ? filtered.map(renderDiagnosticTestRow).join("") : `<p>Brak testów dla wybranych filtrów.</p>`}
+          </div>
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Synteza diagnostyczna</h2>${pill(`${summary.testCount} wyników`, summary.testCount ? "green" : "gold")}</div>
+          ${renderDiagnosticTrainerSummary(summary)}
+        </section>
+
+        <section class="panel">
+          <div class="panel-head"><h2>Ostatnie wyniki aktywnego klienta</h2>${pill(c.name, "blue")}</div>
+          <div class="diagnostic-result-list">
+            ${results.length ? results.slice(0, 8).map(renderDiagnosticResultCard).join("") : `<p>Brak zapisanych wyników. Zacznij od 2–3 prostych testów punktu wyjścia.</p>`}
+          </div>
+        </section>
+      `;
+      bindDiagnosticTestsView();
+    }
+
+    function bindDiagnosticTestsView() {
+      $("#diagnosticCategoryFilter")?.addEventListener("change", e => { diagnosticTestFilters.category = e.target.value; renderDiagnosticTests(); });
+      $("#diagnosticRegionFilter")?.addEventListener("change", e => { diagnosticTestFilters.region = e.target.value; renderDiagnosticTests(); });
+      $("#diagnosticSourceFilter")?.addEventListener("change", e => { diagnosticTestFilters.source = e.target.value; renderDiagnosticTests(); });
+      $("#diagnosticStatusFilter")?.addEventListener("change", e => { diagnosticTestFilters.qualityStatus = e.target.value; renderDiagnosticTests(); });
+      $("#diagnosticVideoFilter")?.addEventListener("change", e => { diagnosticTestFilters.video = e.target.value; renderDiagnosticTests(); });
+      $("#diagnosticTestSelect")?.addEventListener("change", e => {
+        diagnosticTestFilters.selectedTestId = e.target.value;
+        renderDiagnosticTests();
+      });
+      $("#newDiagnosticResultBtn")?.addEventListener("click", () => openDiagnosticResultModal("", diagnosticTestFilters.selectedTestId));
+      document.querySelectorAll("[data-select-diagnostic-test]").forEach(btn => btn.addEventListener("click", () => {
+        diagnosticTestFilters.selectedTestId = btn.dataset.selectDiagnosticTest;
+        renderDiagnosticTests();
+      }));
+      document.querySelectorAll("[data-diagnostic-edit]").forEach(btn => btn.addEventListener("click", () => openDiagnosticResultModal(btn.dataset.diagnosticEdit)));
+      document.querySelectorAll("[data-diagnostic-delete]").forEach(btn => btn.addEventListener("click", () => deleteDiagnosticResult(btn.dataset.diagnosticDelete)));
+    }
+
+    function filterDiagnosticTests(tests = getStudioLasDiagnosticTests()) {
+      return tests.filter(test => {
+        if (diagnosticTestFilters.category && test.category !== diagnosticTestFilters.category) return false;
+        if (diagnosticTestFilters.region && test.region !== diagnosticTestFilters.region) return false;
+        if (diagnosticTestFilters.source && test.source !== diagnosticTestFilters.source) return false;
+        if (diagnosticTestFilters.qualityStatus && test.qualityStatus !== diagnosticTestFilters.qualityStatus) return false;
+        if (diagnosticTestFilters.video === "with" && !test.videoUrl) return false;
+        if (diagnosticTestFilters.video === "without" && test.videoUrl) return false;
+        return true;
+      });
+    }
+
+    function renderDiagnosticTestRow(test) {
+      return `
+        <div class="diagnostic-test-row">
+          <div>
+            <div class="name">${escapeHtml(test.name)}</div>
+            <div class="meta">${escapeHtml(test.category)} · ${escapeHtml(test.region)} · ${escapeHtml(test.pattern)}</div>
+            <div class="tag-row">
+              ${pill(test.source, test.source === "Studio Las Core" ? "green" : "blue")}
+              ${pill(diagnosticQualityLabel(test.qualityStatus), diagnosticQualityTone(test.qualityStatus))}
+              ${test.videoUrl ? pill("Video", "green") : pill("Bez video", "gold")}
+            </div>
+          </div>
+          <button class="btn" type="button" data-select-diagnostic-test="${escapeHtml(test.id)}">Wybierz</button>
+        </div>
+      `;
+    }
+
+    function renderDiagnosticTestPreview(test) {
+      if (!test) return `<div class="diagnostic-preview"><p>Wybierz test z biblioteki.</p></div>`;
+      return `
+        <div class="diagnostic-preview">
+          <div class="panel-head">
+            <div>
+              <div class="label">Podgląd testu</div>
+              <div class="name">${escapeHtml(test.name)}</div>
+              <div class="meta">${escapeHtml(test.source)} · ${escapeHtml(test.category)} · ${escapeHtml(test.region)}</div>
+            </div>
+            ${pill(diagnosticQualityLabel(test.qualityStatus), diagnosticQualityTone(test.qualityStatus))}
+          </div>
+          <p><strong>Cel:</strong> ${escapeHtml(test.goal || "Cel zostanie doprecyzowany podczas sesji.")}</p>
+          <p><strong>Instrukcja:</strong> ${escapeHtml(test.instruction || "Wykonaj test spokojnie, bez dociskania zakresu.")}</p>
+          <p><strong>Notatka trenera:</strong> ${escapeHtml(test.coachNotes || "Zapisz tolerancję i reakcję po teście.")}</p>
+          ${test.videoUrl ? `<p><a class="btn" href="${escapeHtml(test.videoUrl)}" target="_blank" rel="noopener noreferrer">Video</a></p>` : ""}
+          ${test.qualityStatus === "needs_review" ? `<div class="diagnostic-warning">Ten test wymaga dopracowania instrukcji. Zapisz wynik tylko, jeśli wykonałeś go świadomie podczas sesji.</div>` : ""}
+        </div>
+      `;
+    }
+
+    function renderDiagnosticTrainerSummary(summary) {
+      return `
+        <div class="grid cols-2">
+          <div class="portal-info"><div class="label">Podsumowanie</div><p>${escapeHtml(summary.summaryText)}</p></div>
+          <div class="portal-info"><div class="label">Najbliższy krok</div><p>${escapeHtml(summary.nextDiagnosticStep)}</p></div>
+          <div class="portal-info"><div class="label">Najważniejsze obserwacje</div>${renderTextList(summary.keyFindings)}</div>
+          <div class="portal-info"><div class="label">Sygnały do obserwacji</div>${renderTextList(summary.riskSignals.length ? summary.riskSignals : ["Brak mocnych sygnałów do zatrzymania pracy w zapisanych wynikach."])}</div>
+        </div>
+      `;
+    }
+
+    function renderDiagnosticResultCard(result) {
+      return `
+        <div class="diagnostic-result-card">
+          <div class="panel-head">
+            <div>
+              <div class="name">${escapeHtml(result.testName || "Test diagnostyczny")}</div>
+              <div class="meta">${escapeHtml(formatDate(result.date))}${result.side ? ` · ${escapeHtml(result.side)}` : ""}</div>
+            </div>
+            ${pill(result.quality || "do obserwacji", diagnosticResultQualityTone(result.quality))}
+          </div>
+          <div class="grid cols-2">
+            <div class="portal-info"><div class="label">Interpretacja</div><p>${escapeHtml(result.interpretation || "Brak interpretacji.")}</p></div>
+            <div class="portal-info"><div class="label">Decyzja trenera</div><p>${escapeHtml(result.trainerDecision || "obserwuj")}</p></div>
+            <div class="portal-info"><div class="label">Następny krok</div><p>${escapeHtml(result.nextStep || "Do ustalenia po kolejnej obserwacji.")}</p></div>
+            <div class="portal-info"><div class="label">Wynik</div><p>${escapeHtml(String(result.result || "opisowo"))}</p></div>
+          </div>
+          <div class="home-plan-actions">
+            <button class="btn" type="button" data-diagnostic-edit="${escapeHtml(result.id)}">Edytuj</button>
+            <button class="btn danger" type="button" data-diagnostic-delete="${escapeHtml(result.id)}">Usuń</button>
+          </div>
+        </div>
+      `;
+    }
+
+    function diagnosticTestById(id) {
+      return getStudioLasDiagnosticTests().find(test => test.id === id) || null;
+    }
+
+    function sortedDiagnosticResults(client = activeClient()) {
+      return [...(client?.testResults || [])]
+        .map(migrateTestResult)
+        .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.createdAt || "").localeCompare(String(a.createdAt || "")) || String(b.id || "").localeCompare(String(a.id || "")));
+    }
+
+    function latestDiagnosticResult(client = activeClient()) {
+      return sortedDiagnosticResults(client)[0] || null;
+    }
+
+    function diagnosticQualityLabel(status = "needs_review") {
+      return DIAGNOSTIC_QUALITY_LABELS[status] || DIAGNOSTIC_QUALITY_LABELS.needs_review;
+    }
+
+    function diagnosticQualityTone(status = "needs_review") {
+      return status === "reviewed" ? "green" : "gold";
+    }
+
+    function diagnosticResultQualityTone(quality = "") {
+      if (quality === "dobrze tolerowane") return "green";
+      if (quality === "przerwać i skonsultować") return "red";
+      if (quality === "ograniczone" || quality === "do obserwacji") return "gold";
+      return "blue";
+    }
+
     function renderHomePlanView() {
       const c = activeClient();
       c.homePlan = migrateHomePlan(c.homePlan);
@@ -4872,37 +5459,75 @@
     }
 
     function getDiagnosticReadiness(client = activeClient()) {
-      const results = Array.isArray(client?.testResults) ? client.testResults : [];
-      const sorted = [...results].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.id || "").localeCompare(String(a.id || "")));
-      const latestResult = sorted[0] || null;
+      const results = sortedDiagnosticResults(client);
+      const latestResult = results[0] || null;
       if (!results.length) {
         return {
           hasTests: false,
           testCount: 0,
           lastTestDate: "",
-          label: "Ocena ruchowa",
+          label: "Ocena ruchowa do uzupełnienia",
           message: "Ocena ruchowa zostanie uzupełniona po testach wykonanych podczas sesji. Na tym etapie ważniejsze jest bezpieczne potwierdzenie punktu wyjścia niż szybkie etykietowanie wyniku."
         };
       }
+      const trainerSummary = getDiagnosticSummaryForTrainer(client);
       return {
         hasTests: true,
         testCount: results.length,
         lastTestDate: latestResult?.date || "",
         label: "Synteza oceny ruchowej",
-        message: latestResult?.finding || latestResult?.decision || "Ocena ruchowa ma zapisany wniosek do omówienia na sesji."
+        message: trainerSummary.nextDiagnosticStep || latestResult?.interpretation || "Ocena ruchowa ma zapisany wniosek do omówienia na sesji."
       };
     }
 
     function getDiagnosticSummaryForClient(client = activeClient()) {
       const readiness = getDiagnosticReadiness(client);
       if (!readiness.hasTests) return "Ocena ruchowa zostanie uzupełniona po testach wykonanych podczas sesji. Na tym etapie ważniejsze jest bezpieczne potwierdzenie punktu wyjścia niż szybkie etykietowanie wyniku.";
-      return readiness.message;
+      const trainerSummary = getDiagnosticSummaryForTrainer(client);
+      return `Sprawdziliśmy kilka podstawowych ruchów. Najważniejsze teraz: ${trainerSummary.nextDiagnosticStep}. Nie traktujemy pojedynczego testu jako wyroku. Liczy się reakcja i powtarzalność.`;
     }
 
     function getDiagnosticSummaryForTrainer(client = activeClient()) {
-      const readiness = getDiagnosticReadiness(client);
-      if (!readiness.hasTests) return "Brak zapisanych testów diagnostycznych. Moduł testów zostanie dodany w kolejnym etapie.";
-      return `Zapisano ${readiness.testCount} ${pluralizePl(readiness.testCount, "wynik oceny ruchowej", "wyniki oceny ruchowej", "wyników oceny ruchowej")}. Ostatni zapis: ${readiness.lastTestDate ? formatDate(readiness.lastTestDate) : "brak daty"}.`;
+      const results = sortedDiagnosticResults(client);
+      if (!results.length) {
+        return {
+          testCount: 0,
+          lastTestDate: "",
+          keyFindings: ["Brak zapisanych testów diagnostycznych. Zacznij od 2–3 prostych testów punktu wyjścia."],
+          riskSignals: [],
+          nextDiagnosticStep: "Zacznij od 2–3 prostych testów punktu wyjścia.",
+          summaryText: "Brak zapisanych testów diagnostycznych. Zacznij od 2–3 prostych testów punktu wyjścia."
+        };
+      }
+      const recent = results.slice(0, 5);
+      const well = recent.filter(result => result.quality === "dobrze tolerowane").length;
+      const observe = recent.filter(result => result.quality === "do obserwacji").length;
+      const limited = recent.filter(result => result.quality === "ograniczone").length;
+      const consult = recent.filter(result => result.quality === "przerwać i skonsultować" || result.trainerDecision === "skonsultuj").length;
+      const painIncreased = recent.filter(result => result.painBefore !== "" && result.painAfter !== "" && Number(result.painAfter) > Number(result.painBefore)).length;
+      const keyFindings = [
+        `${well} dobrze tolerowane, ${observe} do obserwacji, ${limited} ograniczone w ostatnich ${recent.length} zapisach.`,
+        ...recent.map(result => result.interpretation || `${result.testName}: ${result.quality}`).filter(Boolean).slice(0, 3)
+      ];
+      const riskSignals = [
+        painIncreased ? `W ${painIncreased} ${pluralizePl(painIncreased, "teście", "testach", "testach")} ból po próbie był wyższy niż przed próbą.` : "",
+        consult ? `${consult} ${pluralizePl(consult, "wynik wymaga", "wyniki wymagają", "wyników wymaga")} zatrzymania tempa i spokojnego potwierdzenia.` : ""
+      ].filter(Boolean);
+      const nextDiagnosticStep = consult
+        ? "zatrzymaj progresję i wyjaśnij reakcję przed kolejnym bodźcem"
+        : (painIncreased || limited
+          ? "powtórz wybrane testy w spokojniejszym wariancie i obserwuj reakcję po sesji"
+          : (well >= Math.max(1, recent.length - 1)
+            ? "utrzymaj kierunek i potwierdź tolerancję w kolejnej sesji"
+            : "dobierz 1–2 testy kontrolne i porównaj reakcję"));
+      return {
+        testCount: results.length,
+        lastTestDate: results[0]?.date || "",
+        keyFindings: uniqueList(keyFindings).slice(0, 5),
+        riskSignals,
+        nextDiagnosticStep,
+        summaryText: `Zapisano ${results.length} ${pluralizePl(results.length, "wynik oceny ruchowej", "wyniki oceny ruchowej", "wyników oceny ruchowej")}. Ostatni zapis: ${results[0]?.date ? formatDate(results[0].date) : "brak daty"}. Najbliższy krok: ${nextDiagnosticStep}.`
+      };
     }
 
     function portalStatus(c) {
@@ -5549,6 +6174,7 @@
             ${c.package ? renderReportMetaItem("Pakiet", c.package) : ""}
           </section>
           ${renderReportEvidenceSection(c, reportType, audience)}
+          ${renderReportDiagnosticSection(c, audience)}
           <section class="print-report-section">
             <h2>Najważniejsze w 60 sekund</h2>
             <div class="print-highlight-grid">
@@ -5609,6 +6235,25 @@
           ${items.map(item => `<div class="print-evidence-item"><strong>${escapeHtml(item.label)}</strong>${escapeHtml(reportPresentationText(item.value, audience))}</div>`).join("")}
         </div>
         <p class="print-report-subtle">${escapeHtml(reportPresentationText(reportEvidenceMaturityText(c, reportType, audience), audience))}</p>
+      </section>`;
+    }
+
+    function renderReportDiagnosticSection(c, audience = "client") {
+      const results = sortedDiagnosticResults(c);
+      if (audience !== "trainer") {
+        return `<section class="print-report-section">
+          <h2>Ocena ruchowa</h2>
+          <div class="print-report-note">${escapeHtml(getDiagnosticSummaryForClient(c))}</div>
+        </section>`;
+      }
+      const summary = getDiagnosticSummaryForTrainer(c);
+      const latest = results.slice(0, 3);
+      return `<section class="print-report-section">
+        <h2>Ocena ruchowa</h2>
+        <div class="print-report-note">${escapeHtml(summary.summaryText)}</div>
+        ${latest.length ? `<div class="print-evidence-grid">
+          ${latest.map(result => `<div class="print-evidence-item"><strong>${escapeHtml(formatDate(result.date))} · ${escapeHtml(result.testName)}</strong>${escapeHtml([result.quality, result.trainerDecision, result.nextStep].filter(Boolean).join(" · "))}</div>`).join("")}
+        </div>` : ""}
       </section>`;
     }
 
@@ -6423,7 +7068,7 @@ ${buildReportClosingNote("continuation", context)}`;
 
     function buildDiagnosticTestsSection(c, audience = "client") {
       return audience === "trainer"
-        ? getDiagnosticSummaryForTrainer(c)
+        ? getDiagnosticSummaryForTrainer(c).summaryText
         : getDiagnosticSummaryForClient(c);
     }
 
@@ -6881,6 +7526,103 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
       $("#polarForm").readiness.value = latest(c)?.readiness ?? "";
       $("#polarModal").classList.add("open");
       $("#polarModal").setAttribute("aria-hidden", "false");
+    }
+
+    function openDiagnosticResultModal(resultId = "", preferredTestId = "") {
+      const c = activeClient();
+      if (!c) return toast("Najpierw wybierz klienta, żeby zapisać wynik testu.");
+      const tests = getStudioLasDiagnosticTests();
+      const form = $("#diagnosticResultForm");
+      const existing = resultId ? (c.testResults || []).find(result => result.id === resultId) : null;
+      const selectedTestId = existing?.testId || preferredTestId || diagnosticTestFilters.selectedTestId || tests[0]?.id || "";
+      editingDiagnosticResultId = existing?.id || "";
+      form.reset();
+      $("#diagnosticResultModalTitle").textContent = existing ? "Edytuj wynik testu" : "Nowy wynik testu";
+      form.elements.id.value = existing?.id || "";
+      form.elements.testId.innerHTML = tests.map(test => `<option value="${escapeHtml(test.id)}">${escapeHtml(test.name)} · ${escapeHtml(test.source)}</option>`).join("");
+      form.elements.testId.value = selectedTestId;
+      form.elements.date.value = existing?.date || today();
+      form.elements.side.value = existing?.side || "";
+      form.elements.result.value = existing?.result ?? "";
+      form.elements.painBefore.value = existing?.painBefore ?? "";
+      form.elements.painAfter.value = existing?.painAfter ?? "";
+      form.elements.quality.value = DIAGNOSTIC_RESULT_QUALITIES.includes(existing?.quality) ? existing.quality : "do obserwacji";
+      form.elements.interpretation.value = existing?.interpretation || "";
+      form.elements.trainerDecision.value = DIAGNOSTIC_TRAINER_DECISIONS.includes(existing?.trainerDecision) ? existing.trainerDecision : "obserwuj";
+      form.elements.nextStep.value = existing?.nextStep || "";
+      form.elements.notes.value = existing?.notes || "";
+      updateDiagnosticResultPreview();
+      $("#diagnosticResultModal").classList.add("open");
+      $("#diagnosticResultModal").setAttribute("aria-hidden", "false");
+    }
+
+    function updateDiagnosticResultPreview() {
+      const form = $("#diagnosticResultForm");
+      const test = diagnosticTestById(form?.elements.testId.value || "");
+      $("#diagnosticTestPreview").innerHTML = renderDiagnosticTestPreview(test);
+    }
+
+    function saveDiagnosticResult(e) {
+      e.preventDefault();
+      const c = activeClient();
+      if (!c) return toast("Najpierw wybierz klienta.");
+      const form = e.currentTarget;
+      const fd = new FormData(form);
+      const testId = String(fd.get("testId") || "").trim();
+      const test = diagnosticTestById(testId);
+      if (!test) return toast("Wybierz test.");
+      const date = String(fd.get("date") || "").trim();
+      if (!date) return toast("Podaj datę testu.");
+      const painBefore = readPainField(fd.get("painBefore"));
+      const painAfter = readPainField(fd.get("painAfter"));
+      if (painBefore === null || painAfter === null) return toast("Ból przed i po musi być pusty albo w zakresie 0–10.");
+      const resultText = String(fd.get("result") || "").trim();
+      const interpretation = String(fd.get("interpretation") || "").trim();
+      if (!resultText && !interpretation) return toast("Uzupełnij wynik albo interpretację.");
+      const existing = editingDiagnosticResultId ? (c.testResults || []).find(result => result.id === editingDiagnosticResultId) : null;
+      const nextResult = migrateTestResult({
+        ...(existing || {}),
+        id: existing?.id || `test-${Date.now()}`,
+        testId: test.id,
+        testName: test.name,
+        date,
+        side: String(fd.get("side") || "").trim(),
+        result: resultText,
+        painBefore,
+        painAfter,
+        quality: String(fd.get("quality") || "do obserwacji"),
+        interpretation,
+        trainerDecision: String(fd.get("trainerDecision") || "obserwuj"),
+        nextStep: String(fd.get("nextStep") || "").trim(),
+        notes: String(fd.get("notes") || "").trim(),
+        createdAt: existing?.createdAt || today()
+      });
+      c.testResults = Array.isArray(c.testResults) ? c.testResults : [];
+      c.testResults = existing
+        ? c.testResults.map(result => result.id === existing.id ? nextResult : result)
+        : [nextResult, ...c.testResults];
+      diagnosticTestFilters.selectedTestId = test.id;
+      save();
+      closeModal("diagnosticResultModal");
+      toast(existing ? "Wynik testu zaktualizowany" : "Wynik testu zapisany");
+      renderShell();
+    }
+
+    function readPainField(value) {
+      const raw = String(value ?? "").trim();
+      if (!raw) return "";
+      const number = Number(raw);
+      if (!Number.isFinite(number) || number < 0 || number > 10) return null;
+      return number;
+    }
+
+    function deleteDiagnosticResult(id) {
+      if (!window.confirm("Usunąć ten wynik testu?")) return;
+      const c = activeClient();
+      c.testResults = (c.testResults || []).filter(result => result.id !== id);
+      save();
+      toast("Wynik testu usunięty");
+      renderDiagnosticTests();
     }
 
     function openExerciseModal(id = "") {
@@ -8217,6 +8959,8 @@ Initial 83.45 64.95 18.10
     $("#tanitaDemoBtn").addEventListener("click", applyDemoTanitaData);
     $("#exerciseForm").addEventListener("submit", saveExerciseFromForm);
     $("#manualHomePlanForm").addEventListener("submit", saveManualHomePlanExercise);
+    $("#diagnosticResultForm").addEventListener("submit", saveDiagnosticResult);
+    $("#diagnosticResultForm").elements.testId.addEventListener("change", updateDiagnosticResultPreview);
     window.addEventListener("afterprint", clearPrintingReportMode);
     window.addEventListener("resize", () => {
       if (window.innerWidth > 1024) closeDrawer();
