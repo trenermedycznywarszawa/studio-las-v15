@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.3 | Diagnostic Test Layer from Atlas</title>
+  <title>Studio Las OS 7.3.1 | Workflow QA Cleanup</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -129,8 +129,6 @@
     .nav .client-panel-link { text-decoration: none; }
     .nav .client-panel-link:hover,
     .nav .client-panel-link:focus-visible { color: var(--ink); background: rgba(255,255,255,.04); border-color: rgba(127,176,105,.18); }
-    body.client-mode .client-switcher,
-    body.client-mode .nav,
     body.client-mode .side-card { display: none; }
 
     .side-card {
@@ -844,7 +842,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.3</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.1</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -897,7 +895,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.1</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1031,6 +1029,7 @@
         </div>
         <button class="btn" data-close="polarModal">Zamknij</button>
       </div>
+      <div class="focus-note">Dane z Polar Verity Sense wpisujemy po treningu na podstawie Polar Flow lub kompatybilnej aplikacji. Studio Las OS zapisuje interpretację i decyzję trenera, nie prowadzi automatycznej integracji z opaską.</div>
       <form id="polarForm" class="form-grid">
         <div class="form-field"><label class="label">Data</label><input type="date" name="date" required /></div>
         <div class="form-field"><label class="label">Typ sesji</label><input name="sessionType" placeholder="np. siła, kontrola, cardio zone 2" /></div>
@@ -1041,11 +1040,7 @@
         <div class="form-field"><label class="label">Strefa umiarkowana min</label><input type="number" step="1" name="zoneModerateMin" /></div>
         <div class="form-field"><label class="label">Strefa wysoka min</label><input type="number" step="1" name="zoneHighMin" /></div>
         <div class="form-field"><label class="label">RPE klienta 1-10</label><input type="number" min="1" max="10" step="1" name="rpe" /></div>
-        <div class="form-field"><label class="label">VAS przed 0-10</label><input type="number" min="0" max="10" step="1" name="vasBefore" /></div>
-        <div class="form-field"><label class="label">VAS po 0-10</label><input type="number" min="0" max="10" step="1" name="vasAfter" /></div>
-        <div class="form-field"><label class="label">Gotowość 1-10</label><input type="number" min="1" max="10" step="1" name="readiness" /></div>
-        <div class="form-field"><label class="label">Sen</label><select name="sleepQuality"><option>Bardzo słaby</option><option>Słaby</option><option selected>Przeciętny</option><option>Dobry</option><option>Bardzo dobry</option></select></div>
-        <div class="form-field"><label class="label">Decyzja</label><select name="loadDecision"><option value="progress">Progres</option><option value="maintain" selected>Utrzymaj</option><option value="regress">Cofnij</option><option value="consult">Konsultacja</option></select></div>
+        <div class="form-field"><label class="label">Decyzja</label><select name="loadDecision"><option value="zwiększ">zwiększ</option><option value="utrzymaj" selected>utrzymaj</option><option value="zmniejsz">zmniejsz</option><option value="regeneracyjnie">regeneracyjnie</option><option value="obserwuj">obserwuj</option></select></div>
         <div class="form-field full"><label class="label">Notatka trenera</label><textarea name="trainerNote" placeholder="Co mówi reakcja organizmu o tempie progresji?"></textarea></div>
         <div class="form-field full"><label class="label">Podsumowanie dla klienta</label><textarea name="clientSummary" placeholder="Spokojny język dla klienta, bez oceniania formy."></textarea></div>
         <button class="btn primary full" type="submit">Zapisz odczyt Polar</button>
@@ -1071,8 +1066,8 @@
         <div class="form-field"><label class="label">Podkategoria</label><input name="subcategory" /></div>
         <div class="form-field"><label class="label">Region</label><select name="region"><option>stopa</option><option>łydka</option><option>udo</option><option>biodro</option><option>kręgosłup lędźwiowy</option><option>kręgosłup piersiowy</option><option>bark</option><option>nadgarstek</option><option>core</option><option>całe ciało</option></select></div>
         <div class="form-field"><label class="label">Wzorzec</label><input name="pattern" /></div>
-        <div class="form-field"><label class="label">Etap</label><select name="stage"><option>1 Punkt startowy</option><option>2 Kontrola</option><option>3 Siła i stabilność</option><option>4 Integracja</option><option>5 Samodzielność</option></select></div>
-        <div class="form-field"><label class="label">Poziom</label><select name="level"><option>łatwy</option><option>średni</option><option>trudny</option></select></div>
+        <div class="form-field"><label class="label">Etap</label><select name="stage"><option>1 Punkt startowy</option><option>2 Nauka ruchu</option><option>3 Budowanie kontroli</option><option>4 Budowanie siły</option><option>5 Progresja</option><option>6 Dynamiczne / sportowe</option></select></div>
+        <div class="form-field"><label class="label">Poziom</label><select name="level"><option>punkt startowy</option><option>łatwy</option><option>średni</option><option>trudny</option></select></div>
         <div class="form-field"><label class="label">Sprzęt</label><input name="equipment" /></div>
         <div class="form-field"><label class="label">Domyślna dawka</label><input name="dosageDefault" /></div>
         <div class="form-field"><label class="label">Tempo</label><input name="tempo" /></div>
@@ -1160,7 +1155,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.3";
+    const APP_VERSION = "7.3.1";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -1204,16 +1199,14 @@
       zoneLightMin: [0, 300],
       zoneModerateMin: [0, 300],
       zoneHighMin: [0, 300],
-      rpe: [1, 10],
-      vasBefore: [0, 10],
-      vasAfter: [0, 10],
-      readiness: [1, 10]
+      rpe: [1, 10]
     };
     const LOAD_DECISIONS = {
-      progress: "Progres",
-      maintain: "Utrzymaj",
-      regress: "Cofnij",
-      consult: "Konsultacja"
+      "zwiększ": "zwiększ",
+      "utrzymaj": "utrzymaj",
+      "zmniejsz": "zmniejsz",
+      "regeneracyjnie": "regeneracyjnie",
+      "obserwuj": "obserwuj"
     };
     const DIAGNOSTIC_SOURCES = ["Atlas TESTY", "Studio Las Core"];
     const DIAGNOSTIC_QUALITY_STATUSES = ["reviewed", "needs_review"];
@@ -1229,11 +1222,11 @@
       twelveWeeks: "Raport 12 tygodni",
       continuation: "Plan Kontynuacji"
     };
-    const EXERCISE_CATEGORIES = ["Mobilizacja", "Rolowanie / tkanki miękkie", "Stabilizacja", "Core", "Siła", "Izolacja", "Plyometria", "Oddech / regulacja", "Rozciąganie", "Kontrola ruchu"];
+    const EXERCISE_CATEGORIES = ["Przygotowanie ciała / Kontrola ruchu", "Mobilność", "Aktywacja i kontrola", "Siła", "Moc / koordynacja / przygotowanie sportowe", "Funkcja / codzienny ruch", "Mobilizacja", "Rolowanie / tkanki miękkie", "Stabilizacja", "Core", "Izolacja", "Plyometria", "Oddech / regulacja", "Rozciąganie", "Kontrola ruchu"];
     const EXERCISE_REGIONS = ["stopa", "łydka", "udo", "biodro", "kręgosłup lędźwiowy", "kręgosłup piersiowy", "bark", "nadgarstek", "core", "całe ciało"];
-    const EXERCISE_STAGES = ["1 Punkt startowy", "2 Kontrola", "3 Siła i stabilność", "4 Integracja", "5 Samodzielność"];
-    const EXERCISE_LEVELS = ["łatwy", "średni", "trudny"];
-    const EXERCISE_TRAINING_BLOCKS = ["Przygotowanie ciała", "Mobilność", "Aktywacja i kontrola", "Siła", "Wyciszenie", "Inne"];
+    const EXERCISE_STAGES = ["1 Punkt startowy", "2 Nauka ruchu", "3 Budowanie kontroli", "4 Budowanie siły", "5 Progresja", "6 Dynamiczne / sportowe", "2 Kontrola", "3 Siła i stabilność", "4 Integracja", "5 Samodzielność"];
+    const EXERCISE_LEVELS = ["punkt startowy", "łatwy", "średni", "trudny"];
+    const EXERCISE_TRAINING_BLOCKS = ["Przygotowanie ciała / Kontrola ruchu", "Mobilność", "Aktywacja i kontrola", "Siła", "Moc / koordynacja / przygotowanie sportowe", "Funkcja / codzienny ruch", "Przygotowanie ciała", "Wyciszenie", "Inne"];
     const EXERCISE_QUALITY_STATUSES = ["reviewed", "needs_review", "draft"];
     const EXERCISE_QUALITY_LABELS = {
       reviewed: "Gotowe",
@@ -1248,7 +1241,7 @@
       { value: "category", label: "Kategoria" }
     ];
     const EXERCISE_LIBRARY_SEED_VERSION_KEY = "studioLasExerciseLibrarySeedVersion";
-    const EXERCISE_LIBRARY_CORE_VERSION = "core-v3-expanded";
+    const EXERCISE_LIBRARY_CORE_VERSION = "core-v4-workflow-qa";
     const EXERCISE_VIDEO_SEED_VERSION_KEY = "studioLasExerciseVideoSeedVersion";
     const EXERCISE_VIDEO_SEED_VERSION = "video-v3-strength";
     const STRENGTH_SEED_VERSION_KEY = "studioLasStrengthSeedVersion";
@@ -2637,6 +2630,322 @@
       return trainerSeed.map((exercise, index) => trainerExercise({ ...exercise, sourceOrder: 1001 + index }));
     }
 
+    function getWorkflowQaExerciseSeeds() {
+      const stop = "Przerwij, jeśli pojawia się ostry ból, ból promieniujący, drętwienie, zawroty głowy, narastający ból stawu, utrata kontroli ruchu albo nietypowe objawy dla tego klienta.";
+      const contraindications = "Ostrożnie przy aktywnym ostrym bólu, świeżym urazie, zaostrzeniu objawów, braku kontroli ruchu lub gdy w złożonej sytuacji potrzebna jest zgoda medyczna.";
+      const base = {
+        category: "Przygotowanie ciała / Kontrola ruchu",
+        trainingBlock: "Przygotowanie ciała / Kontrola ruchu",
+        subcategory: "Punkt startowy",
+        region: "całe ciało",
+        pattern: "kontrola",
+        stage: "1 Punkt startowy",
+        level: "łatwy",
+        equipment: "bez sprzętu",
+        dosageDefault: "2 serie po 5-8 spokojnych powtórzeń",
+        tempo: "Wolno, z kontrolą.",
+        breathing: "Spokojny wydech w najtrudniejszej części ruchu.",
+        stopCriteria: stop,
+        contraindications,
+        tags: ["punkt startowy", "klient początkujący", "bez sprzętu", "do domu"],
+        beginnerFriendly: true,
+        qualityStatus: "reviewed",
+        source: "Studio Las OS 7.3.1 QA",
+        sourceOrder: 2000,
+        linkedTests: [],
+        strengthSet: false,
+        muscleMap: {},
+        primaryMuscles: [],
+        secondaryMuscles: [],
+        supportMuscles: []
+      };
+      const instruction = (...lines) => lines.join("\n");
+      const make = (exercise, index) => migrateExercise({
+        ...base,
+        ...exercise,
+        sourceOrder: 2000 + index,
+        tags: uniqueList([...(base.tags || []), ...(exercise.tags || [])])
+      });
+      return [
+        make({
+          id: "qa-oddychanie-9090",
+          name: "Oddychanie 90/90",
+          clientName: "Oddychanie 90/90 - ustawienie żeber i spokojny wydech",
+          category: "Oddech / regulacja",
+          trainingBlock: "Przygotowanie ciała / Kontrola ruchu",
+          region: "core",
+          pattern: "oddech",
+          level: "punkt startowy",
+          equipment: "ściana lub krzesło",
+          dosageDefault: "3-5 oddechów w 2 seriach",
+          goal: "Uspokoić oddech i nauczyć podstawowego ustawienia żeber przed ruchem.",
+          clientInstruction: instruction("- Połóż się na plecach i oprzyj stopy o ścianę albo krzesło.", "- Ustaw kolana i biodra mniej więcej pod kątem prostym.", "- Zrób spokojny wdech nosem.", "- Wydychaj długo ustami, bez wciskania pleców na siłę.", "- Przerwij, jeśli kręci się w głowie."),
+          coachNotes: "Dobry start przy napięciu, pośpiechu oddechowym i trudnościach z kontrolą żeber. Obserwuj unoszenie barków, mocne dociskanie lędźwi i zawroty głowy.",
+          commonMistakes: "Unoszenie barków; zaciskanie brzucha na siłę; zbyt długi wydech powodujący zawroty głowy.",
+          regressions: "Pozycja hakowa z nogami na ziemi.",
+          progressions: "Martwy robak z oddechem.",
+          tags: ["oddech", "start", "core", "bez sprzętu", "do domu"]
+        }, 1),
+        make({
+          id: "atlas-chair-squat",
+          name: "Siadanie i wstawanie z ławki",
+          clientName: "Siadanie i wstawanie - spokojny przysiad do ławki",
+          category: "Funkcja / codzienny ruch",
+          trainingBlock: "Funkcja / codzienny ruch",
+          region: "całe ciało",
+          pattern: "przysiad",
+          equipment: "ławka lub krzesło",
+          dosageDefault: "2-3 serie po 6-10 powtórzeń",
+          goal: "Uczyć bezpiecznego wzorca przysiadu przez codzienny ruch siadania i wstawania.",
+          clientInstruction: instruction("- Ustaw stopy stabilnie na podłodze.", "- Cofnij biodra w stronę ławki.", "- Usiądź lekko albo dotknij ławki bez zapadania kolan.", "- Wstań spokojnie, prowadząc kolana w stronę stóp.", "- Zatrzymaj serię, gdy tracisz kontrolę."),
+          coachNotes: "Użyj przy początkujących, bólu kolana wymagającym kontroli zakresu i nauce obciążania nóg. Zmieniaj wysokość ławki przed dodaniem ciężaru.",
+          commonMistakes: "Kolana uciekają do środka; ciężar spada na palce; klient odbija się od ławki.",
+          regressions: "Wyższa ławka; wsparcie TRX; mniejszy zakres.",
+          progressions: "Goblet squat do boxa; goblet squat.",
+          tags: ["przysiad", "kolano", "biodro", "klient początkujący", "do domu"]
+        }, 2),
+        make({
+          id: "qa-goblet-squat",
+          name: "Goblet squat",
+          clientName: "Przysiad z ciężarem trzymanym z przodu",
+          category: "Siła",
+          trainingBlock: "Siła",
+          region: "całe ciało",
+          pattern: "przysiad",
+          stage: "4 Budowanie siły",
+          level: "średni",
+          equipment: "hantel lub kettlebell",
+          dosageDefault: "3 serie po 6-8 powtórzeń",
+          goal: "Budować siłę przysiadu z czytelną kontrolą tułowia i kolan.",
+          clientInstruction: instruction("- Trzymaj ciężar blisko klatki piersiowej.", "- Zejdź tylko do zakresu, który kontrolujesz.", "- Prowadź kolana w stronę stóp.", "- Wstań bez odbijania i bez pochylania się na siłę.", "- Przerwij przy narastającym bólu kolana lub pleców."),
+          coachNotes: "Dobry po opanowaniu siadu do ławki. Obserwuj głębokość, miednicę, kolana i utrzymanie ciężaru blisko ciała.",
+          commonMistakes: "Zapadanie kolan; za duży ciężar; utrata tułowia w dole.",
+          regressions: "Goblet squat do boxa; siadanie i wstawanie z ławki.",
+          progressions: "Front squat; wolniejsze tempo; większy ciężar.",
+          tags: ["przysiad", "kolano", "biodro", "siła"]
+        }, 3),
+        make({
+          id: "atlas-hip-hinge-dowel",
+          name: "Hip hinge z kijem",
+          clientName: "Zawias biodrowy z kijem - nauka ruchu bioder",
+          category: "Przygotowanie ciała / Kontrola ruchu",
+          trainingBlock: "Aktywacja i kontrola",
+          region: "biodro",
+          pattern: "hinge",
+          stage: "2 Nauka ruchu",
+          equipment: "kij",
+          goal: "Nauczyć cofania bioder bez zastępowania ruchu zgięciem pleców.",
+          clientInstruction: instruction("- Przyłóż kij do pleców: głowa, plecy i miednica mają go czuć.", "- Ugnij lekko kolana.", "- Cofnij biodra do tyłu, jakbyś chciał dotknąć ściany.", "- Wróć do stania bez szarpania.", "- Przerwij, jeśli plecy tracą kontakt z kijem."),
+          coachNotes: "Podstawa przed RDL i martwym ciągiem. Obserwuj, czy ruch idzie z bioder, a nie z lędźwi.",
+          commonMistakes: "Przysiad zamiast hinge; zginanie pleców; blokowanie kolan.",
+          regressions: "Nauka zawiasu biodrowego przy ścianie.",
+          progressions: "Romanian deadlift z hantlami; kickstand RDL.",
+          tags: ["hinge", "biodro", "kręgosłup", "klient początkujący"]
+        }, 4),
+        make({
+          id: "ex-glute-bridge",
+          name: "Glute bridge",
+          clientName: "Most biodrowy - spokojna aktywacja pośladków",
+          category: "Aktywacja i kontrola",
+          trainingBlock: "Aktywacja i kontrola",
+          region: "biodro",
+          pattern: "wyprost biodra",
+          equipment: "mata",
+          goal: "Uczyć wyprostu biodra bez przeciążania lędźwi.",
+          clientInstruction: instruction("- Połóż się na plecach i ustaw stopy pod kolanami.", "- Napnij lekko brzuch i pośladki.", "- Unieś biodra do wygodnej wysokości.", "- Nie wypychaj żeber do góry.", "- Opuść biodra spokojnie."),
+          coachNotes: "Użyj przed hip thrustem, przy nauce pracy biodra i kontroli miednicy. Obserwuj przeprost lędźwi.",
+          commonMistakes: "Wypychanie żeber; praca z pleców; stopy za daleko.",
+          regressions: "Mniejszy zakres; izometryczne napięcie pośladków.",
+          progressions: "Hip thrust; most biodrowy z marszem; hip thrust jednonóż.",
+          tags: ["biodro", "start", "bez sprzętu", "do domu"]
+        }, 5),
+        make({
+          id: "atlas-dead-bug",
+          name: "Dead Bug",
+          clientName: "Martwy robak - kontrola brzucha i oddechu",
+          category: "Core",
+          trainingBlock: "Aktywacja i kontrola",
+          region: "core",
+          pattern: "antywyprost",
+          stage: "2 Nauka ruchu",
+          equipment: "mata",
+          goal: "Budować kontrolę tułowia przy spokojnym ruchu rąk i nóg.",
+          clientInstruction: instruction("- Połóż się na plecach i ustaw żebra spokojnie.", "- Unieś ręce i nogi tylko tak wysoko, jak kontrolujesz plecy.", "- Opuść przeciwną rękę i nogę powoli.", "- Wróć do środka z wydechem.", "- Zmniejsz zakres, jeśli plecy odrywają się od podłoża."),
+          coachNotes: "Dobry po oddechu 90/90. Obserwuj kompensację szyją, żebrami i lędźwiami.",
+          commonMistakes: "Za duży zakres; wstrzymywanie oddechu; napinanie szyi.",
+          regressions: "Tylko ruch nóg; heel taps; oddech 90/90.",
+          progressions: "Dead bug z gumą; hollow hold.",
+          tags: ["core", "oddech", "start", "bez sprzętu", "do domu"]
+        }, 6),
+        make({
+          id: "qa-bird-dog",
+          name: "Bird dog",
+          clientName: "Pies-ptak - stabilny tułów w podporze",
+          category: "Core",
+          trainingBlock: "Aktywacja i kontrola",
+          region: "core",
+          pattern: "antyrotacja",
+          stage: "2 Nauka ruchu",
+          equipment: "mata",
+          goal: "Uczyć stabilnego tułowia przy ruchu kończyn.",
+          clientInstruction: instruction("- Ustaw dłonie pod barkami i kolana pod biodrami.", "- Wyciągnij przeciwną rękę i nogę.", "- Nie skręcaj tułowia i nie unoś nogi za wysoko.", "- Wróć spokojnie i zmień stronę.", "- Zatrzymaj ruch, gdy tracisz równowagę."),
+          coachNotes: "Użyj przy nauce antyrotacji i kontroli miednicy. Obserwuj rotację tułowia oraz zapadanie łopatek.",
+          commonMistakes: "Przeprost lędźwi; za szybkie tempo; unoszenie biodra.",
+          regressions: "Sama noga; sama ręka; krótszy zakres.",
+          progressions: "Pauza 3 sekundy; bear plank; bird dog z oporem.",
+          tags: ["core", "antyrotacja", "bez sprzętu", "do domu"]
+        }, 7),
+        make({
+          id: "qa-pallof-press-standing",
+          name: "Pallof press stojąc",
+          clientName: "Wyciskanie gumy przed siebie - tułów bez skręcania",
+          category: "Core",
+          trainingBlock: "Aktywacja i kontrola",
+          region: "core",
+          pattern: "antyrotacja",
+          stage: "3 Budowanie kontroli",
+          equipment: "guma oporowa",
+          dosageDefault: "2-3 serie po 6-10 powtórzeń na stronę",
+          goal: "Budować kontrolę antyrotacyjną w pozycji stojącej.",
+          clientInstruction: instruction("- Stań bokiem do zaczepionej gumy.", "- Ustaw stopy stabilnie i lekko napnij brzuch.", "- Wyciśnij ręce przed siebie bez skręcania tułowia.", "- Wróć spokojnie do klatki piersiowej.", "- Zmniejsz napięcie gumy, jeśli obraca Cię w bok."),
+          coachNotes: "Dobry most między ćwiczeniami na macie a funkcją stojącą. Obserwuj rotację tułowia, barki i ustawienie miednicy.",
+          commonMistakes: "Za mocna guma; barki przy uszach; obracanie bioder.",
+          regressions: "Pallof press w klęku; mniejsze napięcie gumy.",
+          progressions: "Pallof press w wykroku; izometria; krok boczny.",
+          tags: ["core", "antyrotacja", "guma"]
+        }, 8),
+        make({
+          id: "atlas-trx-row",
+          name: "TRX row",
+          clientName: "Wiosłowanie na TRX - spokojna praca pleców",
+          category: "Siła",
+          trainingBlock: "Siła",
+          region: "bark",
+          pattern: "pull",
+          stage: "3 Budowanie kontroli",
+          equipment: "TRX",
+          dosageDefault: "3 serie po 6-10 powtórzeń",
+          goal: "Budować siłę przyciągania z kontrolą łopatek i tułowia.",
+          clientInstruction: instruction("- Chwyć taśmy i ustaw ciało w jednej linii.", "- Zacznij od łatwego kąta.", "- Przyciągnij klatkę w stronę dłoni.", "- Opuść się spokojnie bez zapadania barków.", "- Przerwij, jeśli tracisz linię tułowia."),
+          coachNotes: "Reguluj trudność kątem ciała. Obserwuj łopatki, szyję i przeprost lędźwi.",
+          commonMistakes: "Szarpanie; barki przy uszach; biodra opadają.",
+          regressions: "Bardziej pionowa pozycja; mniejszy zakres.",
+          progressions: "Niższy kąt; pauza w przyciągnięciu; inverted row.",
+          tags: ["TRX", "łopatka", "bark", "siła"]
+        }, 9),
+        make({
+          id: "atlas-band-face-pull",
+          name: "Face pull",
+          clientName: "Przyciąganie gumy do twarzy - łopatki i tył barku",
+          category: "Aktywacja i kontrola",
+          trainingBlock: "Aktywacja i kontrola",
+          region: "bark",
+          pattern: "pull",
+          equipment: "guma oporowa",
+          dosageDefault: "2-3 serie po 10-12 powtórzeń",
+          goal: "Poprawić kontrolę łopatek i pracę tylnej części barku.",
+          clientInstruction: instruction("- Zaczep gumę na wysokości twarzy.", "- Stań stabilnie i trzymaj żebra spokojnie.", "- Przyciągnij gumę w stronę twarzy.", "- Łokcie prowadź szeroko, bez unoszenia barków.", "- Wróć powoli do startu."),
+          coachNotes: "Dobre jako aktywacja przed pchaniem lub pracą nad łopatką. Obserwuj kompensację szyją.",
+          commonMistakes: "Za mocna guma; przeprost lędźwi; ruch z szyi zamiast łopatki.",
+          regressions: "Band pull apart; mniejsze napięcie gumy.",
+          progressions: "Face pull z rotacją; face pull + Y press.",
+          tags: ["bark", "łopatka", "guma"]
+        }, 10),
+        make({
+          id: "atlas-elevated-push-up",
+          name: "Pompka na podwyższeniu",
+          clientName: "Pompka na podwyższeniu - spokojne pchanie",
+          category: "Siła",
+          trainingBlock: "Siła",
+          region: "bark",
+          pattern: "push",
+          stage: "3 Budowanie kontroli",
+          equipment: "ławka lub stabilne podwyższenie",
+          dosageDefault: "2-3 serie po 5-8 powtórzeń",
+          goal: "Uczyć wzorca pompki z dobraną trudnością.",
+          clientInstruction: instruction("- Oprzyj dłonie na stabilnym podwyższeniu.", "- Ustaw ciało w jednej linii.", "- Zejdź tylko do zakresu, który kontrolujesz.", "- Wypchnij się spokojnie bez zapadania barków.", "- Podwyższ podpór, jeśli ruch robi się za trudny."),
+          coachNotes: "Regresja pompki klasycznej. Obserwuj łopatki, łokcie i utrzymanie tułowia.",
+          commonMistakes: "Głowa wysuwa się do przodu; biodra opadają; łokcie uciekają bardzo szeroko.",
+          regressions: "Pompka przy ścianie.",
+          progressions: "Niższe podwyższenie; pompka klasyczna.",
+          tags: ["bark", "core", "siła", "klient początkujący"]
+        }, 11),
+        make({
+          id: "atlas-step-up-low-box",
+          name: "Step-up niski",
+          clientName: "Wejście na niski stopień - kontrola kolana",
+          category: "Funkcja / codzienny ruch",
+          trainingBlock: "Funkcja / codzienny ruch",
+          region: "biodro",
+          pattern: "step up",
+          equipment: "niski stopień",
+          dosageDefault: "2-3 serie po 6 powtórzeń na stronę",
+          goal: "Uczyć wejścia na stopień z kontrolą stopy, kolana i biodra.",
+          clientInstruction: instruction("- Ustaw całą stopę na niskim stopniu.", "- Przenieś ciężar na nogę z przodu.", "- Wejdź spokojnie bez odpychania się mocno drugą nogą.", "- Zejdź powoli i kontroluj kolano.", "- Zmniejsz wysokość, jeśli kolano ucieka do środka."),
+          coachNotes: "Dobre dla funkcji schodów i kontroli kończyny dolnej. Obserwuj koślawienie kolana i pracę stopy.",
+          commonMistakes: "Odbicie z nogi tylnej; zapadanie kolana; za wysoki stopień.",
+          regressions: "Niższy stopień; wsparcie ręką.",
+          progressions: "Wyższy stopień; hantle; wolne zejście.",
+          tags: ["kolano", "biodro", "funkcja", "do domu"]
+        }, 12),
+        make({
+          id: "atlas-farmer-walk",
+          name: "Farmer walk",
+          clientName: "Spacer farmera - przenoszenie ciężaru z kontrolą",
+          category: "Funkcja / codzienny ruch",
+          trainingBlock: "Funkcja / codzienny ruch",
+          region: "całe ciało",
+          pattern: "carry",
+          stage: "4 Budowanie siły",
+          equipment: "hantle lub kettlebell",
+          dosageDefault: "3 przejścia po 20-30 metrów",
+          goal: "Budować praktyczną siłę chwytu, tułowia i przenoszenia obciążenia.",
+          clientInstruction: instruction("- Chwyć ciężary po bokach ciała.", "- Stań wysoko, bez unoszenia barków.", "- Idź spokojnie krótkimi, stabilnymi krokami.", "- Oddychaj i nie odchylaj się do tyłu.", "- Odłóż ciężar, gdy tracisz postawę."),
+          coachNotes: "Funkcyjne carry do nauki przenoszenia. Obserwuj barki, przeprost lędźwi i asymetrię kroku.",
+          commonMistakes: "Za ciężko; barki przy uszach; wyginanie pleców.",
+          regressions: "Suitcase hold; lżejszy ciężar; krótszy dystans.",
+          progressions: "Farmer walk jednorącz; większy dystans; większy ciężar.",
+          tags: ["carry", "core", "funkcja", "siła"]
+        }, 13),
+        make({
+          id: "atlas-wall-slides",
+          name: "Wall Slides",
+          clientName: "Ślizgi ramion przy ścianie",
+          category: "Mobilność",
+          trainingBlock: "Mobilność",
+          region: "bark",
+          pattern: "ręce nad głową",
+          equipment: "ściana",
+          dosageDefault: "2 serie po 6-8 powtórzeń",
+          goal: "Poprawić kontrolę ruchu ramion nad głową bez kompensacji plecami.",
+          clientInstruction: instruction("- Stań plecami blisko ściany.", "- Ustaw żebra spokojnie i nie wyginaj pleców.", "- Przesuwaj ramiona po ścianie tylko w wygodnym zakresie.", "- Wróć powoli do startu.", "- Przerwij, jeśli bark kłuje albo drętwieje ręka."),
+          coachNotes: "Użyj przy nauce rytmu łopatki i kontroli żeber. Nie wymuszaj kontaktu całych ramion ze ścianą.",
+          commonMistakes: "Wypychanie żeber; dociskanie barku mimo bólu; za duży zakres.",
+          regressions: "Mniejszy zakres; ślizg jednej ręki; pozycja siedząca.",
+          progressions: "Serratus wall slide; wall slide z gumą.",
+          tags: ["bark", "łopatka", "mobilność", "bez sprzętu", "do domu"]
+        }, 14),
+        make({
+          id: "qa-cat-cow",
+          name: "Cat-cow",
+          clientName: "Koci grzbiet i spokojne wydłużenie pleców",
+          category: "Mobilność",
+          trainingBlock: "Mobilność",
+          region: "kręgosłup piersiowy",
+          pattern: "mobilność kręgosłupa",
+          equipment: "mata",
+          dosageDefault: "1-2 serie po 6-8 spokojnych ruchów",
+          goal: "Delikatnie poruszyć kręgosłup i połączyć ruch z oddechem.",
+          clientInstruction: instruction("- Ustaw dłonie pod barkami i kolana pod biodrami.", "- Zaokrąglij plecy spokojnie z wydechem.", "- Wróć do delikatnego wydłużenia z wdechem.", "- Ruszaj powoli, bez dociskania zakresu.", "- Przerwij, jeśli pojawi się ostry ból lub zawroty głowy."),
+          coachNotes: "Rozgrzewka i punkt startowy. Obserwuj, czy klient nie wymusza zakresu lędźwiami.",
+          commonMistakes: "Szarpanie; za duży zakres; blokowanie oddechu.",
+          regressions: "Mniejszy zakres; ruch tylko piersiowy.",
+          progressions: "Rotacja piersiowa w klęku podpartym.",
+          tags: ["mobilność", "kręgosłup", "oddech", "bez sprzętu", "do domu"]
+        }, 15)
+      ];
+    }
+
     function getStudioLasStrengthExercises() {
       const strengthSeed = [
         { id: "strength-biceps-talerze", name: "Biceps talerze", muscleMap: { "biceps": 3 } },
@@ -3028,7 +3337,7 @@
     }
 
     function migrateExercise(exercise = {}) {
-      const name = String(exercise.name || exercise.clientName || "Nowe zadanie ruchowe").trim();
+      const name = String(exercise.technicalName || exercise.nazwaTechniczna || exercise.name || exercise.clientName || "Nowe zadanie ruchowe").trim();
       const id = exercise.id || `ex-${slugify(name)}-${String(Date.now()).slice(-5)}`;
       const sourceOrderNumber = Number(exercise.sourceOrder);
       const rawQualityStatus = String(exercise.qualityStatus || "").trim();
@@ -3041,6 +3350,7 @@
         ...exercise,
         id,
         name,
+        technicalName: exercise.technicalName || exercise.nazwaTechniczna || name,
         clientName: exercise.clientName || name,
         category: EXERCISE_CATEGORIES.includes(exercise.category) ? exercise.category : "Kontrola ruchu",
         subcategory: exercise.subcategory || "",
@@ -3112,6 +3422,11 @@
 
     function shouldBackfillExerciseField(field, originalValue, currentValue) {
       if (isBlankExerciseField(originalValue)) return true;
+      if (["clientName", "goal", "dosageDefault", "clientInstruction", "coachNotes", "commonMistakes", "stopCriteria", "regressions", "progressions", "contraindications"].includes(field)) {
+        const current = String(currentValue || "");
+        if (!current.trim()) return true;
+        if (/wymaga dopracowania|wymaga doprecyzowania|do uzupełnienia|do ustalenia przez trenera/i.test(current)) return true;
+      }
       if (field === "trainingBlock" && currentValue === "Inne") return true;
       if (field === "source" && currentValue === "Szczegółowy plan treningowy dla początkujących") return true;
       if (field === "source" && currentValue === "Szczegółowy plan treningowy dla osoby początkującej") return true;
@@ -3136,7 +3451,7 @@
         }
       });
 
-      const backfillFields = ["trainingBlock", "beginnerFriendly", "source", "sourceOrder", "qualityStatus", "linkedTests", "tags"];
+      const backfillFields = ["clientName", "category", "trainingBlock", "subcategory", "region", "pattern", "stage", "level", "equipment", "goal", "dosageDefault", "tempo", "breathing", "clientInstruction", "coachNotes", "commonMistakes", "stopCriteria", "regressions", "progressions", "contraindications", "beginnerFriendly", "source", "sourceOrder", "qualityStatus", "linkedTests", "tags"];
       (Array.isArray(seedExercises) ? seedExercises : []).map(migrateExercise).forEach(seed => {
         const duplicateId = byId.has(seed.id) ? seed.id : byNameAndSource.get(exerciseSeedMergeKey(seed));
         const entry = duplicateId ? byId.get(duplicateId) : null;
@@ -3231,7 +3546,7 @@
     function upgradeExerciseLibraryToCoreV2() {
       const existing = getExerciseLibrary();
       const seedVersion = localStorage.getItem(EXERCISE_LIBRARY_SEED_VERSION_KEY);
-      const seedExercises = [...getStudioLasCoreExercises(), ...getStudioLasTrainerAtlasExercises()];
+      const seedExercises = [...getStudioLasCoreExercises(), ...getStudioLasTrainerAtlasExercises(), ...getWorkflowQaExerciseSeeds()];
       let merged = seedVersion === EXERCISE_LIBRARY_CORE_VERSION && existing.length
         ? existing.map(migrateExercise)
         : mergeSeedExercisesIntoLibrary(existing, seedExercises);
@@ -3403,6 +3718,17 @@
     }
 
     function migratePolarSession(session = {}) {
+      const legacyDecisionMap = {
+        progress: "zwiększ",
+        maintain: "utrzymaj",
+        regress: "zmniejsz",
+        consult: "obserwuj",
+        "Progres": "zwiększ",
+        "Utrzymaj": "utrzymaj",
+        "Cofnij": "zmniejsz",
+        "Konsultacja": "obserwuj"
+      };
+      const loadDecision = legacyDecisionMap[session.loadDecision] || session.loadDecision || "utrzymaj";
       return {
         ...session,
         id: session.id || `p${session.date || Date.now()}`,
@@ -3421,7 +3747,7 @@
         sleepQuality: session.sleepQuality || "Przeciętny",
         trainerNote: session.trainerNote || "",
         clientSummary: session.clientSummary || "",
-        loadDecision: LOAD_DECISIONS[session.loadDecision] ? session.loadDecision : "maintain"
+        loadDecision: LOAD_DECISIONS[loadDecision] ? loadDecision : "utrzymaj"
       };
     }
 
@@ -3436,6 +3762,8 @@
     }
 
     function migratePreSessionCheck(check = {}) {
+      const legacyDecisionMap = { progress: "zwiększ", maintain: "utrzymaj", regress: "zmniejsz", consult: "obserwuj" };
+      const plannedDecision = legacyDecisionMap[check.plannedDecision] || check.plannedDecision || "utrzymaj";
       return {
         ...check,
         id: check.id || `pre${check.date || Date.now()}`,
@@ -3445,19 +3773,21 @@
         homePlanDone: Boolean(check.homePlanDone),
         newSymptoms: Boolean(check.newSymptoms),
         redFlagConcern: Boolean(check.redFlagConcern),
-        plannedDecision: LOAD_DECISIONS[check.plannedDecision] ? check.plannedDecision : "maintain",
+        plannedDecision: LOAD_DECISIONS[plannedDecision] ? plannedDecision : "utrzymaj",
         note: check.note || ""
       };
     }
 
     function migratePostSessionNote(note = {}) {
+      const legacyDecisionMap = { progress: "zwiększ", maintain: "utrzymaj", regress: "zmniejsz", consult: "obserwuj" };
+      const decision = legacyDecisionMap[note.decision] || note.decision || "utrzymaj";
       return {
         ...note,
         id: note.id || `post${note.date || Date.now()}`,
         date: note.date || today(),
         whatWeDid: note.whatWeDid || "",
         clientResponse: note.clientResponse || "",
-        decision: LOAD_DECISIONS[note.decision] ? note.decision : "maintain",
+        decision: LOAD_DECISIONS[decision] ? decision : "utrzymaj",
         homeTask: note.homeTask || "",
         clientMessage: note.clientMessage || ""
       };
@@ -3509,7 +3839,7 @@
     }
 
     function migrateState(data = {}) {
-      const sourceClients = Array.isArray(data.clients) && data.clients.length ? data.clients : seed.clients;
+      const sourceClients = Array.isArray(data.clients) ? data.clients : seed.clients;
       const clients = sourceClients.map(migrateClient);
       const activeClientId = clients.some(c => c.id === data.activeClientId) ? data.activeClientId : clients[0]?.id || "";
       return { ...data, activeClientId, clients };
@@ -3558,6 +3888,8 @@
     let diagnosticTestFilters = { category: "", region: "", source: "", qualityStatus: "", video: "", selectedTestId: "" };
     let expandedHomePlanExerciseId = "";
     let editingDiagnosticResultId = "";
+    let editingMeasurementId = "";
+    let editingClientId = "";
     let clientPortalShowAllHomeTasks = false;
 
     const $ = (sel) => document.querySelector(sel);
@@ -3683,6 +4015,7 @@
     function handleTopbarAddAction(action) {
       closeAddMenu();
       if (action === "client") return openClientModal();
+      if (!activeClient()) return toast("Najpierw dodaj klienta.");
       if (action === "session") return openSessionModal();
       if (action === "measurement") return openMeasurementModal();
       if (action === "polar") return openPolarModal();
@@ -3710,12 +4043,25 @@
       const c = activeClient();
       const clientMode = viewName === "clientPortal";
       document.body.classList.toggle("client-mode", clientMode);
-      clientSelect.disabled = clientMode;
-      clientSelect.innerHTML = clientMode && c
-        ? `<option value="${c.id}" selected>${escapeHtml(c.name)} · ${escapeHtml(c.package)}</option>`
-        : state.clients.map(c => `<option value="${c.id}" ${c.id === state.activeClientId ? "selected" : ""}>${escapeHtml(c.name)} · ${escapeHtml(c.package)}</option>`).join("");
+      clientSelect.disabled = false;
+      clientSelect.innerHTML = state.clients.length
+        ? state.clients.map(c => `<option value="${c.id}" ${c.id === state.activeClientId ? "selected" : ""}>${escapeHtml(c.name)} · ${escapeHtml(c.package)}</option>`).join("")
+        : `<option value="">Brak klientów</option>`;
       document.querySelectorAll(".nav button").forEach(btn => btn.classList.toggle("active", btn.dataset.view === viewName));
       render();
+    }
+
+    function renderNoClientState() {
+      view.innerHTML = `
+        <section class="panel">
+          <div class="panel-head">
+            <div><h2>Brak klientów</h2><p>Dodaj klienta, żeby rozpocząć pracę w Studio Las OS.</p></div>
+            <button class="btn primary" id="emptyClientAddBtn" type="button">Dodaj klienta</button>
+          </div>
+          <p>Po usunięciu ostatniego klienta aplikacja zostaje w spokojnym stanie startowym. Dane nowego klienta będą zapisane lokalnie w tej przeglądarce.</p>
+        </section>
+      `;
+      $("#emptyClientAddBtn")?.addEventListener("click", () => openClientModal());
     }
 
     function render() {
@@ -3745,6 +4091,7 @@
       $("#roleBadge").textContent = clientMode ? "Widok klienta" : "Widok trenera";
       $("#roleBadge").className = `pill top-role ${clientMode ? "green" : "blue"}`;
       renderTopbarActions(clientMode);
+      if (!c && viewName !== "command") return renderNoClientState();
       if (viewName === "command") renderCommand();
       if (viewName === "todaySession") renderTodaySession();
       if (viewName === "intake") renderIntake();
@@ -3763,6 +4110,7 @@
     }
 
     function renderCommand() {
+      if (!state.clients.length) return renderNoClientState();
       const allSessions = state.clients.reduce((sum, c) => sum + c.sessions.length, 0);
       const stable = state.clients.filter(c => risk(c).level === "green").length;
       const active = activeClient();
@@ -3861,7 +4209,7 @@
           <div class="panel-head"><h2>Co muszę wiedzieć przed sesją</h2>${pill("brief", "blue")}</div>
           <div class="grid cols-3">
             <div class="portal-info"><div class="label">Ostatnia sesja</div><p>${lastSession ? `${escapeHtml(formatDate(lastSession.date))} · VAS ${formatMetric(lastSession.vasBefore, "")}→${formatMetric(lastSession.vasAfter, "")} · ${escapeHtml(lastSession.decision || "brak decyzji")}` : "Brak sesji"}</p></div>
-            <div class="portal-info"><div class="label">Ostatni Polar</div><p>${lastPolar ? `${escapeHtml(formatDate(lastPolar.date))} · RPE ${formatMetric(lastPolar.rpe, "")} · VAS po ${formatMetric(lastPolar.vasAfter, "")} · gotowość ${formatMetric(lastPolar.readiness, "")} · ${escapeHtml(loadDecisionLabel(lastPolar.loadDecision))}` : "Brak odczytu Polar"}</p></div>
+            <div class="portal-info"><div class="label">Ostatni Polar</div><p>${lastPolar ? `${escapeHtml(formatDate(lastPolar.date))} · RPE ${formatMetric(lastPolar.rpe, "")} · HR avg ${formatMetric(lastPolar.hrAvg, "")} · wysoka strefa ${formatMetric(lastPolar.zoneHighMin, "min")} · ${escapeHtml(loadDecisionLabel(lastPolar.loadDecision))}` : "Brak odczytu Polar"}</p></div>
             <div class="portal-info"><div class="label">Ostatni Tanita</div><p>${lastTanita ? `${escapeHtml(formatDate(lastTanita.date))} · ${formatMetric(lastTanita.weightKg, "kg")} · fat ${formatMetric(lastTanita.fatPercent, "%")} · mięśnie ${formatMetric(lastTanita.muscleMassKg, "kg")}` : "Brak pomiaru Tanita"}</p></div>
             <div class="portal-info"><div class="label">Zadania</div><p>${doneTasks}/${tasks.length} wykonane</p></div>
             <div class="portal-info span-2"><div class="label">Czerwone flagi</div><p>${escapeHtml(redFlags || "Brak wpisanych czerwonych flag.")}</p></div>
@@ -4194,7 +4542,14 @@
           ${kpi("Sesje", c.sessions.length, "jakość danych > ilość", "info")}
         </div>
         <section class="panel">
-          <div class="panel-head"><div><h2>${escapeHtml(c.name)}</h2><p>${escapeHtml(c.contact || "brak kontaktu")} · ${escapeHtml(c.package)}</p></div>${pill(risk(c).label, risk(c).level)}</div>
+          <div class="panel-head">
+            <div><h2>${escapeHtml(c.name)}</h2><p>${escapeHtml(c.contact || "brak kontaktu")} · ${escapeHtml(c.package)}</p></div>
+            <div class="home-plan-actions">
+              ${pill(risk(c).label, risk(c).level)}
+              <button class="btn" id="editClientBtn" type="button">Edytuj klienta</button>
+              <button class="btn danger" id="deleteClientBtn" type="button">Usuń klienta</button>
+            </div>
+          </div>
           <div class="grid cols-2">
             ${fieldBlock("Cel 12 tygodni", c.goal)}
             ${fieldBlock("Status zdrowia", c.healthStatus)}
@@ -4208,6 +4563,23 @@
           ${renderClientIntake(c)}
         </section>
       `;
+      $("#editClientBtn")?.addEventListener("click", () => openClientModal(c.id));
+      $("#deleteClientBtn")?.addEventListener("click", () => deleteClient(c.id));
+    }
+
+    function deleteClient(clientId) {
+      const client = state.clients.find(item => item.id === clientId);
+      if (!client) return toast("Nie znaleziono klienta.");
+      const confirmed = window.confirm(`Usunąć klienta ${client.name}? Lokalne dane tego klienta zostaną usunięte ze Studio Las OS: sesje, pomiary, odczyty Polar, wyniki testów, plan domowy, zadania i raporty.`);
+      if (!confirmed) return;
+      state.clients = state.clients.filter(item => item.id !== clientId);
+      if (state.activeClientId === clientId) {
+        state.activeClientId = state.clients[0]?.id || "";
+        viewName = state.clients.length ? "command" : "command";
+      }
+      save();
+      renderShell();
+      toast("Klient usunięty");
     }
 
     function renderClientIntake(c) {
@@ -4454,7 +4826,7 @@
     }
 
     function renderExerciseQuickFilters() {
-      const quickFilters = ["Gotowe", "Start", "Mobilność", "Core", "Siła", "Klatka", "Plecy", "Nogi", "Pośladki", "Biceps", "Triceps", "Bez sprzętu", "Roller", "Krzesło", "Do opracowania"];
+      const quickFilters = ["Gotowe", "Punkt startowy", "Klient początkujący", "Bez sprzętu", "Do domu", "Ból / ostrożnie", "Bark", "Biodro", "Kolano", "Kręgosłup", "Core", "Oddech", "Mobilność", "Siła", "Do opracowania"];
       return quickFilters.map(label => {
         const active = label === "Gotowe"
           ? exerciseAtlasFilters.qualityStatus === "reviewed"
@@ -4483,7 +4855,15 @@
 
     function matchesExerciseQuickFilter(ex, quick) {
       const haystack = compareHeader([ex.trainingBlock, ex.category, ex.region, ex.equipment, ...(ex.tags || [])].join(" "));
-      if (quick === "Start") return ex.stage === "1 Punkt startowy" || haystack.includes("start");
+      if (quick === "Punkt startowy" || quick === "Start") return ex.stage === "1 Punkt startowy" || ex.level === "punkt startowy" || haystack.includes("start");
+      if (quick === "Klient początkujący") return ex.beginnerFriendly === true || haystack.includes("klient poczatkujacy") || haystack.includes("klient początkujący");
+      if (quick === "Do domu") return haystack.includes("do domu") || /mata|ściana|sciana|krzesło|krzeslo|masa własnego ciała|masa wlasnego ciala|bez sprzętu|bez sprzetu/i.test(ex.equipment || haystack);
+      if (quick === "Ból / ostrożnie") return haystack.includes("ostroznie") || haystack.includes("ostrożnie") || haystack.includes("bol") || haystack.includes("ból");
+      if (quick === "Bark") return ex.region === "bark" || haystack.includes("bark") || haystack.includes("lopatka") || haystack.includes("łopatka");
+      if (quick === "Biodro") return ex.region === "biodro" || haystack.includes("biodro");
+      if (quick === "Kolano") return haystack.includes("kolano") || haystack.includes("przysiad") || haystack.includes("wykrok");
+      if (quick === "Kręgosłup") return /kręgosłup|kregoslup|piersiowy|lędźwiowy|ledzwiowy/.test(haystack);
+      if (quick === "Oddech") return ex.category === "Oddech / regulacja" || haystack.includes("oddech");
       if (quick === "Mobilność") return ex.trainingBlock === "Mobilność" || ["Mobilizacja", "Rozciąganie"].includes(ex.category);
       if (quick === "Core") return ex.category === "Core" || ex.region === "core" || haystack.includes("core") || exerciseMatchesAnyMuscle(ex, ["brzuch", "lędźwie"]);
       if (quick === "Siła") return ex.trainingBlock === "Siła" || ex.category === "Siła";
@@ -4579,6 +4959,7 @@
       return `<div class="exercise-card">
         <div>
           <div class="name">${escapeHtml(ex.clientName || ex.name)}</div>
+          <div class="meta">${escapeHtml(ex.name || ex.clientName)}</div>
           <div class="meta">${escapeHtml([ex.category, ex.region, ex.stage].filter(Boolean).join(" · "))}</div>
         </div>
         <div class="tag-row">
@@ -4603,6 +4984,7 @@
       return `<div class="exercise-compact-row">
         <div>
           <div class="name">${escapeHtml(ex.clientName || ex.name)}</div>
+          <div class="meta">${escapeHtml(ex.name || ex.clientName)}</div>
           <div class="meta">${escapeHtml(ex.dosageDefault || "Dawka do ustalenia")}</div>
           ${needsReview ? `<div class="meta warn">Najpierw dopracuj instrukcję.</div>` : ""}
         </div>
@@ -5081,7 +5463,11 @@
           ${measurementInputNote(m) ? `<div class="meta">${escapeHtml(measurementInputNote(m))}</div>` : ""}
           ${m.trainerInterpretation ? `<div class="meta">${escapeHtml(m.trainerInterpretation)}</div>` : ""}
           ${m.clientSummary ? `<div class="name">Dla klienta: ${escapeHtml(m.clientSummary)}</div>` : ""}
-          ${m.pdfDataUrl ? `<div><button class="btn" data-open-pdf="${escapeHtml(m.id)}">Otwórz PDF</button></div>` : ""}
+          <div class="card-actions">
+            <button class="btn" data-edit-measurement="${escapeHtml(m.id)}" type="button">Edytuj</button>
+            <button class="btn danger" data-delete-measurement="${escapeHtml(m.id)}" type="button">Usuń</button>
+            ${m.pdfDataUrl ? `<button class="btn" data-open-pdf="${escapeHtml(m.id)}" type="button">Otwórz PDF</button>` : ""}
+          </div>
         </div>
       `;
     }
@@ -5096,6 +5482,7 @@
             <div><h2>Najnowszy odczyt Polar</h2><p>${escapeHtml(c.name)} · tolerancja obciążenia po sesji.</p></div>
             ${pill(latest ? formatDate(latest.date) : "brak odczytu", latest ? assessLoadTolerance(latest).level : "gold")}
           </div>
+          <div class="focus-note">Dane z Polar Verity Sense wpisujemy po treningu na podstawie Polar Flow lub kompatybilnej aplikacji. Studio Las OS zapisuje interpretację i decyzję trenera, nie prowadzi automatycznej integracji z opaską.</div>
           ${latest ? renderPolarMain(latest) : `<div class="home-plan-empty"><p>Nie ma jeszcze odczytu Polar dla tego klienta. Dodaj pierwszy odczyt po sesji, jeśli chcesz ocenić tolerancję obciążenia.</p><div class="home-plan-actions"><button class="btn primary" id="polarEmptyBtn">Nowy odczyt Polar</button></div></div>`}
         </section>
         <section class="panel">
@@ -5122,9 +5509,9 @@
             ${pill(session.sessionType || "typ sesji", "blue")}
             ${pill(`HR avg ${formatMetric(session.hrAvg, "")}`, "blue")}
             ${pill(`HR max ${formatMetric(session.hrMax, "")}`, "gold")}
+            ${pill(`Czas ${formatMetric(session.durationMin, "min")}`, "blue")}
+            ${pill(`Strefy ${formatMetric(session.zoneLightMin, "min")} / ${formatMetric(session.zoneModerateMin, "min")} / ${formatMetric(session.zoneHighMin, "min")}`, "blue")}
             ${pill(`RPE ${formatMetric(session.rpe, "")}`, "gold")}
-            ${pill(`VAS ${formatMetric(session.vasBefore, "")}→${formatMetric(session.vasAfter, "")}`, "blue")}
-            ${pill(`Gotowość ${formatMetric(session.readiness, "")}`, "green")}
             ${pill(loadDecisionLabel(session.loadDecision), loadDecisionTone(session.loadDecision))}
             ${pill(tolerance.label, tolerance.level)}
           </div>
@@ -5133,7 +5520,7 @@
             ${fieldBlock("Notatka trenera", session.trainerNote || "Brak notatki trenera.")}
           </div>
           ${session.clientSummary ? `<div class="portal-info"><div class="label">Dla klienta</div><p>${escapeHtml(session.clientSummary)}</p></div>` : ""}
-          <p>To wsparcie decyzji treningowej, nie diagnoza medyczna. Łączymy HR, RPE, VAS, gotowość i sen z obserwacją ruchu.</p>
+          <p>To wsparcie decyzji treningowej, nie diagnoza medyczna. Łączymy HR, strefy, czas pracy i RPE z obserwacją ruchu.</p>
         </div>
       `;
     }
@@ -5144,9 +5531,9 @@
       if (!latest) return `<p>Potrzebny jest minimum jeden odczyt, żeby pokazać bieżący punkt odniesienia.</p>`;
       const cards = [
         ["RPE", latest.rpe, first?.rpe, ""],
-        ["VAS po", latest.vasAfter, first?.vasAfter, ""],
-        ["Gotowość", latest.readiness, first?.readiness, ""],
-        ["HR avg", latest.hrAvg, first?.hrAvg, ""]
+        ["HR avg", latest.hrAvg, first?.hrAvg, ""],
+        ["HR max", latest.hrMax, first?.hrMax, ""],
+        ["Strefa wysoka", latest.zoneHighMin, first?.zoneHighMin, "min"]
       ];
       return `<div class="grid cols-4">${cards.map(([label, now, start, unit]) => `
         <div class="portal-metric">
@@ -5170,9 +5557,9 @@
           <div class="measurement-metrics">
             ${pill(`HR avg ${formatMetric(session.hrAvg, "")}`, "blue")}
             ${pill(`HR max ${formatMetric(session.hrMax, "")}`, "gold")}
+            ${pill(`Czas ${formatMetric(session.durationMin, "min")}`, "blue")}
+            ${pill(`Strefa wysoka ${formatMetric(session.zoneHighMin, "min")}`, "gold")}
             ${pill(`RPE ${formatMetric(session.rpe, "")}`, "gold")}
-            ${pill(`VAS ${formatMetric(session.vasBefore, "")}→${formatMetric(session.vasAfter, "")}`, "blue")}
-            ${pill(`Gotowość ${formatMetric(session.readiness, "")}`, "green")}
             ${pill(loadDecisionLabel(session.loadDecision), loadDecisionTone(session.loadDecision))}
           </div>
           <div class="meta">${escapeHtml(tolerance.explanation)}</div>
@@ -5593,6 +5980,18 @@
 
     function bindPdfButtons() {
       document.querySelectorAll("[data-open-pdf]").forEach(btn => btn.addEventListener("click", () => openMeasurementPdf(btn.dataset.openPdf)));
+      document.querySelectorAll("[data-edit-measurement]").forEach(btn => btn.addEventListener("click", () => openMeasurementModal(btn.dataset.editMeasurement)));
+      document.querySelectorAll("[data-delete-measurement]").forEach(btn => btn.addEventListener("click", () => deleteMeasurement(btn.dataset.deleteMeasurement)));
+    }
+
+    function deleteMeasurement(id) {
+      const c = activeClient();
+      if (!c) return;
+      if (!window.confirm("Usunąć ten pomiar Tanita?")) return;
+      c.measurements = (c.measurements || []).filter(item => item.id !== id);
+      save();
+      renderMeasurements();
+      toast("Pomiar usunięty");
     }
 
     function measurementOrigin(m) {
@@ -5618,20 +6017,19 @@
     }
 
     function assessLoadTolerance(polarSession = {}) {
-      const vasBefore = normalizeNumber(polarSession.vasBefore);
-      const vasAfter = normalizeNumber(polarSession.vasAfter);
       const rpe = normalizeNumber(polarSession.rpe);
       const hrAvg = normalizeNumber(polarSession.hrAvg);
       const hrMax = normalizeNumber(polarSession.hrMax);
       const zoneHighMin = normalizeNumber(polarSession.zoneHighMin) || 0;
-      const readiness = normalizeNumber(polarSession.readiness);
-      const sleep = polarSession.sleepQuality || "";
+      const zoneModerateMin = normalizeNumber(polarSession.zoneModerateMin) || 0;
+      const durationMin = normalizeNumber(polarSession.durationMin);
+      const decision = polarSession.loadDecision || "utrzymaj";
 
-      if (vasBefore !== null && vasAfter !== null && vasAfter > vasBefore + 2) {
+      if (decision === "zmniejsz" || decision === "regeneracyjnie") {
         return {
-          level: "red",
-          label: "Zwolnij obciążenie",
-          explanation: "VAS po sesji wzrósł o więcej niż 2 punkty względem startu. To sygnał, żeby cofnąć bodziec i sprawdzić reakcję po odpoczynku."
+          level: "gold",
+          label: decision === "regeneracyjnie" ? "Regeneracyjnie" : "Zmniejsz bodziec",
+          explanation: "Decyzja trenera wskazuje na spokojniejszy kolejny krok. Odczyt zapisujemy jako wsparcie decyzji o tolerancji obciążenia."
         };
       }
       if (rpe !== null && rpe >= 9 && ((hrMax !== null && hrAvg !== null && hrMax >= hrAvg + 42) || zoneHighMin >= 15)) {
@@ -5641,42 +6039,43 @@
           explanation: "Wysokie RPE połączone z wysokim HR max albo dłuższą strefą wysoką sugeruje ostrożność przed kolejną progresją."
         };
       }
-      if (readiness !== null && readiness <= 4) {
+      if (durationMin !== null && durationMin > 0 && zoneHighMin / durationMin >= 0.35) {
         return {
           level: "gold",
-          label: "Utrzymaj lub skróć",
-          explanation: "Niska gotowość ogranicza tolerancję obciążenia. Warto utrzymać plan lub zmniejszyć trudność bez traktowania tego jak porażki."
+          label: "Dużo wysokiej strefy",
+          explanation: "Duży udział wysokiej strefy w całej sesji warto zestawić z celem treningu i reakcją klienta po odpoczynku."
         };
       }
-      if (["Słaby", "Bardzo słaby"].includes(sleep)) {
-        return {
-          level: "gold",
-          label: "Sen ogranicza progres",
-          explanation: "Słabszy sen może zawężać tolerancję na bodziec. Decyzję o progresji warto oprzeć też na reakcji po 24 godzinach."
-        };
-      }
-      if ((vasBefore === null || vasAfter === null || vasAfter <= vasBefore) && readiness !== null && readiness >= 6 && rpe !== null && rpe <= 7) {
+      if (decision === "zwiększ" && rpe !== null && rpe <= 7 && zoneHighMin <= 10) {
         return {
           level: "green",
-          label: "Dobra tolerancja",
-          explanation: "VAS po sesji nie rośnie, gotowość jest stabilna, a RPE zostaje w kontrolowanym zakresie. Można rozważyć małą progresję."
+            label: "Dobra tolerancja",
+          explanation: "RPE i czas w wysokiej strefie wyglądają spokojnie dla tej decyzji. Kolejny krok może być minimalną progresją."
+        };
+      }
+      if (decision === "obserwuj" || zoneModerateMin || zoneHighMin) {
+        return {
+          level: "gold",
+          label: "Obserwuj trend",
+          explanation: "Odczyt jest punktem obserwacji. Najważniejsze jest porównanie kilku sesji, RPE, stref i decyzji trenera."
         };
       }
       return {
         level: "gold",
         label: "Obserwuj trend",
-        explanation: "Odczyt jest neutralny. Najważniejsze jest porównanie kilku sesji, reakcji bólowej, gotowości i snu."
+        explanation: "Odczyt jest neutralny. Najważniejsze jest porównanie kilku sesji, RPE, stref i decyzji trenera."
       };
     }
 
     function loadDecisionLabel(value) {
-      return LOAD_DECISIONS[value] || "Utrzymaj";
+      const legacy = { progress: "zwiększ", maintain: "utrzymaj", regress: "zmniejsz", consult: "obserwuj" };
+      return LOAD_DECISIONS[value] || legacy[value] || "utrzymaj";
     }
 
     function loadDecisionTone(value) {
-      if (value === "progress") return "green";
-      if (value === "regress") return "gold";
-      if (value === "consult") return "red";
+      if (value === "zwiększ" || value === "progress") return "green";
+      if (value === "zmniejsz" || value === "regeneracyjnie" || value === "regress") return "gold";
+      if (value === "obserwuj" || value === "consult") return "blue";
       return "blue";
     }
 
@@ -5701,7 +6100,7 @@
       const hasEnoughData = Boolean(lastSession || lastPolar || lastTanita || tasks.length || client.decisionLogic);
       const vasIncrease = vasBefore !== null && vasAfter !== null ? vasAfter - vasBefore : null;
       const redFlagsPresent = Boolean(String(client.redFlags || "").trim());
-      const worseningSignal = (vasIncrease !== null && vasIncrease >= 2) || polarTolerance?.level === "red" || lastPolar?.loadDecision === "regress";
+      const worseningSignal = (vasIncrease !== null && vasIncrease >= 2) || polarTolerance?.level === "red" || ["zmniejsz", "regeneracyjnie", "regress"].includes(lastPolar?.loadDecision);
 
       if (lastSession) reasons.push(`Ostatnia sesja: ${formatDate(lastSession.date)} · VAS ${formatMetric(vasBefore, "")}→${formatMetric(vasAfter, "")}.`);
       if (lastPolar) reasons.push(`Ostatni Polar: ${formatDate(lastPolar.date)} · ${polarTolerance.label.toLowerCase()}.`);
@@ -5713,12 +6112,12 @@
         reasons.push("Brak wystarczających danych do pewnej decyzji tygodniowej.");
         risks.push("Decyzja powinna pozostać konserwatywna do czasu kolejnej sesji lub odczytu.");
         doNotDo.push("Nie przyspieszaj progresji bez obserwacji reakcji organizmu.");
-      } else if ((vasAfter !== null && vasAfter >= 7) || (vasIncrease !== null && vasIncrease >= 3) || lastPolar?.loadDecision === "consult" || (redFlagsPresent && worseningSignal)) {
+      } else if ((vasAfter !== null && vasAfter >= 7) || (vasIncrease !== null && vasIncrease >= 3) || (redFlagsPresent && worseningSignal)) {
         recommendation = "consult";
         label = "Konsultacja / stop-klatka";
         risks.push("Sygnał bólowy lub czerwone flagi wymagają zatrzymania automatycznej progresji.");
         doNotDo.push("Nie dokładamy intensywności ani zakresu do czasu wyjaśnienia reakcji.");
-      } else if ((vasIncrease !== null && vasIncrease >= 2) || (readiness !== null && readiness <= 3) || sleepQuality === "Bardzo słaby" || polarTolerance?.level === "red") {
+      } else if ((vasIncrease !== null && vasIncrease >= 2) || (readiness !== null && readiness <= 3) || sleepQuality === "Bardzo słaby" || polarTolerance?.level === "red" || ["zmniejsz", "regeneracyjnie"].includes(lastPolar?.loadDecision)) {
         recommendation = "regress";
         label = "Cofnij bodziec";
         risks.push("Organizm pokazuje niższą tolerancję na aktualne obciążenie.");
@@ -5767,9 +6166,9 @@
     }
 
     function decisionTone(value) {
-      if (value === "progress") return "green";
-      if (value === "regress") return "gold";
-      if (value === "consult") return "red";
+      if (value === "zwiększ" || value === "progress") return "green";
+      if (value === "zmniejsz" || value === "regeneracyjnie" || value === "regress") return "gold";
+      if (value === "obserwuj" || value === "consult") return "blue";
       return "blue";
     }
 
@@ -5778,8 +6177,13 @@
         progress: "Progres",
         maintain: "Utrzymaj",
         regress: "Cofnij",
-        consult: "Konsultacja"
-      }[value] || "Utrzymaj";
+        consult: "Konsultacja",
+        "zwiększ": "zwiększ",
+        "utrzymaj": "utrzymaj",
+        "zmniejsz": "zmniejsz",
+        "regeneracyjnie": "regeneracyjnie",
+        "obserwuj": "obserwuj"
+      }[value] || "utrzymaj";
     }
 
     function openMeasurementPdf(id) {
@@ -7420,15 +7824,14 @@ ${neutral}${trainerLine}`;
       }
       const latest = sessions[0];
       const avgRpe = average(sessions.map(s => s.rpe));
-      const avgVasAfter = average(sessions.map(s => s.vasAfter));
       const first = sessions[sessions.length - 1];
-      const readinessTrend = formatDelta(latest.readiness, first?.readiness, "");
+      const highZoneTrend = formatDelta(latest.zoneHighMin, first?.zoneHighMin, "min");
       const tolerance = assessLoadTolerance(latest);
       const clientLine = latest.clientSummary || "Te dane pomagają dobrać tempo progresji. Nie oceniamy formy, tylko reakcję organizmu.";
-      const trainerHr = audience === "trainer" ? `\nKontekst HR: ostatnio HR avg ${formatMetric(latest.hrAvg, "")}, HR max ${formatMetric(latest.hrMax, "")}, czas w wysokiej strefie ${formatMetric(latest.zoneHighMin, "min")}.` : "";
+      const trainerHr = audience === "trainer" ? `\nKontekst HR: ostatnio HR avg ${formatMetric(latest.hrAvg, "")}, HR max ${formatMetric(latest.hrMax, "")}, strefy ${formatMetric(latest.zoneLightMin, "min")} / ${formatMetric(latest.zoneModerateMin, "min")} / ${formatMetric(latest.zoneHighMin, "min")}.` : "";
       const trainerNote = audience === "trainer" && latest.trainerNote ? `\nNotatka trenera: ${latest.trainerNote}` : "";
-      return `Ostatni odczyt (${formatDate(latest.date)}): RPE ${formatMetric(latest.rpe, "")}, VAS po ${formatMetric(latest.vasAfter, "")}, gotowość ${formatMetric(latest.readiness, "")}, decyzja ${loadDecisionLabel(latest.loadDecision)}.
-Średnio z odczytów: RPE ${formatAverage(avgRpe)}, VAS po ${formatAverage(avgVasAfter)}, trend gotowości ${readinessTrend}.
+      return `Ostatni odczyt (${formatDate(latest.date)}): ${latest.sessionType || "sesja"}, czas ${formatMetric(latest.durationMin, "min")}, RPE ${formatMetric(latest.rpe, "")}, decyzja ${loadDecisionLabel(latest.loadDecision)}.
+Średnio z odczytów: RPE ${formatAverage(avgRpe)}, trend czasu w wysokiej strefie ${highZoneTrend}.
 Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? tolerance.explanation : clientLine}${trainerHr}${trainerNote}`;
     }
 
@@ -7490,7 +7893,24 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
       }));
     }
 
-    function openClientModal() {
+    function openClientModal(clientId = "") {
+      const form = $("#clientForm");
+      const existing = clientId ? state.clients.find(client => client.id === clientId) : null;
+      editingClientId = existing?.id || "";
+      form.reset();
+      $("#clientModal h2").textContent = existing ? "Edytuj klienta" : "Nowy klient";
+      $("#clientForm button[type='submit']").textContent = existing ? "Zapisz klienta" : "Dodaj klienta";
+      if (existing) {
+        [
+          "name", "contact", "email", "phone", "startDate", "nextSessionDate", "nextReviewDate",
+          "motivation", "healthStatus", "fears", "contraindications", "redFlags", "neuroType",
+          "goal", "decisionLogic"
+        ].forEach(field => {
+          if (form.elements[field]) form.elements[field].value = existing[field] || "";
+        });
+        form.elements.package.value = existing.package || "Diagnostyka";
+        form.elements.stage.value = String(existing.stage || 1);
+      }
       $("#clientModal").classList.add("open");
       $("#clientModal").setAttribute("aria-hidden", "false");
     }
@@ -7504,26 +7924,50 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
       $("#sessionModal").setAttribute("aria-hidden", "false");
     }
 
-    function openMeasurementModal() {
+    function openMeasurementModal(measurementId = "") {
       const c = activeClient();
-      pendingMeasurementPdf = initialMeasurementPdf();
+      if (!c) return toast("Najpierw dodaj klienta.");
+      const existing = measurementId ? (c.measurements || []).find(item => item.id === measurementId) : null;
+      editingMeasurementId = existing?.id || "";
+      pendingMeasurementPdf = existing?.pdfDataUrl ? {
+        name: existing.pdfName || "",
+        dataUrl: existing.pdfDataUrl || "",
+        rawText: "",
+        parsed: {},
+        autoFilled: existing.pdfAutoFilled === true,
+        sourceMode: existing.sourceMode || existing.inputMethod || "pdf",
+        inputMethod: existing.inputMethod || "pdf",
+        parseStatus: existing.parseStatus || "manual_required",
+        parsedFields: Array.isArray(existing.parsedFields) ? existing.parsedFields : []
+      } : initialMeasurementPdf();
+      $("#measurementModal h2").textContent = existing ? "Edytuj pomiar Tanita" : "Nowy pomiar Tanita";
+      $("#measurementForm button[type='submit']").textContent = existing ? "Zapisz zmiany pomiaru" : "Zapisz pomiar";
       $("#measurementClientName").textContent = `${c.name} · pomiar Tanita`;
-      $("#measurementForm").reset();
-      $("#measurementForm").date.value = today();
-      setMeasurementPdfStatus("Brak załączonego PDF.", "Wymaga ręcznego uzupełnienia", "gold", "");
-      updateTanitaReadout("PDF nie został jeszcze załączony.", [], TANITA_FIELD_ORDER, "Po załączeniu PDF dane liczbowe wpisz ręcznie z raportu Tanita.");
+      const form = $("#measurementForm");
+      form.reset();
+      TANITA_FIELD_ORDER.forEach(field => {
+        if (form.elements[field]) form.elements[field].value = existing?.[field] ?? "";
+      });
+      form.elements.trainerInterpretation.value = existing?.trainerInterpretation || "";
+      form.elements.clientSummary.value = existing?.clientSummary || "";
+      if (!existing) form.date.value = today();
+      if (existing?.pdfDataUrl) {
+        setMeasurementPdfStatus(existing.pdfName || "PDF Tanita załączony.", "PDF zachowany", "green", "Załącz nowy PDF tylko wtedy, gdy chcesz zastąpić poprzedni dokument.");
+        updateTanitaReadout("PDF zapisany przy tym pomiarze.", existing.parsedFields || [], TANITA_FIELD_ORDER, "Dane liczbowe możesz poprawić ręcznie. Brak nowego pliku zachowa dotychczasowy PDF.");
+      } else {
+        setMeasurementPdfStatus("Brak załączonego PDF.", "Wymaga ręcznego uzupełnienia", "gold", "");
+        updateTanitaReadout("PDF nie został jeszcze załączony.", [], TANITA_FIELD_ORDER, "Po załączeniu PDF dane liczbowe wpisz ręcznie z raportu Tanita.");
+      }
       $("#measurementModal").classList.add("open");
       $("#measurementModal").setAttribute("aria-hidden", "false");
     }
 
     function openPolarModal() {
       const c = activeClient();
+      if (!c) return toast("Najpierw dodaj klienta.");
       $("#polarClientName").textContent = `${c.name} · odczyt Polar`;
       $("#polarForm").reset();
       $("#polarForm").date.value = today();
-      $("#polarForm").vasBefore.value = latest(c)?.vasBefore ?? "";
-      $("#polarForm").vasAfter.value = latest(c)?.vasAfter ?? "";
-      $("#polarForm").readiness.value = latest(c)?.readiness ?? "";
       $("#polarModal").classList.add("open");
       $("#polarModal").setAttribute("aria-hidden", "false");
     }
@@ -9009,8 +9453,10 @@ Initial 83.45 64.95 18.10
     $("#clientForm").addEventListener("submit", e => {
       e.preventDefault();
       const fd = new FormData(e.currentTarget);
+      const existing = editingClientId ? state.clients.find(client => client.id === editingClientId) : null;
       const c = {
-        id: `SL-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
+        ...(existing || {}),
+        id: existing?.id || `SL-${new Date().getFullYear()}-${String(Date.now()).slice(-4)}`,
         name: fd.get("name").trim(),
         contact: fd.get("contact").trim(),
         email: fd.get("email").trim(),
@@ -9027,28 +9473,33 @@ Initial 83.45 64.95 18.10
         healthStatus: fd.get("healthStatus").trim(),
         neuroType: fd.get("neuroType").trim(),
         goal: fd.get("goal").trim(),
-        nextMilestone: "",
+        nextMilestone: existing?.nextMilestone || "",
         decisionLogic: fd.get("decisionLogic").trim(),
-        homePlan: defaultHomePlan(),
-        checkins: [],
-        documents: [],
-        measurements: [],
-        polarSessions: [],
-        reports: [],
-        preSessionChecks: [],
-        postSessionNotes: [],
-        intake: defaultIntake(),
-        tasks: [],
-        sessions: []
+        homePlan: existing?.homePlan || defaultHomePlan(),
+        checkins: existing?.checkins || [],
+        documents: existing?.documents || [],
+        measurements: existing?.measurements || [],
+        polarSessions: existing?.polarSessions || [],
+        reports: existing?.reports || [],
+        preSessionChecks: existing?.preSessionChecks || [],
+        postSessionNotes: existing?.postSessionNotes || [],
+        testResults: existing?.testResults || [],
+        intake: existing?.intake || defaultIntake(),
+        tasks: existing?.tasks || [],
+        sessions: existing?.sessions || []
       };
-      state.clients.push(migrateClient(c));
+      const migrated = migrateClient(c);
+      state.clients = existing
+        ? state.clients.map(client => client.id === existing.id ? migrated : client)
+        : [...state.clients, migrated];
       state.activeClientId = c.id;
       save();
+      editingClientId = "";
       e.currentTarget.reset();
       closeModal("clientModal");
       viewName = "client";
       renderShell();
-      toast("Dodano klienta");
+      toast(existing ? "Klient zaktualizowany" : "Dodano klienta");
     });
 
     $("#measurementForm").addEventListener("submit", async e => {
@@ -9057,9 +9508,10 @@ Initial 83.45 64.95 18.10
       const fd = new FormData(e.currentTarget);
       const validationError = validateMeasurementBeforeSave(fd);
       if (validationError) return toast(validationError);
+      const existing = editingMeasurementId ? (c.measurements || []).find(item => item.id === editingMeasurementId) : null;
       const file = e.currentTarget.tanitaPdf.files?.[0];
       let pdf = pendingMeasurementPdf;
-      if (file && !pdf.dataUrl) {
+      if (file) {
         try {
           pdf = await readTanitaPdfFile(file);
         } catch (error) {
@@ -9067,7 +9519,8 @@ Initial 83.45 64.95 18.10
         }
       }
       const measurement = migrateMeasurement({
-        id: `m${Date.now()}`,
+        ...(existing || {}),
+        id: existing?.id || `m${Date.now()}`,
         date: fd.get("date"),
         source: "Tanita",
         weightKg: fd.get("weightKg"),
@@ -9083,18 +9536,22 @@ Initial 83.45 64.95 18.10
         bmi: fd.get("bmi"),
         boneMassKg: fd.get("boneMassKg"),
         proteinKg: fd.get("proteinKg"),
-        pdfName: pdf.name,
-        pdfDataUrl: pdf.dataUrl,
-        inputMethod: pdf.inputMethod || pdf.sourceMode || (pdf.dataUrl ? "pdf" : "manual"),
-        parseStatus: pdf.parseStatus || (pdf.dataUrl ? "manual_required" : "not_attempted"),
-        parsedFields: Array.isArray(pdf.parsedFields) ? pdf.parsedFields : [],
-        sourceMode: pdf.sourceMode || pdf.inputMethod || (pdf.dataUrl ? "pdf" : "manual"),
-        pdfAutoFilled: Boolean(pdf.autoFilled),
+        pdfName: pdf.name || existing?.pdfName || "",
+        pdfDataUrl: pdf.dataUrl || existing?.pdfDataUrl || "",
+        inputMethod: pdf.inputMethod || pdf.sourceMode || existing?.inputMethod || ((pdf.dataUrl || existing?.pdfDataUrl) ? "pdf" : "manual"),
+        parseStatus: pdf.parseStatus || existing?.parseStatus || ((pdf.dataUrl || existing?.pdfDataUrl) ? "manual_required" : "not_attempted"),
+        parsedFields: Array.isArray(pdf.parsedFields) ? pdf.parsedFields : (existing?.parsedFields || []),
+        sourceMode: pdf.sourceMode || pdf.inputMethod || existing?.sourceMode || ((pdf.dataUrl || existing?.pdfDataUrl) ? "pdf" : "manual"),
+        pdfAutoFilled: Boolean(pdf.autoFilled || existing?.pdfAutoFilled),
         trainerInterpretation: fd.get("trainerInterpretation").trim(),
         clientSummary: fd.get("clientSummary").trim()
       });
-      c.measurements.push(measurement);
+      c.measurements = Array.isArray(c.measurements) ? c.measurements : [];
+      c.measurements = existing
+        ? c.measurements.map(item => item.id === existing.id ? measurement : item)
+        : [...c.measurements, measurement];
       save();
+      editingMeasurementId = "";
       e.currentTarget.reset();
       pendingMeasurementPdf = initialMeasurementPdf();
       setMeasurementPdfStatus("Brak załączonego PDF.", "Wymaga ręcznego uzupełnienia", "gold", "");
@@ -9102,7 +9559,7 @@ Initial 83.45 64.95 18.10
       closeModal("measurementModal");
       viewName = "measurements";
       renderShell();
-      toast("Pomiar zapisany");
+      toast(existing ? "Pomiar zaktualizowany" : "Pomiar zapisany");
     });
 
     $("#polarForm").addEventListener("submit", e => {
@@ -9122,10 +9579,6 @@ Initial 83.45 64.95 18.10
         zoneModerateMin: fd.get("zoneModerateMin"),
         zoneHighMin: fd.get("zoneHighMin"),
         rpe: fd.get("rpe"),
-        vasBefore: fd.get("vasBefore"),
-        vasAfter: fd.get("vasAfter"),
-        readiness: fd.get("readiness"),
-        sleepQuality: fd.get("sleepQuality"),
         trainerNote: fd.get("trainerNote").trim(),
         clientSummary: fd.get("clientSummary").trim(),
         loadDecision: fd.get("loadDecision")
