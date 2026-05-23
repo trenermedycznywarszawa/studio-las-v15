@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.3.1 | Workflow QA Cleanup</title>
+  <title>Studio Las OS 7.3.2 | Exercise Atlas QA</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -842,7 +842,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.1</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.2</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -895,7 +895,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.1</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.2</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1155,7 +1155,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.3.1";
+    const APP_VERSION = "7.3.2";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -1241,9 +1241,9 @@
       { value: "category", label: "Kategoria" }
     ];
     const EXERCISE_LIBRARY_SEED_VERSION_KEY = "studioLasExerciseLibrarySeedVersion";
-    const EXERCISE_LIBRARY_CORE_VERSION = "core-v4-workflow-qa";
+    const EXERCISE_LIBRARY_CORE_VERSION = "core-v5-atlas-qa";
     const EXERCISE_VIDEO_SEED_VERSION_KEY = "studioLasExerciseVideoSeedVersion";
-    const EXERCISE_VIDEO_SEED_VERSION = "video-v3-strength";
+    const EXERCISE_VIDEO_SEED_VERSION = "video-v4-atlas-qa";
     const STRENGTH_SEED_VERSION_KEY = "studioLasStrengthSeedVersion";
     const STRENGTH_SEED_VERSION = "strength-v1";
     const CORE_EXERCISE_SOURCE = "Plan początkujący";
@@ -1284,7 +1284,29 @@
       "strength-wioslowanie-sztanga": "https://youtu.be/b8fN_gmP6Es",
       "strength-wyciskanie-nad-glowa-hantle": "https://youtu.be/n4qcVghtAEg",
       "strength-wykroki-boczne": "https://youtu.be/ik5h53Ghrgo",
-      "strength-zuraw": "https://youtu.be/RwsKhIIkNIM"
+      "strength-zuraw": "https://youtu.be/RwsKhIIkNIM",
+      "qa-bird-dog": "https://youtu.be/ocZ_dhQCEqo"
+    };
+    const EXERCISE_VIDEO_SAFE_ALIASES = {
+      "bird dog": ["bird dog", "pies-ptak", "przeciwległa ręka i noga"],
+      "dead bug": ["dead bug", "martwy robak"],
+      "wall slides": ["wall slide", "wall slides", "ślizgi ramion przy ścianie"],
+      "face pull": ["face pull"],
+      "goblet squat": ["goblet squat", "przysiad goblet"],
+      "glute bridge": ["glute bridge", "most biodrowy"],
+      "hip thrust": ["hip thrust"],
+      "trx row": ["trx row", "wiosłowanie trx"],
+      "pallof press": ["pallof press"],
+      "plank": ["plank", "deska"],
+      "side plank": ["side plank", "deska bokiem"],
+      "cat-cow": ["cat cow", "cat-cow", "koci grzbiet"],
+      "step-up": ["step up", "step-up", "wejście na stopień"]
+    };
+    const EXERCISE_ATLAS_QA_AUDIT = {
+      version: "7.3.2",
+      localVideoSources: "Brak plików XLSX/CSV/JSON z Atlasem w repo i workspace podczas audytu.",
+      safeVideoMatchesAdded: ["qa-bird-dog -> bird-dog-prawa-reka-lewa-noga"],
+      skippedAmbiguousVideoMatches: ["qa-goblet-squat: dostępny film dotyczy wariantu do boxa", "qa-pallof-press-standing: dostępny film nie potwierdza jednoznacznie pozycji stojącej", "atlas-wall-slides: brak lokalnego źródła z pewnym linkiem", "qa-cat-cow: brak lokalnego źródła z pewnym linkiem"]
     };
     const DIAGNOSTIC_ATLAS_AUDIT = {
       atlasTests: 27,
@@ -1305,6 +1327,181 @@
         "Test kontroli motorycznej i ciśnienia wewnątrzbrzusznego (IAP)"
       ]
     };
+
+    const EXERCISE_REQUIRED_STOP_SIGNAL = /ostry ból|ból promieniujący|promieniowanie|drętwienie|zawroty głowy|narastający ból|utrata kontroli|nietypowe objawy/i;
+    const EXERCISE_GENERIC_TEXT = /wymaga dopracowania|wymaga doprecyzowania|do uzupełnienia|do ustalenia przez trenera|instrukcja klienta wymaga|nie przypisuj klientowi bez/i;
+    const KNOWN_EXERCISE_DUPLICATE_ALIASES = {
+      "qa-bird-dog": "bird-dog-prawa-reka-lewa-noga"
+    };
+    const EXERCISE_CLIENT_NAME_ALIASES = {
+      "strength-dumbbell-shrug": "Wzruszenia barków z hantlami",
+      "strength-low-row": "Wiosłowanie niskie na wyciągu",
+      "strength-klatka-na-podlodze-hantle": "Wyciskanie hantli leżąc na podłodze",
+      "atlas-db-bench-press": "Wyciskanie hantli na ławce",
+      "strength-lawka-hantle-15": "Wyciskanie hantli na ławce skośnej",
+      "strength-lawka-sztanga": "Wyciskanie sztangi leżąc",
+      "strength-lawka-sztanga-wasko": "Wyciskanie sztangi wąsko",
+      "strength-martwy-ciag-neutralny": "Martwy ciąg w ustawieniu neutralnym",
+      "strength-narciarz": "Przyciąganie prostych ramion na wyciągu",
+      "strength-podciaganie-nachwyt": "Podciąganie nachwytem",
+      "strength-podciaganie-podchwyt": "Podciąganie podchwytem",
+      "strength-przyciaganie-na-kolach": "Wiosłowanie na kołach gimnastycznych",
+      "strength-przysiad-bulgarski": "Przysiad bułgarski",
+      "strength-przysiady-z-podskokiem": "Przysiad z podskokiem",
+      "strength-przywodzenie-nog-maszyna": "Przywodzenie nóg na maszynie",
+      "strength-rear-delt-fly": "Odwodzenie ramion na tył barku",
+      "strength-rozpietki-maszyna": "Rozpiętki na maszynie",
+      "strength-triceps-wyciag": "Prostowanie ramion na wyciągu",
+      "strength-wioslowanie-sztanga": "Wiosłowanie sztangą w opadzie",
+      "strength-wyciag-klatka-dol": "Przyciąganie linki do klatki z dołu",
+      "strength-wyciag-klatka-srodek": "Przyciąganie linki do klatki na wysokości środka",
+      "strength-wyciskanie-francuskie": "Wyciskanie francuskie",
+      "strength-wyciskanie-kettli-jednoracz": "Wyciskanie kettla jednorącz",
+      "strength-wyciskanie-nad-glowa-hantle": "Wyciskanie hantli nad głowę",
+      "strength-wykroki-boczne": "Wykroki boczne",
+      "strength-wykroki-z-kettlami": "Wykroki z kettlami",
+      "strength-wyprosty-nog-maszyna": "Wyprosty nóg na maszynie",
+      "atlas-lateral-raise": "Unoszenie ramion bokiem",
+      "strength-wznosy-bokiem-kettle": "Unoszenie ramion bokiem z kettlem",
+      "atlas-standing-calf-raise": "Wspięcia na palce stojąc",
+      "strength-wznosy-lydek-1-noga": "Wspięcia na palce jednonóż",
+      "strength-zuraw": "Żuraw / Nordic curl"
+    };
+
+    function exerciseInstructionLineCount(text = "") {
+      return String(text || "").split(/\n+/).map(line => line.replace(/^[-•\d. ]+/, "").trim()).filter(Boolean).length;
+    }
+
+    function isGenericExerciseText(value = "") {
+      return !String(value || "").trim() || EXERCISE_GENERIC_TEXT.test(String(value || ""));
+    }
+
+    function exerciseHasRegressionOrProgression(exercise = {}) {
+      return !isGenericExerciseText(exercise.regressions) || !isGenericExerciseText(exercise.progressions);
+    }
+
+    function exerciseHasReviewedContent(exercise = {}) {
+      const technicalName = String(exercise.technicalName || exercise.name || "").trim();
+      const clientName = String(exercise.clientName || "").trim();
+      return Boolean(
+        technicalName &&
+        clientName &&
+        !isGenericExerciseText(exercise.goal) &&
+        !isGenericExerciseText(exercise.dosageDefault) &&
+        exerciseInstructionLineCount(exercise.clientInstruction) >= 3 &&
+        !isGenericExerciseText(exercise.commonMistakes) &&
+        EXERCISE_REQUIRED_STOP_SIGNAL.test(String(exercise.stopCriteria || "")) &&
+        exerciseHasRegressionOrProgression(exercise) &&
+        String(exercise.level || "").trim() &&
+        String(exercise.stage || "").trim()
+      );
+    }
+
+    function exerciseDefaultDose(exercise = {}) {
+      const category = `${exercise.category || ""} ${exercise.trainingBlock || ""}`.toLowerCase();
+      const pattern = String(exercise.pattern || "").toLowerCase();
+      if (/oddech/.test(category + pattern)) return "2-4 serie po 4-6 spokojnych oddechów";
+      if (/mobil|rozciąg|tkanki|rolowanie/.test(category)) return "1-3 serie po 6-10 powtórzeń albo 30-60 s na stronę";
+      if (/carry/.test(pattern)) return "3-5 serii po 20-40 m lub 20-40 s";
+      if (/plyometr|moc|dynamiczne|skok|rzut|skip/.test(category + pattern)) return "2-4 serie po 3-6 jakościowych powtórzeń";
+      if (/aktywacja|kontrola|core|stabilizacja/.test(category)) return "2-3 serie po 8-12 spokojnych powtórzeń";
+      return "2-4 serie po 6-12 powtórzeń technicznych";
+    }
+
+    function exerciseDefaultTempo(exercise = {}) {
+      const category = `${exercise.category || ""} ${exercise.trainingBlock || ""}`.toLowerCase();
+      const pattern = String(exercise.pattern || "").toLowerCase();
+      if (/oddech/.test(category + pattern)) return "Wydech 4-6 s, bez forsowania.";
+      if (/plyometr|moc|dynamiczne|skok|rzut|skip/.test(category + pattern)) return "Szybki ruch, pełna kontrola lądowania lub końca ruchu.";
+      if (/siła|strength/.test(category)) return "3010 albo 3111, dopóki technika jest stabilna.";
+      return "Spokojne, kontrolowane tempo bez szarpania.";
+    }
+
+    function exerciseDefaultInstruction(exercise = {}) {
+      const pattern = compareHeader([exercise.pattern, exercise.name, exercise.category].join(" "));
+      if (/przysiad|squat/.test(pattern)) {
+        return "- Ustaw stopy stabilnie na podłodze.\n- Zejdź tylko do zakresu, który kontrolujesz.\n- Prowadź kolana w stronę stóp.\n- Wróć do pozycji stojącej bez odbijania.\n- Przerwij, jeśli pojawi się ostry ból.";
+      }
+      if (/hinge|martwy|hip thrust|bridge|biodr/.test(pattern)) {
+        return "- Ustaw stopy stabilnie i przygotuj tułów.\n- Cofnij biodra albo unieś je tylko w kontrolowanym zakresie.\n- Nie wyginaj lędźwi na siłę.\n- Wróć do pozycji startowej spokojnie.\n- Przerwij, jeśli pojawi się ból promieniujący lub drętwienie.";
+      }
+      if (/pull|row|wios|podciag|przyciag|face pull/.test(pattern)) {
+        return "- Ustaw tułów stabilnie i opuść barki z dala od uszu.\n- Przyciągnij dłonie lub uchwyt bez szarpania.\n- Prowadź łopatki spokojnie, bez spinania szyi.\n- Wróć do startu z kontrolą.\n- Przerwij, jeśli pojawi się drętwienie albo kłucie w barku.";
+      }
+      if (/push|press|wycisk|pomp/.test(pattern)) {
+        return "- Ustaw ciało stabilnie przed pierwszym powtórzeniem.\n- Napnij lekko brzuch i nie wypychaj żeber.\n- Wypchnij ciężar albo ciało bez szarpania.\n- Opuść ręce spokojnie do pozycji startowej.\n- Przerwij, jeśli bark lub szyja reagują ostrym bólem.";
+      }
+      if (/core|antyrot|plank|brzuch/.test(pattern)) {
+        return "- Ustaw pozycję tak, żeby oddech był spokojny.\n- Napnij lekko brzuch bez zaciskania szyi.\n- Wykonaj ruch wolno albo utrzymaj pozycję krótko.\n- Zakończ serię, zanim tracisz kontrolę.\n- Przerwij, jeśli pojawi się ból lędźwi lub drętwienie.";
+      }
+      return "- Ustaw pozycję startową stabilnie.\n- Wykonaj ruch spokojnie, bez szarpania.\n- Oddychaj i utrzymuj kontrolę tułowia.\n- Wróć do pozycji startowej z kontrolą.\n- Przerwij, jeśli pojawi się ostry ból.";
+    }
+
+    function exerciseDefaultGoal(exercise = {}) {
+      const pattern = String(exercise.pattern || exercise.category || "ruchu").toLowerCase();
+      return `Dopracować wzorzec ${pattern} w wariancie dobranym do aktualnej kontroli klienta.`;
+    }
+
+    function exerciseDefaultCoachNotes(exercise = {}) {
+      return "Użyj tylko wtedy, gdy wariant, zakres i obciążenie pasują do celu sesji. Obserwuj tempo, oddech, kontrolę tułowia i kompensacje. Regresuj przy utracie jakości; progresuj dopiero po powtarzalnej technice i spokojnej reakcji po sesji.";
+    }
+
+    function exerciseDefaultMistakes(exercise = {}) {
+      const pattern = compareHeader([exercise.pattern, exercise.name, exercise.category].join(" "));
+      if (/przysiad|wykrok|kolano|squat|lunge/.test(pattern)) return "Zapadanie kolan; odrywanie stóp; zbyt szybkie tempo; utrata kontroli tułowia.";
+      if (/bark|press|push|pull|row|wios|face/.test(pattern)) return "Unoszenie barków; kompensacja szyją; przeprost lędźwi; zbyt szybkie tempo.";
+      if (/hinge|martwy|biodr/.test(pattern)) return "Kompensacja lędźwiami; brak pracy bioder; szarpanie ciężaru; utrata kontroli oddechu.";
+      return "Za szybkie tempo; brak kontroli oddechu; skracanie zakresu ruchu; utrata stabilnej pozycji.";
+    }
+
+    function exerciseDefaultRegressions(exercise = {}) {
+      const pattern = compareHeader([exercise.pattern, exercise.name, exercise.category].join(" "));
+      if (/przysiad|squat/.test(pattern)) return "Mniejszy zakres; wyższy box lub ławka; wsparcie TRX.";
+      if (/push|press|pomp/.test(pattern)) return "Mniejszy zakres; lżejszy ciężar; wyższe podparcie lub wersja siedząca.";
+      if (/pull|row|wios|podciag/.test(pattern)) return "Lżejszy opór; łatwiejszy kąt ciała; krótszy zakres ruchu.";
+      if (/hinge|martwy|biodr/.test(pattern)) return "Hip hinge z kijem; mniejszy zakres; lżejszy ciężar.";
+      return "Mniejszy zakres; wolniejsze tempo; łatwiejsza pozycja startowa.";
+    }
+
+    function exerciseDefaultProgressions(exercise = {}) {
+      const pattern = compareHeader([exercise.pattern, exercise.name, exercise.category].join(" "));
+      if (/carry/.test(pattern)) return "Dłuższy dystans; większy ciężar; wariant jednorącz.";
+      if (/przysiad|squat/.test(pattern)) return "Niższy box; wolniejsze tempo; większy ciężar.";
+      if (/push|press|pull|row|wios/.test(pattern)) return "Wolniejszy powrót; pauza w końcowej pozycji; stopniowo większy opór.";
+      return "Dłuższa pauza; większy zakres tylko przy kontroli; stopniowo większy opór.";
+    }
+
+    function applyExerciseQaDefaults(exercise = {}, options = {}) {
+      const next = { ...exercise };
+      if (!String(next.technicalName || "").trim()) next.technicalName = next.name || next.clientName || "";
+      if (EXERCISE_CLIENT_NAME_ALIASES[next.id]) next.clientName = EXERCISE_CLIENT_NAME_ALIASES[next.id];
+      if (!String(next.clientName || "").trim()) next.clientName = next.name || next.technicalName || "";
+      if (isGenericExerciseText(next.goal)) next.goal = exerciseDefaultGoal(next);
+      if (isGenericExerciseText(next.dosageDefault)) next.dosageDefault = exerciseDefaultDose(next);
+      if (isGenericExerciseText(next.tempo)) next.tempo = exerciseDefaultTempo(next);
+      if (isGenericExerciseText(next.breathing)) next.breathing = "Oddychaj spokojnie i nie wstrzymuj oddechu w najtrudniejszej części ruchu.";
+      if (isGenericExerciseText(next.clientInstruction) || exerciseInstructionLineCount(next.clientInstruction) < 3) next.clientInstruction = exerciseDefaultInstruction(next);
+      if (isGenericExerciseText(next.coachNotes)) next.coachNotes = exerciseDefaultCoachNotes(next);
+      if (isGenericExerciseText(next.commonMistakes)) next.commonMistakes = exerciseDefaultMistakes(next);
+      if (isGenericExerciseText(next.stopCriteria) || !EXERCISE_REQUIRED_STOP_SIGNAL.test(String(next.stopCriteria || ""))) {
+        next.stopCriteria = "Przerwij, jeśli pojawia się ostry ból, ból promieniujący, drętwienie, zawroty głowy, narastający ból stawu, utrata kontroli ruchu albo objawy nietypowe dla klienta.";
+      }
+      if (isGenericExerciseText(next.regressions)) next.regressions = exerciseDefaultRegressions(next);
+      if (isGenericExerciseText(next.progressions)) next.progressions = exerciseDefaultProgressions(next);
+      if (isGenericExerciseText(next.contraindications)) {
+        next.contraindications = "Ostrożnie przy aktywnym ostrym bólu, świeżym urazie, zaostrzeniu objawów, braku kontroli pozycji lub gdy w złożonych przypadkach medycznych wymagana jest zgoda specjalisty.";
+      }
+      next.tags = uniqueList([...(Array.isArray(next.tags) ? next.tags : splitList(next.tags)), next.pattern, next.region, next.equipment].filter(Boolean).flatMap(item => splitList(item)));
+      if (KNOWN_EXERCISE_DUPLICATE_ALIASES[next.id]) {
+        next.duplicateAliasOf = KNOWN_EXERCISE_DUPLICATE_ALIASES[next.id];
+        next.qualityStatus = "needs_review";
+      } else if (options.forceNeedsReview) {
+        next.qualityStatus = "needs_review";
+      } else if (next.qualityStatus === "reviewed" && !exerciseHasReviewedContent(next)) {
+        next.qualityStatus = "needs_review";
+      }
+      return next;
+    }
 
     function getStudioLasDiagnosticTests() {
       const atlasRows = [
@@ -2650,7 +2847,7 @@
         tags: ["punkt startowy", "klient początkujący", "bez sprzętu", "do domu"],
         beginnerFriendly: true,
         qualityStatus: "reviewed",
-        source: "Studio Las OS 7.3.1 QA",
+        source: "Studio Las OS 7.3.2 QA",
         sourceOrder: 2000,
         linkedTests: [],
         strengthSet: false,
@@ -3346,7 +3543,7 @@
       const primaryMuscles = normalizeMuscleList(exercise.primaryMuscles?.length ? exercise.primaryMuscles : musclesByScore(muscleMap, 3));
       const secondaryMuscles = normalizeMuscleList(exercise.secondaryMuscles?.length ? exercise.secondaryMuscles : musclesByScore(muscleMap, 2));
       const supportMuscles = normalizeMuscleList(exercise.supportMuscles?.length ? exercise.supportMuscles : musclesByScore(muscleMap, 1));
-      return {
+      return applyExerciseQaDefaults({
         ...exercise,
         id,
         name,
@@ -3385,7 +3582,7 @@
         secondaryMuscles,
         supportMuscles,
         strengthSet: exercise.strengthSet === true
-      };
+      });
     }
 
     function getExerciseLibrary() {
@@ -4959,7 +5156,7 @@
       return `<div class="exercise-card">
         <div>
           <div class="name">${escapeHtml(ex.clientName || ex.name)}</div>
-          <div class="meta">${escapeHtml(ex.name || ex.clientName)}</div>
+          <div class="meta">${escapeHtml(ex.technicalName || ex.name || ex.clientName)}</div>
           <div class="meta">${escapeHtml([ex.category, ex.region, ex.stage].filter(Boolean).join(" · "))}</div>
         </div>
         <div class="tag-row">
@@ -4984,7 +5181,7 @@
       return `<div class="exercise-compact-row">
         <div>
           <div class="name">${escapeHtml(ex.clientName || ex.name)}</div>
-          <div class="meta">${escapeHtml(ex.name || ex.clientName)}</div>
+          <div class="meta">${escapeHtml(ex.technicalName || ex.name || ex.clientName)}</div>
           <div class="meta">${escapeHtml(ex.dosageDefault || "Dawka do ustalenia")}</div>
           ${needsReview ? `<div class="meta warn">Najpierw dopracuj instrukcję.</div>` : ""}
         </div>
