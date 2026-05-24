@@ -3,38 +3,40 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.3.5 | Context Quick Replies</title>
+  <title>Studio Las OS 7.3.6 | Calmer Client UI</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fffaf1'/%3E%3Cpath d='M32 12c9 10 14 20 14 28a14 14 0 0 1-28 0c0-8 5-18 14-28Z' fill='%236f8f68'/%3E%3Cpath d='M32 24v26M23 38h18' stroke='%231f2a24' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
   <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v11/images/damian-about.webp" />
   <style>
     :root {
-      --ink: #f4efe6;
-      --muted: #b8afa2;
-      --faint: #81786b;
-      --bg: #0f1110;
-      --panel: #171918;
-      --panel-2: #1f211f;
-      --line: #343832;
-      --green: #7fb069;
-      --green-2: #a8d08d;
-      --gold: #d8a657;
-      --red: #d36b62;
-      --blue: #75a7c8;
-      --shadow: 0 24px 70px rgba(0,0,0,.38);
+      --ink: #1f2a24;
+      --muted: #60685d;
+      --faint: #8b867b;
+      --bg: #f4efe6;
+      --panel: #fffaf1;
+      --panel-2: #f7efe2;
+      --line: rgba(70, 80, 65, .16);
+      --green: #6f8f68;
+      --green-2: #4f744a;
+      --gold: #b8894d;
+      --red: #b76558;
+      --blue: #6f8fa0;
+      --shadow: 0 18px 45px rgba(56, 49, 38, .12);
     }
 
     * { box-sizing: border-box; }
-    html { color-scheme: dark; max-width: 100%; overflow-x: hidden; }
+    html { color-scheme: light; max-width: 100%; overflow-x: hidden; }
     body {
       margin: 0;
       min-height: 100vh;
       max-width: 100%;
       overflow-x: hidden;
       background:
-        radial-gradient(circle at top left, rgba(127,176,105,.12), transparent 34rem),
-        linear-gradient(135deg, #0c0e0d 0%, #131512 52%, #0f1110 100%);
+        radial-gradient(circle at top left, rgba(111,143,104,.18), transparent 32rem),
+        radial-gradient(circle at bottom right, rgba(184,137,77,.12), transparent 30rem),
+        linear-gradient(135deg, #f7f1e7 0%, #f4efe6 48%, #ece3d3 100%);
       color: var(--ink);
       font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
       letter-spacing: 0;
@@ -55,8 +57,8 @@
       height: 100vh;
       padding: 18px 16px;
       border-right: 1px solid var(--line);
-      background: rgba(18,20,18,.82);
-      backdrop-filter: blur(22px);
+      background: rgba(255,250,241,.86);
+      backdrop-filter: blur(18px);
       display: flex;
       flex-direction: column;
       gap: 12px;
@@ -64,11 +66,11 @@
 
     .brand { display: flex; align-items: center; gap: 12px; padding: 2px 6px 12px; border-bottom: 1px solid var(--line); color: var(--ink); text-decoration: none; }
     .brand:hover, .brand:focus-visible { color: var(--ink); outline: none; }
-    .brand:focus-visible { box-shadow: 0 0 0 3px rgba(127,176,105,.16); border-radius: 12px; }
+    .brand:focus-visible { box-shadow: 0 0 0 3px rgba(111,143,104,.18); border-radius: 12px; }
     .mark {
       width: 42px; height: 42px; border-radius: 12px;
-      background: linear-gradient(145deg, rgba(127,176,105,.28), rgba(216,166,87,.16));
-      display: grid; place-items: center; border: 1px solid rgba(127,176,105,.34);
+      background: linear-gradient(145deg, rgba(111,143,104,.22), rgba(184,137,77,.14));
+      display: grid; place-items: center; border: 1px solid rgba(111,143,104,.26);
     }
     .mark svg { width: 26px; height: 26px; }
     .brand strong { display: block; font-family: Georgia, serif; font-size: 20px; line-height: 1; }
@@ -77,7 +79,7 @@
       min-height: 38px;
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: rgba(31,33,31,.56);
+      background: rgba(255,253,248,.72);
       color: var(--ink);
       text-decoration: none;
       display: inline-flex;
@@ -89,21 +91,21 @@
       font-size: 12px;
     }
     .home-return:hover,
-    .home-return:focus-visible { border-color: rgba(127,176,105,.42); background: rgba(127,176,105,.12); outline: none; }
+    .home-return:focus-visible { border-color: rgba(111,143,104,.34); background: rgba(111,143,104,.1); outline: none; }
 
     .client-switcher { display: grid; gap: 8px; }
     .label { color: var(--faint); font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: .12em; }
     select, input, textarea {
       width: 100%;
       color: var(--ink);
-      background: var(--panel-2);
+      background: #fffdf8;
       border: 1px solid var(--line);
       border-radius: 10px;
       padding: 11px 12px;
       outline: none;
     }
     textarea { min-height: 94px; resize: vertical; }
-    select:focus, input:focus, textarea:focus { border-color: rgba(127,176,105,.7); box-shadow: 0 0 0 3px rgba(127,176,105,.12); }
+    select:focus, input:focus, textarea:focus { border-color: rgba(111,143,104,.7); box-shadow: 0 0 0 3px rgba(111,143,104,.16); }
     .quick-replies {
       display: grid;
       gap: 7px;
@@ -123,8 +125,8 @@
       min-width: 0;
     }
     .quick-reply-chip {
-      border: 1px solid rgba(127,176,105,.24);
-      background: rgba(127,176,105,.08);
+      border: 1px solid rgba(111,143,104,.24);
+      background: rgba(111,143,104,.08);
       color: var(--muted);
       border-radius: 999px;
       padding: 6px 9px;
@@ -138,13 +140,13 @@
     .quick-reply-chip:hover,
     .quick-reply-chip:focus-visible {
       color: var(--ink);
-      border-color: rgba(127,176,105,.48);
-      background: rgba(127,176,105,.14);
+      border-color: rgba(111,143,104,.44);
+      background: rgba(111,143,104,.14);
       outline: none;
     }
     .quick-reply-toggle {
-      border-color: rgba(216,166,87,.24);
-      background: rgba(216,166,87,.08);
+      border-color: rgba(184,137,77,.24);
+      background: rgba(184,137,77,.08);
       color: var(--gold);
     }
 
@@ -167,17 +169,17 @@
       font-weight: 800;
       font-size: 12px;
     }
-    .nav button.active { color: var(--ink); background: rgba(127,176,105,.13); border-color: rgba(127,176,105,.26); }
+    .nav button.active { color: var(--ink); background: rgba(111,143,104,.13); border-color: rgba(111,143,104,.24); }
     .nav svg { width: 16px; height: 16px; flex: 0 0 auto; }
     .nav .client-panel-link { text-decoration: none; }
     .nav .client-panel-link:hover,
-    .nav .client-panel-link:focus-visible { color: var(--ink); background: rgba(255,255,255,.04); border-color: rgba(127,176,105,.18); }
+    .nav .client-panel-link:focus-visible { color: var(--ink); background: rgba(111,143,104,.09); border-color: rgba(111,143,104,.2); }
     body.client-mode .side-card { display: none; }
 
     .side-card {
       margin-top: auto;
       border: 1px solid var(--line);
-      background: rgba(31,33,31,.72);
+      background: rgba(255,253,248,.72);
       border-radius: 14px;
       padding: 11px;
     }
@@ -196,8 +198,8 @@
       gap: 18px;
       padding: 16px 28px;
       border-bottom: 1px solid var(--line);
-      background: rgba(15,17,16,.78);
-      backdrop-filter: blur(22px);
+      background: rgba(244,239,230,.84);
+      backdrop-filter: blur(18px);
     }
     .title h1 { margin: 0; font-size: 20px; line-height: 1.15; font-family: Georgia, serif; font-weight: 700; }
     .title p { margin: 5px 0 0; color: var(--muted); font-size: 13px; }
@@ -214,7 +216,7 @@
       width: min(260px, calc(100vw - 32px));
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: rgba(23,25,24,.98);
+      background: rgba(255,250,241,.98);
       box-shadow: var(--shadow);
       padding: 8px;
       display: grid;
@@ -231,7 +233,7 @@
       font-weight: 850;
     }
     .add-menu button:hover,
-    .add-menu button:focus-visible { background: rgba(127,176,105,.12); outline: none; }
+    .add-menu button:focus-visible { background: rgba(111,143,104,.11); outline: none; }
 
     .btn {
       min-height: 40px;
@@ -247,9 +249,9 @@
       justify-content: center;
       gap: 8px;
     }
-    .btn.primary { background: var(--green); border-color: var(--green); color: #071008; }
-    .btn.warning { background: rgba(216,166,87,.15); border-color: rgba(216,166,87,.38); color: #f1c981; }
-    .btn.danger { background: rgba(211,107,98,.14); border-color: rgba(211,107,98,.36); color: #f1aaa3; }
+    .btn.primary { background: var(--green); border-color: var(--green); color: #102016; }
+    .btn.warning { background: rgba(184,137,77,.13); border-color: rgba(184,137,77,.34); color: #76572e; }
+    .btn.danger { background: rgba(183,101,88,.1); border-color: rgba(183,101,88,.32); color: #8d3f35; }
 
     .content { max-width: 1320px; margin: 0 auto; padding: 26px; display: grid; gap: 18px; }
     .grid { display: grid; gap: 16px; }
@@ -259,13 +261,13 @@
     .span-2 { grid-column: span 2; }
 
     .panel {
-      background: rgba(23,25,24,.88);
+      background: rgba(255,250,241,.9);
       border: 1px solid var(--line);
       border-radius: 14px;
       box-shadow: var(--shadow);
       padding: 18px;
     }
-    .panel.soft { box-shadow: none; background: rgba(31,33,31,.62); }
+    .panel.soft { box-shadow: none; background: rgba(255,253,248,.66); }
     .panel-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 14px; margin-bottom: 14px; }
     .panel h2, .panel h3 { margin: 0; }
     .panel h2 { font-family: Georgia, serif; font-size: 22px; }
@@ -283,7 +285,7 @@
     .client-row, .session-row, .task-row {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: rgba(31,33,31,.56);
+      background: rgba(255,253,248,.72);
       padding: 13px;
       display: grid;
       gap: 8px;
@@ -301,25 +303,25 @@
       padding: 5px 8px;
       border: 1px solid var(--line);
       color: var(--muted);
-      background: rgba(15,17,16,.48);
+      background: rgba(255,253,248,.72);
       font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
       letter-spacing: .08em;
       white-space: nowrap;
     }
-    .pill.green { color: var(--green-2); border-color: rgba(127,176,105,.38); background: rgba(127,176,105,.12); }
-    .pill.gold { color: #f1c981; border-color: rgba(216,166,87,.38); background: rgba(216,166,87,.12); }
-    .pill.red { color: #f1aaa3; border-color: rgba(211,107,98,.38); background: rgba(211,107,98,.12); }
-    .pill.blue { color: #a6cce4; border-color: rgba(117,167,200,.38); background: rgba(117,167,200,.12); }
+    .pill.green { color: var(--green-2); border-color: rgba(111,143,104,.34); background: rgba(111,143,104,.1); }
+    .pill.gold { color: #76572e; border-color: rgba(184,137,77,.34); background: rgba(184,137,77,.1); }
+    .pill.red { color: #8d3f35; border-color: rgba(183,101,88,.34); background: rgba(183,101,88,.09); }
+    .pill.blue { color: #496e7d; border-color: rgba(111,143,160,.32); background: rgba(111,143,160,.09); }
 
-    .portal-hero { border-color: rgba(127,176,105,.34); background: linear-gradient(135deg, rgba(127,176,105,.14), rgba(31,33,31,.78)); }
+    .portal-hero { border-color: rgba(111,143,104,.28); background: linear-gradient(135deg, rgba(111,143,104,.14), rgba(255,253,248,.88)); }
     .portal-meta { display: flex; flex-wrap: wrap; gap: 8px; }
-    .portal-focus { border-color: rgba(216,166,87,.38); background: linear-gradient(135deg, rgba(216,166,87,.11), rgba(23,25,24,.9)); }
+    .portal-focus { border-color: rgba(184,137,77,.32); background: linear-gradient(135deg, rgba(184,137,77,.13), rgba(255,253,248,.9)); }
     .portal-info, .portal-metric, .doc-card, .exercise-card {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: rgba(31,33,31,.56);
+      background: rgba(255,253,248,.74);
       padding: 13px;
     }
     .portal-info p, .portal-metric p, .doc-card p { margin: 7px 0 0; }
@@ -331,14 +333,14 @@
     .filter-bar .form-field:first-child { grid-column: span 2; }
     .quick-filter-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .quick-filter-row .btn { min-height: 32px; padding: 7px 10px; font-size: 12px; border-radius: 999px; }
-    .quick-filter-row .btn.active { border-color: rgba(127,176,105,.68); background: rgba(127,176,105,.18); color: var(--green-2); }
+    .quick-filter-row .btn.active { border-color: rgba(111,143,104,.52); background: rgba(111,143,104,.14); color: var(--green-2); }
     .exercise-card { display: grid; gap: 10px; }
     .exercise-card .card-actions { display: flex; flex-wrap: wrap; gap: 8px; }
     .exercise-card .tag-row { display: flex; flex-wrap: wrap; gap: 6px; }
     .focus-note {
-      border: 1px solid rgba(117,167,200,.28);
+      border: 1px solid rgba(111,143,160,.24);
       border-radius: 12px;
-      background: rgba(117,167,200,.08);
+      background: rgba(111,143,160,.07);
       padding: 11px 12px;
       color: var(--muted);
       font-size: 13px;
@@ -347,12 +349,12 @@
     }
     .view-mode-row { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-top: 12px; }
     .view-mode-row .btn { min-height: 32px; padding: 7px 10px; font-size: 12px; }
-    .view-mode-row .btn.active { border-color: rgba(127,176,105,.68); background: rgba(127,176,105,.18); color: var(--green-2); }
+    .view-mode-row .btn.active { border-color: rgba(111,143,104,.52); background: rgba(111,143,104,.14); color: var(--green-2); }
     .exercise-compact-list { display: grid; gap: 8px; }
     .exercise-compact-row {
       border: 1px solid var(--line);
       border-radius: 10px;
-      background: rgba(31,33,31,.5);
+      background: rgba(255,253,248,.68);
       padding: 10px;
       display: grid;
       grid-template-columns: minmax(180px, 1.1fr) minmax(260px, 2fr) minmax(180px, auto);
@@ -367,9 +369,9 @@
     .home-plan-summary { display: grid; gap: 8px; }
     .home-plan-summary-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
     .home-plan-empty {
-      border: 1px dashed rgba(216,166,87,.48);
+      border: 1px dashed rgba(184,137,77,.42);
       border-radius: 12px;
-      background: rgba(216,166,87,.08);
+      background: rgba(184,137,77,.08);
       padding: 16px;
       display: grid;
       gap: 12px;
@@ -381,9 +383,9 @@
     .measurement-list { display: grid; gap: 10px; }
     .diagnostic-toolbar { display: grid; gap: 12px; }
     .diagnostic-preview {
-      border: 1px solid rgba(117,167,200,.3);
+      border: 1px solid rgba(111,143,160,.26);
       border-radius: 12px;
-      background: rgba(117,167,200,.08);
+      background: rgba(111,143,160,.07);
       padding: 13px;
       display: grid;
       gap: 8px;
@@ -393,7 +395,7 @@
     .diagnostic-test-row {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: rgba(31,33,31,.5);
+      background: rgba(255,253,248,.68);
       padding: 12px;
       display: grid;
       grid-template-columns: minmax(0, 1fr) auto;
@@ -405,29 +407,29 @@
     .diagnostic-result-card {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: rgba(31,33,31,.56);
+      background: rgba(255,253,248,.74);
       padding: 13px;
       display: grid;
       gap: 10px;
     }
     .diagnostic-warning {
-      border: 1px solid rgba(216,166,87,.42);
+      border: 1px solid rgba(184,137,77,.34);
       border-radius: 12px;
-      background: rgba(216,166,87,.1);
+      background: rgba(184,137,77,.09);
       padding: 11px 12px;
-      color: #f1c981;
+      color: #76572e;
       font-size: 13px;
       line-height: 1.45;
     }
     .measurement-card {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: rgba(31,33,31,.56);
+      background: rgba(255,253,248,.74);
       padding: 13px;
       display: grid;
       gap: 10px;
     }
-    .measurement-main { border-color: rgba(117,167,200,.42); background: linear-gradient(135deg, rgba(117,167,200,.12), rgba(23,25,24,.9)); }
+    .measurement-main { border-color: rgba(111,143,160,.28); background: linear-gradient(135deg, rgba(111,143,160,.09), rgba(255,253,248,.9)); }
     .measurement-metrics { display: flex; flex-wrap: wrap; gap: 8px; }
     .file-note { color: var(--muted); font-size: 12px; line-height: 1.4; }
     .file-status { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
@@ -435,7 +437,7 @@
     .measurement-readout {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: rgba(15,17,16,.34);
+      background: rgba(255,250,241,.66);
       padding: 12px;
       display: grid;
       gap: 6px;
@@ -448,13 +450,13 @@
       border-radius: 12px;
       padding: 12px;
       min-height: 104px;
-      background: rgba(31,33,31,.5);
+      background: rgba(255,253,248,.68);
       color: var(--ink);
       text-align: left;
       appearance: none;
     }
-    .step.active { border-color: rgba(127,176,105,.65); background: rgba(127,176,105,.12); }
-    .step.done { border-color: rgba(127,176,105,.3); }
+    .step.active { border-color: rgba(111,143,104,.52); background: rgba(111,143,104,.11); }
+    .step.done { border-color: rgba(111,143,104,.26); }
     .step strong { display: block; margin-top: 8px; font-size: 13px; }
     .step span { display: block; margin-top: 5px; color: var(--muted); font-size: 12px; line-height: 1.35; }
 
@@ -468,7 +470,7 @@
       height: 170px;
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: linear-gradient(180deg, rgba(255,255,255,.025), transparent);
+      background: linear-gradient(180deg, rgba(111,143,104,.08), transparent);
       overflow: hidden;
     }
     .chart svg { width: 100%; height: 100%; display: block; }
@@ -476,7 +478,7 @@
     .report {
       white-space: pre-wrap;
       color: var(--ink);
-      background: #111310;
+      background: #fffdf8;
       border: 1px solid var(--line);
       border-radius: 12px;
       padding: 16px;
@@ -575,7 +577,7 @@
     .report-quality-gate {
       border: 1px solid var(--line);
       border-radius: 12px;
-      background: rgba(31,33,31,.55);
+      background: rgba(255,253,248,.72);
       padding: 14px;
       margin-bottom: 14px;
       display: grid;
@@ -589,7 +591,7 @@
     .modal {
       position: fixed;
       inset: 0;
-      background: rgba(0,0,0,.62);
+      background: rgba(31,42,36,.36);
       display: none;
       align-items: center;
       justify-content: center;
@@ -649,7 +651,7 @@
         transform: translateX(-105%);
         transition: transform .22s ease;
         overflow-y: auto;
-        box-shadow: 18px 0 60px rgba(0,0,0,.38);
+      box-shadow: 18px 0 42px rgba(56,49,38,.18);
       }
       body.drawer-open .side { transform: translateX(0); }
       body.drawer-open { overflow: hidden; }
@@ -657,7 +659,7 @@
         position: fixed;
         inset: 0;
         z-index: 55;
-        background: rgba(0,0,0,.52);
+        background: rgba(31,42,36,.28);
         backdrop-filter: blur(2px);
       }
       body.drawer-open .drawer-backdrop { display: block; }
@@ -885,7 +887,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.5</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.6</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -932,13 +934,13 @@
     <main class="main">
       <header class="topbar">
         <div class="title">
-          <h1 id="screenTitle">Evidence-Based Command Center</h1>
-          <p id="screenSubtitle">Operacyjny pulpit pracy 1:1, diagnostyki, procesu i danych Tanita.</p>
+          <h1 id="screenTitle">Centrum prowadzenia</h1>
+          <p id="screenSubtitle">Spokojny pulpit pracy 1:1, procesu i decyzji trenera.</p>
         </div>
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.5</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.6</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1198,7 +1200,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.3.5";
+    const APP_VERSION = "7.3.6";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -1353,7 +1355,7 @@
       "step-up": ["step up", "step-up", "wejście na stopień"]
     };
     const EXERCISE_ATLAS_QA_AUDIT = {
-      version: "7.3.5",
+      version: "7.3.6",
       localVideoSources: "ATLAS-ĆWICZEŃ.xlsx: 879 hyperlinków; 10.2024-Atlas-cwiczen-byd797p.xlsx: 1107 hyperlinków; 1676 unikalnych URL.",
       safeVideoMatchesAdded: ["atlas-db-bench-press -> DB - BENCH PRESS", "qa-pallof-press-standing -> BAND - PALLOF PRESS (STANDING)", "strength-klatka-na-podlodze-hantle -> DB - FLOOR PRESS", "strength-lawka-sztanga -> Wyciskanie sztangi leżąc", "strength-lawka-sztanga-wasko -> BB - BENCH PRESS (CLOSE GRIP)", "strength-pompki -> Pompki", "strength-wyciskanie-kettli-jednoracz -> KB - SINGLE ARM OVERHEAD PRESS"],
       skippedAmbiguousVideoMatches: ["atlas-one-arm-db-row: kilka wariantów DB single arm row z różnym podparciem", "atlas-med-ball-chest-throw: kilka wariantów CM/NCM i pozycji", "atlas-single-arm-farmer-carry: źródło nie potwierdza wariantu jednorącz", "atlas-wall-slides: brak pewnego linku wall slide/serratus wall slide", "qa-goblet-squat: brak jednoznacznego źródła goblet squat bez innego wariantu"]
@@ -4719,7 +4721,7 @@
     function render() {
       const c = activeClient();
       const titles = {
-        command: ["Evidence-Based Command Center", "Dzisiejsze decyzje, ryzyka, priorytety i dane procesu."],
+        command: ["Centrum prowadzenia", "Dzisiejsze decyzje, priorytety i spokojny kierunek pracy."],
         todaySession: ["Sesja dzisiaj", "Szybkie centrum pracy przed i po sesji z aktywnym klientem."],
         intake: ["Ankieta", "Import CSV, mapa startowa i triage procesu przed pierwszą sesją."],
         client: ["Profil klienta", "Jedno miejsce na hipotezę, cel, komunikację i czerwone flagi."],
@@ -4733,7 +4735,7 @@
         diagnosticTests: ["Testy", "Obserwacje ruchowe zapisane jako wskazówki do decyzji trenera."],
         decision: ["Decyzja tygodniowa", "Silnik rekomendacji na podstawie procesu, sesji, Polar, Tanita i zadań."],
         report: ["Raport dobrostanu", "Gotowy język dla klienta bez ręcznego składania notatek."],
-        clientPortal: ["Panel klienta", "Prosty widok procesu dla aktualnie wybranego klienta."]
+        clientPortal: ["Panel klienta", "Spokojny widok procesu dla aktualnie wybranego klienta."]
       };
       const title = titles[viewName] || titles.command;
       const clientMode = viewName === "clientPortal";
@@ -4772,14 +4774,14 @@
       const milestones = state.clients.flatMap(c => c.sessions.filter(s => s.milestone).map(s => ({ client: c.name, date: s.date, text: s.milestone }))).sort((a,b) => b.date.localeCompare(a.date)).slice(0, 5);
       view.innerHTML = `
         <div class="grid cols-4">
-          ${kpi("Klienci aktywni", state.clients.length, `${stable} stabilnych klinicznie`, "good")}
+          ${kpi("Klienci aktywni", state.clients.length, `${stable} ze spokojnym sygnałem procesu`, "good")}
           ${kpi("Sesje łącznie", allSessions, "pełny ślad pracy", "info")}
           ${kpi("VAS teraz", m.vasNow ?? "–", m.vasDelta !== null ? `zmiana od startu: -${m.vasDelta}` : "potrzebne dane", m.vasNow <= 3 ? "good" : m.vasNow <= 6 ? "warn" : "bad")}
           ${kpi("Mobilność", m.mobility !== null ? `${m.mobility}%` : "–", m.mobilityDelta !== null ? `+${m.mobilityDelta}% od startu` : "potrzebne dane", "good")}
         </div>
         <div class="grid cols-3">
           <section class="panel span-2">
-            <div class="panel-head"><div><h2>Lista kliniczna</h2><p>Nie kto jest w bazie, tylko kto wymaga Twojej uwagi.</p></div>${pill("triage", "blue")}</div>
+            <div class="panel-head"><div><h2>Lista procesu</h2><p>Kto dziś potrzebuje Twojej uwagi i jasnego kolejnego kroku.</p></div>${pill("triage", "blue")}</div>
             <div class="grid">
               ${state.clients.map(clientCard).join("")}
             </div>
@@ -4794,7 +4796,7 @@
           <div class="grid cols-3">
             <div class="portal-info"><div class="label">Rekomendacja</div><p>${escapeHtml(decisionLabel(decision.recommendation))}</p></div>
             <div class="portal-info"><div class="label">Powody</div><p>${escapeHtml(decision.reasons.slice(0, 2).join(" "))}</p></div>
-            <div class="portal-info"><div class="label">Największe ryzyko</div><p>${escapeHtml(decision.risks[0] || "Brak dużego sygnału ryzyka.")}</p></div>
+            <div class="portal-info"><div class="label">Najważniejszy sygnał</div><p>${escapeHtml(decision.risks[0] || "Brak dużego sygnału ograniczającego.")}</p></div>
           </div>
           <div style="margin-top:12px"><button class="btn primary" id="commandDecisionBtn">Przejdź do decyzji</button></div>
         </section>
@@ -4803,7 +4805,7 @@
           <div class="grid cols-3">
             <div class="portal-info"><div class="label">Aktywny klient</div><p>${escapeHtml(active.name)}</p></div>
             <div class="portal-info"><div class="label">Rekomendacja na dziś</div><p>${escapeHtml(decision.label)}</p></div>
-            <div class="portal-info"><div class="label">Największe ryzyko</div><p>${escapeHtml(decision.risks[0] || "Brak dużego sygnału ryzyka.")}</p></div>
+            <div class="portal-info"><div class="label">Najważniejszy sygnał</div><p>${escapeHtml(decision.risks[0] || "Brak dużego sygnału ograniczającego.")}</p></div>
           </div>
           <div style="margin-top:12px"><button class="btn primary" id="commandTodaySessionBtn">Przejdź do Sesja dzisiaj</button></div>
         </section>
@@ -4894,7 +4896,7 @@
             ${fieldBlock("Rekomendacja", decisionLabel(decision.recommendation))}
             ${fieldBlock("Co robi trener", decision.trainerAction)}
             <div class="panel soft"><div class="label">Czego nie robić</div>${renderTextList(decision.doNotDo)}</div>
-            ${fieldBlock("Największe ryzyko", biggestRisk)}
+            ${fieldBlock("Najważniejszy sygnał", biggestRisk)}
           </div>
         </section>
 
@@ -4914,7 +4916,7 @@
             <form id="preSessionCheckForm" class="form-grid">
               <div class="form-field full"><label><input type="checkbox" name="painIncreased"> Czy ból wzrósł od ostatniej sesji?</label></div>
               <div class="form-field full"><label><input type="checkbox" name="poorSleep"> Czy sen/regeneracja były słabe?</label></div>
-              <div class="form-field full"><label><input type="checkbox" name="homePlanDone"> Czy plan domowy wykonany?</label></div>
+              <div class="form-field full"><label><input type="checkbox" name="homePlanDone"> Czy plan między spotkaniami był wykonany?</label></div>
               <div class="form-field full"><label><input type="checkbox" name="newSymptoms"> Czy są nowe objawy?</label></div>
               <div class="form-field full"><label><input type="checkbox" name="redFlagConcern"> Czy jest obawa o czerwoną flagę?</label></div>
               <div class="form-field full"><label class="label">Planowana decyzja</label><select name="plannedDecision"><option value="progress">Progres</option><option value="maintain" selected>Utrzymaj</option><option value="regress">Cofnij</option><option value="consult">Konsultacja</option></select></div>
@@ -4929,7 +4931,7 @@
               <div class="form-field full"><label class="label">Co zrobiliśmy?</label><textarea name="whatWeDid"></textarea></div>
               <div class="form-field full"><label class="label">Jak klient zareagował?</label><textarea name="clientResponse"></textarea></div>
               <div class="form-field full"><label class="label">Decyzja po sesji</label><select name="decision"><option value="progress">Progres</option><option value="maintain" selected>Utrzymaj</option><option value="regress">Cofnij</option><option value="consult">Konsultacja</option></select></div>
-              <div class="form-field full"><label class="label">Zadanie domowe do następnego razu</label><textarea name="homeTask"></textarea></div>
+              <div class="form-field full"><label class="label">Ruch do wykonania przed kolejnym spotkaniem</label><textarea name="homeTask"></textarea></div>
               <div class="form-field full"><label class="label">Komunikat dla klienta</label><textarea name="clientMessage"></textarea></div>
               <button class="btn primary full" type="submit">Zapisz notatkę</button>
             </form>
@@ -5019,7 +5021,7 @@
         c.tasks.push({ text: homeTask, done: false, createdAt: today(), source: "postSessionNote" });
       }
       save();
-      toast(homeTask ? "Notatka zapisana i dodano zadanie domowe" : "Notatka po sesji zapisana");
+      toast(homeTask ? "Notatka zapisana i dodano ruch do wykonania" : "Notatka po sesji zapisana");
       renderTodaySession();
     }
 
@@ -6245,7 +6247,7 @@
         </section>
 
         <section class="panel">
-          <div class="panel-head"><h2>Zadanie na dziś</h2>${pill(activeHomePlanExercises(c).length ? "jedno działanie" : "do ustalenia", activeHomePlanExercises(c).length ? "green" : "gold")}</div>
+          <div class="panel-head"><h2>Ruch do wykonania</h2>${pill(activeHomePlanExercises(c).length ? "jeden spokojny krok" : "do ustalenia", activeHomePlanExercises(c).length ? "green" : "gold")}</div>
           ${renderPortalTodayTask(c)}
         </section>
 
@@ -6255,7 +6257,7 @@
         </section>
 
         <section class="panel" id="clientPortalPlanSection">
-          <div class="panel-head"><h2>Plan domowy</h2>${pill("zadania ruchowe", "green")}</div>
+          <div class="panel-head"><h2>Plan między spotkaniami</h2>${pill("ruch do wykonania", "green")}</div>
           ${renderPortalHomePlan(c)}
         </section>
 
@@ -6291,7 +6293,7 @@
           <div class="measurement-card measurement-main">
             <div class="panel-head">
             <div>
-              <div class="label">Zadanie na dziś</div>
+              <div class="label">Ruch na dziś</div>
               <div class="name">${escapeHtml(firstTask.name || "Zadanie ruchowe")}</div>
             </div>
             ${pill(firstTask.frequency || "do wykonania", "green")}
@@ -6303,7 +6305,7 @@
       return `
         <div class="measurement-card measurement-main">
           <div class="label">Najbliższy krok</div>
-          <div class="name">${hasProcessData ? "Plan domowy zostanie dobrany po potwierdzeniu punktu wyjścia." : "Najpierw potwierdzimy punkt wyjścia i dobierzemy bezpieczny kierunek pracy."}</div>
+          <div class="name">${hasProcessData ? "Plan między spotkaniami dobierzemy po potwierdzeniu punktu wyjścia." : "Najpierw potwierdzimy punkt wyjścia i dobierzemy bezpieczny kierunek pracy."}</div>
           <p>Najpierw sprawdzamy reakcję organizmu i dopiero potem zwiększamy wymagania.</p>
         </div>
       `;
@@ -6330,7 +6332,7 @@
       const readiness = getDiagnosticReadiness(c);
       return `
         <div class="portal-info span-2">
-          <div class="label">Ocena ruchowa</div>
+          <div class="label">Obserwacja ruchu</div>
           <p><strong>${escapeHtml(readiness.label)}</strong></p>
           <p>${escapeHtml(getDiagnosticSummaryForClient(c))}</p>
         </div>
@@ -6339,13 +6341,13 @@
 
     function renderPortalTodayTask(c) {
       const firstTask = activeHomePlanExercises(c)[0];
-      if (!firstTask) return `<p>Zadanie na dziś zostanie ustalone po najbliższej sesji.</p>`;
+      if (!firstTask) return `<p>Ruch do wykonania ustalimy po najbliższej sesji.</p>`;
       const videoUrl = hasExerciseVideo(firstTask) ? String(firstTask.videoUrl).trim() : "";
       return `
         <div class="measurement-card measurement-main">
           <div class="panel-head">
             <div>
-              <div class="label">Jedno zadanie</div>
+              <div class="label">Jeden spokojny krok</div>
               <div class="name">${escapeHtml(firstTask.name || "Zadanie ruchowe")}</div>
             </div>
             ${pill(firstTask.frequency || "częstotliwość do ustalenia", "green")}
@@ -6357,7 +6359,7 @@
           </div>
           <div class="card-actions">
             ${videoUrl ? `<a class="btn" href="${escapeHtml(videoUrl)}" target="_blank" rel="noopener noreferrer">Zobacz video</a>` : ""}
-            <button class="btn" data-client-portal-plan-jump type="button">Zobacz cały plan domowy</button>
+            <button class="btn" data-client-portal-plan-jump type="button">Zobacz cały plan między spotkaniami</button>
           </div>
         </div>
       `;
@@ -6378,13 +6380,13 @@
 
     function renderPortalHomePlan(c) {
       const active = activeHomePlanExercises(c);
-      if (!active.length) return `<p>Plan domowy zostanie dobrany po potwierdzeniu punktu wyjścia.</p>`;
+      if (!active.length) return `<p>Na razie nie ma przypisanego planu między spotkaniami.</p>`;
       const visibleTasks = clientPortalShowAllHomeTasks ? active : active.slice(0, 3);
       return `
         <div class="exercise-list">
           ${visibleTasks.map(ex => `
             <div class="exercise-card">
-              <div class="name">${escapeHtml(ex.name || "Zadanie ruchowe")}</div>
+              <div class="name">${escapeHtml(ex.name || "Ruch do wykonania")}</div>
               <div class="grid cols-2">
                 <div class="portal-info"><div class="label">Dawkowanie</div><p>${escapeHtml(ex.dosage || "Do ustalenia")}</p></div>
                 <div class="portal-info"><div class="label">Częstotliwość</div><p>${escapeHtml(ex.frequency || "Do ustalenia")}</p></div>
@@ -6393,7 +6395,7 @@
               </div>
               ${hasExerciseVideo(ex) ? `<a class="btn" href="${escapeHtml(String(ex.videoUrl).trim())}" target="_blank" rel="noopener noreferrer">Zobacz video</a>` : ""}
             </div>`).join("")}
-          ${active.length > 3 ? `<button class="btn" id="clientPortalShowAllPlanBtn" type="button">${clientPortalShowAllHomeTasks ? "Pokaż mniej" : "Pokaż wszystkie zadania"}</button>` : ""}
+          ${active.length > 3 ? `<button class="btn" id="clientPortalShowAllPlanBtn" type="button">${clientPortalShowAllHomeTasks ? "Pokaż mniej" : "Pokaż cały plan"}</button>` : ""}
         </div>
       `;
     }
@@ -6470,7 +6472,7 @@
       if (measurementCount > 1) return { title: "Mamy już punkt porównawczy", text: "Mamy już punkt porównawczy — teraz ważniejszy jest spokojny trend niż pojedyncza liczba." };
       if (measurementCount === 1) return { title: "Mamy punkt odniesienia", text: "Pomiar Tanita jest punktem odniesienia. Trend ocenimy po kolejnych pomiarach." };
       if (polarCount) return { title: "Tolerancja obciążenia", text: "Mamy pierwszą informację o tolerancji obciążenia." };
-      if (activeHomePlanExercises(c).length) return { title: "Regularność między sesjami", text: "Plan domowy daje nam pierwszy dowód regularności między sesjami." };
+      if (activeHomePlanExercises(c).length) return { title: "Regularność między sesjami", text: "Plan między spotkaniami daje nam pierwszy spokojny sygnał regularności." };
       return { title: "Pierwszy dowód dopiero przed nami", text: "Pierwszy dowód postępu pojawi się po zapisaniu obserwacji z sesji." };
     }
 
@@ -6512,8 +6514,8 @@
           hasTests: false,
           testCount: 0,
           lastTestDate: "",
-          label: "Ocena ruchowa do uzupełnienia",
-          message: "Ocena ruchowa zostanie uzupełniona po testach wykonanych podczas sesji. Na tym etapie ważniejsze jest bezpieczne potwierdzenie punktu wyjścia niż szybkie etykietowanie wyniku."
+          label: "Obserwacja ruchu do uzupełnienia",
+          message: "Obserwacja ruchu zostanie uzupełniona po testach wykonanych podczas sesji. Na tym etapie ważniejsze jest bezpieczne potwierdzenie punktu wyjścia niż szybkie etykietowanie wyniku."
         };
       }
       const trainerSummary = getDiagnosticSummaryForTrainer(client);
@@ -6522,13 +6524,13 @@
         testCount: results.length,
         lastTestDate: latestResult?.date || "",
         label: "Synteza oceny ruchowej",
-        message: trainerSummary.nextDiagnosticStep || latestResult?.interpretation || "Ocena ruchowa ma zapisany wniosek do omówienia na sesji."
+        message: trainerSummary.nextDiagnosticStep || latestResult?.interpretation || "Obserwacja ruchu ma zapisany wniosek do omówienia na sesji."
       };
     }
 
     function getDiagnosticSummaryForClient(client = activeClient()) {
       const readiness = getDiagnosticReadiness(client);
-      if (!readiness.hasTests) return "Ocena ruchowa zostanie uzupełniona po testach wykonanych podczas sesji. Na tym etapie ważniejsze jest bezpieczne potwierdzenie punktu wyjścia niż szybkie etykietowanie wyniku.";
+      if (!readiness.hasTests) return "Obserwacja ruchu zostanie uzupełniona po testach wykonanych podczas sesji. Na tym etapie ważniejsze jest bezpieczne potwierdzenie punktu wyjścia niż szybkie etykietowanie wyniku.";
       const trainerSummary = getDiagnosticSummaryForTrainer(client);
       return `Sprawdziliśmy kilka podstawowych ruchów. Najważniejsze teraz: ${trainerSummary.nextDiagnosticStep}. Nie traktujemy pojedynczego testu jako wyroku. Liczy się reakcja i powtarzalność.`;
     }
@@ -7300,7 +7302,7 @@
     }
 
     function renderReportEvidenceSection(c, reportType = "fourWeeks", audience = "client") {
-      const items = reportEvidenceItems(c, reportType);
+      const items = reportEvidenceItems(c, reportType, audience);
       return `<section class="print-report-section print-evidence-note">
         <h2>Na czym opieramy ten raport</h2>
         <p>${escapeHtml(reportPresentationText(generateReportEvidenceSummary(c, reportType, audience), audience))}</p>
@@ -7315,7 +7317,7 @@
       const results = sortedDiagnosticResults(c);
       if (audience !== "trainer") {
         return `<section class="print-report-section">
-          <h2>Ocena ruchowa</h2>
+          <h2>Obserwacja ruchu</h2>
           <div class="print-report-note">${escapeHtml(getDiagnosticSummaryForClient(c))}</div>
         </section>`;
       }
@@ -7332,7 +7334,7 @@
 
     function generateReportEvidenceSummary(c, reportType = "fourWeeks", audience = "client") {
       const context = getReportProcessContext(c, reportType);
-      const sources = reportEvidenceItems(c, reportType)
+      const sources = reportEvidenceItems(c, reportType, audience)
         .map(item => item.phrase)
         .filter(Boolean);
       const typeLabel = reportType === "fourWeeks" && !context.isProcessStarted
@@ -7357,7 +7359,7 @@
       return `${sourceText} Rodzaj raportu: ${typeLabel}. ${contextNote ? `${contextNote} ` : ""}${audienceNote}`;
     }
 
-    function reportEvidenceItems(c, reportType = "fourWeeks") {
+    function reportEvidenceItems(c, reportType = "fourWeeks", audience = "client") {
       const counts = reportEvidenceCounts(c);
       const context = getReportProcessContext(c, reportType);
       return [
@@ -7397,13 +7399,13 @@
           phrase: counts.tasks ? `${counts.tasks} ${pluralizePl(counts.tasks, "zadania bieżącego", "zadań bieżących", "zadań bieżących")}` : ""
         },
         {
-          label: "Plan domowy / zadania ruchowe",
+          label: homePlanReportLabel(audience),
           value: counts.homePlan ? String(counts.homePlan) : "do uzupełnienia",
           phrase: counts.homePlan ? `${counts.homePlan} ${pluralizePl(counts.homePlan, "aktywnego zadania ruchowego", "aktywnych zadań ruchowych", "aktywnych zadań ruchowych")}` : ""
         },
         {
           label: "Testy diagnostyczne",
-          value: counts.tests ? String(counts.tests) : "po ocenie ruchowej",
+          value: counts.tests ? String(counts.tests) : (audience === "trainer" ? "po ocenie ruchowej" : "po obserwacji ruchu"),
           phrase: counts.tests ? `${counts.tests} ${pluralizePl(counts.tests, "zapisanego testu diagnostycznego", "zapisanych testów diagnostycznych", "zapisanych testów diagnostycznych")}` : ""
         }
       ];
@@ -7522,9 +7524,9 @@
           description: audience === "trainer" ? decision.trainerAction : "Decyzja określa tempo pracy na najbliższy etap i będzie sprawdzana po kolejnych obserwacjach."
         });
         cards.push({
-          label: "Plan domowy / zadania ruchowe",
+          label: homePlanReportLabel(audience),
           value: homeExercises.length ? `${homeExercises.length} aktywne zadania ruchowe` : "Do doprecyzowania",
-          description: homeExercises.length ? "Plan domowy / zadania ruchowe mają wspierać powtarzalność między sesjami." : "Plan domowy / zadania ruchowe wymagają doprecyzowania po kolejnych obserwacjach."
+          description: homeExercises.length ? `${homePlanReportLabel(audience)} ma wspierać powtarzalność między sesjami.` : `${homePlanReportLabel(audience)} wymaga doprecyzowania po kolejnych obserwacjach.`
         });
         if (latestTanita) {
           cards.push({
@@ -7584,7 +7586,7 @@
         });
         cards.push({
           label: "Co utrzymać",
-          value: homeExercises.length ? "Plan domowy / zadania ruchowe" : "Rytm pracy",
+          value: homeExercises.length ? homePlanReportLabel(audience) : "Rytm pracy",
           description: homeExercises.length ? `${homeExercises.length} aktywne zadania ruchowe.` : "Utrzymać prosty zapis reakcji i regularność ruchu."
         });
         cards.push({
@@ -7599,9 +7601,9 @@
         });
       }
 
-      if (homeExercises.length && !cards.some(card => /Plan domowy/i.test(card.label))) {
+      if (homeExercises.length && !cards.some(card => /Plan domowy|Plan między spotkaniami/i.test(card.label))) {
         cards.splice(1, 0, {
-          label: "Plan domowy",
+          label: homePlanReportLabel(audience),
           value: `${homeExercises.length} ${pluralizePl(homeExercises.length, "zadanie", "zadania", "zadań")}`,
           description: "Zadania ruchowe dobrane do aktualnego etapu."
         });
@@ -7620,7 +7622,7 @@
         if (!context.isProcessStarted) return "To jest wstępny szkic raportu 4-tygodniowego, a nie pełna ocena procesu. Na tym etapie dokument porządkuje kierunek pracy i pokazuje, co trzeba zebrać w kolejnych sesjach.";
         if (context.sessionCount >= 3 || context.postNoteCount >= 2) return "Zakres danych pozwala ostrożnie opisać kierunek procesu, ale nadal nie traktujemy pojedynczych pomiarów jako wyroku.";
         if (readiness.status === "premature") return context.hasHomePlan
-          ? "Ten raport porządkuje pierwszy kierunek pracy, ale nie jest jeszcze oceną trendu. Najważniejsze jest zebrać kilka spokojnych obserwacji po sesjach i sprawdzić, czy plan domowy / zadania ruchowe zaczynają być powtarzalne."
+          ? `Ten raport porządkuje pierwszy kierunek pracy, ale nie jest jeszcze oceną trendu. Najważniejsze jest zebrać kilka spokojnych obserwacji po sesjach i sprawdzić, czy ${homePlanReportLabel(audience).toLowerCase()} zaczyna być powtarzalny.`
           : "Ten raport porządkuje pierwszy kierunek pracy, ale nie jest jeszcze oceną trendu. Najważniejsze jest zebrać kilka spokojnych obserwacji po sesjach i doprecyzować plan ruchowy.";
         return "Najważniejsze jest teraz sprawdzenie, czy pierwsze zadania zaczynają być powtarzalne między sesjami i czy reakcja organizmu pozwala spokojnie zwiększać wymagania.";
       }
@@ -7643,13 +7645,13 @@
         return [
           { title: "Potwierdzić punkt startowy", description: intake.firstSessionFocus || "Ustalić baseline ruchu, reakcję bólu i bezpieczny zakres pierwszej pracy." },
           { title: "Ustalić tolerancję obciążenia", description: "Sprawdzić, jak organizm reaguje po sesji i w kolejnym dniu." },
-          { title: "Doprecyzować plan domowy / zadania ruchowe", description: "Wybrać mały zestaw zadań, który da się realnie powtarzać." }
+          { title: `Doprecyzować ${homePlanReportLabel(audience).toLowerCase()}`, description: "Wybrać mały zestaw zadań, który da się realnie powtarzać." }
         ];
       }
 
       if (reportType === "continuation") {
         return [
-          { title: "Utrzymać sprawdzone zadania", description: homeExercises.length ? "Kontynuować aktywny plan domowy / zadania ruchowe bez dokładania kilku zmian naraz." : "Najpierw doprecyzować aktualny plan domowy / zadania ruchowe." },
+          { title: "Utrzymać sprawdzone zadania", description: homeExercises.length ? `Kontynuować aktywny ${homePlanReportLabel(audience).toLowerCase()} bez dokładania kilku zmian naraz.` : `Najpierw doprecyzować aktualny ${homePlanReportLabel(audience).toLowerCase()}.` },
           { title: "Zwiększać obciążenie warunkowo", description: "Progres tylko wtedy, gdy reakcja organizmu pozostaje przewidywalna." },
           { title: "Wrócić do kontroli we właściwym momencie", description: "Nie czekać, jeśli reakcja bólu, sen albo gotowość wyraźnie się pogarszają." }
         ];
@@ -7657,7 +7659,7 @@
 
       const priorities = [
         { title: "Wykonać decyzję tygodniową", description: audience === "trainer" ? decision.trainerAction : "Utrzymać bieżący kierunek i sprawdzić po kolejnych danych, czy tempo nadal pasuje." },
-        { title: homeExercises.length ? "Utrzymać plan domowy / zadania ruchowe" : "Doprecyzować plan domowy / zadania ruchowe", description: homeExercises.length ? "Sprawdzić powtarzalność zadań między sesjami." : "Dobrać zadania ruchowe po kolejnych obserwacjach." },
+        { title: homeExercises.length ? `Utrzymać ${homePlanReportLabel(audience).toLowerCase()}` : `Doprecyzować ${homePlanReportLabel(audience).toLowerCase()}`, description: homeExercises.length ? "Sprawdzić powtarzalność zadań między sesjami." : "Dobrać zadania ruchowe po kolejnych obserwacjach." },
         { title: "Zebrać kolejny dowód postępu", description: nextProgressEvidence(c) }
       ];
       if (reportType === "twelveWeeks") {
@@ -7673,7 +7675,7 @@
       const context = getReportProcessContext(c, reportType);
       const criteria = [
         "Reakcja bólu po aktywności nie rośnie względem punktu wyjścia.",
-        context.hasHomePlan ? "Plan domowy jest wykonywany w ustalonym rytmie i nie nasila objawów po aktywności." : "Zadania bieżące mają czytelny zapis realizacji, a plan ruchowy jest doprecyzowywany po obserwacjach.",
+        context.hasHomePlan ? `${homePlanReportLabel(audience)} jest wykonywany w ustalonym rytmie i nie nasila objawów po aktywności.` : "Zadania bieżące mają czytelny zapis realizacji, a plan ruchowy jest doprecyzowywany po obserwacjach.",
         "Klient potrafi nazwać, które ruchy są bezpieczne, powtarzalne i dobrze tolerowane."
       ];
       if (latestPolarSession(c) || context.hasSessions || context.hasPostNotes) criteria.push("Odczyty Polar lub obserwacje po sesjach pokazują tolerancję obciążenia.");
@@ -7878,7 +7880,7 @@ ${buildWorkingHypothesis(c, audience)}
 Priorytety pierwszych 2–4 tygodni
 ${buildInitialPriorities(c, "startMap", audience)}
 
-Plan domowy / zadania ruchowe
+${homePlanReportLabel(audience)}
 ${buildHomePlanDetailSection(c, "startMap", audience)}
 
 Czego nie przyspieszamy
@@ -7911,7 +7913,7 @@ ${buildWhatWeKnowSection(c, audience)}
 Co działa
 ${buildWhatWorksSection(c, audience)}
 
-Plan domowy / zadania ruchowe
+${homePlanReportLabel(audience)}
 ${buildHomePlanDetailSection(c, "fourWeeks", audience)}
 
 Co nadal ogranicza proces
@@ -7957,9 +7959,9 @@ ${generateTanitaNarrative(c, "twelveWeeks", audience)}
 Dane Polar
 ${generatePolarNarrative(c, "twelveWeeks", audience)}
 
-Zadania bieżące i plan domowy
+${audience === "trainer" ? "Zadania bieżące i plan domowy" : "Zadania bieżące i plan między spotkaniami"}
 ${buildComplianceSection(c, audience)}
-Plan domowy / zadania ruchowe
+${homePlanReportLabel(audience)}
 ${buildHomePlanDetailSection(c, "twelveWeeks", audience)}
 ${buildDiagnosticTestsSection(c, audience)}
 
@@ -7990,7 +7992,7 @@ ${buildKeepSection(c, decision)}
 Co robić samodzielnie
 ${buildSelfWorkSection(c)}
 
-Plan domowy / zadania ruchowe
+${homePlanReportLabel(audience)}
 ${buildHomePlanDetailSection(c, "continuation", audience)}
 
 Czego unikać
@@ -8105,20 +8107,24 @@ ${buildReportClosingNote("continuation", context)}`;
       return exercises.filter(ex => (ex.status || "active") === "active" && (ex.name || ex.exerciseId));
     }
 
+    function homePlanReportLabel(audience = "client") {
+      return audience === "trainer" ? "Plan domowy / zadania ruchowe" : "Plan między spotkaniami";
+    }
+
     function buildHomePlanReportSection(c, reportType = "fourWeeks", audience = "client") {
       const exercises = activeHomePlanExercises(c);
       const tasks = Array.isArray(c.tasks) ? c.tasks : [];
       const doneTasks = tasks.filter(task => task.done).length;
+      const label = homePlanReportLabel(audience);
       if (exercises.length) {
-        const label = "Plan domowy / zadania ruchowe";
         const items = exercises.slice(0, 4).map(ex => `${ex.name}${ex.dosage ? ` · ${ex.dosage}` : ""}${ex.frequency ? ` · ${ex.frequency}` : ""}${hasExerciseVideo(ex) ? " · Video" : ""}`).join("; ");
         return `${label}: ${items}.`;
       }
-      if (reportType === "continuation") return "Plan kontynuacji nie powinien być finalizowany bez aktualnego planu domowego.";
+      if (reportType === "continuation") return audience === "trainer" ? "Plan kontynuacji nie powinien być finalizowany bez aktualnego planu domowego." : "Plan kontynuacji wymaga jeszcze spokojnego planu między spotkaniami.";
       if (tasks.length && doneTasks) return "Zadania bieżące mają już zapis realizacji, ale plan ruchowy zostanie doprecyzowany po kolejnych obserwacjach.";
-      if (reportType === "startMap") return "Plan domowy / zadania ruchowe zostaną dobrane po potwierdzeniu punktu wyjścia.";
-      if (reportType === "fourWeeks") return "Plan domowy / zadania ruchowe wymagają doprecyzowania po kolejnych obserwacjach.";
-      return "Plan domowy / zadania ruchowe warto odświeżyć przed kolejnym etapem procesu.";
+      if (reportType === "startMap") return `${label} zostanie dobrany po potwierdzeniu punktu wyjścia.`;
+      if (reportType === "fourWeeks") return `${label} wymaga doprecyzowania po kolejnych obserwacjach.`;
+      return `${label} warto odświeżyć przed kolejnym etapem procesu.`;
     }
 
     function buildHomePlanDetailSection(c, reportType = "fourWeeks", audience = "client") {
@@ -8200,7 +8206,7 @@ ${buildReportClosingNote("continuation", context)}`;
       const goal = inlineGoalText(reportGoal(c));
       return `- Potwierdzić dane z ankiety i aktualny punkt startowy.
 - Ustalić 1-2 mierzalne kryteria dla celu: ${goal}.
-- Dobrać mały plan domowy / zadania ruchowe, które klient realnie wykona.
+- Dobrać mały ${homePlanReportLabel(audience).toLowerCase()}, który klient realnie wykona.
 - Sprawdzić reakcję po sesji zanim zwiększymy trudność.
 - ${buildHomePlanReportSection(c, reportType, audience)}`;
     }
@@ -8224,10 +8230,10 @@ ${buildReportClosingNote("continuation", context)}`;
         `- Reakcja po sesji: VAS i gotowość${l ? ` (ostatnio VAS po ${formatMetric(l.vasAfter, "")}, gotowość ${formatMetric(l.readiness, "")})` : " - do uzupełnienia po pierwszych sesjach"}.`,
         `- Jakość ruchu i mobilność${m.mobility !== null ? ` (obecnie ${m.mobility}%)` : " - punkt odniesienia powstanie w procesie"}.`,
         `- Zadania bieżące: ${taskCompletionText(tasks)}.`,
-        `- Plan domowy / zadania ruchowe: ${homeExercises.length ? `${homeExercises.length} aktywne` : "do doprecyzowania po kolejnych obserwacjach"}.`,
+        `- ${homePlanReportLabel(audience)}: ${homeExercises.length ? `${homeExercises.length} aktywne` : "do doprecyzowania po kolejnych obserwacjach"}.`,
         `- Tanita: ${latestMeasurement(c) ? "punkt pomiarowy jest zapisany i będzie porównywany z kolejnymi." : friendlyMissingData("tanita")}`,
         `- Polar: ${latestPolarSession(c) ? "reakcja na obciążenie jest uwzględniana przy decyzji o tempie pracy." : friendlyMissingData("polar")}`,
-        `- Ocena ruchowa: ${buildDiagnosticTestsSection(c, audience)}`
+        `- ${audience === "trainer" ? "Ocena ruchowa" : "Obserwacja ruchu"}: ${buildDiagnosticTestsSection(c, audience)}`
       ];
       if (audience === "trainer") lines.push(`- Etap procesu: ${steps[c.stage - 1]?.[0] || "proces indywidualny"}.`);
       return lines.join("\n");
@@ -8323,7 +8329,7 @@ ${latestPost?.homeTask ? `Ostatnie zadanie ruchowe do domu: ${latestPost.homeTas
     function buildLongTermRecommendation(c, decision = generateWeeklyDecision(c)) {
       return `${decision.clientMessage}
 Najbliższy kierunek: ${c.nextMilestone || inlineGoalText(reportGoal(c))}
-Kryterium kontroli: reakcja po sesji, sen, gotowość i wykonywanie planu domowego.`;
+Kryterium kontroli: reakcja po sesji, sen, gotowość i wykonywanie planu między spotkaniami.`;
     }
 
     function buildKeepSection(c, decision = generateWeeklyDecision(c)) {
@@ -8341,7 +8347,7 @@ Kryterium kontroli: reakcja po sesji, sen, gotowość i wykonywanie planu domowe
           return `- ${ex.name}: ${ex.dosage || "wg ustaleń"}${ex.frequency ? ` · ${ex.frequency}` : ""}${cue}.${stop}`;
         }).join("\n");
       }
-      return "Samodzielna praca powinna na tym etapie ograniczać się do zadań uzgodnionych po sesji. Finalny plan kontynuacji wymaga jeszcze aktualnego planu domowego.";
+      return "Samodzielna praca powinna na tym etapie ograniczać się do zadań uzgodnionych po sesji. Finalny plan kontynuacji wymaga jeszcze aktualnego planu między spotkaniami.";
     }
 
     function buildAvoidSection(c, decision = generateWeeklyDecision(c)) {
@@ -8354,7 +8360,7 @@ Kryterium kontroli: reakcja po sesji, sen, gotowość i wykonywanie planu domowe
     }
 
     function buildWhenReturnSection(c) {
-      return "- Po wyraźnym spadku gotowości lub regularnym wzroście bólu po aktywności.\n- Gdy plan domowy staje się niejasny albo trudny do utrzymania.\n- Przed większą zmianą celu, obciążenia lub częstotliwości.";
+      return "- Po wyraźnym spadku gotowości lub regularnym wzroście bólu po aktywności.\n- Gdy plan między spotkaniami staje się niejasny albo trudny do utrzymania.\n- Przed większą zmianą celu, obciążenia lub częstotliwości.";
     }
 
     function buildConsultSection(c, audience = "client") {
@@ -8364,7 +8370,7 @@ Kryterium kontroli: reakcja po sesji, sen, gotowość i wykonywanie planu domowe
 
     function buildReportClosingNote(reportType = "fourWeeks", processContext = null) {
       if (reportType === "startMap") return "To dokument startowy. Jego celem jest uporządkowanie kierunku pracy, a nie ocena efektów.";
-      if (reportType === "continuation" && processContext?.isContinuationPremature) return "To ramy bezpieczeństwa do dalszej pracy. Finalny plan samodzielności wymaga jeszcze aktualnego planu domowego i kolejnych obserwacji.";
+      if (reportType === "continuation" && processContext?.isContinuationPremature) return "To ramy bezpieczeństwa do dalszej pracy. Finalny plan samodzielności wymaga jeszcze aktualnego planu między spotkaniami i kolejnych obserwacji.";
       if (reportType === "continuation") return "To plan dalszego działania. Ma pomagać w samodzielności, ale zostawia jasne granice, kiedy warto wrócić do kontroli.";
       return "To jest raport procesu treningowego i wsparcie decyzji. Nie udaje diagnozy medycznej i nie zastępuje konsultacji medycznej, jeśli pojawiają się niepokojące objawy.";
     }
@@ -8388,7 +8394,7 @@ Kryterium kontroli: reakcja po sesji, sen, gotowość i wykonywanie planu domowe
           post.whatWeDid && audience === "trainer" ? `zrobiliśmy: ${post.whatWeDid}` : "",
           post.clientResponse && audience === "trainer" ? `reakcja klienta: ${post.clientResponse}` : "",
           post.clientMessage ? `komunikat dla klienta: ${post.clientMessage}` : "",
-          post.homeTask ? `zadanie domowe: ${post.homeTask}` : ""
+          post.homeTask ? `ruch do wykonania: ${post.homeTask}` : ""
         ].filter(Boolean).join("; ");
         parts.push(`Po ostatniej sesji (${formatDate(post.date)}) ustalono: ${decisionLabel(post.decision)}.${details ? ` ${details}.` : ""}`);
       }
