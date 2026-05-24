@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.3.4 | Data Flow QA</title>
+  <title>Studio Las OS 7.3.5 | Context Quick Replies</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -104,6 +104,49 @@
     }
     textarea { min-height: 94px; resize: vertical; }
     select:focus, input:focus, textarea:focus { border-color: rgba(127,176,105,.7); box-shadow: 0 0 0 3px rgba(127,176,105,.12); }
+    .quick-replies {
+      display: grid;
+      gap: 7px;
+      margin-top: 8px;
+    }
+    .quick-reply-label {
+      color: var(--faint);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+    .quick-reply-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      min-width: 0;
+    }
+    .quick-reply-chip {
+      border: 1px solid rgba(127,176,105,.24);
+      background: rgba(127,176,105,.08);
+      color: var(--muted);
+      border-radius: 999px;
+      padding: 6px 9px;
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1.25;
+      max-width: 100%;
+      white-space: normal;
+      text-align: left;
+    }
+    .quick-reply-chip:hover,
+    .quick-reply-chip:focus-visible {
+      color: var(--ink);
+      border-color: rgba(127,176,105,.48);
+      background: rgba(127,176,105,.14);
+      outline: none;
+    }
+    .quick-reply-toggle {
+      border-color: rgba(216,166,87,.24);
+      background: rgba(216,166,87,.08);
+      color: var(--gold);
+    }
 
     .nav { display: grid; gap: 7px; overflow-y: auto; padding-right: 2px; }
     .nav-section { display: grid; gap: 3px; }
@@ -842,7 +885,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.4</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.5</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -895,7 +938,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.4</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.5</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1155,7 +1198,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.3.4";
+    const APP_VERSION = "7.3.5";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -1310,7 +1353,7 @@
       "step-up": ["step up", "step-up", "wejście na stopień"]
     };
     const EXERCISE_ATLAS_QA_AUDIT = {
-      version: "7.3.4",
+      version: "7.3.5",
       localVideoSources: "ATLAS-ĆWICZEŃ.xlsx: 879 hyperlinków; 10.2024-Atlas-cwiczen-byd797p.xlsx: 1107 hyperlinków; 1676 unikalnych URL.",
       safeVideoMatchesAdded: ["atlas-db-bench-press -> DB - BENCH PRESS", "qa-pallof-press-standing -> BAND - PALLOF PRESS (STANDING)", "strength-klatka-na-podlodze-hantle -> DB - FLOOR PRESS", "strength-lawka-sztanga -> Wyciskanie sztangi leżąc", "strength-lawka-sztanga-wasko -> BB - BENCH PRESS (CLOSE GRIP)", "strength-pompki -> Pompki", "strength-wyciskanie-kettli-jednoracz -> KB - SINGLE ARM OVERHEAD PRESS"],
       skippedAmbiguousVideoMatches: ["atlas-one-arm-db-row: kilka wariantów DB single arm row z różnym podparciem", "atlas-med-ball-chest-throw: kilka wariantów CM/NCM i pozycji", "atlas-single-arm-farmer-carry: źródło nie potwierdza wariantu jednorącz", "atlas-wall-slides: brak pewnego linku wall slide/serratus wall slide", "qa-goblet-squat: brak jednoznacznego źródła goblet squat bez innego wariantu"]
@@ -4167,6 +4210,410 @@
       return `<span class="pill ${level}">${escapeHtml(text)}</span>`;
     }
 
+    const QUICK_REPLY_GROUPS = {
+      polarTrainerNote: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Polar · notatka trenera",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Dobra tolerancja obciążenia względem charakteru sesji.",
+          "Tętno adekwatne do intensywności i celu treningu.",
+          "RPE wyższe niż sugeruje tętno — dopytać o sen, stres i regenerację.",
+          "Reakcja wysiłkowa do obserwacji na kolejnej sesji.",
+          "Możliwa lekka progresja, jeśli reakcja po treningu pozostanie dobra.",
+          "Utrzymać podobną intensywność i obserwować stabilność odpowiedzi.",
+          "Zmniejszyć intensywność, jeśli po sesji pojawi się nadmierne zmęczenie.",
+          "Sesja miała charakter bardziej regeneracyjny niż progresywny."
+        ]
+      },
+      polarClientSummary: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Polar · podsumowanie dla klienta",
+        audience: "client",
+        maxVisible: 6,
+        replies: [
+          "Organizm dobrze zareagował na dzisiejszy trening.",
+          "Dzisiejszy trening traktujemy jako punkt odniesienia.",
+          "Na kolejnej sesji możemy spokojnie utrzymać podobny poziom pracy.",
+          "Dzisiaj ważniejsza była kontrola niż maksymalna intensywność.",
+          "Będziemy obserwować, jak organizm reaguje na podobne obciążenie.",
+          "Na razie nie przyspieszamy — budujemy stabilną tolerancję wysiłku."
+        ]
+      },
+      tanitaInterpretation: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Tanita · interpretacja trenera",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Wynik traktujemy jako punkt odniesienia, nie pojedynczy werdykt.",
+          "Najważniejszy będzie trend z kolejnych pomiarów.",
+          "Pojedynczy pomiar może być zaburzony nawodnieniem, snem i porą dnia.",
+          "Na tym etapie nie wyciągamy zbyt daleko idących wniosków.",
+          "Kierunek zmian ocenimy po minimum 2–3 pomiarach w podobnych warunkach.",
+          "Wynik warto zestawić z frekwencją, regeneracją i obserwacją sylwetki."
+        ]
+      },
+      tanitaTrainerNote: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Tanita · notatka operacyjna",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Kolejny pomiar wykonać w możliwie podobnych warunkach.",
+          "Zwrócić uwagę na nawodnienie przed pomiarem.",
+          "Nie komunikować klientowi wyniku jako sztywnej oceny formy.",
+          "Połączyć interpretację z frekwencją i obciążeniem treningowym.",
+          "Sprawdzić, czy zmiana jest spójna z obserwacją sylwetki i samopoczuciem.",
+          "Nie reagować gwałtownie na pojedyncze odchylenie."
+        ]
+      },
+      tanitaClientSummary: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Tanita · podsumowanie dla klienta",
+        audience: "client",
+        maxVisible: 6,
+        replies: [
+          "Ten pomiar jest punktem startowym do dalszej obserwacji.",
+          "Nie oceniamy formy po jednym wyniku — ważniejszy jest trend.",
+          "Kolejny pomiar pokaże, czy zmiany idą w dobrym kierunku.",
+          "Skupiamy się na procesie, regularności i spokojnej progresji.",
+          "Wynik omówimy w kontekście treningu, regeneracji i codziennych nawyków.",
+          "Najważniejsze będzie to, jak ciało reaguje w czasie, nie jeden odczyt."
+        ]
+      },
+      diagnosticTrainerNote: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Testy · notatka trenera",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Ruch wykonany bez istotnej prowokacji objawów.",
+          "Widoczna kompensacja wymagająca obserwacji.",
+          "Ograniczenie kontroli ruchu przy końcowym zakresie.",
+          "Test traktować jako punkt odniesienia, nie diagnozę.",
+          "Warto wrócić do testu po kilku tygodniach pracy.",
+          "Nie progresować obciążenia bez poprawy kontroli.",
+          "Wynik spójny z obserwacją z sesji.",
+          "Wynik niespójny z odczuciami klienta — dopytać na kolejnej sesji.",
+          "Ograniczenie wygląda bardziej na problem kontroli niż siły.",
+          "Ruch akceptowalny, ale wymaga wolniejszego tempa i lepszej kontroli."
+        ]
+      },
+      diagnosticClientSummary: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Testy · spokojny następny krok",
+        audience: "client",
+        maxVisible: 6,
+        replies: [
+          "Ten test pomaga nam dobrać bezpieczny kierunek pracy.",
+          "Na ten moment najważniejsza będzie kontrola ruchu.",
+          "Będziemy obserwować, czy ten zakres poprawia się w kolejnych tygodniach.",
+          "Nie chodzi o ocenę, tylko o lepsze dopasowanie treningu.",
+          "Ten wynik pokazuje, nad czym warto spokojnie popracować.",
+          "To jest punkt odniesienia, do którego wrócimy po kolejnym etapie pracy."
+        ]
+      },
+      sessionTrainerObservation: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Sesja · obserwacja trenera",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Sesja wykonana zgodnie z planem.",
+          "Dobra tolerancja ćwiczeń.",
+          "Bez istotnego nasilenia objawów w trakcie sesji.",
+          "Wymagana dalsza obserwacja reakcji po treningu.",
+          "Technika poprawiała się w trakcie serii.",
+          "Priorytetem była kontrola ruchu, nie ciężar.",
+          "Klient wymagał przypomnienia tempa i oddechu.",
+          "Możliwa lekka progresja na kolejnej sesji.",
+          "Utrzymać obecny poziom trudności.",
+          "Zmniejszyć objętość przy kolejnej sesji.",
+          "Reakcja dobra, ale nie przyspieszać progresji.",
+          "Więcej czasu poświęcić na jakość pierwszych serii."
+        ]
+      },
+      sessionClientSummary: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Sesja · komunikat dla klienta",
+        audience: "client",
+        maxVisible: 6,
+        replies: [
+          "Dzisiejszy trening był wykonany spokojnie i pod kontrolą.",
+          "Najważniejsza była jakość ruchu, nie maksymalne obciążenie.",
+          "W kolejnym kroku utrzymamy podobny kierunek pracy.",
+          "Dzisiaj zrobiliśmy dobry krok w stronę większej kontroli.",
+          "Obserwuj reakcję organizmu po treningu i daj znać, jeśli coś się nasili.",
+          "Na kolejnej sesji sprawdzimy, jak organizm odpowiedział po treningu."
+        ]
+      },
+      homePlanClientInstruction: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Plan domowy · instrukcja klienta",
+        audience: "client",
+        maxVisible: 6,
+        replies: [
+          "Wykonuj spokojnie, bez pośpiechu.",
+          "Przerwij, jeśli pojawi się ostry ból lub drętwienie.",
+          "Najważniejsza jest kontrola, nie liczba powtórzeń.",
+          "Oddychaj spokojnie i nie wstrzymuj powietrza.",
+          "Zostaw 1–2 powtórzenia w zapasie.",
+          "Jeśli ruch prowokuje objawy, zapisz kiedy i gdzie.",
+          "Wykonaj tylko w zakresie, który jesteś w stanie kontrolować.",
+          "Lepiej zrobić mniej, ale dokładniej."
+        ]
+      },
+      homePlanTrainerNote: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Plan domowy · notatka trenera",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Zadanie jako utrwalenie pracy z sesji.",
+          "Nie progresować bez informacji zwrotnej od klienta.",
+          "Sprawdzić wykonanie na kolejnej sesji.",
+          "Dobre jako zadanie krótkie, ale regularne.",
+          "Wymaga demonstracji przed samodzielnym wykonaniem.",
+          "Nadaje się jako test regularności między sesjami.",
+          "Utrzymać niską dawkę do czasu potwierdzenia tolerancji."
+        ]
+      },
+      reportPriorities: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Raport · priorytety",
+        audience: "client",
+        maxVisible: 6,
+        replies: [
+          "Priorytetem będzie kontrola ruchu i spokojna progresja.",
+          "Najważniejsze będzie utrzymanie regularności między sesjami.",
+          "Obciążenie zwiększamy tylko wtedy, gdy reakcja organizmu pozostaje dobra.",
+          "W kolejnym etapie skupiamy się na jakości wykonania, nie na ilości.",
+          "Dane traktujemy jako wsparcie decyzji, nie jako automatyczny werdykt.",
+          "Najważniejszy będzie trend, nie pojedynczy wynik."
+        ]
+      },
+      reportNextStep: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Raport · następny krok",
+        audience: "client",
+        maxVisible: 6,
+        replies: [
+          "Utrzymać obecny kierunek pracy przez kolejny etap.",
+          "Wprowadzić lekką progresję, jeśli reakcja po treningach pozostaje dobra.",
+          "Skupić się na regularności i jakości wykonania zadań domowych.",
+          "Obserwować reakcję organizmu po sesjach i nie przyspieszać progresji.",
+          "Priorytetem na kolejny etap będzie kontrola ruchu i tolerancja obciążenia.",
+          "Kolejny raport powinien ocenić trend, nie pojedynczy wynik."
+        ]
+      },
+      clientProfileTrainerNote: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Profil klienta · kontekst procesu",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Klient wymaga spokojnego prowadzenia i jasnych kolejnych kroków.",
+          "Na początku ważniejsze jest poczucie bezpieczeństwa niż intensywność.",
+          "Dobrze reaguje na proste instrukcje i konkretny plan.",
+          "Warto regularnie wracać do celu głównego klienta.",
+          "Nie przeciążać komunikacji technicznymi szczegółami.",
+          "Budować proces przez małe, czytelne zadania."
+        ]
+      },
+      processDecision: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Proces · decyzja",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Kontynuować obecny kierunek pracy.",
+          "Utrzymać etap i obserwować reakcję.",
+          "Możliwa lekka progresja w kolejnym mikrocyklu.",
+          "Cofnąć poziom trudności i odbudować kontrolę.",
+          "Przejść na spokojniejszy tydzień regeneracyjny.",
+          "Wrócić do podstawowego wariantu ćwiczeń."
+        ]
+      },
+      atlasClientInstruction: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Atlas · instrukcja klienta",
+        audience: "client",
+        maxVisible: 6,
+        replies: [
+          "Wykonuj ruch spokojnie i bez szarpania.",
+          "Utrzymaj kontrolę przez cały zakres ruchu.",
+          "Oddychaj spokojnie, nie wstrzymuj powietrza.",
+          "Przerwij, jeśli pojawi się ostry ból, drętwienie lub zawroty głowy.",
+          "Zatrzymaj ruch, jeśli tracisz kontrolę pozycji.",
+          "Lepiej wykonać mniejszy zakres, ale z dobrą kontrolą."
+        ]
+      },
+      atlasCoachNotes: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Atlas · notatki trenera",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Użyj jako prostego wariantu startowego.",
+          "Sprawdź, czy klient nie kompensuje ruchem lędźwi.",
+          "Obserwuj ustawienie kolana, biodra i tułowia.",
+          "Progresuj dopiero po utrzymaniu kontroli w pełnej serii.",
+          "Regresuj, jeśli klient traci tempo lub pozycję.",
+          "Nie przypisuj bez wcześniejszej demonstracji przy kliencie początkującym."
+        ]
+      },
+      atlasCommonMistakes: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Atlas · najczęstsze błędy",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Zbyt szybkie tempo.",
+          "Utrata kontroli pozycji.",
+          "Wstrzymywanie oddechu.",
+          "Skracanie zakresu ruchu.",
+          "Kompensacja odcinkiem lędźwiowym.",
+          "Unoszenie barków bez potrzeby.",
+          "Zapadanie kolan do środka."
+        ]
+      },
+      atlasStopCriteria: {
+        label: "Szybkie odpowiedzi",
+        fieldContext: "Atlas · kryteria przerwania",
+        audience: "trainer",
+        maxVisible: 6,
+        replies: [
+          "Ostry ból.",
+          "Ból promieniujący.",
+          "Drętwienie lub mrowienie.",
+          "Zawroty głowy.",
+          "Narastający ból stawu.",
+          "Utrata kontroli ruchu.",
+          "Objawy nietypowe dla klienta."
+        ]
+      }
+    };
+
+    const QUICK_REPLY_MAPPINGS = [
+      { form: "clientForm", name: "motivation", group: "clientProfileTrainerNote" },
+      { form: "clientForm", name: "goal", group: "clientProfileTrainerNote" },
+      { form: "clientForm", name: "fears", group: "clientProfileTrainerNote" },
+      { form: "clientForm", name: "redFlags", group: "processDecision" },
+      { form: "clientForm", name: "decisionLogic", group: "processDecision" },
+      { form: "sessionForm", name: "notes", group: "sessionTrainerObservation" },
+      { form: "sessionForm", name: "decision", group: "processDecision" },
+      { form: "measurementForm", name: "trainerInterpretation", group: "tanitaInterpretation" },
+      { form: "measurementForm", name: "clientSummary", group: "tanitaClientSummary" },
+      { form: "polarForm", name: "trainerNote", group: "polarTrainerNote" },
+      { form: "polarForm", name: "clientSummary", group: "polarClientSummary" },
+      { form: "diagnosticResultForm", name: "interpretation", group: "diagnosticTrainerNote" },
+      { form: "diagnosticResultForm", name: "nextStep", group: "diagnosticClientSummary" },
+      { form: "diagnosticResultForm", name: "notes", group: "diagnosticTrainerNote" },
+      { form: "preSessionCheckForm", name: "note", group: "sessionTrainerObservation" },
+      { form: "postSessionNoteForm", name: "whatWeDid", group: "sessionTrainerObservation" },
+      { form: "postSessionNoteForm", name: "clientResponse", group: "sessionTrainerObservation" },
+      { form: "postSessionNoteForm", name: "homeTask", group: "homePlanClientInstruction" },
+      { form: "postSessionNoteForm", name: "clientMessage", group: "sessionClientSummary" },
+      { form: "manualHomePlanForm", name: "clientCue", group: "homePlanClientInstruction" },
+      { form: "manualHomePlanForm", name: "stopCriteria", group: "homePlanClientInstruction" },
+      { form: "exerciseForm", name: "clientInstruction", group: "atlasClientInstruction" },
+      { form: "exerciseForm", name: "coachNotes", group: "atlasCoachNotes" },
+      { form: "exerciseForm", name: "commonMistakes", group: "atlasCommonMistakes" },
+      { form: "exerciseForm", name: "stopCriteria", group: "atlasStopCriteria" },
+      { selector: "[data-home-field='clientCue']", group: "homePlanClientInstruction" },
+      { selector: "[data-home-field='stopCriteria']", group: "homePlanClientInstruction" }
+    ];
+    const quickReplyExpanded = new Set();
+
+    function quickReplyFieldId(field) {
+      if (field.dataset.quickReplyTargetId) return field.dataset.quickReplyTargetId;
+      const form = field.closest("form");
+      const index = Array.from(document.querySelectorAll("input, textarea")).indexOf(field);
+      field.dataset.quickReplyTargetId = [
+        form?.id || "dynamic",
+        field.name || field.dataset.homeField || "field",
+        field.dataset.homeId || "",
+        index
+      ].filter(Boolean).join("-");
+      return field.dataset.quickReplyTargetId;
+    }
+
+    function renderQuickReplies(groupKey, targetFieldSelectorOrId, options = {}) {
+      const group = QUICK_REPLY_GROUPS[groupKey];
+      if (!group) return;
+      const field = typeof targetFieldSelectorOrId === "string"
+        ? document.querySelector(targetFieldSelectorOrId.startsWith("#") || targetFieldSelectorOrId.startsWith("[") ? targetFieldSelectorOrId : `#${targetFieldSelectorOrId}`)
+        : targetFieldSelectorOrId;
+      if (!field || !(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement)) return;
+      if (field.type && ["date", "number", "email", "tel", "url", "file", "hidden", "checkbox"].includes(field.type)) return;
+      if (field.closest("#view") && viewName === "clientPortal") return;
+      const targetId = options.targetId || quickReplyFieldId(field);
+      field.parentElement?.querySelector(`.quick-replies[data-quick-reply-target="${CSS.escape(targetId)}"]`)?.remove();
+      const expanded = quickReplyExpanded.has(targetId);
+      const limit = group.maxVisible || 6;
+      const replies = expanded ? group.replies : group.replies.slice(0, limit);
+      const box = document.createElement("div");
+      box.className = "quick-replies";
+      box.dataset.quickReplyGroup = groupKey;
+      box.dataset.quickReplyTarget = targetId;
+      box.innerHTML = `
+        <div class="quick-reply-label">${escapeHtml(group.label || "Szybkie odpowiedzi")}</div>
+        <div class="quick-reply-list"></div>
+      `;
+      const list = box.querySelector(".quick-reply-list");
+      replies.forEach(phrase => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "quick-reply-chip";
+        btn.textContent = phrase;
+        btn.setAttribute("aria-label", `Wstaw: ${phrase}`);
+        btn.addEventListener("click", () => handleQuickReplyInsert(field, phrase, options));
+        list.appendChild(btn);
+      });
+      if (group.replies.length > limit) {
+        const toggle = document.createElement("button");
+        toggle.type = "button";
+        toggle.className = "quick-reply-chip quick-reply-toggle";
+        toggle.textContent = expanded ? "Mniej" : "Więcej";
+        toggle.addEventListener("click", () => {
+          expanded ? quickReplyExpanded.delete(targetId) : quickReplyExpanded.add(targetId);
+          renderQuickReplies(groupKey, field, { ...options, targetId });
+        });
+        list.appendChild(toggle);
+      }
+      field.insertAdjacentElement("afterend", box);
+    }
+
+    function handleQuickReplyInsert(targetField, phrase, options = {}) {
+      if (!targetField) return;
+      const current = String(targetField.value || "");
+      const trimmed = current.trimEnd();
+      if (trimmed.endsWith(phrase)) {
+        targetField.focus();
+        const end = targetField.value.length;
+        targetField.setSelectionRange?.(end, end);
+        return;
+      }
+      targetField.value = trimmed ? `${trimmed}\n${phrase}` : phrase;
+      targetField.dispatchEvent(new Event("input", { bubbles: true }));
+      targetField.dispatchEvent(new Event("change", { bubbles: true }));
+      targetField.focus();
+      const end = targetField.value.length;
+      targetField.setSelectionRange?.(end, end);
+    }
+
+    function enhanceQuickReplies(root = document) {
+      if (viewName === "clientPortal" && root === view) return;
+      QUICK_REPLY_MAPPINGS.forEach(mapping => {
+        const fields = mapping.selector
+          ? root.querySelectorAll?.(mapping.selector)
+          : root.querySelectorAll?.(`#${mapping.form} [name="${mapping.name}"]`);
+        fields?.forEach(field => renderQuickReplies(mapping.group, field));
+      });
+    }
+
     function setAddMenuOpen(open) {
       const menu = $("#addMenu");
       const btn = $("#addMenuBtn");
@@ -4312,6 +4759,7 @@
       if (viewName === "decision") renderDecision();
       if (viewName === "report") renderReport();
       if (viewName === "clientPortal") renderClientPortal();
+      enhanceQuickReplies(document);
     }
 
     function renderCommand() {
