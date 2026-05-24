@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.3.2 | Exercise Atlas QA</title>
+  <title>Studio Las OS 7.3.3 | Exercise Video Coverage</title>
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -842,7 +842,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.2</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.3</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -895,7 +895,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.2</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.3</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1155,7 +1155,7 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.3.2";
+    const APP_VERSION = "7.3.3";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
@@ -1243,7 +1243,7 @@
     const EXERCISE_LIBRARY_SEED_VERSION_KEY = "studioLasExerciseLibrarySeedVersion";
     const EXERCISE_LIBRARY_CORE_VERSION = "core-v5-atlas-qa";
     const EXERCISE_VIDEO_SEED_VERSION_KEY = "studioLasExerciseVideoSeedVersion";
-    const EXERCISE_VIDEO_SEED_VERSION = "video-v4-atlas-qa";
+    const EXERCISE_VIDEO_SEED_VERSION = "video-v5-source-extraction";
     const STRENGTH_SEED_VERSION_KEY = "studioLasStrengthSeedVersion";
     const STRENGTH_SEED_VERSION = "strength-v1";
     const CORE_EXERCISE_SOURCE = "Plan początkujący";
@@ -1261,6 +1261,7 @@
       "ex-single-leg-hip-thrust": "https://youtu.be/4q55YL-BDzA",
       "atlas-band-pull-apart": "https://youtu.be/XVqeIIXZ0lc",
       "atlas-bear-crawl": "https://youtu.be/CJWbagSjJ8s",
+      "atlas-db-bench-press": "https://youtu.be/Ojc-f0DyVtA",
       "atlas-db-romanian-deadlift": "https://youtu.be/EUrRC83H1LM",
       "atlas-dead-bug": "https://youtu.be/iB3i4t7aWn4",
       "atlas-elevated-push-up": "https://youtu.be/aDVGSy0XdXs",
@@ -1276,12 +1277,18 @@
       "atlas-step-up-low-box": "https://youtu.be/fRdZgvy9Ycw",
       "atlas-trx-row": "https://youtu.be/l46kH1cXIZ0",
       "atlas-worlds-greatest-stretch": "https://youtu.be/hBlLRW7h-pc",
+      "qa-pallof-press-standing": "https://youtu.be/CyfKL_1fmsU",
       "strength-dipy": "https://youtu.be/LNChWxXz8VM",
+      "strength-klatka-na-podlodze-hantle": "https://youtu.be/uxEK9gdCiCE",
+      "strength-lawka-sztanga": "https://youtu.be/vH6D0Q0vQek",
+      "strength-lawka-sztanga-wasko": "https://youtu.be/y8SpraFnV8M",
       "strength-podciaganie-nachwyt": "https://youtu.be/ZobBXFuVNIQ",
       "strength-podciaganie-podchwyt": "https://youtu.be/QFp1xa1vCDc",
+      "strength-pompki": "https://youtu.be/v9dYMR0ZrEk",
       "strength-przyciaganie-na-kolach": "https://youtu.be/aWXz54L-0f4",
       "strength-przysiad-bulgarski": "https://youtu.be/MnR6znqwz5o",
       "strength-wioslowanie-sztanga": "https://youtu.be/b8fN_gmP6Es",
+      "strength-wyciskanie-kettli-jednoracz": "https://youtu.be/nIGMor0ELMk",
       "strength-wyciskanie-nad-glowa-hantle": "https://youtu.be/n4qcVghtAEg",
       "strength-wykroki-boczne": "https://youtu.be/ik5h53Ghrgo",
       "strength-zuraw": "https://youtu.be/RwsKhIIkNIM",
@@ -1303,10 +1310,10 @@
       "step-up": ["step up", "step-up", "wejście na stopień"]
     };
     const EXERCISE_ATLAS_QA_AUDIT = {
-      version: "7.3.2",
-      localVideoSources: "Brak plików XLSX/CSV/JSON z Atlasem w repo i workspace podczas audytu.",
-      safeVideoMatchesAdded: ["qa-bird-dog -> bird-dog-prawa-reka-lewa-noga"],
-      skippedAmbiguousVideoMatches: ["qa-goblet-squat: dostępny film dotyczy wariantu do boxa", "qa-pallof-press-standing: dostępny film nie potwierdza jednoznacznie pozycji stojącej", "atlas-wall-slides: brak lokalnego źródła z pewnym linkiem", "qa-cat-cow: brak lokalnego źródła z pewnym linkiem"]
+      version: "7.3.3",
+      localVideoSources: "ATLAS-ĆWICZEŃ.xlsx: 879 hyperlinków; 10.2024-Atlas-cwiczen-byd797p.xlsx: 1107 hyperlinków; 1676 unikalnych URL.",
+      safeVideoMatchesAdded: ["atlas-db-bench-press -> DB - BENCH PRESS", "qa-pallof-press-standing -> BAND - PALLOF PRESS (STANDING)", "strength-klatka-na-podlodze-hantle -> DB - FLOOR PRESS", "strength-lawka-sztanga -> Wyciskanie sztangi leżąc", "strength-lawka-sztanga-wasko -> BB - BENCH PRESS (CLOSE GRIP)", "strength-pompki -> Pompki", "strength-wyciskanie-kettli-jednoracz -> KB - SINGLE ARM OVERHEAD PRESS"],
+      skippedAmbiguousVideoMatches: ["atlas-one-arm-db-row: kilka wariantów DB single arm row z różnym podparciem", "atlas-med-ball-chest-throw: kilka wariantów CM/NCM i pozycji", "atlas-single-arm-farmer-carry: źródło nie potwierdza wariantu jednorącz", "atlas-wall-slides: brak pewnego linku wall slide/serratus wall slide", "qa-goblet-squat: brak jednoznacznego źródła goblet squat bez innego wariantu"]
     };
     const DIAGNOSTIC_ATLAS_AUDIT = {
       atlasTests: 27,
