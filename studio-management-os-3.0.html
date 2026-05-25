@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.3.6 | Calmer Client UI</title>
+  <title>Studio Las OS 7.3.7 | Guided Workflow</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fffaf1'/%3E%3Cpath d='M32 12c9 10 14 20 14 28a14 14 0 0 1-28 0c0-8 5-18 14-28Z' fill='%236f8f68'/%3E%3Cpath d='M32 24v26M23 38h18' stroke='%231f2a24' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
@@ -378,6 +378,41 @@
     }
     .home-plan-empty p { margin: 0; color: var(--ink); line-height: 1.55; }
     .home-plan-empty .home-plan-actions { gap: 10px; }
+    .workflow-path { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+    .workflow-step {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,253,248,.74);
+      padding: 12px;
+      display: grid;
+      gap: 8px;
+      text-align: left;
+      color: var(--ink);
+      appearance: none;
+    }
+    .workflow-step:hover,
+    .workflow-step:focus-visible {
+      border-color: rgba(111,143,104,.36);
+      background: rgba(111,143,104,.08);
+      outline: none;
+    }
+    .workflow-step.done { border-color: rgba(111,143,104,.34); background: rgba(111,143,104,.1); }
+    .workflow-step.available { border-color: rgba(184,137,77,.3); }
+    .workflow-step strong { display: flex; align-items: center; justify-content: space-between; gap: 8px; font-size: 13px; }
+    .workflow-step p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.4; }
+    .workflow-actions { display: flex; flex-wrap: wrap; gap: 7px; }
+    .access-code {
+      font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+      font-size: 20px;
+      letter-spacing: .08em;
+      color: var(--ink);
+    }
+    .access-copy-fallback { min-height: 112px; }
+    .client-gate {
+      max-width: 720px;
+      margin: 0 auto;
+      width: 100%;
+    }
     .task-row label { display: flex; gap: 10px; align-items: flex-start; }
     .task-row.done .name, .task-row.done .meta { color: var(--faint); text-decoration: line-through; }
     .measurement-list { display: grid; gap: 10px; }
@@ -887,7 +922,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.6</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.7</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -906,9 +941,9 @@
           <button data-view="report"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg><span>Raport</span></button>
         </div>
         <div class="nav-section">
-          <div class="nav-label">Proces</div>
-          <button data-view="decision"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-5"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Decyzja</span></button>
-          <button data-view="process"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Proces</span></button>
+          <div class="nav-label">Prowadzenie</div>
+          <button data-view="decision"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 12l2 2 4-5"/><path d="M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0Z"/><path d="M12 3v2M12 19v2M3 12h2M19 12h2"/></svg><span>Co dalej?</span></button>
+          <button data-view="process"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 6h16M4 12h16M4 18h16"/></svg><span>Etap pracy</span></button>
           <button data-view="sessions"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 19.5V4a2 2 0 0 1 2-2h11l3 3v14.5a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/></svg><span>Sesje</span></button>
           <button data-view="diagnosticTests"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M4 5h16"/><path d="M4 12h10"/><path d="M4 19h7"/><path d="m15 17 2 2 4-5"/></svg><span>Testy</span></button>
         </div>
@@ -940,7 +975,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.6</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.7</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1200,9 +1235,10 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.3.6";
+    const APP_VERSION = "7.3.7";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
+    const CLIENT_PANEL_UNLOCK_PREFIX = "studioLasClientPanelUnlocked_";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
     const TANITA_KEY_FIELDS = ["date", "weightKg", "fatPercent", "muscleMassKg", "fatMassKg", "bodyWaterPercent", "bmrKcal", "visceralFatRating", "bmi"];
@@ -4042,6 +4078,33 @@
       };
     }
 
+    function generateClientAccessCode(existingCodes = []) {
+      const alphabet = "23456789ABCDEFGHJKMNPQRSTUVWXYZ";
+      const used = new Set(existingCodes.filter(Boolean).map(code => String(code).toUpperCase()));
+      for (let attempt = 0; attempt < 80; attempt++) {
+        let raw = "";
+        for (let i = 0; i < 4; i++) raw += alphabet[Math.floor(Math.random() * alphabet.length)];
+        const code = `LAS-${raw}`;
+        if (!used.has(code)) return code;
+      }
+      return `LAS-${Date.now().toString(36).slice(-4).toUpperCase().replace(/[O0I1L]/g, "8")}`;
+    }
+
+    function ensureClientAccessCodes(clients = []) {
+      const used = new Set();
+      return clients.map(client => {
+        const existing = String(client.clientAccessCode || "").trim().toUpperCase();
+        const valid = /^LAS-[2-9A-HJ-KM-NP-Z]{4}$/.test(existing) && !used.has(existing);
+        const code = valid ? existing : generateClientAccessCode([...used]);
+        used.add(code);
+        return {
+          ...client,
+          clientAccessCode: code,
+          clientAccessUpdatedAt: client.clientAccessUpdatedAt || new Date().toISOString().slice(0, 10)
+        };
+      });
+    }
+
     function migrateClient(client = {}) {
       const plan = migrateHomePlan(client.homePlan);
 
@@ -4057,6 +4120,8 @@
         contact: client.contact || "",
         email: client.email || "",
         phone: client.phone || "",
+        clientAccessCode: client.clientAccessCode || "",
+        clientAccessUpdatedAt: client.clientAccessUpdatedAt || "",
         startDate: client.startDate || "",
         nextSessionDate: client.nextSessionDate || "",
         nextReviewDate: client.nextReviewDate || "",
@@ -4089,7 +4154,7 @@
 
     function migrateState(data = {}) {
       const sourceClients = Array.isArray(data.clients) ? data.clients : seed.clients;
-      const clients = sourceClients.map(migrateClient);
+      const clients = ensureClientAccessCodes(sourceClients.map(migrateClient));
       const activeClientId = clients.some(c => c.id === data.activeClientId) ? data.activeClientId : clients[0]?.id || "";
       return { ...data, activeClientId, clients };
     }
@@ -4169,6 +4234,65 @@
 
     function activeClient() {
       return state.clients.find(c => c.id === state.activeClientId) || state.clients[0];
+    }
+
+    function clientLoginLabel(c = activeClient()) {
+      return c?.email || c?.name || "";
+    }
+
+    function normalizeClientLogin(value = "") {
+      return String(value).trim().replace(/\s+/g, " ").toLowerCase();
+    }
+
+    function clientPanelUnlockKey(clientId) {
+      return `${CLIENT_PANEL_UNLOCK_PREFIX}${clientId}`;
+    }
+
+    function isClientPanelUnlocked(clientId) {
+      try {
+        return sessionStorage.getItem(clientPanelUnlockKey(clientId)) === "true";
+      } catch (error) {
+        return false;
+      }
+    }
+
+    function unlockClientPanel(clientId) {
+      try {
+        sessionStorage.setItem(clientPanelUnlockKey(clientId), "true");
+      } catch (error) {}
+    }
+
+    function lockClientPanel(clientId) {
+      try {
+        sessionStorage.removeItem(clientPanelUnlockKey(clientId));
+      } catch (error) {}
+    }
+
+    function findClientForAccess(login, code) {
+      const normalizedLogin = normalizeClientLogin(login);
+      const normalizedCode = String(code || "").trim().toUpperCase();
+      const byEmail = state.clients.filter(client => normalizeClientLogin(client.email) === normalizedLogin);
+      const byName = state.clients.filter(client => normalizeClientLogin(client.name) === normalizedLogin);
+      const candidates = byEmail.length ? byEmail : byName;
+      if (!normalizedLogin || !normalizedCode) return { status: "missing" };
+      if (!candidates.length) return { status: "not_found" };
+      if (!byEmail.length && byName.length > 1) return { status: "ambiguous" };
+      const client = candidates.find(item => String(item.clientAccessCode || "").trim().toUpperCase() === normalizedCode);
+      return client ? { status: "ok", client } : { status: "invalid" };
+    }
+
+    function clientAccessMessage(c = activeClient()) {
+      const login = clientLoginLabel(c);
+      const firstName = String(c?.name || "").trim().split(/\s+/)[0] || "cześć";
+      return `Cześć ${firstName},
+Twój dostęp do Panelu klienta Studio Las:
+Login: ${login}
+Kod: ${c.clientAccessCode}
+
+Użyj linku:
+https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html
+
+Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
     }
 
     function latest(c = activeClient()) {
@@ -4707,6 +4831,7 @@
 
     function renderNoClientState() {
       view.innerHTML = `
+        ${renderGuidedWorkflow(null)}
         <section class="panel">
           <div class="panel-head">
             <div><h2>Brak klientów</h2><p>Dodaj klienta, żeby rozpocząć pracę w Studio Las OS.</p></div>
@@ -4716,6 +4841,7 @@
         </section>
       `;
       $("#emptyClientAddBtn")?.addEventListener("click", () => openClientModal());
+      bindGuidedWorkflowActions();
     }
 
     function render() {
@@ -4725,7 +4851,7 @@
         todaySession: ["Sesja dzisiaj", "Szybkie centrum pracy przed i po sesji z aktywnym klientem."],
         intake: ["Ankieta", "Import CSV, mapa startowa i triage procesu przed pierwszą sesją."],
         client: ["Profil klienta", "Jedno miejsce na hipotezę, cel, komunikację i czerwone flagi."],
-        process: ["Proces 12 tygodni", "Nie etap dla ozdoby, tylko logika przejścia do kolejnego standardu."],
+        process: ["Ścieżka klienta", "Gdzie jesteśmy w procesie i co wymaga uwagi."],
         sessions: ["Sesje i trend", "Historia obserwacji, bólu, gotowości i decyzji."],
         tasks: ["Zadania", "Aktywne rzeczy do dopięcia dla wybranego klienta."],
         measurements: ["Pomiary", "Warstwa Tanita: metryki, PDF i interpretacja w kontekście procesu."],
@@ -4733,7 +4859,7 @@
         homePlanView: ["Plan domowy", "Aktywne i archiwalne zadania ruchowe dla wybranego klienta."],
         exerciseAtlas: ["Atlas ruchu", "Baza zadań ruchowych dla trenera. Klient widzi tylko ćwiczenia przypisane do jego planu domowego."],
         diagnosticTests: ["Testy", "Obserwacje ruchowe zapisane jako wskazówki do decyzji trenera."],
-        decision: ["Decyzja tygodniowa", "Silnik rekomendacji na podstawie procesu, sesji, Polar, Tanita i zadań."],
+        decision: ["Następny krok", "Decyzja trenera na kolejny etap pracy."],
         report: ["Raport dobrostanu", "Gotowy język dla klienta bez ręcznego składania notatek."],
         clientPortal: ["Panel klienta", "Spokojny widok procesu dla aktualnie wybranego klienta."]
       };
@@ -4779,6 +4905,7 @@
           ${kpi("VAS teraz", m.vasNow ?? "–", m.vasDelta !== null ? `zmiana od startu: -${m.vasDelta}` : "potrzebne dane", m.vasNow <= 3 ? "good" : m.vasNow <= 6 ? "warn" : "bad")}
           ${kpi("Mobilność", m.mobility !== null ? `${m.mobility}%` : "–", m.mobilityDelta !== null ? `+${m.mobilityDelta}% od startu` : "potrzebne dane", "good")}
         </div>
+        ${renderGuidedWorkflow(active)}
         <div class="grid cols-3">
           <section class="panel span-2">
             <div class="panel-head"><div><h2>Lista procesu</h2><p>Kto dziś potrzebuje Twojej uwagi i jasnego kolejnego kroku.</p></div>${pill("triage", "blue")}</div>
@@ -4792,13 +4919,13 @@
           </section>
         </div>
         <section class="panel">
-          <div class="panel-head"><div><h2>Decyzja na kolejny tydzień</h2><p>${escapeHtml(active.name)} · automatyczny szkic decyzji trenerskiej.</p></div>${pill(decision.label, decisionTone(decision.recommendation))}</div>
+          <div class="panel-head"><div><h2>Następny krok</h2><p>${escapeHtml(active.name)} · szkic decyzji trenerskiej na kolejny etap.</p></div>${pill(decision.label, decisionTone(decision.recommendation))}</div>
           <div class="grid cols-3">
             <div class="portal-info"><div class="label">Rekomendacja</div><p>${escapeHtml(decisionLabel(decision.recommendation))}</p></div>
             <div class="portal-info"><div class="label">Powody</div><p>${escapeHtml(decision.reasons.slice(0, 2).join(" "))}</p></div>
             <div class="portal-info"><div class="label">Najważniejszy sygnał</div><p>${escapeHtml(decision.risks[0] || "Brak dużego sygnału ograniczającego.")}</p></div>
           </div>
-          <div style="margin-top:12px"><button class="btn primary" id="commandDecisionBtn">Przejdź do decyzji</button></div>
+          <div style="margin-top:12px"><button class="btn primary" id="commandDecisionBtn">Przejdź do następnego kroku</button></div>
         </section>
         <section class="panel">
           <div class="panel-head"><div><h2>Sesja dzisiaj</h2><p>${escapeHtml(active.name)} · szybki brief przed wejściem na salę.</p></div>${pill(decisionLabel(decision.recommendation), decisionTone(decision.recommendation))}</div>
@@ -4821,6 +4948,7 @@
         </div>
       `;
       bindClientCards();
+      bindGuidedWorkflowActions();
       $("#commandDecisionBtn")?.addEventListener("click", () => {
         viewName = "decision";
         renderShell();
@@ -4829,6 +4957,72 @@
         viewName = "todaySession";
         renderShell();
       });
+    }
+
+    function workflowStepState(c, key) {
+      if (!c) return key === "client" ? "available" : "";
+      const hasAnyObservation = Boolean((c.testResults || []).length || (c.measurements || []).length || (c.polarSessions || []).length);
+      const states = {
+        client: true,
+        intake: hasImportedIntake(c),
+        observe: hasAnyObservation,
+        session: (c.sessions || []).length > 0 || (c.postSessionNotes || []).length > 0,
+        plan: activeHomePlanExercises(c).length > 0,
+        portal: true,
+        report: true
+      };
+      return states[key] ? "done" : "available";
+    }
+
+    function renderGuidedWorkflow(c) {
+      const steps = [
+        { key: "client", label: "Dodaj klienta", desc: "Utwórz profil i zapisz podstawowy cel.", actions: [["client", c ? "Otwórz profil" : "Dodaj klienta"]] },
+        { key: "intake", label: "Uzupełnij / wgraj ankietę", desc: "Zbierz punkt startowy, obawy i ograniczenia.", actions: [["intake", "Ankieta"]] },
+        { key: "observe", label: "Wykonaj testy i pomiary", desc: "Zapisz Tanitę, Polar i obserwacje ruchowe.", actions: [["diagnosticTests", "Testy"], ["measurements", "Pomiary"], ["polar", "Polar"]] },
+        { key: "session", label: "Zapisz sesję", desc: "Zapisz obserwacje i decyzję po pracy z klientem.", actions: [["session", "Nowa sesja"]] },
+        { key: "plan", label: "Przypisz plan między spotkaniami", desc: "Wybierz 1–3 zadania, które klient realnie wykona.", actions: [["homePlanView", "Plan"], ["exerciseAtlas", "Atlas"]] },
+        { key: "portal", label: "Pokaż Panel klienta", desc: "Sprawdź, czy klient widzi spokojny następny krok.", actions: [["clientPortal", "Panel"]] },
+        { key: "report", label: "Wygeneruj raport", desc: "Podsumuj proces i ustal kolejny etap.", actions: [["report", "Raport"]] }
+      ];
+      return `
+        <section class="panel">
+          <div class="panel-head">
+            <div><h2>Ścieżka pracy z klientem</h2><p>Krótka mapa kolejności. Pomaga prowadzić proces, ale niczego nie blokuje.</p></div>
+            ${pill(c ? "aktywny klient" : "start", c ? "green" : "gold")}
+          </div>
+          <div class="workflow-path">
+            ${steps.map((step, index) => {
+              const stateName = workflowStepState(c, step.key);
+              return `<div class="workflow-step ${stateName}">
+                <strong><span>${index + 1}. ${escapeHtml(step.label)}</span>${stateName === "done" ? pill("gotowe", "green") : pill(c || step.key === "client" ? "otwarte" : "po dodaniu klienta", c || step.key === "client" ? "gold" : "blue")}</strong>
+                <p>${escapeHtml(step.desc)}</p>
+                <div class="workflow-actions">
+                  ${step.actions.map(([action, label]) => `<button class="btn" data-workflow-action="${escapeHtml(action)}" type="button">${escapeHtml(label)}</button>`).join("")}
+                </div>
+              </div>`;
+            }).join("")}
+          </div>
+        </section>
+      `;
+    }
+
+    function bindGuidedWorkflowActions() {
+      document.querySelectorAll("[data-workflow-action]").forEach(btn => btn.addEventListener("click", () => {
+        runWorkflowAction(btn.dataset.workflowAction);
+      }));
+    }
+
+    function runWorkflowAction(action) {
+      if (action === "client") {
+        const c = activeClient();
+        return c ? (viewName = "client", renderShell()) : openClientModal();
+      }
+      if (action === "session") {
+        return activeClient() ? openSessionModal() : openClientModal();
+      }
+      if (!activeClient()) return openClientModal();
+      viewName = action;
+      renderShell();
     }
 
     function renderTodaySession() {
@@ -5217,9 +5411,64 @@
           <div class="panel-head"><h2>Mapa startowa z ankiety</h2>${pill(hasImportedIntake(c) ? `ryzyko: ${intakeRiskLabel(c.intake.riskLevel)}` : "brak ankiety", hasImportedIntake(c) ? intakeRiskTone(c.intake.riskLevel) : "gold")}</div>
           ${renderClientIntake(c)}
         </section>
+        ${renderClientAccessCard(c)}
       `;
       $("#editClientBtn")?.addEventListener("click", () => openClientModal(c.id));
       $("#deleteClientBtn")?.addEventListener("click", () => deleteClient(c.id));
+      $("#copyClientAccessBtn")?.addEventListener("click", () => copyClientAccess(c.id));
+      $("#resetClientAccessBtn")?.addEventListener("click", () => resetClientAccessCode(c.id));
+    }
+
+    function renderClientAccessCard(c) {
+      return `
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Dostęp do Panelu klienta</h2>
+              <p>Przekaż klientowi login i kod, żeby mógł zobaczyć spokojny widok między spotkaniami.</p>
+            </div>
+            ${pill("lokalna bramka", "gold")}
+          </div>
+          <div class="grid cols-3">
+            <div class="portal-info"><div class="label">Login</div><p>${escapeHtml(clientLoginLabel(c) || "Uzupełnij email albo imię i nazwisko")}</p></div>
+            <div class="portal-info"><div class="label">Kod dostępu</div><p class="access-code">${escapeHtml(c.clientAccessCode)}</p></div>
+            <div class="portal-info"><div class="label">Aktualizacja</div><p>${escapeHtml(c.clientAccessUpdatedAt || "dzisiaj")}</p></div>
+          </div>
+          <div class="home-plan-actions" style="margin-top:12px">
+            <button class="btn primary" id="copyClientAccessBtn" type="button">Kopiuj dane dostępu</button>
+            <button class="btn warning" id="resetClientAccessBtn" type="button">Resetuj kod</button>
+          </div>
+          <p class="form-message" style="margin-top:10px">To jest lokalna bramka dostępu do Panelu klienta. Nie zastępuje pełnego systemu logowania. Nie wysyłaj w panelu danych, których nie chcesz przechowywać w tej aplikacji.</p>
+          <textarea class="access-copy-fallback" id="clientAccessFallback" readonly hidden></textarea>
+        </section>
+      `;
+    }
+
+    async function copyClientAccess(clientId) {
+      const c = state.clients.find(client => client.id === clientId);
+      if (!c) return toast("Nie znaleziono klienta.");
+      const message = clientAccessMessage(c);
+      const copied = await copyReportText(message);
+      const fallback = $("#clientAccessFallback");
+      if (!copied && fallback) {
+        fallback.hidden = false;
+        fallback.value = message;
+        fallback.focus();
+        fallback.select();
+        return toast("Skopiuj dane dostępu z pola tekstowego.");
+      }
+      toast("Dane dostępu skopiowane");
+    }
+
+    function resetClientAccessCode(clientId) {
+      const c = state.clients.find(client => client.id === clientId);
+      if (!c) return toast("Nie znaleziono klienta.");
+      c.clientAccessCode = generateClientAccessCode(state.clients.filter(client => client.id !== clientId).map(client => client.clientAccessCode));
+      c.clientAccessUpdatedAt = today();
+      lockClientPanel(clientId);
+      save();
+      renderShell();
+      toast("Kod dostępu został zresetowany");
     }
 
     function deleteClient(clientId) {
@@ -5227,6 +5476,7 @@
       if (!client) return toast("Nie znaleziono klienta.");
       const confirmed = window.confirm(`Usunąć klienta ${client.name}? Lokalne dane tego klienta zostaną usunięte ze Studio Las OS: sesje, pomiary, odczyty Polar, wyniki testów, plan domowy, zadania i raporty.`);
       if (!confirmed) return;
+      lockClientPanel(clientId);
       state.clients = state.clients.filter(item => item.id !== clientId);
       if (state.activeClientId === clientId) {
         state.activeClientId = state.clients[0]?.id || "";
@@ -5261,7 +5511,7 @@
       const c = activeClient();
       view.innerHTML = `
         <section class="panel">
-          <div class="panel-head"><div><h2>Proces klienta</h2><p>${escapeHtml(c.name)} · aktualnie krok ${c.stage}</p></div>${pill("zmiana etapu zapisuje decyzję", "blue")}</div>
+          <div class="panel-head"><div><h2>Ścieżka klienta</h2><p>${escapeHtml(c.name)} · aktualnie krok ${c.stage}</p></div>${pill("zmiana etapu zapisuje decyzję", "blue")}</div>
           <div class="progress-line">
             ${steps.map((s, i) => `<button class="step ${c.stage === i + 1 ? "active" : ""} ${c.stage > i + 1 ? "done" : ""}" data-stage="${i + 1}">
               ${pill(`Krok ${i + 1}`, c.stage >= i + 1 ? "green" : "")}
@@ -6231,12 +6481,19 @@
 
     function renderClientPortal() {
       const c = activeClient();
+      if (!isClientPanelUnlocked(c.id)) {
+        renderClientPortalGate(c);
+        return;
+      }
       const l = latest(c);
       view.innerHTML = `
         <section class="panel portal-focus">
           <div class="panel-head">
             <div><h2>Co teraz?</h2><p>${escapeHtml(c.name)} · jedno najważniejsze działanie.</p></div>
-            ${pill(portalStatus(c), portalStatusTone(c))}
+            <div class="home-plan-actions">
+              ${pill(portalStatus(c), portalStatusTone(c))}
+              <button class="btn" id="lockClientPanelBtn" type="button">Zablokuj panel</button>
+            </div>
           </div>
           ${renderPortalNow(c)}
         </section>
@@ -6282,6 +6539,71 @@
         viewName = "report";
         renderShell();
       });
+      $("#lockClientPanelBtn")?.addEventListener("click", () => {
+        lockClientPanel(c.id);
+        renderClientPortal();
+        toast("Panel klienta zablokowany");
+      });
+    }
+
+    function renderClientPortalGate(c) {
+      view.innerHTML = `
+        <section class="panel portal-focus client-gate">
+          <div class="panel-head">
+            <div>
+              <h2>Wejście do Panelu klienta</h2>
+              <p>Panel pokazuje tylko najważniejsze informacje między spotkaniami.</p>
+            </div>
+            ${pill("kod dostępu", "gold")}
+          </div>
+          <form class="grid" id="clientAccessGateForm">
+            <div class="form-field">
+              <label class="label" for="clientAccessLogin">Login / imię i nazwisko lub email</label>
+              <input id="clientAccessLogin" name="login" autocomplete="username" placeholder="np. ${escapeHtml(c.email || c.name)}">
+            </div>
+            <div class="form-field">
+              <label class="label" for="clientAccessCode">Kod dostępu</label>
+              <input id="clientAccessCode" name="code" autocomplete="one-time-code" placeholder="LAS-XXXX">
+            </div>
+            <p class="form-message">Ten panel pokazuje tylko najważniejsze informacje między spotkaniami. Jeśli czegoś nie rozumiesz, omów to z trenerem.</p>
+            <p class="form-message" id="clientAccessError" role="status" aria-live="polite"></p>
+            <div class="home-plan-actions">
+              <button class="btn primary" type="submit">Wejdź do Panelu klienta</button>
+              <button class="btn" id="trainerPortalPreviewBtn" type="button">Podgląd trenera</button>
+            </div>
+            <p class="form-message">To jest lokalna bramka dostępu do panelu w Studio Las OS. Nie zastępuje pełnego konta użytkownika ani medycznego systemu logowania.</p>
+          </form>
+        </section>
+      `;
+      $("#clientAccessGateForm")?.addEventListener("submit", handleClientAccessSubmit);
+      $("#trainerPortalPreviewBtn")?.addEventListener("click", () => {
+        unlockClientPanel(c.id);
+        renderClientPortal();
+        toast("Podgląd Panelu klienta odblokowany");
+      });
+    }
+
+    function handleClientAccessSubmit(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const errorEl = $("#clientAccessError");
+      const formData = new FormData(form);
+      const result = findClientForAccess(formData.get("login"), formData.get("code"));
+      if (result.status === "ok") {
+        state.activeClientId = result.client.id;
+        unlockClientPanel(result.client.id);
+        save();
+        renderShell();
+        toast("Panel klienta odblokowany");
+        return;
+      }
+      const messages = {
+        missing: "Uzupełnij login i kod dostępu.",
+        ambiguous: "Znaleziono więcej niż jedną osobę o takim imieniu i nazwisku. Użyj adresu email jako loginu.",
+        not_found: "Nie udało się potwierdzić dostępu. Sprawdź dane albo poproś trenera o nowy kod.",
+        invalid: "Nie udało się potwierdzić dostępu. Sprawdź dane albo poproś trenera o nowy kod."
+      };
+      if (errorEl) errorEl.textContent = messages[result.status] || messages.invalid;
     }
 
     function renderPortalNow(c) {
@@ -10153,6 +10475,8 @@ Initial 83.45 64.95 18.10
         contact: fd.get("contact").trim(),
         email: fd.get("email").trim(),
         phone: fd.get("phone").trim(),
+        clientAccessCode: existing?.clientAccessCode || generateClientAccessCode(state.clients.map(client => client.clientAccessCode)),
+        clientAccessUpdatedAt: existing?.clientAccessUpdatedAt || today(),
         startDate: fd.get("startDate"),
         nextSessionDate: fd.get("nextSessionDate"),
         nextReviewDate: fd.get("nextReviewDate"),
