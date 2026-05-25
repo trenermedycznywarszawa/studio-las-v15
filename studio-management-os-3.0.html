@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.3.7 | Guided Workflow</title>
+  <title>Studio Las OS 7.3.8 | Client Guidance</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fffaf1'/%3E%3Cpath d='M32 12c9 10 14 20 14 28a14 14 0 0 1-28 0c0-8 5-18 14-28Z' fill='%236f8f68'/%3E%3Cpath d='M32 24v26M23 38h18' stroke='%231f2a24' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
@@ -327,6 +327,43 @@
     .portal-info p, .portal-metric p, .doc-card p { margin: 7px 0 0; }
     .portal-metric strong { display: block; margin-top: 8px; font-size: 24px; line-height: 1; }
     .doc-card { min-height: 118px; display: flex; flex-direction: column; justify-content: space-between; gap: 14px; }
+    .guidance-today { display: grid; gap: 12px; }
+    .guidance-step {
+      border: 1px solid rgba(111,143,104,.2);
+      border-radius: 14px;
+      background: rgba(255,253,248,.82);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+    .guidance-step.done {
+      border-color: rgba(111,143,104,.38);
+      background: rgba(111,143,104,.1);
+    }
+    .guidance-step .name { font-size: 18px; }
+    .guidance-step p { margin: 0; color: var(--muted); line-height: 1.55; }
+    .guidance-step-footer { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; justify-content: space-between; }
+    .guidance-done-text { color: var(--green-2); font-weight: 800; }
+    .guidance-materials { display: grid; grid-template-columns: repeat(auto-fit, minmax(190px, 1fr)); gap: 10px; }
+    .guidance-material {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: rgba(255,253,248,.76);
+      padding: 13px;
+      display: grid;
+      gap: 10px;
+      min-height: 142px;
+    }
+    .guidance-material p { margin: 0; color: var(--muted); line-height: 1.45; }
+    .guidance-empty {
+      border: 1px solid rgba(184,137,77,.24);
+      border-radius: 14px;
+      background: rgba(184,137,77,.08);
+      padding: 14px;
+      color: var(--muted);
+      line-height: 1.55;
+    }
+    .trainer-guidance-status { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
     .exercise-list { display: grid; gap: 10px; }
     .task-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; }
     .filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; align-items: end; }
@@ -732,6 +769,7 @@
       .cols-4, .cols-3, .cols-2,
       .form-grid, .filter-bar,
       .home-plan-summary-grid,
+      .trainer-guidance-status,
       .exercise-compact-row,
       .diagnostic-test-row { grid-template-columns: 1fr; }
       .progress-line { grid-template-columns: 1fr; }
@@ -746,6 +784,8 @@
       .exercise-card .card-actions .btn,
       .exercise-card .card-actions a,
       .doc-card .btn,
+      .guidance-step-footer .btn,
+      .guidance-material .btn,
       .measurement-main .btn,
       .diagnostic-result-card .btn,
       .diagnostic-test-row .btn { width: 100%; flex: 1 1 100%; }
@@ -922,7 +962,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.7</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.8</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -975,7 +1015,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.7</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.8</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1235,9 +1275,10 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.3.7";
+    const APP_VERSION = "7.3.8";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
+    const GUIDANCE_STORAGE_KEY = "studioLasGuidance_v1";
     const CLIENT_PANEL_UNLOCK_PREFIX = "studioLasClientPanelUnlocked_";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
@@ -4268,6 +4309,67 @@
       } catch (error) {}
     }
 
+    function loadGuidanceState() {
+      try {
+        return JSON.parse(localStorage.getItem(GUIDANCE_STORAGE_KEY) || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function saveGuidanceState(data) {
+      try {
+        localStorage.setItem(GUIDANCE_STORAGE_KEY, JSON.stringify(data || {}));
+      } catch (error) {}
+    }
+
+    function dailyGuidanceDate() {
+      return getTodayISODate();
+    }
+
+    function guidanceTaskId(task) {
+      return String(task?.id || task?.exerciseId || task?.name || "step").replace(/\s+/g, "-");
+    }
+
+    function clientGuidanceTasks(c = activeClient()) {
+      return activeHomePlanExercises(c).slice(0, 3).map((task, index) => ({
+        id: `home-${guidanceTaskId(task)}-${index}`,
+        sourceId: task.id || task.exerciseId || "",
+        title: task.name || "Ruch do wykonania",
+        dose: [task.dosage || "", task.frequency || ""].filter(Boolean).join(" · ") || "2-15 minut spokojnej pracy.",
+        cue: task.clientCue || "Wykonuj spokojnie, bez pośpiechu i w zakresie, który kontrolujesz.",
+        stop: task.stopCriteria || "Przerwij, jeśli objawy wyraźnie narastają albo pojawia się reakcja nietypowa.",
+        videoUrl: hasExerciseVideo(task) ? String(task.videoUrl).trim() : ""
+      }));
+    }
+
+    function isGuidanceStepDone(clientId, taskId, date = dailyGuidanceDate()) {
+      const data = loadGuidanceState();
+      return data?.[clientId]?.[date]?.[taskId] === true;
+    }
+
+    function setGuidanceStepDone(clientId, taskId, done, date = dailyGuidanceDate()) {
+      const data = loadGuidanceState();
+      data[clientId] = data[clientId] || {};
+      data[clientId][date] = data[clientId][date] || {};
+      if (done) data[clientId][date][taskId] = true;
+      else delete data[clientId][date][taskId];
+      saveGuidanceState(data);
+    }
+
+    function guidanceCompletion(c = activeClient(), date = dailyGuidanceDate()) {
+      const tasks = clientGuidanceTasks(c);
+      const done = tasks.filter(task => isGuidanceStepDone(c.id, task.id, date)).length;
+      return { tasks, done, total: tasks.length };
+    }
+
+    function toggleGuidanceStep(clientId, taskId) {
+      const current = isGuidanceStepDone(clientId, taskId);
+      setGuidanceStepDone(clientId, taskId, !current);
+      renderClientPortal();
+      toast(!current ? "Dzisiejszy krok wykonany." : "Oznaczenie cofnięte.");
+    }
+
     function findClientForAccess(login, code) {
       const normalizedLogin = normalizeClientLogin(login);
       const normalizedCode = String(code || "").trim().toUpperCase();
@@ -6137,6 +6239,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
           </form>
           <div class="home-plan-source">${pill("Źródło zadań: Atlas ruchu lub wpis ręczny", "blue")}</div>
         </section>
+        ${renderTrainerGuidanceStatus(c)}
         <section class="panel">
           <div class="panel-head">
             <h2>Aktywne zadania ruchowe</h2>
@@ -6181,6 +6284,29 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       $("#homePlanManualAddBtn")?.addEventListener("click", openManualHomePlanExerciseModal);
       $("#homePlanManualHeaderBtn")?.addEventListener("click", openManualHomePlanExerciseModal);
       $("#homePlanTouchTodayBtn")?.addEventListener("click", setHomePlanDateToday);
+    }
+
+    function renderTrainerGuidanceStatus(c) {
+      const completion = guidanceCompletion(c);
+      const lastSession = latest(c);
+      const friction = completion.total && completion.done === 0
+        ? "Dzisiaj brak oznaczonych kroków. Warto sprawdzić, czy plan nie jest za długi albo niejasny."
+        : completion.total
+          ? "Plan ma czytelny rytm. Sprawdź na kolejnej sesji, czy kroki były realne do wykonania."
+          : "Brak małych kroków dla klienta. Najpierw przypisz 1-3 zadania między spotkaniami.";
+      return `
+        <section class="panel">
+          <div class="panel-head">
+            <div><h2>Prowadzenie między sesjami</h2><p>Lekka widoczność adherence bez gamifikacji i bez presji na klienta.</p></div>
+            ${pill(completion.total ? `${completion.done}/${completion.total} dzisiaj` : "brak kroków", completion.done ? "green" : "gold")}
+          </div>
+          <div class="trainer-guidance-status">
+            <div class="portal-info"><div class="label">Dzisiejsze kroki</div><p>${completion.total ? `${completion.done} z ${completion.total} oznaczone jako wykonane.` : "Brak przypisanych kroków."}</p></div>
+            <div class="portal-info"><div class="label">Ostatnia sesja</div><p>${lastSession?.date ? escapeHtml(formatDate(lastSession.date)) : "Brak zapisanej sesji."}</p></div>
+            <div class="portal-info"><div class="label">Friction</div><p>${escapeHtml(friction)}</p></div>
+          </div>
+        </section>
+      `;
     }
 
     function renderHomePlanEmptyState() {
@@ -6485,56 +6611,35 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
         renderClientPortalGate(c);
         return;
       }
-      const l = latest(c);
+      const completion = guidanceCompletion(c);
       view.innerHTML = `
         <section class="panel portal-focus">
           <div class="panel-head">
-            <div><h2>Co teraz?</h2><p>${escapeHtml(c.name)} · jedno najważniejsze działanie.</p></div>
+            <div><h2>Dzisiaj</h2><p>${escapeHtml(c.name)} · maksymalnie trzy spokojne kroki między spotkaniami.</p></div>
             <div class="home-plan-actions">
-              ${pill(portalStatus(c), portalStatusTone(c))}
+              ${pill(completion.total ? `${completion.done}/${completion.total} dzisiaj` : "do ustalenia", completion.done && completion.done === completion.total ? "green" : "gold")}
               <button class="btn" id="lockClientPanelBtn" type="button">Zablokuj panel</button>
             </div>
           </div>
-          ${renderPortalNow(c)}
+          ${renderPortalDailyGuidance(c)}
         </section>
 
         <section class="panel">
-          <div class="panel-head"><h2>Status procesu</h2>${pill(getClientStageLabel(c), "blue")}</div>
-          ${renderPortalProcessStatus(c)}
+          <div class="panel-head"><h2>Twój proces</h2>${pill(getClientStageLabel(c), "blue")}</div>
+          ${renderPortalProcessSnapshot(c)}
         </section>
 
         <section class="panel">
-          <div class="panel-head"><h2>Ruch do wykonania</h2>${pill(activeHomePlanExercises(c).length ? "jeden spokojny krok" : "do ustalenia", activeHomePlanExercises(c).length ? "green" : "gold")}</div>
-          ${renderPortalTodayTask(c)}
-        </section>
-
-        <section class="panel">
-          <div class="panel-head"><h2>Dowód postępu</h2>${pill("spokojna interpretacja", "green")}</div>
-          ${renderPortalProgressEvidence(c)}
-        </section>
-
-        <section class="panel" id="clientPortalPlanSection">
-          <div class="panel-head"><h2>Plan między spotkaniami</h2>${pill("ruch do wykonania", "green")}</div>
-          ${renderPortalHomePlan(c)}
-        </section>
-
-        <section class="panel">
-          <div class="panel-head"><h2>Ostatnia sesja</h2>${pill(l?.date ? formatDate(l.date) : "brak zapisu", "blue")}</div>
-          ${renderPortalLastSession(c)}
-        </section>
-
-        <section class="panel">
-          <div class="panel-head"><h2>Dokumenty / Raporty</h2>${pill("krótko", "blue")}</div>
-          ${renderPortalDocuments(c)}
+          <div class="panel-head"><h2>Twoje materiały</h2>${pill("bez chaosu", "green")}</div>
+          ${renderPortalMaterials(c)}
         </section>
       `;
+      document.querySelectorAll("[data-guidance-complete]").forEach(btn => btn.addEventListener("click", () => {
+        toggleGuidanceStep(c.id, btn.dataset.guidanceComplete);
+      }));
       document.querySelectorAll("[data-client-portal-plan-jump]").forEach(btn => btn.addEventListener("click", () => {
         $("#clientPortalPlanSection")?.scrollIntoView({ behavior: "smooth", block: "start" });
       }));
-      $("#clientPortalShowAllPlanBtn")?.addEventListener("click", () => {
-        clientPortalShowAllHomeTasks = !clientPortalShowAllHomeTasks;
-        renderClientPortal();
-      });
       $("#clientPortalReportBtn")?.addEventListener("click", () => {
         viewName = "report";
         renderShell();
@@ -6604,6 +6709,114 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
         invalid: "Nie udało się potwierdzić dostępu. Sprawdź dane albo poproś trenera o nowy kod."
       };
       if (errorEl) errorEl.textContent = messages[result.status] || messages.invalid;
+    }
+
+    function renderPortalDailyGuidance(c) {
+      const tasks = clientGuidanceTasks(c);
+      if (!tasks.length) {
+        return `
+          <div class="guidance-empty">
+            Na razie nie ma przypisanego planu między spotkaniami. Poproś trenera o jeden mały krok na dziś - najlepiej taki, który da się wykonać w kilka minut.
+          </div>
+        `;
+      }
+      return `
+        <div class="guidance-today">
+          ${tasks.map(task => {
+            const done = isGuidanceStepDone(c.id, task.id);
+            return `
+              <div class="guidance-step ${done ? "done" : ""}">
+                <div class="panel-head">
+                  <div>
+                    <div class="label">Najbliższy krok</div>
+                    <div class="name">${escapeHtml(task.title)}</div>
+                  </div>
+                  ${pill(done ? "wykonane" : "dzisiaj", done ? "green" : "gold")}
+                </div>
+                <p>${escapeHtml(task.dose)}</p>
+                <p>${escapeHtml(task.cue)}</p>
+                <p class="meta">${escapeHtml(task.stop)}</p>
+                <div class="guidance-step-footer">
+                  <span class="${done ? "guidance-done-text" : "meta"}">${done ? "Dzisiejszy krok wykonany." : "Zrób spokojnie, bez pośpiechu."}</span>
+                  <div class="home-plan-actions">
+                    ${task.videoUrl ? `<a class="btn" href="${escapeHtml(task.videoUrl)}" target="_blank" rel="noopener noreferrer">Zobacz video</a>` : ""}
+                    <button class="btn ${done ? "" : "primary"}" data-guidance-complete="${escapeHtml(task.id)}" type="button">${done ? "Cofnij oznaczenie" : "Oznacz wykonane"}</button>
+                  </div>
+                </div>
+              </div>
+            `;
+          }).join("")}
+        </div>
+      `;
+    }
+
+    function processWeekNumber(c) {
+      if (!c?.startDate) return null;
+      const start = new Date(`${c.startDate}T00:00:00`);
+      if (Number.isNaN(start.getTime())) return null;
+      const diff = Date.now() - start.getTime();
+      return Math.max(1, Math.floor(diff / (7 * 24 * 60 * 60 * 1000)) + 1);
+    }
+
+    function portalClientTip(c) {
+      const firstTask = clientGuidanceTasks(c)[0];
+      if (firstTask) return "Dzisiaj wystarczy wykonać mały krok. Nie dokładaj nic ponad plan bez ustalenia z trenerem.";
+      if (c.nextSessionDate) return "Do kolejnego spotkania obserwuj reakcję organizmu i zapisz pytania dla trenera.";
+      return "Najpierw ustalimy jeden prosty kierunek pracy między spotkaniami.";
+    }
+
+    function renderPortalProcessSnapshot(c) {
+      const l = latest(c);
+      const week = processWeekNumber(c);
+      return `
+        <div class="grid cols-2">
+          <div class="portal-info"><div class="label">Aktualny etap</div><p><strong>${escapeHtml(getClientStageLabel(c))}</strong></p><p>${escapeHtml(getClientStageExplanation(c))}</p></div>
+          <div class="portal-info"><div class="label">Tydzień procesu</div><p>${week ? `Tydzień ${escapeHtml(String(week))}` : "Ustalimy po dacie startu."}</p></div>
+          <div class="portal-info"><div class="label">Ostatnia sesja</div><p>${l?.date ? escapeHtml(formatDate(l.date)) : "Ostatnia sesja pojawi się po pierwszym zapisie."}</p></div>
+          <div class="portal-info"><div class="label">Następna sesja</div><p>${c.nextSessionDate ? escapeHtml(formatDate(c.nextSessionDate)) : "Termin dopiszemy po ustaleniu spotkania."}</p></div>
+          <div class="portal-info span-2"><div class="label">Jedna wskazówka</div><p>${escapeHtml(portalClientTip(c))}</p></div>
+        </div>
+      `;
+    }
+
+    function renderPortalMaterials(c) {
+      const active = activeHomePlanExercises(c);
+      const report = latestReport(c);
+      const hasVideo = active.some(task => hasExerciseVideo(task));
+      const recommendation = shortText(latest(c)?.decision || c.decisionLogic || "Kolejny kierunek pracy ustalimy po najbliższej obserwacji.", 180);
+      return `
+        <div class="guidance-materials">
+          <div class="guidance-material" id="clientPortalPlanSection">
+            <div>
+              <div class="label">Plan</div>
+              <div class="name">Plan między spotkaniami</div>
+              <p>${active.length ? `${active.length} ${pluralizePl(active.length, "aktywny ruch", "aktywne ruchy", "aktywnych ruchów")} do spokojnego wykonania.` : "Plan pojawi się po przypisaniu przez trenera."}</p>
+            </div>
+          </div>
+          <div class="guidance-material">
+            <div>
+              <div class="label">Atlas</div>
+              <div class="name">Video przy ruchach</div>
+              <p>${hasVideo ? "Materiały video są dostępne przy przypisanych krokach na dziś." : "Video pojawi się tylko wtedy, gdy trener przypisze je do konkretnego ruchu."}</p>
+            </div>
+          </div>
+          <div class="guidance-material">
+            <div>
+              <div class="label">Raport</div>
+              <div class="name">${report ? "Najnowszy raport" : "Raport procesu"}</div>
+              <p>${report ? escapeHtml(formatDate(report.date)) : "Raport przygotujemy, gdy będzie sensownie podsumowywał proces."}</p>
+            </div>
+            <button class="btn" id="clientPortalReportBtn" type="button">${report ? "Zobacz raport" : "Przygotuj raport"}</button>
+          </div>
+          <div class="guidance-material">
+            <div>
+              <div class="label">Zalecenia</div>
+              <div class="name">Najbliższy kierunek</div>
+              <p>${escapeHtml(recommendation)}</p>
+            </div>
+          </div>
+        </div>
+      `;
     }
 
     function renderPortalNow(c) {
