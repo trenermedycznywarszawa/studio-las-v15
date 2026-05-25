@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 7.3.8 | Client Guidance</title>
+  <title>Studio Las OS 7.3.9 | Guidance Pilot</title>
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fffaf1'/%3E%3Cpath d='M32 12c9 10 14 20 14 28a14 14 0 0 1-28 0c0-8 5-18 14-28Z' fill='%236f8f68'/%3E%3Cpath d='M32 24v26M23 38h18' stroke='%231f2a24' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html" />
@@ -364,6 +364,28 @@
       line-height: 1.55;
     }
     .trainer-guidance-status { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .pilot-form { margin-top: 12px; }
+    .pilot-helper { margin: 10px 0 0; color: var(--muted); line-height: 1.55; }
+    .onboarding-kit {
+      border: 1px solid rgba(111,143,104,.24);
+      border-radius: 18px;
+      background: #fffdf8;
+      padding: 28px;
+      color: var(--ink);
+      display: grid;
+      gap: 20px;
+    }
+    .onboarding-kit h2 { margin: 0; font-size: 30px; }
+    .onboarding-kit h3 { margin: 0 0 8px; font-size: 16px; }
+    .onboarding-kit p { margin: 0; color: var(--muted); line-height: 1.65; }
+    .onboarding-kit .access-code { font-size: 24px; }
+    .onboarding-week-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+    .onboarding-week {
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background: rgba(244,239,230,.45);
+    }
     .exercise-list { display: grid; gap: 10px; }
     .task-form { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 10px; align-items: start; }
     .filter-bar { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 10px; align-items: end; }
@@ -770,6 +792,7 @@
       .form-grid, .filter-bar,
       .home-plan-summary-grid,
       .trainer-guidance-status,
+      .onboarding-week-grid,
       .exercise-compact-row,
       .diagnostic-test-row { grid-template-columns: 1fr; }
       .progress-line { grid-template-columns: 1fr; }
@@ -945,6 +968,38 @@
         box-shadow: none !important;
       }
 
+      body.printing-onboarding .side,
+      body.printing-onboarding .topbar,
+      body.printing-onboarding .drawer-backdrop,
+      body.printing-onboarding .modal .panel-head,
+      body.printing-onboarding .modal .home-plan-actions,
+      body.printing-onboarding .toast {
+        display: none !important;
+      }
+
+      body.printing-onboarding .modal,
+      body.printing-onboarding .modal.open {
+        display: block !important;
+        position: static !important;
+        background: #fff !important;
+        padding: 0 !important;
+      }
+
+      body.printing-onboarding .modal-box {
+        max-width: none !important;
+        width: 100% !important;
+        max-height: none !important;
+        box-shadow: none !important;
+        border: 0 !important;
+        padding: 0 !important;
+      }
+
+      body.printing-onboarding .onboarding-kit {
+        border: 0 !important;
+        border-radius: 0 !important;
+        padding: 0 !important;
+      }
+
       @page {
         size: A4;
         margin: 12mm;
@@ -962,7 +1017,7 @@
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.8</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 7.3.9</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -1015,7 +1070,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.8</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 7.3.9</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1272,13 +1327,31 @@
     </div>
   </div>
 
+  <div class="modal" id="onboardingKitModal" aria-hidden="true">
+    <div class="modal-box">
+      <div class="panel-head">
+        <div>
+          <h2>Pakiet startowy klienta</h2>
+          <p>Krótki, drukowalny rytuał wejścia w proces. Bez długiego poradnika.</p>
+        </div>
+        <button class="btn" data-close="onboardingKitModal">Zamknij</button>
+      </div>
+      <div id="onboardingKitDocument"></div>
+      <div class="home-plan-actions" style="margin-top:14px">
+        <button class="btn primary" id="printOnboardingKitBtn" type="button">Drukuj pakiet startowy</button>
+        <button class="btn" id="copyOnboardingKitBtn" type="button">Kopiuj krótką instrukcję</button>
+      </div>
+    </div>
+  </div>
+
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "7.3.8";
+    const APP_VERSION = "7.3.9";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const GUIDANCE_STORAGE_KEY = "studioLasGuidance_v1";
+    const GUIDANCE_PILOT_STORAGE_KEY = "studioLasGuidancePilot_v1";
     const CLIENT_PANEL_UNLOCK_PREFIX = "studioLasClientPanelUnlocked_";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
@@ -4370,6 +4443,108 @@
       toast(!current ? "Dzisiejszy krok wykonany." : "Oznaczenie cofnięte.");
     }
 
+    function loadPilotStore() {
+      try {
+        return JSON.parse(localStorage.getItem(GUIDANCE_PILOT_STORAGE_KEY) || "{}");
+      } catch (error) {
+        return {};
+      }
+    }
+
+    function savePilotStore(data) {
+      try {
+        localStorage.setItem(GUIDANCE_PILOT_STORAGE_KEY, JSON.stringify(data || {}));
+      } catch (error) {}
+    }
+
+    function defaultPilotData() {
+      return {
+        status: "not_started",
+        startDate: "",
+        durationWeeks: 4,
+        currentWeek: "",
+        objective: "Sprawdzić, czy klient wraca do panelu i wykonuje małe kroki między spotkaniami.",
+        trainerNote: "",
+        weeklyFeedback: [],
+        updatedAt: ""
+      };
+    }
+
+    function getPilotData(clientId) {
+      const store = loadPilotStore();
+      return { ...defaultPilotData(), ...(store[clientId] || {}) };
+    }
+
+    function setPilotData(clientId, updates) {
+      const store = loadPilotStore();
+      store[clientId] = { ...getPilotData(clientId), ...updates, updatedAt: getTodayISODate() };
+      savePilotStore(store);
+      return store[clientId];
+    }
+
+    function calculatedPilotWeek(pilot) {
+      if (!pilot?.startDate) return "";
+      const start = new Date(`${pilot.startDate}T00:00:00`);
+      if (Number.isNaN(start.getTime())) return "";
+      const week = Math.floor((Date.now() - start.getTime()) / (7 * 24 * 60 * 60 * 1000)) + 1;
+      return String(Math.min(Math.max(week, 1), Number(pilot.durationWeeks || 4)));
+    }
+
+    function pilotWeekValue(pilot) {
+      return String(pilot.currentWeek || calculatedPilotWeek(pilot) || "1");
+    }
+
+    function getPilotFeedback(clientId, week = pilotWeekValue(getPilotData(clientId))) {
+      const pilot = getPilotData(clientId);
+      return (pilot.weeklyFeedback || []).find(item => String(item.week) === String(week)) || {
+        week: Number(week || 1),
+        understoodNextStep: "",
+        reducedChaos: "",
+        friction: "",
+        simplifyNext: "",
+        updatedAt: ""
+      };
+    }
+
+    function savePilotFeedback(clientId, feedback) {
+      const pilot = getPilotData(clientId);
+      const week = Number(feedback.week || pilotWeekValue(pilot) || 1);
+      const next = (pilot.weeklyFeedback || []).filter(item => Number(item.week) !== week);
+      next.push({ ...feedback, week, updatedAt: getTodayISODate() });
+      setPilotData(clientId, { weeklyFeedback: next.sort((a, b) => Number(a.week) - Number(b.week)) });
+    }
+
+    function guidanceActivitySummary(c = activeClient()) {
+      const data = loadGuidanceState()?.[c.id] || {};
+      const dates = Object.keys(data).filter(date => Object.values(data[date] || {}).some(Boolean)).sort();
+      const todayDate = getTodayISODate();
+      const latestDate = dates[dates.length - 1] || "";
+      let lastActivity = "Brak aktywności";
+      let daysSince = null;
+      if (latestDate) {
+        const diff = new Date(`${todayDate}T00:00:00`) - new Date(`${latestDate}T00:00:00`);
+        daysSince = Math.max(0, Math.round(diff / (24 * 60 * 60 * 1000)));
+        lastActivity = daysSince === 0 ? "Dzisiaj" : (daysSince === 1 ? "Wczoraj" : `${daysSince} dni temu`);
+      }
+      const today = new Date(`${todayDate}T00:00:00`);
+      const weekStart = new Date(today);
+      weekStart.setDate(today.getDate() - ((today.getDay() + 6) % 7));
+      const completedThisWeek = dates.reduce((sum, date) => {
+        const current = new Date(`${date}T00:00:00`);
+        if (current < weekStart || current > today) return sum;
+        return sum + Object.values(data[date] || {}).filter(Boolean).length;
+      }, 0);
+      const assignedVisible = clientGuidanceTasks(c).length;
+      const signal = !assignedVisible
+        ? { label: "Do obserwacji", tone: "gold" }
+        : (!latestDate || completedThisWeek === 0 || daysSince >= 6)
+          ? { label: "Wysokie tarcie", tone: "red" }
+          : daysSince <= 2
+            ? { label: "Rytm stabilny", tone: "green" }
+            : { label: "Do obserwacji", tone: "gold" };
+      return { lastActivity, completedThisWeek, assignedVisible, signal };
+    }
+
     function findClientForAccess(login, code) {
       const normalizedLogin = normalizeClientLogin(login);
       const normalizedCode = String(code || "").trim().toUpperCase();
@@ -5514,11 +5689,13 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
           ${renderClientIntake(c)}
         </section>
         ${renderClientAccessCard(c)}
+        ${renderOnboardingKitCard(c)}
       `;
       $("#editClientBtn")?.addEventListener("click", () => openClientModal(c.id));
       $("#deleteClientBtn")?.addEventListener("click", () => deleteClient(c.id));
       $("#copyClientAccessBtn")?.addEventListener("click", () => copyClientAccess(c.id));
       $("#resetClientAccessBtn")?.addEventListener("click", () => resetClientAccessCode(c.id));
+      $("#showOnboardingKitBtn")?.addEventListener("click", () => openOnboardingKitModal(c.id));
     }
 
     function renderClientAccessCard(c) {
@@ -5544,6 +5721,93 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
           <textarea class="access-copy-fallback" id="clientAccessFallback" readonly hidden></textarea>
         </section>
       `;
+    }
+
+    function renderOnboardingKitCard(c) {
+      return `
+        <section class="panel">
+          <div class="panel-head">
+            <div>
+              <h2>Pakiet startowy klienta</h2>
+              <p>Prosty materiał do wydruku albo wysłania po pierwszym spotkaniu.</p>
+            </div>
+            ${pill("pakiet", "green")}
+          </div>
+          <p class="pilot-helper">To nie jest poradnik ani lista obowiązków. To krótki rytuał wejścia w spokojny proces między spotkaniami.</p>
+          <div class="home-plan-actions" style="margin-top:12px">
+            <button class="btn primary" id="showOnboardingKitBtn" type="button">Pokaż pakiet startowy</button>
+          </div>
+        </section>
+      `;
+    }
+
+    function onboardingInstructionText(c) {
+      const firstName = String(c.name || "").trim().split(/\s+/)[0] || "Cześć";
+      return `Cześć ${firstName},
+tu znajdziesz swój Panel klienta Studio Las:
+
+Link:
+https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html
+
+Login: ${clientLoginLabel(c)}
+Kod dostępu: ${c.clientAccessCode}
+
+W panelu zobaczysz tylko najważniejsze rzeczy między spotkaniami:
+dzisiejsze małe kroki, swój proces i materiały.
+
+Nie chodzi o perfekcję. Chodzi o spokojny rytm.`;
+    }
+
+    function renderOnboardingKitDocument(c) {
+      return `
+        <article class="onboarding-kit">
+          <header>
+            <div class="label">Studio Las</div>
+            <h2>Twój proces w Studio Las</h2>
+            <p>${escapeHtml(c.name)}</p>
+          </header>
+          <section>
+            <h3>Na start</h3>
+            <p>To nie jest lista obowiązków. To spokojny system małych kroków między spotkaniami.</p>
+          </section>
+          <section class="grid cols-2">
+            <div class="portal-info"><div class="label">Login</div><p>${escapeHtml(clientLoginLabel(c) || c.name)}</p></div>
+            <div class="portal-info"><div class="label">Kod dostępu</div><p class="access-code">${escapeHtml(c.clientAccessCode)}</p></div>
+            <div class="portal-info span-2"><div class="label">Link</div><p>https://trenermedycznywarszawa.github.io/studio-las-v11/studio-management-os-3.0.html</p></div>
+          </section>
+          <section>
+            <h3>Jak korzystać z panelu</h3>
+            <p>Wejdź do Panelu klienta. Zobacz sekcję „Dzisiaj”. Wykonaj maksymalnie 1-3 małe kroki. Oznacz wykonane. Jeśli coś jest za trudne, omówimy to na spotkaniu.</p>
+          </section>
+          <section>
+            <h3>Pierwsze 4 tygodnie</h3>
+            <div class="onboarding-week-grid">
+              <div class="onboarding-week"><strong>Tydzień 1</strong><p>Spokojny start</p></div>
+              <div class="onboarding-week"><strong>Tydzień 2</strong><p>Rytm między spotkaniami</p></div>
+              <div class="onboarding-week"><strong>Tydzień 3</strong><p>Mniej chaosu, więcej powtarzalności</p></div>
+              <div class="onboarding-week"><strong>Tydzień 4</strong><p>Co działa, co upraszczamy</p></div>
+            </div>
+          </section>
+        </article>
+      `;
+    }
+
+    function openOnboardingKitModal(clientId) {
+      const c = state.clients.find(client => client.id === clientId) || activeClient();
+      $("#onboardingKitDocument").innerHTML = renderOnboardingKitDocument(c);
+      $("#onboardingKitModal").classList.add("open");
+      $("#onboardingKitModal").setAttribute("aria-hidden", "false");
+      $("#printOnboardingKitBtn")?.addEventListener("click", printOnboardingKit, { once: true });
+      $("#copyOnboardingKitBtn")?.addEventListener("click", async () => {
+        const copied = await copyReportText(onboardingInstructionText(c));
+        toast(copied ? "Instrukcja skopiowana" : "Nie udało się skopiować instrukcji");
+      }, { once: true });
+    }
+
+    function printOnboardingKit() {
+      document.body.classList.add("printing-onboarding");
+      window.print();
+      setTimeout(() => document.body.classList.remove("printing-onboarding"), 1200);
     }
 
     async function copyClientAccess(clientId) {
@@ -6284,29 +6548,105 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       $("#homePlanManualAddBtn")?.addEventListener("click", openManualHomePlanExerciseModal);
       $("#homePlanManualHeaderBtn")?.addEventListener("click", openManualHomePlanExerciseModal);
       $("#homePlanTouchTodayBtn")?.addEventListener("click", setHomePlanDateToday);
+      $("#guidancePilotForm")?.addEventListener("submit", saveGuidancePilotForm);
+      $("#pilotFeedbackForm")?.addEventListener("submit", savePilotFeedbackForm);
     }
 
     function renderTrainerGuidanceStatus(c) {
       const completion = guidanceCompletion(c);
       const lastSession = latest(c);
-      const friction = completion.total && completion.done === 0
-        ? "Dzisiaj brak oznaczonych kroków. Warto sprawdzić, czy plan nie jest za długi albo niejasny."
-        : completion.total
-          ? "Plan ma czytelny rytm. Sprawdź na kolejnej sesji, czy kroki były realne do wykonania."
-          : "Brak małych kroków dla klienta. Najpierw przypisz 1-3 zadania między spotkaniami.";
+      const activity = guidanceActivitySummary(c);
+      const pilot = getPilotData(c.id);
+      const week = pilotWeekValue(pilot);
+      const feedback = getPilotFeedback(c.id, week);
       return `
         <section class="panel">
           <div class="panel-head">
-            <div><h2>Prowadzenie między sesjami</h2><p>Lekka widoczność adherence bez gamifikacji i bez presji na klienta.</p></div>
-            ${pill(completion.total ? `${completion.done}/${completion.total} dzisiaj` : "brak kroków", completion.done ? "green" : "gold")}
+            <div><h2>Prowadzenie między sesjami</h2><p>To nie jest ocena klienta. To sygnał, gdzie proces może wymagać uproszczenia.</p></div>
+            ${pill(activity.signal.label, activity.signal.tone)}
           </div>
           <div class="trainer-guidance-status">
             <div class="portal-info"><div class="label">Dzisiejsze kroki</div><p>${completion.total ? `${completion.done} z ${completion.total} oznaczone jako wykonane.` : "Brak przypisanych kroków."}</p></div>
+            <div class="portal-info"><div class="label">Ostatnia aktywność</div><p>${escapeHtml(activity.lastActivity)}</p></div>
+            <div class="portal-info"><div class="label">Ten tydzień</div><p>${activity.completedThisWeek} wykonanych kroków · ${activity.assignedVisible || 0} widoczne dziś</p></div>
+            <div class="portal-info"><div class="label">Sygnał tarcia</div><p>${escapeHtml(activity.signal.label)}</p></div>
             <div class="portal-info"><div class="label">Ostatnia sesja</div><p>${lastSession?.date ? escapeHtml(formatDate(lastSession.date)) : "Brak zapisanej sesji."}</p></div>
-            <div class="portal-info"><div class="label">Friction</div><p>${escapeHtml(friction)}</p></div>
+            <div class="portal-info"><div class="label">Co sprawdzić</div><p>${escapeHtml(activity.signal.label === "Rytm stabilny" ? "Utrzymać małe kroki i nie dokładać wielu zmian naraz." : "Sprawdzić, czy plan jest wystarczająco krótki i jasny.")}</p></div>
           </div>
+          <p class="pilot-helper">To nie jest ocena klienta. To sygnał, gdzie proces może wymagać uproszczenia.</p>
+        </section>
+        <section class="panel">
+          <div class="panel-head">
+            <div><h2>Pilot prowadzenia między sesjami</h2><p>Kontrolowany pilotaż 4-6 tygodni. Testujemy, czy klient wraca do procesu między spotkaniami.</p></div>
+            ${pill(pilotStatusLabel(pilot.status), pilotStatusTone(pilot.status))}
+          </div>
+          <form id="guidancePilotForm" class="form-grid pilot-form">
+            <div class="form-field"><label class="label">Status pilota</label><select name="status">${pilotStatusOptions(pilot.status)}</select></div>
+            <div class="form-field"><label class="label">Start pilota</label><input type="date" name="startDate" value="${escapeHtml(pilot.startDate || "")}" /></div>
+            <div class="form-field"><label class="label">Czas trwania</label><select name="durationWeeks"><option value="4" ${Number(pilot.durationWeeks) === 4 ? "selected" : ""}>4 tygodnie</option><option value="6" ${Number(pilot.durationWeeks) === 6 ? "selected" : ""}>6 tygodni</option></select></div>
+            <div class="form-field"><label class="label">Aktualny tydzień</label><select name="currentWeek">${[1,2,3,4,5,6].map(i => `<option value="${i}" ${String(i) === String(week) ? "selected" : ""}>Tydzień ${i}</option>`).join("")}</select></div>
+            <div class="form-field full"><label class="label">Cel pilota</label><input name="objective" value="${escapeHtml(pilot.objective || "")}" /></div>
+            <div class="form-field full"><label class="label">Notatka trenera</label><textarea name="trainerNote">${escapeHtml(pilot.trainerNote || "")}</textarea></div>
+            <button class="btn primary full" type="submit">Zapisz pilot</button>
+          </form>
+          <form id="pilotFeedbackForm" class="form-grid pilot-form">
+            <div class="form-field"><label class="label">Tydzień check-in</label><select name="week">${[1,2,3,4,5,6].map(i => `<option value="${i}" ${Number(feedback.week) === i ? "selected" : ""}>Tydzień ${i}</option>`).join("")}</select></div>
+            <div class="form-field"><label class="label">Czy klient wiedział, co zrobić między spotkaniami?</label><select name="understoodNextStep">${feedbackOption(["", "yes", "partial", "no"], feedback.understoodNextStep, ["wybierz", "tak", "częściowo", "nie"])}</select></div>
+            <div class="form-field"><label class="label">Czy panel zmniejszał chaos?</label><select name="reducedChaos">${feedbackOption(["", "yes", "partial", "unknown", "no"], feedback.reducedChaos, ["wybierz", "tak", "częściowo", "nie wiem", "nie"])}</select></div>
+            <div class="form-field full"><label class="label">Największe tarcie</label><textarea name="friction">${escapeHtml(feedback.friction || "")}</textarea></div>
+            <div class="form-field full"><label class="label">Co uprościć w kolejnym tygodniu?</label><textarea name="simplifyNext">${escapeHtml(feedback.simplifyNext || "")}</textarea></div>
+            <button class="btn full" type="submit">Zapisz check-in pilota</button>
+          </form>
         </section>
       `;
+    }
+
+    function pilotStatusLabel(status = "not_started") {
+      return { not_started: "Nie rozpoczęto", active: "Aktywny", paused: "Wstrzymany", completed: "Zakończony" }[status] || "Nie rozpoczęto";
+    }
+
+    function pilotStatusTone(status = "not_started") {
+      return { active: "green", paused: "gold", completed: "blue", not_started: "gold" }[status] || "gold";
+    }
+
+    function pilotStatusOptions(selected = "not_started") {
+      return Object.entries({ not_started: "Nie rozpoczęto", active: "Aktywny", paused: "Wstrzymany", completed: "Zakończony" })
+        .map(([value, label]) => `<option value="${value}" ${value === selected ? "selected" : ""}>${label}</option>`).join("");
+    }
+
+    function feedbackOption(values, selected, labels) {
+      return values.map((value, index) => `<option value="${value}" ${String(value) === String(selected || "") ? "selected" : ""}>${labels[index]}</option>`).join("");
+    }
+
+    function saveGuidancePilotForm(event) {
+      event.preventDefault();
+      const c = activeClient();
+      const fd = new FormData(event.currentTarget);
+      setPilotData(c.id, {
+        status: fd.get("status") || "not_started",
+        startDate: fd.get("startDate") || "",
+        durationWeeks: Number(fd.get("durationWeeks") || 4),
+        currentWeek: fd.get("currentWeek") || "",
+        objective: String(fd.get("objective") || "").trim(),
+        trainerNote: String(fd.get("trainerNote") || "").trim()
+      });
+      renderHomePlanView();
+      toast("Pilot zapisany");
+    }
+
+    function savePilotFeedbackForm(event) {
+      event.preventDefault();
+      const c = activeClient();
+      const fd = new FormData(event.currentTarget);
+      savePilotFeedback(c.id, {
+        week: Number(fd.get("week") || 1),
+        understoodNextStep: fd.get("understoodNextStep") || "",
+        reducedChaos: fd.get("reducedChaos") || "",
+        friction: String(fd.get("friction") || "").trim(),
+        simplifyNext: String(fd.get("simplifyNext") || "").trim()
+      });
+      renderHomePlanView();
+      toast("Check-in pilota zapisany");
     }
 
     function renderHomePlanEmptyState() {
@@ -6615,7 +6955,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       view.innerHTML = `
         <section class="panel portal-focus">
           <div class="panel-head">
-            <div><h2>Dzisiaj</h2><p>${escapeHtml(c.name)} · maksymalnie trzy spokojne kroki między spotkaniami.</p></div>
+            <div><h2>Dzisiaj</h2><p>${escapeHtml(c.name)} · maksymalnie trzy spokojne kroki między spotkaniami. Nie chodzi o perfekcję. Chodzi o spokojny kontakt z procesem.</p></div>
             <div class="home-plan-actions">
               ${pill(completion.total ? `${completion.done}/${completion.total} dzisiaj` : "do ustalenia", completion.done && completion.done === completion.total ? "green" : "gold")}
               <button class="btn" id="lockClientPanelBtn" type="button">Zablokuj panel</button>
@@ -6716,7 +7056,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       if (!tasks.length) {
         return `
           <div class="guidance-empty">
-            Na razie nie ma przypisanego planu między spotkaniami. Poproś trenera o jeden mały krok na dziś - najlepiej taki, który da się wykonać w kilka minut.
+            Na dziś nie ma nowych kroków. Wrócimy do procesu na kolejnym spotkaniu.
           </div>
         `;
       }
@@ -7785,6 +8125,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
           </section>
           ${renderReportEvidenceSection(c, reportType, audience)}
           ${renderReportDiagnosticSection(c, audience)}
+          ${renderReportGuidancePilotSection(c, audience)}
           <section class="print-report-section">
             <h2>Najważniejsze w 60 sekund</h2>
             <div class="print-highlight-grid">
@@ -7864,6 +8205,23 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
         ${latest.length ? `<div class="print-evidence-grid">
           ${latest.map(result => `<div class="print-evidence-item"><strong>${escapeHtml(formatDate(result.date))} · ${escapeHtml(result.testName)}</strong>${escapeHtml([result.quality, result.trainerDecision, result.nextStep].filter(Boolean).join(" · "))}</div>`).join("")}
         </div>` : ""}
+      </section>`;
+    }
+
+    function renderReportGuidancePilotSection(c, audience = "client") {
+      const pilot = getPilotData(c.id);
+      const activity = guidanceActivitySummary(c);
+      const note = audience === "trainer" && pilot.trainerNote
+        ? `<div class="print-evidence-note">Notatka trenera: ${escapeHtml(pilot.trainerNote)}</div>`
+        : "";
+      return `<section class="print-report-section">
+        <h2>Prowadzenie między sesjami</h2>
+        <div class="print-evidence-grid">
+          <div class="print-evidence-item"><strong>Status pilota</strong>${escapeHtml(pilotStatusLabel(pilot.status))}</div>
+          <div class="print-evidence-item"><strong>Aktywność</strong>${escapeHtml(activity.lastActivity)}</div>
+          <div class="print-evidence-item"><strong>Sygnał tarcia</strong>${escapeHtml(activity.signal.label)}</div>
+        </div>
+        ${note}
       </section>`;
     }
 
