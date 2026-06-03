@@ -296,6 +296,10 @@
     .process-mobile-title,
     .contact-mobile-title,
     .step-mobile-copy,
+    .mobile-report-lead,
+    .restore-mobile-title,
+    .decision-mobile-title,
+    .decision-mobile-lead,
     .mobile-section-cta {
       display:none;
     }
@@ -1243,12 +1247,7 @@
     }
 
     @media (max-width:640px) {
-      .trust-strip,
-      #pierwsza-wizyta,
-      #miejsce,
-      #raport,
-      #historie,
-      #decyzja {
+      .trust-strip {
         display:none;
       }
 
@@ -1406,6 +1405,144 @@
         min-height:auto;
       }
 
+      #pierwsza-wizyta,
+      #miejsce,
+      #raport,
+      #historie,
+      #decyzja {
+        display:block;
+        padding-top:clamp(76px, 18vw, 104px);
+        padding-bottom:clamp(76px, 18vw, 104px);
+      }
+
+      #pierwsza-wizyta .first-grid,
+      #miejsce .place-grid,
+      #raport .report-grid {
+        display:grid;
+        grid-template-columns:1fr;
+        gap:24px;
+      }
+
+      #pierwsza-wizyta .first-grid > div:first-child,
+      #miejsce .place-grid > div:last-child,
+      #raport .report-grid > div:first-child,
+      #decyzja .container > .reveal:first-child {
+        max-width:none;
+      }
+
+      #pierwsza-wizyta .first-step:nth-child(3),
+      #miejsce .place-list li:nth-child(2),
+      #miejsce .place-list li:nth-child(3),
+      #raport .report-box li:nth-child(4),
+      #historie .story:nth-child(n+3),
+      #historie .section-cta a:first-child {
+        display:none;
+      }
+
+      #pierwsza-wizyta .first-steps,
+      #miejsce .place-list,
+      #raport .check-list {
+        gap:10px;
+      }
+
+      #pierwsza-wizyta .first-step {
+        min-height:auto;
+        padding:18px 18px 18px 58px;
+        border-radius:18px;
+      }
+
+      #pierwsza-wizyta .first-step::before {
+        left:18px;
+        top:18px;
+        font-size:.74rem;
+      }
+
+      #pierwsza-wizyta .first-step h3,
+      #raport .report-box h3 {
+        font-size:1rem;
+        line-height:1.35;
+      }
+
+      #pierwsza-wizyta .first-step span,
+      #miejsce .place-list,
+      #raport .check-list li,
+      #historie .story p {
+        font-size:.94rem;
+        line-height:1.7;
+      }
+
+      #miejsce .place-images {
+        display:block;
+        margin-bottom:6px;
+      }
+
+      #miejsce .place-images img:not(.main) {
+        display:none;
+      }
+
+      #miejsce .place-images img.main {
+        width:100%;
+        height:220px;
+        object-fit:cover;
+        border-radius:20px;
+        box-shadow:0 16px 36px rgba(54, 44, 35, .12);
+      }
+
+      #raport .report-grid > div:first-child .section-lead:not(.mobile-report-lead) {
+        display:none;
+      }
+
+      #raport .mobile-report-lead {
+        display:block;
+      }
+
+      #raport .report-box {
+        padding:24px 22px;
+      }
+
+      #raport .report-box h3 {
+        display:none;
+      }
+
+      #historie .story-grid {
+        gap:18px;
+      }
+
+      #historie .story {
+        padding:24px 22px;
+      }
+
+      #historie .story span {
+        margin-top:18px;
+      }
+
+      #decyzja .decision-desktop-title,
+      #decyzja .decision-desktop-lead,
+      #decyzja .decision-grid {
+        display:none;
+      }
+
+      #decyzja .decision-mobile-title,
+      #decyzja .decision-mobile-lead {
+        display:block;
+      }
+
+      .restore-desktop-title {
+        display:none;
+      }
+
+      .restore-mobile-title {
+        display:block;
+      }
+
+      #pierwsza-wizyta .restore-mobile-title,
+      #miejsce .restore-mobile-title,
+      #raport .restore-mobile-title,
+      #historie .restore-mobile-title,
+      #decyzja .decision-mobile-title {
+        max-width:16ch;
+      }
+
       .btn {
         width:100%;
         min-height:60px;
@@ -1413,12 +1550,7 @@
     }
 
     @media (max-width: 640px) {
-      .trust-strip,
-      #pierwsza-wizyta,
-      #miejsce,
-      #raport,
-      #historie,
-      #decyzja {
+      .trust-strip {
         display: none !important;
       }
     }
@@ -1473,8 +1605,8 @@
 
           <ul class="hero-points">
             <li>praca 1:1 po bólu i kontuzjach,</li>
-            <li>System 4 Kroków zamiast przypadkowych ćwiczeń,</li>
-            <li>analiza Tanita RD-545 + proste testy ruchowe,</li>
+            <li>około 12 tygodni procesu,</li>
+            <li>diagnostyka + plan pierwszego etapu,</li>
             <li>plan domowy dopasowany do realnego życia,</li>
             <li>kameralne studio w lesie, bez tłumu i oceniania.</li>
           </ul>
@@ -1598,7 +1730,8 @@
       <div class="container first-grid">
         <div class="reveal">
           <div class="eyebrow">Pierwsza wizyta</div>
-          <h2 class="section-title">Bez presji. Bez sprawdzania formy. Bez „zobaczymy, co wyjdzie”.</h2>
+          <h2 class="section-title restore-desktop-title">Bez presji. Bez sprawdzania formy. Bez „zobaczymy, co wyjdzie”.</h2>
+          <h2 class="section-title restore-mobile-title">Pierwsza wizyta bez presji.</h2>
           <p class="section-lead">Pierwsze spotkanie ma zdjąć napięcie i dać jasną odpowiedź: od czego zaczynamy, co jest bezpieczne i czy współpraca ma sens.</p>
           <div class="section-cta">
             <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Wypełnij ankietę diagnostyczną</a>
@@ -1666,7 +1799,8 @@
 
         <div class="reveal">
           <div class="eyebrow">Miejsce</div>
-          <h2 class="section-title">Las za oknem to nie dekoracja. To część procesu.</h2>
+          <h2 class="section-title restore-desktop-title">Las za oknem to nie dekoracja. To część procesu.</h2>
+          <h2 class="section-title restore-mobile-title">Spokojne studio pod Warszawą.</h2>
           <p class="section-lead">Studio Las nie udaje klubu fitness. To małe, spokojne miejsce do pracy 1:1, w którym można wrócić do ruchu bez tłumu, hałasu i patrzących ludzi.</p>
           <ul class="place-list">
             <li>prywatna sala zamiast zatłoczonej siłowni,</li>
@@ -1674,6 +1808,9 @@
             <li>sprzęt do pracy siłowej, medycznej i funkcjonalnej,</li>
             <li>parking, woda, ręczniki, prysznic i spokojna przestrzeń po treningu.</li>
           </ul>
+          <div class="mobile-section-cta">
+            <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Zacznij od ankiety</a>
+          </div>
         </div>
       </div>
     </section>
@@ -1742,8 +1879,10 @@
       <div class="container report-grid">
         <div class="reveal">
           <div class="eyebrow">Raport Dobrostanu</div>
-          <h2 class="section-title">Po 12 tygodniach nie mówimy „chyba jest lepiej”. Sprawdzamy.</h2>
+          <h2 class="section-title restore-desktop-title">Po 12 tygodniach nie mówimy „chyba jest lepiej”. Sprawdzamy.</h2>
+          <h2 class="section-title restore-mobile-title">Po 12 tygodniach sprawdzamy efekty.</h2>
           <p class="section-lead">Klient premium nie powinien wychodzić z procesu tylko z dobrym samopoczuciem. Powinien dostać konkretny obraz zmiany: ciało, siła, ból, nawyki i rekomendacja kolejnego kroku.</p>
+          <p class="section-lead mobile-report-lead">Po ok. 12 tygodniach widzisz, co się zmieniło i co robić dalej.</p>
         </div>
 
         <div class="report-box reveal">
@@ -1751,10 +1890,13 @@
           <ul class="check-list">
             <li>zmiany w pomiarach Tanita RD-545,</li>
             <li>testy funkcjonalne i progres siłowy,</li>
-            <li>ocenę bólu i lęku przed ruchem,</li>
+            <li>ból, funkcję i lęk przed ruchem,</li>
             <li>nawyki: sen, regeneracja, odżywianie, siedzenie,</li>
             <li>rekomendację: ROZWÓJ, lżejsza kontynuacja albo samodzielność.</li>
           </ul>
+          <div class="mobile-section-cta">
+            <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Sprawdź pierwszy krok</a>
+          </div>
         </div>
       </div>
     </section>
@@ -1763,7 +1905,8 @@
       <div class="container">
         <div class="reveal">
           <div class="eyebrow">Historie z bloga</div>
-          <h2 class="section-title">Nie musisz wierzyć w hasła. Zobacz, jak wygląda proces.</h2>
+          <h2 class="section-title restore-desktop-title">Nie musisz wierzyć w hasła. Zobacz, jak wygląda proces.</h2>
+          <h2 class="section-title restore-mobile-title">Zobacz, jak wygląda efekt.</h2>
           <p class="section-lead">Zamiast pustych rekomendacji pokazuję konkretne historie: punkt startowy, sposób pracy i to, co zmieniło się w codziennym życiu.</p>
         </div>
 
@@ -1801,8 +1944,10 @@
       <div class="container">
         <div class="reveal">
           <div class="eyebrow">Decyzja</div>
-          <h2 class="section-title">Możesz dalej czekać, aż ciało „samo przejdzie”. Albo sprawdzić, od czego zacząć.</h2>
-          <p class="section-lead">Ankieta nie zobowiązuje Cię do zakupu pakietu. Jest pierwszym filtrem: czy mogę Ci realnie pomóc, czy lepiej skierować Cię gdzie indziej.</p>
+          <h2 class="section-title decision-desktop-title">Możesz dalej czekać, aż ciało „samo przejdzie”. Albo sprawdzić, od czego zacząć.</h2>
+          <h2 class="section-title decision-mobile-title">Nie musisz decydować dziś o całym procesie.</h2>
+          <p class="section-lead decision-desktop-lead">Ankieta nie zobowiązuje Cię do zakupu pakietu. Jest pierwszym filtrem: czy mogę Ci realnie pomóc, czy lepiej skierować Cię gdzie indziej.</p>
+          <p class="section-lead decision-mobile-lead">Zacznij od ankiety i rozmowy.</p>
         </div>
 
         <div class="decision-grid">
@@ -1822,6 +1967,10 @@
               <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Wypełnij ankietę diagnostyczną</a>
             </div>
           </div>
+        </div>
+
+        <div class="mobile-section-cta">
+          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Wypełnij ankietę diagnostyczną</a>
         </div>
       </div>
     </section>
