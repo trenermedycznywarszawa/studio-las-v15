@@ -1,4 +1,4 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
@@ -9,13 +9,10 @@
 
   <meta property="og:title" content="Metoda i pakiety | Studio Las" />
   <meta property="og:description" content="System 4 Kroków – od bólu do samodzielności. Pakiety FUNDAMENT i ROZWÓJ. Trening medyczny 1:1 w lesie pod Warszawą." />
-    <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/metoda-i-pakiety.html" />
-  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/metoda-i-pakiety.html" />
-  <meta property="og:locale" content="pl_PL" />
-  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v11/images/damian-about.webp" />
+  <meta property="og:image" content="./images/studio-latem.webp" />
   <meta property="og:type" content="website" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
 
@@ -97,7 +94,10 @@
 
     .nav-logo span { color:var(--cedar); }
 
-    .nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);
+    .nav-links {
+      display:flex;
+      align-items:center;
+      gap:32px;
       list-style:none;
     }
 
@@ -111,12 +111,6 @@
     }
 
     .nav-links a:hover,
-
-.client-panel-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.78);transition:color var(--transition),text-shadow var(--transition),transform var(--transition),border-color var(--transition)}
-.client-panel-link:hover,.client-panel-link:focus-visible{color:var(--cedar-light);text-shadow:0 0 18px rgba(141,173,120,.28);transform:translateY(-1px)}
-.client-panel-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.92;transition:opacity var(--transition),transform var(--transition)}
-.client-panel-link:hover .client-panel-icon,.client-panel-link:focus-visible .client-panel-icon{opacity:1;transform:translateY(-1px)}
-.nav-mobile .client-panel-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.86)}
     .nav-links a.active { color:var(--cedar-light); }
 
     .nav-cta {
@@ -1412,52 +1406,210 @@
         align-items:flex-start;
       }
     }
-  
-/* Unified global navigation */
-.site-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(23,37,30,.94);box-shadow:0 2px 24px rgba(0,0,0,.15);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
-.site-logo{font-family:var(--font-display,var(--display,Georgia,serif));font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white,#fff)}
-.site-logo span{color:var(--cedar-light,var(--cedar,#b8935a))}
-.site-nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none;margin:0;padding:0}
-.site-nav-links a,.site-nav-mobile a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t,var(--transition,.25s ease)),background var(--t,var(--transition,.25s ease)),border-color var(--t,var(--transition,.25s ease)),transform var(--t,var(--transition,.25s ease))}
-.site-nav-links a:hover,.site-nav-links a.active,.site-nav-mobile a:hover,.site-nav-mobile a.active{color:var(--cedar-light,#d5b982)}
-.site-nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border:1px solid var(--cedar,#b8935a);background:transparent;color:rgba(255,255,255,.86)!important;line-height:1;white-space:nowrap}
-.site-nav-cta:hover,.site-nav-cta.active{background:rgba(184,147,90,.12);color:var(--cedar-light,#d5b982)!important;border-color:var(--cedar-light,#d5b982)}
-.site-client-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.68)!important;white-space:nowrap}
-.site-client-link:hover,.site-client-link:focus-visible{color:var(--cedar-light,#d5b982)!important;transform:translateY(-1px)}
-.site-client-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
-.site-nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:0;padding:8px}
-.site-nav-toggle span{display:block;width:24px;height:2px;background:var(--white,#fff)}
-.site-nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;flex-direction:column;gap:16px;padding:24px;background:var(--forest,#17251e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
-.site-nav-mobile.open{display:flex}
-.site-nav-mobile a{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
-.site-nav-mobile .site-nav-cta{margin-top:4px;padding:14px 18px;border-bottom:1px solid var(--cedar,#b8935a)}
-.site-nav-mobile .site-client-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.72)!important}
-@media(max-width:980px){.site-nav-links{display:none}.site-nav-toggle{display:flex}}
-@media(max-width:640px){.site-nav{height:64px;padding:0 18px}.site-nav-mobile{top:64px;max-height:calc(100vh - 64px);overflow-y:auto}.site-logo{font-size:1.25rem}}
-</style>
+
+    @media (max-width:1024px) {
+      .container {
+        padding-left:clamp(24px, 5vw, 44px);
+        padding-right:clamp(24px, 5vw, 44px);
+      }
+
+      .section {
+        padding:clamp(88px, 12vw, 124px) 0;
+      }
+
+      #page-hero {
+        padding:clamp(118px, 16vw, 150px) 0 clamp(78px, 10vw, 104px);
+      }
+
+      .page-hero-title,
+      .section-title,
+      .final-cta-title {
+        line-height:1.08;
+        letter-spacing:0;
+        text-wrap:balance;
+      }
+
+      .page-hero-title {
+        max-width:12ch;
+        margin-bottom:28px;
+        font-size:clamp(2.35rem, 7.8vw, 4rem);
+      }
+
+      .page-hero-sub,
+      .section-lead,
+      .faq-lead,
+      .final-cta-sub {
+        max-width:34rem;
+        font-size:1rem;
+        line-height:1.86;
+      }
+
+      .btn-primary,
+      .btn-outline,
+      .diag-cta,
+      .pkg-cta {
+        min-height:58px;
+        padding:18px 26px;
+        line-height:1.25;
+      }
+
+      .big-steps {
+        margin-top:72px;
+      }
+
+      .big-step {
+        gap:0 34px;
+      }
+
+      .big-step-right {
+        padding:52px 0;
+      }
+
+      .big-step-title {
+        font-size:clamp(1.58rem, 4.2vw, 2.15rem);
+        line-height:1.16;
+        text-wrap:balance;
+      }
+
+      .big-step-body {
+        max-width:36rem;
+        font-size:.98rem;
+        line-height:1.82;
+      }
+
+      .big-step-details {
+        gap:16px;
+        margin-top:30px;
+      }
+
+      .step-detail {
+        padding:20px;
+      }
+
+      .diagnostics-card,
+      .package-card,
+      .weekly-framing,
+      .single-session,
+      .raport-value-box,
+      .pillar {
+        padding:34px 30px;
+      }
+
+      .pillars-grid,
+      .packages-grid,
+      .faq-grid {
+        gap:22px;
+      }
+
+      .faq-grid {
+        align-items:start;
+      }
+
+      .faq-list {
+        gap:12px;
+      }
+
+      .faq-item {
+        border:1px solid var(--grey-soft);
+        background:var(--white);
+      }
+
+      .faq-question {
+        align-items:flex-start;
+        padding:24px 22px;
+        line-height:1.35;
+      }
+
+      .faq-answer-inner {
+        padding:0 22px 24px;
+        font-size:.95rem;
+        line-height:1.82;
+      }
+    }
+
+    @media (max-width:600px) {
+      #page-hero {
+        padding:112px 0 82px;
+      }
+
+      .page-hero-title {
+        max-width:11ch;
+        font-size:2.38rem;
+      }
+
+      .section {
+        padding:92px 0;
+      }
+
+      .section-title {
+        max-width:12ch;
+        font-size:2.22rem;
+      }
+
+      .big-step {
+        gap:0;
+      }
+
+      .big-step-left {
+        padding:34px 0 0;
+      }
+
+      .big-step-right {
+        padding:20px 0 38px;
+      }
+
+      .diagnostics-card,
+      .package-card,
+      .weekly-framing,
+      .single-session,
+      .raport-value-box,
+      .pillar {
+        padding:32px 28px;
+      }
+
+      .faq-question {
+        padding:24px 20px;
+      }
+
+      .faq-answer-inner {
+        padding:0 20px 24px;
+      }
+
+      .final-cta-actions {
+        gap:14px;
+      }
+    }
+
+    @media (max-width:640px) {
+      #faq .faq-item:nth-child(n+5) {
+        display:none;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <nav class="site-nav" aria-label="Nawigacja główna">
-  <a class="site-logo" href="./index.html">Studio <span>Las</span></a>
-  <ul class="site-nav-links">
-    <li><a href="./index.html">Strona główna</a></li>
-    <li><a href="./metoda-i-pakiety.html" class="active">Metoda i pakiety</a></li>
-    <li><a href="./blog.html">Blog</a></li>
-    <li><a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a></li>
-    <li><!-- future client portal --><a href="strefa-klienta.html" class="site-client-link" aria-label="Panel klienta – funkcja w przygotowaniu"><svg class="site-client-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/><path d="M18.5 5.5h2v2"/><path d="M20.5 5.5 17 9"/></svg><span>Panel klienta</span></a></li>
-  </ul>
-  <button class="site-nav-toggle" id="hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" type="button">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-<div class="site-nav-mobile nav-mobile" id="navMobile">
-  <a href="./index.html">Strona główna</a>
-  <a href="./metoda-i-pakiety.html" class="active">Metoda i pakiety</a>
-  <a href="./blog.html">Blog</a>
-  <a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a>
-  <!-- future client portal --><a href="strefa-klienta.html" class="site-client-link" aria-label="Panel klienta – funkcja w przygotowaniu"><svg class="site-client-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/><path d="M18.5 5.5h2v2"/><path d="M20.5 5.5 17 9"/></svg><span>Panel klienta</span></a>
-</div>
+  <nav id="navbar" role="navigation" aria-label="Nawigacja główna">
+    <a href="./index.html" class="nav-logo">Studio <span>Las</span></a>
+
+    <ul class="nav-links">
+      <li><a href="./index.html">Strona główna</a></li>
+      <li><a href="./metoda-i-pakiety.html" class="active">Metoda i pakiety</a></li>
+      <li><a href="./blog.html">Blog</a></li>
+      <li><a href="./ankieta-kontakt.html#ankieta" class="nav-cta">Ankieta / Kontakt</a></li>
+    </ul>
+
+    <button class="nav-hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" id="hamburger" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile" id="navMobile">
+    <a href="./index.html">Strona główna</a>
+    <a href="./metoda-i-pakiety.html">Metoda i pakiety</a>
+    <a href="./blog.html">Blog</a>
+    <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Wypełnij ankietę</a>
+  </div>
 
   <main>
     <section id="page-hero">
@@ -1511,12 +1663,50 @@
             </div>
             <div class="big-step-right">
               <div class="big-step-tag">Krok 1 · Tydzień 0</div>
-              <h3 class="big-step-title">Poznajemy Twój punkt startowy</h3>
+              <h3 class="big-step-title">Ankieta, rozmowa i punkt startowy</h3>
               <p class="big-step-body">
-                Zaczynamy od wypełnienia krótkiej ankiety online. Na jej podstawie dzwonię, żeby spokojnie omówić sytuację i umówić termin wizyty diagnostycznej w studio. Na miejscu wykonujemy analizę składu ciała na analizatorze Tanita RD-545, proste testy ruchowe oraz szczegółowy wywiad medyczno-treningowy.
+                Zaczynamy od wypełnienia krótkiej ankiety online. Na jej podstawie dzwonię, żeby spokojnie omówić sytuację, nazwać główny problem i sprawdzić, czy diagnostyka w Studio Las ma sens.
               </p>
               <p class="big-step-body">
-                Na tej podstawie określamy Twój realny punkt wyjścia – nie na podstawie zgadywania, tylko danych. Ustalamy konkretny, osiągalny cel na pierwsze 12 tygodni i omawiamy, które z czterech filarów wymagają najszybszej korekty.
+                Ten krok daje nam punkt startowy: historię bólu, ograniczeń, celu i codziennych warunków, w których ten proces ma się wydarzyć.
+              </p>
+
+              <div class="big-step-details">
+                <div class="step-detail">
+                  <div class="step-detail-label">Czas trwania</div>
+                  <div class="step-detail-value">5–10 minut ankiety + krótka rozmowa</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Co ustalamy</div>
+                  <div class="step-detail-value">problem, cel, ryzyka i sens kolejnego kroku</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Koszt</div>
+                  <div class="step-detail-value">0 zł</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Co dostajesz</div>
+                  <div class="step-detail-value">uczciwą informację, czy warto umawiać diagnostykę</div>
+                </div>
+              </div>
+
+              <div class="big-step-effect">Wiesz, czy zaczynamy i z jakiego punktu naprawdę startujesz.</div>
+            </div>
+          </div>
+
+          <div class="big-step reveal">
+            <div class="big-step-left">
+              <div class="big-step-number">02</div>
+              <div class="big-step-line"></div>
+            </div>
+            <div class="big-step-right">
+              <div class="big-step-tag">Krok 2 · Wizyta diagnostyczna</div>
+              <h3 class="big-step-title">Diagnostyka i plan pierwszego etapu</h3>
+              <p class="big-step-body">
+                W studio robimy analizę składu ciała na Tanita RD-545, wywiad, proste testy ruchowe oraz ocenę tego, jak ciało reaguje na podstawowe zadania. Nie po to, żeby nazwać Cię „sprawnym” albo „niesprawnym”, tylko żeby ustalić pierwszy bezpieczny etap pracy.
+              </p>
+              <p class="big-step-body">
+                Po diagnostyce masz konkretny plan pierwszego etapu: cel na najbliższe tygodnie, główne ograniczenia, tempo progresji i decyzję, czy pakiet FUNDAMENT jest właściwą ścieżką.
               </p>
 
               <div class="big-step-details">
@@ -1534,49 +1724,11 @@
                 </div>
                 <div class="step-detail">
                   <div class="step-detail-label">Co dostajesz</div>
-                  <div class="step-detail-value">Wstępny plan działania na 12 tygodni</div>
+                  <div class="step-detail-value">plan pierwszego etapu na 12 tygodni</div>
                 </div>
               </div>
 
-              <div class="big-step-effect">Wiesz, gdzie naprawdę jesteś – i co konkretnie trzeba zrobić.</div>
-            </div>
-          </div>
-
-          <div class="big-step reveal">
-            <div class="big-step-left">
-              <div class="big-step-number">02</div>
-              <div class="big-step-line"></div>
-            </div>
-            <div class="big-step-right">
-              <div class="big-step-tag">Krok 2 · Tygodnie 1–12</div>
-              <h3 class="big-step-title">Przywracamy ruch i budujemy fundament</h3>
-              <p class="big-step-body">
-                Zaczynamy pracę 1:1 – spokojnie, bez presji i bez „orania się”. Najpierw naprawiamy podstawowe wzorce ruchowe i eliminujemy przeciążenia, które są przyczyną bólu. Dopiero potem stopniowo budujemy stabilizację i siłę funkcjonalną.
-              </p>
-              <p class="big-step-body">
-                Standard współpracy to 1 sesja 1:1 w Studio Las tygodniowo oraz 1 prosty trening samodzielny w domu, oparty na 2–4 ćwiczeniach, które poznajesz u mnie na sali.
-              </p>
-
-              <div class="big-step-details">
-                <div class="step-detail">
-                  <div class="step-detail-label">Częstotliwość</div>
-                  <div class="step-detail-value">1× w tygodniu w studio + 1× samodzielnie</div>
-                </div>
-                <div class="step-detail">
-                  <div class="step-detail-label">Długość sesji</div>
-                  <div class="step-detail-value">ok. 75 minut</div>
-                </div>
-                <div class="step-detail">
-                  <div class="step-detail-label">Plan domowy</div>
-                  <div class="step-detail-value">2–4 ćwiczenia po każdej sesji</div>
-                </div>
-                <div class="step-detail">
-                  <div class="step-detail-label">Mini-audyt</div>
-                  <div class="step-detail-value">Po 4 tygodniach: Tanita + korekta planu</div>
-                </div>
-              </div>
-
-              <div class="big-step-effect">Ciało zaczyna ruszać się z mniejszym bólem i większą pewnością.</div>
+              <div class="big-step-effect">Masz diagnozę ruchową i plan pierwszego etapu, a nie trening z szablonu.</div>
             </div>
           </div>
 
@@ -1586,35 +1738,35 @@
               <div class="big-step-line"></div>
             </div>
             <div class="big-step-right">
-              <div class="big-step-tag">Krok 3 · Równolegle przez cały proces</div>
-              <h3 class="big-step-title">Układamy Twoje codzienne nawyki</h3>
+              <div class="big-step-tag">Krok 3 · Tygodnie 1–12</div>
+              <h3 class="big-step-title">Trening 1:1 + plan domowy</h3>
               <p class="big-step-body">
-                Trening w studiu to tylko część układanki – realne życie to pozostałe 166 godzin tygodnia. Dlatego pracujemy nad filarami dobrostanu, które decydują o tym, czy efekty treningu utrzymają się długoterminowo.
+                Zaczynamy pracę 1:1 – spokojnie, bez presji i bez „orania się”. Najpierw porządkujemy podstawowe wzorce ruchowe i przeciążenia, które podtrzymują problem. Dopiero potem dokładamy stabilizację, siłę i większą swobodę ruchu.
               </p>
               <p class="big-step-body">
-                Nie dostajesz „idealnego planu z internetu”. Dostajesz rozwiązania dopasowane do Twojej pracy, rodziny i poziomu stresu. Celem nie jest perfekcja – tylko 1–3 nawyki, które jesteś w stanie realnie wdrożyć i utrzymać.
+                Standard współpracy to 1 sesja 1:1 w Studio Las tygodniowo oraz prosty plan domowy oparty na 2–4 ćwiczeniach. Nawyki, sen, regeneracja i codzienna aktywność są częścią tego kroku, bo mają utrzymać efekt między spotkaniami.
               </p>
 
               <div class="big-step-details">
                 <div class="step-detail">
-                  <div class="step-detail-label">Odżywianie</div>
-                  <div class="step-detail-value">Proste zmiany, bez diet cud</div>
+                  <div class="step-detail-label">Częstotliwość</div>
+                  <div class="step-detail-value">1× w tygodniu w studio + plan domowy</div>
                 </div>
                 <div class="step-detail">
-                  <div class="step-detail-label">Sen i regeneracja</div>
-                  <div class="step-detail-value">Mikrorutyny dopasowane do Twojego dnia</div>
+                  <div class="step-detail-label">Długość sesji</div>
+                  <div class="step-detail-value">ok. 75 minut</div>
                 </div>
                 <div class="step-detail">
-                  <div class="step-detail-label">Stres i napięcie</div>
-                  <div class="step-detail-value">Praca z lękiem przed ruchem</div>
+                  <div class="step-detail-label">Plan domowy</div>
+                  <div class="step-detail-value">2–4 ćwiczenia po sesji</div>
                 </div>
                 <div class="step-detail">
-                  <div class="step-detail-label">Aktywność codzienna</div>
-                  <div class="step-detail-value">Jak siedzieć, chodzić, dźwigać</div>
+                  <div class="step-detail-label">Korekta</div>
+                  <div class="step-detail-value">mini-audyt i aktualizacja planu po drodze</div>
                 </div>
               </div>
 
-              <div class="big-step-effect">Efekty treningu przestają znikać po tygodniu przerwy.</div>
+              <div class="big-step-effect">Ciało zaczyna ruszać się z mniejszym bólem, a Ty wiesz, co robić między sesjami.</div>
             </div>
           </div>
 
@@ -1624,7 +1776,7 @@
             </div>
             <div class="big-step-right">
               <div class="big-step-tag">Krok 4 · Tydzień 12</div>
-              <h3 class="big-step-title">Widzisz efekty i wiesz, co dalej</h3>
+              <h3 class="big-step-title">Raport efektów i decyzja, co dalej</h3>
               <p class="big-step-body">
                 Po zakończeniu 12 tygodni robimy pełne podsumowanie. Dostajesz Kwartalny Raport Dobrostanu – konkretny dokument zebrany w jednym miejscu, który pokazuje, co się zmieniło: liczby z Tanity, wyniki testów funkcjonalnych, ocena nawyków i subiektywne odczucie bólu.
               </p>
@@ -2004,7 +2156,6 @@
         <p class="footer-copy">© 2026 Studio Las · Damian Krawiec. Wszelkie prawa zastrzeżone.</p>
         <div class="footer-legal">
           <a href="./ankieta-kontakt.html#kontakt-lokalizacja">Kontakt</a>
-          <a href="strefa-klienta.html" class="client-panel-link"><svg class="client-panel-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/><path d="M18.5 5.5h2v2"/><path d="M20.5 5.5 17 9"/></svg><span>Panel klienta</span></a>
           <a href="./ankieta-kontakt.html#ankieta">Ankieta</a>
         </div>
       </div>
@@ -2099,28 +2250,5 @@
       });
     }, { passive:true });
   </script>
-<script>
-(function initSiteNavigation(){
-  const toggle=document.getElementById('hamburger');
-  const menu=document.getElementById('navMobile');
-  if(!toggle||!menu)return;
-  const setOpen=(open)=>{
-    menu.classList.toggle('open',open);
-    toggle.setAttribute('aria-expanded',open?'true':'false');
-    toggle.setAttribute('aria-label',open?'Zamknij menu':'Otwórz menu');
-  };
-  toggle.addEventListener('click',(event)=>{
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    setOpen(!menu.classList.contains('open'));
-  },true);
-  menu.querySelectorAll('a').forEach(link=>{
-    link.addEventListener('click',()=>setOpen(false));
-  });
-  document.addEventListener('keydown',(event)=>{
-    if(event.key==='Escape')setOpen(false);
-  });
-})();
-</script>
 </body>
 </html>

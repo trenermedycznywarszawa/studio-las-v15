@@ -1,21 +1,18 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-  <title>Studio Las | Trening medyczny 1:1 pod Warszawą</title>
-  <meta name="description" content="Kameralne studio treningu medycznego 1:1 pod Warszawą. Praca po bólu i kontuzjach, diagnostyka ruchowa, spokojny proces oraz konsultacje specjalistyczne, gdy są potrzebne." />
+  <title>Studio Las | Trening medyczny 1:1 w lesie pod Warszawą</title>
+  <meta name="description" content="Studio Las w Pracach Dużych pod Warszawą. Trening medyczny 1:1 dla osób 40+, które chcą wyjść z bólu, wrócić po kontuzji i odbudować zaufanie do ciała." />
 
   <meta property="og:title" content="Studio Las | Trening medyczny 1:1 w lesie pod Warszawą" />
   <meta property="og:description" content="Około 12 tygodni spokojnej pracy 1:1. Bez chaosu siłowni. Bez presji. Z diagnostyką, planem i raportem efektów." />
   <meta property="og:type" content="website" />
-    <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v11/index.html" />
-  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v11/index.html" />
-  <meta property="og:locale" content="pl_PL" />
-  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v11/images/damian-about.webp" />
+  <meta property="og:image" content="./images/damian-about.webp" />
 
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
 
@@ -133,6 +130,99 @@
     .btn-outline { color:var(--cedar); border-color:var(--cedar); }
     .btn-outline:hover { background:var(--cedar); color:var(--white); }
 
+    .nav {
+      position:fixed;
+      inset:0 0 auto 0;
+      height:72px;
+      z-index:100;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      padding:0 28px;
+      color:var(--white);
+      background:rgba(23,37,30,.9);
+      backdrop-filter:blur(16px);
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .logo {
+      font-family:var(--display);
+      font-size:1.45rem;
+      letter-spacing:.08em;
+      font-weight:500;
+    }
+
+    .logo span { color:var(--cedar-light); }
+
+    .nav-links {
+      display:flex;
+      gap:28px;
+      align-items:center;
+      list-style:none;
+    }
+
+    .nav-links a {
+      font-size:.76rem;
+      letter-spacing:.13em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.78);
+      transition:color var(--t);
+    }
+
+    .nav-links a:hover { color:var(--cedar-light); }
+
+    .nav-links .btn {
+      min-height:42px;
+      padding:10px 18px;
+      color:var(--white);
+    }
+
+    .nav-hamburger {
+      display:none;
+      flex-direction:column;
+      gap:5px;
+      background:none;
+      border:0;
+      padding:8px;
+      cursor:pointer;
+    }
+
+    .nav-hamburger span {
+      width:24px;
+      height:2px;
+      background:var(--white);
+      display:block;
+    }
+
+    .nav-mobile {
+      display:none;
+      position:fixed;
+      top:72px;
+      left:0;
+      right:0;
+      z-index:99;
+      background:var(--forest);
+      border-bottom:1px solid rgba(255,255,255,.08);
+      padding:22px 24px 28px;
+    }
+
+    .nav-mobile.open {
+      display:grid;
+      gap:16px;
+    }
+
+    .nav-mobile a {
+      color:rgba(255,255,255,.82);
+      padding:8px 0;
+      border-bottom:1px solid rgba(255,255,255,.08);
+      font-size:.96rem;
+    }
+
+    .nav-mobile a:last-child {
+      color:var(--cedar-light);
+      font-weight:600;
+    }
+
     .hero {
       position:relative;
       min-height:100vh;
@@ -199,6 +289,15 @@
     .hero h1 em {
       color:var(--cedar-light);
       font-style:italic;
+    }
+
+    .mobile-title,
+    .mobile-hero-copy,
+    .process-mobile-title,
+    .contact-mobile-title,
+    .step-mobile-copy,
+    .mobile-section-cta {
+      display:none;
     }
 
     .hero p {
@@ -352,58 +451,6 @@
       background:var(--cedar);
     }
 
-    .specialist-scope {
-      background:linear-gradient(180deg, var(--offwhite) 0%, #f1ece4 100%);
-    }
-
-    .specialist-wrap {
-      display:grid;
-      grid-template-columns:minmax(0, 1.08fr) minmax(320px, .92fr);
-      gap:56px;
-      align-items:center;
-    }
-
-    .specialist-copy .section-lead + .section-lead {
-      margin-top:18px;
-    }
-
-    .specialist-panel {
-      background:rgba(255,255,255,.72);
-      border:1px solid var(--grey-soft);
-      padding:30px;
-    }
-
-    .specialist-grid {
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:10px;
-      margin-bottom:18px;
-    }
-
-    .specialist-card {
-      min-height:76px;
-      display:flex;
-      align-items:center;
-      padding:18px;
-      background:var(--white);
-      border:1px solid rgba(184,147,90,.28);
-    }
-
-    .specialist-card span {
-      color:var(--forest);
-      font-size:.84rem;
-      letter-spacing:.1em;
-      text-transform:uppercase;
-      font-weight:600;
-    }
-
-    .specialist-note {
-      border-top:1px solid var(--grey-soft);
-      padding-top:18px;
-      color:var(--grey-text);
-      font-size:.9rem;
-      line-height:1.7;
-    }
     .process { background:var(--white); }
 
     .process-header {
@@ -451,7 +498,7 @@
 
     .timeline {
       display:grid;
-      grid-template-columns:repeat(5,1fr);
+      grid-template-columns:repeat(4,1fr);
       gap:2px;
     }
 
@@ -899,7 +946,6 @@
 
     @media (max-width:1080px) {
       .timeline { grid-template-columns:repeat(2, 1fr); }
-      .timeline .step:last-child { grid-column:1 / -1; }
       .step { min-height:auto; }
       .packages { grid-template-columns:1fr; }
       .package { min-height:auto; }
@@ -907,6 +953,8 @@
     }
 
     @media (max-width:980px) {
+      .nav-links { display:none; }
+      .nav-hamburger { display:flex; }
       .hero { min-height:780px; }
       .hero-bg img { object-position:58% center; }
       .trust-grid,
@@ -927,9 +975,23 @@
 
     @media (max-width:640px) {
       html { scroll-padding-top:72px; }
+      .nav { height:64px; padding:0 18px; }
+      .nav-mobile { top:64px; }
+      .nav-mobile.open {
+        max-height:calc(100vh - 64px);
+        overflow-y:auto;
+      }
+
+      .logo { font-size:1.25rem; }
+
       .hero {
         min-height:auto;
         padding:102px 0 62px;
+      }
+
+      .hero-bg img {
+        animation:none;
+        transform:none;
       }
 
       .hero h1 {
@@ -961,6 +1023,8 @@
       .timeline,
       .for-grid,
       .story-grid,
+      .packages,
+      .packages-head,
       .process-summary {
         grid-template-columns:1fr;
       }
@@ -1018,72 +1082,371 @@
 
       .footer-inner { display:grid; }
     }
-  
-/* Unified global navigation */
-.site-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(23,37,30,.94);box-shadow:0 2px 24px rgba(0,0,0,.15);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
-.site-logo{font-family:var(--font-display,var(--display,Georgia,serif));font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white,#fff)}
-.site-logo span{color:var(--cedar-light,var(--cedar,#b8935a))}
-.site-nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none;margin:0;padding:0}
-.site-nav-links a,.site-nav-mobile a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t,var(--transition,.25s ease)),background var(--t,var(--transition,.25s ease)),border-color var(--t,var(--transition,.25s ease)),transform var(--t,var(--transition,.25s ease))}
-.site-nav-links a:hover,.site-nav-links a.active,.site-nav-mobile a:hover,.site-nav-mobile a.active{color:var(--cedar-light,#d5b982)}
-.site-nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border:1px solid var(--cedar,#b8935a);background:transparent;color:rgba(255,255,255,.86)!important;line-height:1;white-space:nowrap}
-.site-nav-cta:hover,.site-nav-cta.active{background:rgba(184,147,90,.12);color:var(--cedar-light,#d5b982)!important;border-color:var(--cedar-light,#d5b982)}
-.site-client-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.68)!important;white-space:nowrap}
-.site-client-link:hover,.site-client-link:focus-visible{color:var(--cedar-light,#d5b982)!important;transform:translateY(-1px)}
-.site-client-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
-.site-nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:0;padding:8px}
-.site-nav-toggle span{display:block;width:24px;height:2px;background:var(--white,#fff)}
-.site-nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;flex-direction:column;gap:16px;padding:24px;background:var(--forest,#17251e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
-.site-nav-mobile.open{display:flex}
-.site-nav-mobile a{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
-.site-nav-mobile .site-nav-cta{margin-top:4px;padding:14px 18px;border-bottom:1px solid var(--cedar,#b8935a)}
-.site-nav-mobile .site-client-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.72)!important}
-@media(max-width:980px){.site-nav-links{display:none}.site-nav-toggle{display:flex}}
-@media(max-width:640px){.site-nav{height:64px;padding:0 18px}.site-nav-mobile{top:64px;max-height:calc(100vh - 64px);overflow-y:auto}.site-logo{font-size:1.25rem}}
-</style>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "LocalBusiness",
-    "name": "Studio Las",
-    "image": "https://trenermedycznywarszawa.github.io/studio-las-v11/images/damian-about.webp",
-    "telephone": "+48503975998",
-    "email": "trenermedycznywarszawa@gmail.com",
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "ul. Pracka 1J",
-      "addressLocality": "Prace Duże",
-      "postalCode": "05-504",
-      "addressCountry": "PL"
-    },
-    "areaServed": ["Tarczyn", "Piaseczno", "Warszawa", "Grójec", "Mszczonów", "Ursynów", "Wilanów", "Mokotów"],
-    "description": "Kameralne studio treningu medycznego 1:1 w lesie pod Warszawą dla osób 40+ z bólem, po kontuzji i z lękiem przed ruchem.",
-    "url": "https://trenermedycznywarszawa.github.io/studio-las-v11/index.html"
-  }
-  </script>
+
+    @media (max-width:1024px) {
+      .container {
+        padding-left:clamp(24px, 5vw, 44px);
+        padding-right:clamp(24px, 5vw, 44px);
+      }
+
+      .section {
+        padding:clamp(88px, 12vw, 126px) 0;
+      }
+
+      .eyebrow {
+        margin-bottom:20px;
+        letter-spacing:.18em;
+      }
+
+      .section-title {
+        max-width:12ch;
+        margin-bottom:26px;
+        font-size:clamp(2.08rem, 7.4vw, 3.55rem);
+        line-height:1.08;
+        letter-spacing:0;
+        text-wrap:balance;
+      }
+
+      .section-lead {
+        max-width:34rem;
+        font-size:1rem;
+        line-height:1.86;
+      }
+
+      .hero {
+        min-height:auto;
+        padding:clamp(112px, 18vw, 148px) 0 clamp(82px, 13vw, 118px);
+        align-items:flex-end;
+      }
+
+      .hero-content {
+        max-width:680px;
+        display:flex;
+        flex-direction:column;
+      }
+
+      .hero h1 {
+        max-width:12.5ch;
+        margin-bottom:26px;
+        font-size:clamp(2.55rem, 7.2vw, 3.85rem);
+        line-height:1;
+        letter-spacing:0;
+        text-wrap:balance;
+      }
+
+      .hero p {
+        max-width:34rem;
+        margin-bottom:24px;
+        font-size:1rem;
+        line-height:1.78;
+      }
+
+      .hero-punch {
+        max-width:35rem;
+        margin-bottom:32px;
+        font-size:clamp(1.3rem, 4.6vw, 1.9rem);
+        line-height:1.28;
+        letter-spacing:0;
+      }
+
+      .hero-points {
+        order:5;
+        gap:14px 22px;
+        margin-top:30px;
+        margin-bottom:40px;
+      }
+
+      .hero-points li {
+        font-size:.94rem;
+        line-height:1.62;
+      }
+
+      .hero-actions,
+      .section-cta {
+        gap:16px;
+        margin-top:42px;
+      }
+
+      .hero-actions {
+        order:4;
+      }
+
+      .hero-note {
+        order:6;
+      }
+
+      .btn {
+        min-height:58px;
+        padding:18px 26px;
+        line-height:1.25;
+      }
+
+      .process-header,
+      .packages-head {
+        gap:30px;
+        margin-bottom:48px;
+      }
+
+      .process-summary {
+        gap:16px;
+        margin-bottom:42px;
+        background:transparent;
+      }
+
+      .process-summary div {
+        padding:30px 28px;
+        border:1px solid var(--grey-soft);
+      }
+
+      .timeline,
+      .first-steps,
+      .for-grid,
+      .story-grid,
+      .packages,
+      .decision-grid {
+        gap:18px;
+      }
+
+      .step,
+      .problem-card,
+      .report-box,
+      .for-card,
+      .story,
+      .decision-card,
+      .package,
+      .contact-card {
+        padding:34px 30px;
+      }
+
+      .step h3,
+      .for-card h3,
+      .decision-card h3,
+      .package h3,
+      .story h3 {
+        margin-bottom:16px;
+        line-height:1.2;
+        text-wrap:balance;
+      }
+
+      .step p,
+      .story p,
+      .package li,
+      .for-card li,
+      .decision-card p,
+      .decision-card li {
+        line-height:1.72;
+      }
+
+      .first-step {
+        padding:30px 28px 30px 78px;
+      }
+    }
+
+    @media (max-width:640px) {
+      .trust-strip,
+      #pierwsza-wizyta,
+      #miejsce,
+      #raport,
+      #historie,
+      #decyzja {
+        display:none;
+      }
+
+      .section {
+        padding:76px 0;
+      }
+
+      .hero {
+        padding:86px 0 54px;
+      }
+
+      .desktop-title,
+      .desktop-copy,
+      .hero-punch,
+      .hero-note,
+      .hero-actions .btn-ghost {
+        display:none;
+      }
+
+      .mobile-title,
+      .mobile-hero-copy,
+      .process-mobile-title,
+      .contact-mobile-title,
+      .step-mobile-copy {
+        display:block;
+      }
+
+      .process-desktop-title,
+      .contact-desktop-title {
+        display:none;
+      }
+
+      .hero h1 {
+        max-width:11ch;
+        margin-bottom:22px;
+        font-size:clamp(2.2rem, 10vw, 2.48rem);
+        line-height:1.02;
+      }
+
+      .hero p.mobile-hero-copy {
+        max-width:31rem;
+        margin-bottom:0;
+        font-size:.98rem;
+        line-height:1.74;
+      }
+
+      .hero-actions {
+        margin-top:28px;
+      }
+
+      .hero-points {
+        grid-template-columns:1fr;
+        gap:10px;
+        margin-top:22px;
+        margin-bottom:0;
+      }
+
+      .hero-points li:nth-child(n+4) {
+        display:none;
+      }
+
+      .hero p,
+      .section-lead {
+        font-size:.98rem;
+        line-height:1.82;
+      }
+
+      .section-title {
+        max-width:11ch;
+        font-size:clamp(2.08rem, 9vw, 2.62rem);
+      }
+
+      .mobile-section-cta {
+        display:flex;
+        grid-column:1 / -1;
+        margin-top:26px;
+      }
+
+      #problem .problem-list li:nth-child(n+4),
+      #dla-kogo .for-card.yes li:nth-child(n+4),
+      #pakiety .package li:nth-child(n+4),
+      #o-damianie .credentials li:nth-child(n+3) {
+        display:none;
+      }
+
+      .process-summary {
+        display:none;
+      }
+
+      .timeline,
+      .for-grid,
+      .packages {
+        gap:14px;
+      }
+
+      .step,
+      .problem-card,
+      .report-box,
+      .for-card,
+      .story,
+      .decision-card,
+      .package,
+      .contact-card {
+        padding:32px 28px;
+      }
+
+      .step {
+        padding:24px 22px;
+      }
+
+      .step-num {
+        margin-bottom:14px;
+        font-size:1.7rem;
+      }
+
+      .step > p:not(.step-mobile-copy) {
+        display:none;
+      }
+
+      .step h3 {
+        margin-bottom:10px;
+      }
+
+      .step-mobile-copy {
+        color:var(--grey-text);
+        font-size:.92rem;
+        line-height:1.62;
+      }
+
+      .step .effect {
+        padding-top:14px;
+        font-size:.78rem;
+        line-height:1.55;
+      }
+
+      #jak-to-dziala .section-cta .btn-outline,
+      #dla-kogo .section-cta a:not(:last-child),
+      #o-damianie .section-cta a:nth-child(2),
+      #pakiety .package .btn-ghost {
+        display:none;
+      }
+
+      #dla-kogo .for-card.no,
+      #pakiety .package:nth-child(3),
+      #o-damianie .about-photo,
+      #kontakt .contact-card:nth-child(2) {
+        display:none;
+      }
+
+      #pakiety .packages-head {
+        margin-bottom:32px;
+      }
+
+      #pakiety .package {
+        min-height:auto;
+      }
+
+      .btn {
+        width:100%;
+        min-height:60px;
+      }
+    }
+
+    @media (max-width: 640px) {
+      .trust-strip,
+      #pierwsza-wizyta,
+      #miejsce,
+      #raport,
+      #historie,
+      #decyzja {
+        display: none !important;
+      }
+    }
+  </style>
 </head>
 
 <body>
-  <nav class="site-nav" aria-label="Nawigacja główna">
-  <a class="site-logo" href="./index.html">Studio <span>Las</span></a>
-  <ul class="site-nav-links">
-    <li><a href="./index.html" class="active">Strona główna</a></li>
-    <li><a href="./metoda-i-pakiety.html">Metoda i pakiety</a></li>
-    <li><a href="./blog.html">Blog</a></li>
-    <li><a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a></li>
-    <li><!-- future client portal --><a href="strefa-klienta.html" class="site-client-link" aria-label="Panel klienta – funkcja w przygotowaniu"><svg class="site-client-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/><path d="M18.5 5.5h2v2"/><path d="M20.5 5.5 17 9"/></svg><span>Panel klienta</span></a></li>
-  </ul>
-  <button class="site-nav-toggle" id="hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" type="button">
-    <span></span><span></span><span></span>
-  </button>
-</nav>
-<div class="site-nav-mobile nav-mobile" id="navMobile">
-  <a href="./index.html" class="active">Strona główna</a>
-  <a href="./metoda-i-pakiety.html">Metoda i pakiety</a>
-  <a href="./blog.html">Blog</a>
-  <a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a>
-  <!-- future client portal --><a href="strefa-klienta.html" class="site-client-link" aria-label="Panel klienta – funkcja w przygotowaniu"><svg class="site-client-icon" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 12.5a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7Z"/><path d="M5.5 20a6.5 6.5 0 0 1 13 0"/><path d="M18.5 5.5h2v2"/><path d="M20.5 5.5 17 9"/></svg><span>Panel klienta</span></a>
-</div>
+  <nav class="nav" aria-label="Nawigacja główna">
+    <a class="logo" href="./index.html">Studio <span>Las</span></a>
+
+    <ul class="nav-links">
+      <li><a href="./index.html">Strona główna</a></li>
+      <li><a href="./metoda-i-pakiety.html">Metoda i pakiety</a></li>
+      <li><a href="./dla-kogo.html">Dla kogo</a></li>
+      <li><a href="./blog.html">Blog</a></li>
+    </ul>
+
+    <button class="nav-hamburger" id="hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile" id="navMobile">
+    <a href="./index.html">Strona główna</a>
+    <a href="./metoda-i-pakiety.html">Metoda i pakiety</a>
+    <a href="./dla-kogo.html">Dla kogo</a>
+    <a href="./blog.html">Blog</a>
+  </div>
 
   <a class="btn btn-primary sticky-cta" href="./ankieta-kontakt.html#ankieta">Wypełnij ankietę</a>
 
@@ -1096,9 +1459,13 @@
       <div class="container">
         <div class="hero-content reveal">
           <div class="hero-kicker">Studio Las · Prace Duże pod Warszawą</div>
-          <h1>Wróć do ciała, któremu znowu możesz ufać.</h1>
+          <h1>
+            <span class="desktop-title">Wyjdź z bólu ruchem — spokojnie, krok po <em>kroku.</em></span>
+            <span class="mobile-title">Ból nie musi rządzić <em>ruchem.</em></span>
+          </h1>
 
-          <p>Trening medyczny 1:1 w kameralnym studiu w lesie pod Warszawą. Dla osób 40+, które żyją z bólem, wracają po kontuzji albo boją się ruszać, bo ciało już kilka razy zawiodło.</p>
+          <p class="desktop-copy">Kameralne studio treningu medycznego 1:1 w lesie pod Warszawą. Około 12 tygodni pracy, która pomaga odbudować zaufanie do ciała po bólu, kontuzji albo długiej przerwie.</p>
+          <p class="mobile-hero-copy">Spokojny proces 1:1 dla osób, które chcą wrócić do ruchu bez presji, tłumu i przypadkowych ćwiczeń.</p>
 
           <div class="hero-punch">
             To 12 tygodni pracy, po których nie masz być „stałym klientem od bólu” — masz wrócić do życia z ciałem, któremu znowu <strong>ufasz.</strong>
@@ -1117,7 +1484,7 @@
             <a class="btn btn-ghost" href="#jak-to-dziala">Zobacz, jak to działa</a>
           </div>
 
-          <div class="hero-note">Ankieta zajmuje około 5 minut. Oddzwaniam w ciągu 24 godzin w dni robocze i mówię wprost, czy mogę Ci pomóc. Bez zobowiązań.</div>
+          <div class="hero-note">Nie zaczynamy od przypadkowego treningu. Najpierw ankieta, rozmowa i diagnostyka — dopiero potem decyzja, czy proces ma sens.</div>
         </div>
       </div>
     </section>
@@ -1125,10 +1492,10 @@
     <section class="trust-strip" aria-label="Najważniejsze wyróżniki">
       <div class="container">
         <div class="trust-grid">
-          <div class="trust-item"><strong>40+ z bólem</strong><span>Dla osób 40+ z bólem i po kontuzjach</span></div>
-          <div class="trust-item"><strong>12 tygodni</strong><span>Około 12 tygodni procesu 1:1</span></div>
-          <div class="trust-item"><strong>Tanita + testy</strong><span>Diagnostyka Tanita + testy ruchowe</span></div>
-          <div class="trust-item"><strong>Bez presji</strong><span>Bez tłumu, presji i chaosu siłowni</span></div>
+          <div class="trust-item"><strong>12 tygodni</strong><span>FUNDAMENT zamiast luźnych treningów</span></div>
+          <div class="trust-item"><strong>1:1</strong><span>kameralna praca bez tłumu i presji</span></div>
+          <div class="trust-item"><strong>Tanita + testy</strong><span>diagnostyka, nie zgadywanie</span></div>
+          <div class="trust-item"><strong>Raport</strong><span>konkretne podsumowanie efektów</span></div>
         </div>
       </div>
     </section>
@@ -1149,99 +1516,79 @@
             <li>Masz 40+ lat, dużo obowiązków i nie chcesz kolejnego „spróbuję od poniedziałku”.</li>
           </ul>
         </div>
-        <div class="section-cta reveal">
-          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-outline">Sprawdź, czy ten proces jest dla Ciebie</a>
+
+        <div class="mobile-section-cta">
+          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-outline">Sprawdź pierwszy krok</a>
         </div>
       </div>
     </section>
 
-    <section class="section specialist-scope" aria-label="Współpraca specjalistyczna">
-      <div class="container specialist-wrap">
-        <div class="specialist-copy reveal">
-          <div class="eyebrow">Szersze spojrzenie</div>
-          <h2 class="section-title">Gdy problem wymaga szerszego spojrzenia</h2>
-          <p class="section-lead">Nie każdy problem da się uczciwie sprowadzić do ćwiczeń. Dlatego w pracy z klientami patrzę szerzej: na ruch, ból, regenerację, odżywianie i historię zdrowia. Jeśli widzę, że sytuacja wymaga dodatkowej konsultacji, omawiam kierunek pracy ze sprawdzonym specjalistą — psychodietetykiem, dietetykiem klinicznym, fizjoterapeutą lub ortopedą.</p>
-          <p class="section-lead">Dzięki temu nie działamy w ciemno. Trening pozostaje głównym narzędziem pracy w Studio Las, ale decyzje podejmujemy odpowiedzialnie — z uwzględnieniem tego, czego naprawdę potrzebuje Twoje ciało.</p>
-        </div>
-        <div class="specialist-panel reveal">
-          <div class="specialist-grid" aria-label="Specjaliści konsultowani w razie potrzeby">
-            <div class="specialist-card"><span>Psychodietetyk</span></div>
-            <div class="specialist-card"><span>Dietetyk kliniczny</span></div>
-            <div class="specialist-card"><span>Fizjoterapeuta</span></div>
-            <div class="specialist-card"><span>Ortopeda</span></div>
-          </div>
-          <p class="specialist-note">Konsultacja specjalistyczna pojawia się wtedy, gdy jest potrzebna — nie jako ozdobnik, tylko jako element bezpieczeństwa procesu.</p>
-        </div>
-      </div>
-    </section>
     <section class="section process" id="jak-to-dziala">
       <div class="container">
         <div class="process-header reveal">
           <div>
             <div class="eyebrow">Jak to działa</div>
-            <h2 class="section-title">Proces zamiast przypadkowych treningów.</h2>
+            <h2 class="section-title process-desktop-title">Proces zamiast przypadkowych treningów.</h2>
+            <h2 class="section-title process-mobile-title">System 4 Kroków.</h2>
           </div>
           <p class="section-lead">Od pierwszego kontaktu wiesz, co się wydarzy. To zmniejsza lęk przed ruchem i daje jasne ramy pracy na około 12 tygodni.</p>
         </div>
 
         <div class="process-summary reveal" aria-label="Skrót procesu Studio Las">
           <div>
-            <strong>1. Ankieta i rozmowa</strong>
-            <span>Opisujesz problem. Ja sprawdzam, czy diagnostyka ma sens.</span>
+            <strong>1. Ankieta, rozmowa i punkt startowy</strong>
+            <span>Opisujesz problem, a ja sprawdzam, od czego bezpiecznie zacząć.</span>
           </div>
           <div>
-            <strong>2. Diagnostyka</strong>
-            <span>Tanita, testy ruchowe i konkretny punkt startowy.</span>
+            <strong>2. Diagnostyka i plan pierwszego etapu</strong>
+            <span>Tanita, testy ruchowe i decyzja, jaki pierwszy etap ma sens.</span>
           </div>
           <div>
-            <strong>3. Fundament</strong>
+            <strong>3. Trening 1:1 + plan domowy</strong>
             <span>12 tygodni spokojnej pracy 1:1 + prosty plan domowy.</span>
           </div>
           <div>
-            <strong>4. Raport i decyzja</strong>
-            <span>Sprawdzamy efekty i ustalamy, co dalej — bez zgadywania.</span>
+            <strong>4. Raport efektów i decyzja, co dalej</strong>
+            <span>Raport jest częścią kroku 4: sprawdzamy efekty i wybieramy dalszą drogę.</span>
           </div>
         </div>
 
         <div class="timeline">
           <article class="step reveal">
             <div class="step-num">01</div>
-            <h3>Ankieta online i krótka rozmowa</h3>
+            <h3>Ankieta, rozmowa i punkt startowy</h3>
             <p>Wypełniasz krótką ankietę, a ja analizuję odpowiedzi i oddzwaniam, żeby spokojnie omówić sytuację.</p>
-            <div class="effect">Efekt: wiemy, czy warto umawiać diagnostykę.</div>
+            <p class="step-mobile-copy">Opisujesz problem. Oddzwaniam i ustalamy, czy diagnostyka ma sens.</p>
+            <div class="effect">Efekt: wiemy, z jakiego miejsca startujesz i czy diagnostyka ma sens.</div>
           </article>
 
           <article class="step reveal">
             <div class="step-num">02</div>
-            <h3>Konsultacja w Studio Las</h3>
+            <h3>Diagnostyka i plan pierwszego etapu</h3>
             <p>Tanita RD-545, wywiad, proste testy ruchowe i określenie realnego celu na pierwsze 12 tygodni.</p>
-            <div class="effect">Efekt: znasz punkt startowy.</div>
+            <p class="step-mobile-copy">Sprawdzamy punkt startowy i wybieramy bezpieczny pierwszy etap.</p>
+            <div class="effect">Efekt: masz konkretny plan pierwszego etapu, nie listę przypadkowych ćwiczeń.</div>
           </article>
 
           <article class="step reveal">
             <div class="step-num">03</div>
-            <h3>Trening medyczny 1:1</h3>
-            <p>Spokojna praca dopasowana do historii zdrowia, możliwości i poziomu lęku przed ruchem.</p>
-            <div class="effect">Efekt: ciało przestaje straszyć.</div>
+            <h3>Trening 1:1 + plan domowy</h3>
+            <p>Spokojna praca dopasowana do historii zdrowia, możliwości i poziomu lęku przed ruchem. Po sesjach dostajesz 2–4 konkretne ćwiczenia oraz wskazówki na co dzień.</p>
+            <p class="step-mobile-copy">Pracujemy 1:1 w studio. Dostajesz krótki plan domowy między sesjami.</p>
+            <div class="effect">Efekt: ciało przestaje straszyć, a zmiana nie znika po tygodniu.</div>
           </article>
 
           <article class="step reveal">
             <div class="step-num">04</div>
-            <h3>Plan domowy i wsparcie</h3>
-            <p>Po sesjach dostajesz 2–4 konkretne ćwiczenia oraz wskazówki, co robić i czego unikać na co dzień.</p>
-            <div class="effect">Efekt: zmiana nie znika po tygodniu.</div>
-          </article>
-
-          <article class="step reveal">
-            <div class="step-num">05</div>
-            <h3>Raport i dalszy plan</h3>
+            <h3>Raport efektów i decyzja, co dalej</h3>
             <p>Po ok. 12 tygodniach sprawdzamy efekty i decydujemy: ROZWÓJ, lżejsza kontynuacja albo samodzielność.</p>
+            <p class="step-mobile-copy">Po 12 tygodniach sprawdzamy efekt i wybieramy dalszą drogę.</p>
             <div class="effect">Efekt: masz dowód, nie domysły.</div>
           </article>
         </div>
 
         <div class="section-cta reveal">
-          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Zacznij od krótkiej ankiety</a>
+          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Zacznij od ankiety</a>
           <a href="./metoda-i-pakiety.html#system-4-krokow" class="btn btn-outline">Pełny opis metody</a>
         </div>
       </div>
@@ -1251,19 +1598,19 @@
       <div class="container first-grid">
         <div class="reveal">
           <div class="eyebrow">Pierwsza wizyta</div>
-          <h2 class="section-title">Pierwsza wizyta — krok po kroku</h2>
-          <p class="section-lead">Pierwszy kontakt ma zmniejszyć napięcie. Wiesz, co Cię czeka, zanim pojawisz się w Studio Las.</p>
+          <h2 class="section-title">Bez presji. Bez sprawdzania formy. Bez „zobaczymy, co wyjdzie”.</h2>
+          <p class="section-lead">Pierwsze spotkanie ma zdjąć napięcie i dać jasną odpowiedź: od czego zaczynamy, co jest bezpieczne i czy współpraca ma sens.</p>
           <div class="section-cta">
             <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Wypełnij ankietę diagnostyczną</a>
           </div>
         </div>
 
         <div class="first-steps reveal">
-          <div class="first-step"><strong>1. Wypełniasz krótką ankietę online.</strong><span>Opisujesz sytuację, ból, historię ruchu i najważniejsze obawy.</span></div>
-          <div class="first-step"><strong>2. Oddzwaniam i spokojnie omawiam Twoją sytuację.</strong><span>Bez pośpiechu ustalamy, czy diagnostyka ma sens.</span></div>
-          <div class="first-step"><strong>3. Umawiamy termin pierwszej diagnostyki w Studio Las.</strong><span>Dostajesz jasną informację, jak dojechać i czego się spodziewać.</span></div>
-          <div class="first-step"><strong>4. Robimy rozmowę, analizę Tanita i proste testy ruchowe.</strong><span>Bez sprawdzania formy i bez presji.</span></div>
-          <div class="first-step"><strong>5. Dostajesz propozycję dalszego procesu.</strong><span>Bez obowiązku decyzji na miejscu.</span></div>
+          <div class="first-step"><strong>Krótka ankieta online</strong><span>Najpierw opisujesz sytuację, ból, historię ruchu i najważniejsze obawy.</span></div>
+          <div class="first-step"><strong>Telefon lub mail</strong><span>Spokojnie ustalamy, czy diagnostyka w Studio Las jest właściwym kolejnym krokiem.</span></div>
+          <div class="first-step"><strong>Pełniejszy wywiad przed wizytą</strong><span>Żeby na sali nie tracić czasu na papierologię i od razu przejść do konkretów.</span></div>
+          <div class="first-step"><strong>Tanita, testy i pierwsze ruchy</strong><span>Bez presji, bez „sprawdzania formy”, w tempie dopasowanym do Ciebie.</span></div>
+          <div class="first-step"><strong>Propozycja procesu</strong><span>Dostajesz rekomendację FUNDAMENTU, ale bez presji decyzji na miejscu.</span></div>
         </div>
       </div>
     </section>
@@ -1272,7 +1619,7 @@
       <div class="container">
         <div class="reveal">
           <div class="eyebrow">Dla kogo</div>
-          <h2 class="section-title">Dla kogo jest Studio Las?</h2>
+          <h2 class="section-title">Studio Las jest dla konkretnych osób. I bardzo dobrze.</h2>
           <p class="section-lead">To miejsce dla osób, które chcą spokojnego procesu, a nie kolejnego zrywu. Jasny filtr oszczędza Twój czas i mój czas.</p>
         </div>
 
@@ -1302,7 +1649,9 @@
         </div>
 
         <div class="section-cta reveal">
-          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Sprawdź, czy Studio Las jest dla Ciebie</a>
+          <a href="./dla-kogo.html" class="btn btn-outline">Zobacz pełną stronę „Dla kogo”</a>
+          <a href="./trening-po-leczeniu-onkologicznym.html" class="btn btn-outline">Trening po leczeniu onkologicznym</a>
+          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-outline">Sprawdź, czy to dla Ciebie</a>
         </div>
       </div>
     </section>
@@ -1310,9 +1659,9 @@
     <section class="section dark" id="miejsce">
       <div class="container place-grid">
         <div class="place-images reveal">
-          <img src="./images/studio-latem.webp" alt="Kameralne studio treningu medycznego w lesie pod Warszawą" class="main" loading="lazy" decoding="async" />
-          <img src="./images/las.webp" alt="Las przy Studio Las w Pracach Dużych" loading="lazy" decoding="async" />
-          <img src="./images/studio-interior.webp" alt="Wnętrze Studio Las w Pracach Dużych" loading="lazy" decoding="async" />
+          <img src="./images/studio-latem.webp" alt="Studio Las wśród drzew" class="main" loading="lazy" />
+          <img src="./images/las.webp" alt="Las przy Studio Las w Pracach Dużych" loading="lazy" />
+          <img src="./images/studio-interior.webp" alt="Wnętrze Studio Las" loading="lazy" />
         </div>
 
         <div class="reveal">
@@ -1351,7 +1700,7 @@
               <li>testy ruchowe i ocena punktu startowego,</li>
               <li>wstępny plan na 12 tygodni.</li>
             </ul>
-            <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Zacznij od krótkiej ankiety</a>
+            <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Zacznij od ankiety</a>
           </article>
 
           <article class="package featured reveal">
@@ -1382,6 +1731,10 @@
             <a href="./metoda-i-pakiety.html#pakiety" class="btn btn-ghost">Pełny cennik</a>
           </article>
         </div>
+
+        <div class="mobile-section-cta">
+          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Zacznij od ankiety</a>
+        </div>
       </div>
     </section>
 
@@ -1409,17 +1762,38 @@
     <section class="section stories" id="historie">
       <div class="container">
         <div class="reveal">
-          <div class="eyebrow">Historie klientów</div>
-          <h2 class="section-title">Historie osób, które zaczynały od bólu i niepewności</h2>
-          <p class="section-lead">Poniższe karty są przykładami historii do zastąpienia prawdziwymi opiniami klientów, gdy będą gotowe do publikacji.</p>
+          <div class="eyebrow">Historie z bloga</div>
+          <h2 class="section-title">Nie musisz wierzyć w hasła. Zobacz, jak wygląda proces.</h2>
+          <p class="section-lead">Zamiast pustych rekomendacji pokazuję konkretne historie: punkt startowy, sposób pracy i to, co zmieniło się w codziennym życiu.</p>
         </div>
-        <!-- TODO: Placeholdery case studies - zastąpić prawdziwymi historiami klientów po uzyskaniu zgód. -->
+
         <div class="story-grid">
-          <article class="story reveal"><div class="story-tag">Marek, 47 lat</div><h3>Ból lędźwi po pracy przy biurku</h3><p>Po 12 tygodniach ból spadł z 8/10 do 2/10, a Marek wrócił do spokojnego treningu bez strachu.</p><span>„Największą zmianą nie było tylko to, że mniej bolało. Największą zmianą było to, że przestałem bać się ruchu.”</span></article>
-          <article class="story reveal"><div class="story-tag">Anna, 52 lata</div><h3>Kolano po kontuzji i lęk przed schodami</h3><p>Większa stabilność, mniej bólu przy schodach i prosty plan domowy 2 razy w tygodniu.</p><span>„W końcu ktoś nie kazał mi cisnąć mocniej, tylko pokazał, jak wracać krok po kroku.”</span></article>
-          <article class="story reveal"><div class="story-tag">Tomasz, 44 lata</div><h3>Zmęczenie, ból pleców, brak energii</h3><p>Regularny ruch, mniej napięcia po siedzeniu i jasny plan dalszego działania.</p><span>„To był pierwszy proces, którego nie rzuciłem po dwóch tygodniach.”</span></article>
+          <a href="./post-janek-bol-plecow-apatia.html" class="story reveal">
+            <div class="story-tag">Case study · ból pleców</div>
+            <h3>Janek, 44 lata — ból pleców i brak energii</h3>
+            <p>Historia o tym, że problem nie zawsze jest tam, gdzie pokazuje rezonans.</p>
+            <span>Czytaj dalej →</span>
+          </a>
+
+          <a href="./post-3-minutowy-reset.html" class="story reveal">
+            <div class="story-tag">Praca biurowa · reset</div>
+            <h3>3-minutowy reset dla pleców i karku</h3>
+            <p>Prosty protokół dla osób, które po całym dniu siedzenia czują napięcie i sztywność.</p>
+            <span>Czytaj dalej →</span>
+          </a>
+
+          <a href="./post-sibo-jelita-energia.html" class="story reveal">
+            <div class="story-tag">Energia · styl życia</div>
+            <h3>Trenujesz, jesz dobrze… a efektów nie ma?</h3>
+            <p>Historia o tym, że czasem problem nie leży w treningu, tylko w organizmie, który nie współpracuje.</p>
+            <span>Czytaj dalej →</span>
+          </a>
         </div>
-        <div class="section-cta reveal"><a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Sprawdź, czy proces ma sens</a></div>
+
+        <div class="section-cta reveal">
+          <a href="./blog.html" class="btn btn-outline">Zobacz blog</a>
+          <a href="./ankieta-kontakt.html#ankieta" class="btn btn-outline">Sprawdź, czy proces ma sens</a>
+        </div>
       </div>
     </section>
 
@@ -1455,20 +1829,19 @@
     <section class="section white" id="o-damianie">
       <div class="container about-grid">
         <div class="about-photo reveal">
-          <img src="./images/IMG_3853.webp" alt="Damian Krawiec – Studio Las" loading="lazy" decoding="async" />
+          <img src="./images/IMG_3853.webp" alt="Damian Krawiec – Studio Las" loading="lazy" />
         </div>
 
         <div class="reveal">
           <div class="eyebrow">Damian Krawiec</div>
-          <h2 class="section-title">Dlaczego możesz mi zaufać?</h2>
+          <h2 class="section-title">Nie jestem trenerem od liczenia powtórzeń. Jestem przewodnikiem po powrocie do ruchu.</h2>
           <p class="section-lead">Łączę doświadczenie treningowe, medyczne i pracę pod presją. Na pierwszym planie jest spokojny, przewidywalny proces dla osób, które chcą przestać bać się własnego ciała.</p>
 
           <ul class="credentials">
             <li>15+ lat pracy w treningu i fitnessie,</li>
-            <li>specjalizacja w treningu medycznym i powrotach po kontuzjach,</li>
-            <li>studia podyplomowe „Fizjoterapia w sporcie”,</li>
-            <li>współpraca z WIML,</li>
-            <li>doświadczenie pracy pod presją, przełożone na spokojny proces dla osób cywilnych 40+.</li>
+            <li>specjalizacja: trening medyczny i terapia ruchem,</li>
+            <li>powroty po kontuzjach, przewlekłe bóle, osoby 40+,</li>
+            <li>doświadczenie pracy pod stresem przełożone na uporządkowany proces.</li>
           </ul>
 
           <div class="section-cta">
@@ -1479,38 +1852,18 @@
       </div>
     </section>
 
-    <section class="section white" id="faq">
-      <div class="container">
-        <div class="reveal">
-          <div class="eyebrow">FAQ</div>
-          <h2 class="section-title">Najczęstsze pytania przed pierwszym kontaktem</h2>
-        </div>
-        <div class="faq-grid reveal">
-          <article><h3>Czy mogę przyjść, jeśli aktualnie boli mnie kręgosłup?</h3><p>Tak, ale nie zaczynamy od przypadkowego treningu. Najpierw ankieta, rozmowa i diagnostyka. Jeśli sytuacja wymaga konsultacji lekarskiej lub fizjoterapeutycznej, powiem to wprost.</p></article>
-          <article><h3>Czy to jest rehabilitacja czy trening?</h3><p>Studio Las łączy trening medyczny, terapię ruchem i spokojną pracę nad nawykami. Nie zastępuje leczenia lekarskiego, ale pomaga bezpiecznie wrócić do ruchu po bólu, kontuzji lub dłuższej przerwie.</p></article>
-          <article><h3>Czy muszę mieć doświadczenie na siłowni?</h3><p>Nie. Wiele osób trafia tu właśnie dlatego, że nie lubi klasycznej siłowni albo źle się tam czuje.</p></article>
-          <article><h3>Co jeśli boję się, że trening pogorszy ból?</h3><p>To normalna obawa. Dlatego zaczynamy spokojnie, od testów, rozmowy i prostych ruchów. Celem nie jest wycisk, tylko odzyskanie kontroli i zaufania do ciała.</p></article>
-          <article><h3>Ile trwa pierwszy etap?</h3><p>Standardowy proces FUNDAMENT trwa około 12 tygodni. To czas na diagnostykę, spokojną pracę 1:1, ćwiczenia samodzielne i ocenę efektów.</p></article>
-          <article><h3>Czy mogę kupić pojedynczy trening?</h3><p>Nowe osoby zaczynają od ankiety i diagnostyki. Studio Las nie jest miejscem na przypadkowe jednorazowe treningi. Pojedyncze sesje mają sens głównie jako przegląd lub kontynuacja po procesie.</p></article>
-          <article><h3>Co dzieje się po wypełnieniu ankiety?</h3><p>Czytam Twoje odpowiedzi i oddzwaniam w ciągu 24 godzin w dni robocze. Rozmawiamy spokojnie o sytuacji i ustalamy, czy warto umówić pierwszą diagnostykę.</p></article>
-          <article><h3>Gdzie znajduje się Studio Las?</h3><p>Studio mieści się przy ul. Prackiej 1J w Pracach Dużych, w gminie Tarczyn — pod Warszawą, niedaleko Piaseczna, Grójca i południowych dzielnic Warszawy.</p></article>
-        </div>
-        <div class="section-cta reveal"><a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary">Masz już dość zgadywania? Zacznij od ankiety.</a></div>
-      </div>
-    </section>
-
     <section class="section dark" id="kontakt">
       <div class="container contact-grid">
         <div class="contact-card reveal">
           <div class="eyebrow">Pierwszy krok</div>
-          <h2 class="section-title">Nie musisz wiedzieć, od czego zacząć.</h2>
-          <p class="section-lead">Od tego jest pierwszy krok: krótka ankieta i spokojna rozmowa. Jeśli mogę Ci pomóc — powiem jak. Jeśli nie — też powiem wprost.</p>
+          <h2 class="section-title contact-desktop-title">Wypełnij krótką ankietę. Ja sprawdzę, czy mogę Ci realnie pomóc.</h2>
+          <h2 class="section-title contact-mobile-title">Zacznij od krótkiej ankiety.</h2>
+          <p class="section-lead">To nie jest zapis na przypadkowy trening. To pierwszy filtr. Na podstawie odpowiedzi oddzwonię, omówimy sytuację i zdecydujemy, czy warto umawiać diagnostykę.</p>
 
           <div class="section-cta">
             <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Wypełnij ankietę diagnostyczną</a>
             <a class="btn btn-ghost" href="tel:+48503975998">Zadzwoń: 503 975 998</a>
           </div>
-          <p class="section-cta-note final-cta-microcopy">Ankieta zajmuje około 5 minut. Oddzwaniam w ciągu 24 godzin w dni robocze i mówię wprost, czy mogę Ci pomóc. Bez zobowiązań.</p>
         </div>
 
         <div class="contact-card reveal">
@@ -1518,7 +1871,7 @@
           <div class="contact-data">
             <div><strong>Studio Las</strong></div>
             <div>ul. Pracka 1J, 05-504 Prace Duże</div>
-            <div>Studio mieści się w Pracach Dużych, w gminie Tarczyn — w spokojnej lokalizacji pod Warszawą, wygodnej dla osób z Piaseczna, południa Warszawy, Grójca i Mszczonowa.</div><div>Dogodny dojazd także z Ursynowa, Wilanowa i Mokotowa.</div>
+            <div>gmina Tarczyn · okolice Piaseczna i południa Warszawy</div>
             <div>tel. <a href="tel:+48503975998">503 975 998</a></div>
             <div>e-mail: <a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></div>
             <div>Godziny 1:1: pon.–pt. 16:00–22:00, weekendy po umówieniu</div>
@@ -1537,15 +1890,41 @@
       <div>© 2026 Studio Las · Damian Krawiec</div>
       <div>
         <a href="./metoda-i-pakiety.html">Metoda i pakiety</a> ·
-        ·
+        <a href="./dla-kogo.html">Dla kogo</a> ·
         <a href="./blog.html">Blog</a> ·
-        ·
         <a href="./ankieta-kontakt.html#ankieta">Ankieta</a>
       </div>
     </div>
   </footer>
 
   <script>
+    const hamburger = document.getElementById('hamburger');
+    const navMobile = document.getElementById('navMobile');
+
+    if (hamburger && navMobile) {
+      hamburger.addEventListener('click', () => {
+        const isOpen = navMobile.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', String(isOpen));
+        hamburger.setAttribute('aria-label', isOpen ? 'Zamknij menu' : 'Otwórz menu');
+      });
+
+      document.querySelectorAll('#navMobile a').forEach(link => {
+        link.addEventListener('click', () => {
+          navMobile.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.setAttribute('aria-label', 'Otwórz menu');
+        });
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          navMobile.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.setAttribute('aria-label', 'Otwórz menu');
+        }
+      });
+    }
+
     if ('IntersectionObserver' in window) {
       const observer = new IntersectionObserver(entries => {
         entries.forEach(entry => {
@@ -1566,28 +1945,5 @@
       });
     }
   </script>
-<script>
-(function initSiteNavigation(){
-  const toggle=document.getElementById('hamburger');
-  const menu=document.getElementById('navMobile');
-  if(!toggle||!menu)return;
-  const setOpen=(open)=>{
-    menu.classList.toggle('open',open);
-    toggle.setAttribute('aria-expanded',open?'true':'false');
-    toggle.setAttribute('aria-label',open?'Zamknij menu':'Otwórz menu');
-  };
-  toggle.addEventListener('click',(event)=>{
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    setOpen(!menu.classList.contains('open'));
-  },true);
-  menu.querySelectorAll('a').forEach(link=>{
-    link.addEventListener('click',()=>setOpen(false));
-  });
-  document.addEventListener('keydown',(event)=>{
-    if(event.key==='Escape')setOpen(false);
-  });
-})();
-</script>
 </body>
 </html>
