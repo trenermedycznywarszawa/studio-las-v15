@@ -3,29 +3,29 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las | Spokojny proces odzyskiwania zwykłego życia</title>
-  <meta name="description" content="Studio Las pod Warszawą. Prywatny proces 1:1 dla osób 40+ po bólu, kontuzji lub długiej przerwie. Diagnostyka, 12 tygodni pracy, plan domowy i raport efektów." />
+  <title>Studio Las | Zwykłe rzeczy znów mają być łatwiejsze</title>
+  <meta name="description" content="Studio Las pod Warszawą. 12 tygodni spokojnej pracy 1:1 dla osób 40+ po bólu, kontuzji albo długiej przerwie. Diagnostyka, plan domowy i raport efektów." />
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v13/index.html" />
   <meta property="og:title" content="Studio Las | Zwykłe rzeczy znów mają być łatwiejsze" />
-  <meta property="og:description" content="Nie pracujemy po to, żeby lepiej ćwiczyć. Pracujemy po to, żeby schody, poranek, spacer i zwykły dzień znowu były łatwiejsze." />
+  <meta property="og:description" content="Nie sprzedajemy treningu. Pomagamy odzyskać zwykłe rzeczy: schody, poranek, spacer, buty, zakupy i ciało, któremu znowu można ufać." />
   <meta property="og:type" content="website" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v13/index.html" />
 
   <style>
     :root {
       --forest:#10241b;
-      --forest-2:#183529;
-      --forest-soft:#213d31;
+      --forest-2:#19372a;
+      --forest-3:#244638;
       --cedar:#b88f55;
-      --cedar-dark:#936f3d;
-      --cream:#f3efe7;
+      --cedar-dark:#8f6938;
+      --cream:#f2eee6;
       --paper:#fbfaf7;
       --white:#fff;
       --ink:#211a16;
-      --muted:#6f6961;
+      --muted:#706a62;
       --line:rgba(33,26,22,.13);
-      --shadow:0 24px 70px rgba(30,24,18,.13);
-      --radius:8px;
+      --soft-line:rgba(255,255,255,.13);
+      --shadow:0 26px 76px rgba(27,22,17,.13);
       --ease:cubic-bezier(.22,.61,.36,1);
     }
 
@@ -33,20 +33,21 @@
     html { scroll-behavior:smooth; scroll-padding-top:88px; }
     body {
       margin:0;
+      overflow-x:hidden;
       background:var(--paper);
       color:var(--ink);
       font-family:Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
       font-size:16px;
       line-height:1.72;
       -webkit-font-smoothing:antialiased;
-      overflow-x:hidden;
+      text-rendering:optimizeLegibility;
     }
-    img { max-width:100%; display:block; }
+    img { display:block; max-width:100%; }
     a { color:inherit; text-decoration:none; }
     button { font:inherit; color:inherit; }
 
     .container {
-      width:min(1180px, calc(100% - 48px));
+      width:min(1180px, calc(100% - 56px));
       margin:0 auto;
     }
 
@@ -58,48 +59,49 @@
       display:flex;
       align-items:center;
       justify-content:space-between;
-      padding:0 clamp(20px, 4vw, 48px);
-      background:rgba(16,36,27,.88);
+      padding:0 clamp(22px, 4vw, 52px);
+      background:rgba(16,36,27,.9);
       color:var(--white);
       border-bottom:1px solid rgba(255,255,255,.09);
       backdrop-filter:blur(18px);
     }
     .logo {
       font-family:Georgia, "Times New Roman", serif;
+      font-size:1.34rem;
       letter-spacing:.03em;
-      font-size:1.32rem;
       white-space:nowrap;
     }
     .logo span { color:var(--cedar); }
     .nav-links {
       display:flex;
       align-items:center;
-      gap:28px;
+      gap:27px;
       margin:0;
       padding:0;
       list-style:none;
-      font-size:.78rem;
+      font-size:.76rem;
+      font-weight:800;
       text-transform:uppercase;
       letter-spacing:.14em;
     }
     .nav-links a {
-      color:rgba(255,255,255,.72);
-      transition:color .22s var(--ease);
+      color:rgba(255,255,255,.7);
+      transition:color .2s var(--ease);
     }
     .nav-links a:hover { color:var(--white); }
     .nav-cta {
       padding:11px 18px;
-      border:1px solid var(--cedar);
       color:var(--white) !important;
+      border:1px solid var(--cedar);
       background:rgba(184,143,85,.18);
     }
     .hamburger {
       display:none;
       width:42px;
       height:42px;
+      padding:10px;
       border:0;
       background:transparent;
-      padding:10px;
       cursor:pointer;
     }
     .hamburger span {
@@ -116,7 +118,6 @@
       right:0;
       display:none;
       flex-direction:column;
-      gap:0;
       padding:18px 24px 26px;
       background:var(--forest);
       border-bottom:1px solid rgba(255,255,255,.1);
@@ -126,9 +127,10 @@
       padding:15px 0;
       color:rgba(255,255,255,.82);
       border-bottom:1px solid rgba(255,255,255,.08);
+      font-size:.78rem;
+      font-weight:800;
       text-transform:uppercase;
       letter-spacing:.13em;
-      font-size:.78rem;
     }
 
     .btn {
@@ -140,70 +142,39 @@
       border:1px solid transparent;
       border-radius:0;
       font-size:.76rem;
-      font-weight:800;
+      font-weight:900;
+      line-height:1.2;
       text-transform:uppercase;
       letter-spacing:.14em;
-      line-height:1.2;
       transition:transform .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease);
     }
     .btn:hover { transform:translateY(-1px); }
     .btn-primary {
-      background:var(--cedar);
       color:var(--white);
+      background:var(--cedar);
       border-color:var(--cedar);
     }
-    .btn-primary:hover { background:var(--cedar-dark); border-color:var(--cedar-dark); }
+    .btn-primary:hover {
+      background:var(--cedar-dark);
+      border-color:var(--cedar-dark);
+    }
     .btn-outline {
       color:var(--cedar-dark);
-      border-color:var(--cedar);
       background:transparent;
+      border-color:var(--cedar);
     }
     .dark .btn-outline,
-    .hero .btn-outline {
+    .hero .btn-outline,
+    .final-cta .btn-outline {
       color:var(--white);
-      border-color:rgba(255,255,255,.32);
+      border-color:rgba(255,255,255,.34);
     }
 
-    .hero {
-      position:relative;
-      min-height:100vh;
-      display:flex;
-      align-items:flex-end;
-      overflow:hidden;
-      color:var(--white);
-      background:var(--forest);
-      padding:142px 0 82px;
-    }
-    .hero-bg {
-      position:absolute;
-      inset:0;
-      z-index:0;
-    }
-    .hero-bg img {
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      object-position:center;
-      filter:saturate(.92) contrast(1.05);
-    }
-    .hero-bg::after {
-      content:"";
-      position:absolute;
-      inset:0;
-      background:
-        radial-gradient(circle at 18% 50%, rgba(16,36,27,.38) 0%, rgba(16,36,27,.86) 58%, rgba(16,36,27,.94) 100%),
-        linear-gradient(90deg, rgba(16,36,27,.95), rgba(16,36,27,.68) 50%, rgba(16,36,27,.2));
-    }
-    .hero-content {
-      position:relative;
-      z-index:1;
-      width:min(760px, 100%);
-    }
     .eyebrow {
       margin:0 0 22px;
       color:var(--cedar);
       font-size:.72rem;
-      font-weight:800;
+      font-weight:900;
       text-transform:uppercase;
       letter-spacing:.18em;
     }
@@ -216,13 +187,62 @@
       letter-spacing:0;
     }
     h1 {
-      max-width:13ch;
-      font-size:clamp(3.25rem, 8vw, 6.6rem);
+      max-width:12ch;
+      font-size:clamp(3.4rem, 8.4vw, 6.8rem);
       line-height:.95;
     }
+    h2 {
+      max-width:13.5ch;
+      font-size:clamp(2.45rem, 5vw, 4.35rem);
+      line-height:1.03;
+    }
+    h3 {
+      font-size:1.48rem;
+      line-height:1.18;
+    }
+    p { margin:0; }
+
+    .hero {
+      position:relative;
+      min-height:100vh;
+      display:flex;
+      align-items:flex-end;
+      padding:142px 0 78px;
+      overflow:hidden;
+      color:var(--white);
+      background:var(--forest);
+    }
+    .hero-bg {
+      position:absolute;
+      inset:0;
+      z-index:0;
+    }
+    .hero-bg img {
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+      filter:saturate(.9) contrast(1.04);
+    }
+    .hero-bg::after {
+      content:"";
+      position:absolute;
+      inset:0;
+      background:
+        radial-gradient(circle at 18% 50%, rgba(16,36,27,.42), rgba(16,36,27,.86) 58%, rgba(16,36,27,.96)),
+        linear-gradient(90deg, rgba(16,36,27,.96), rgba(16,36,27,.72) 52%, rgba(16,36,27,.22));
+    }
+    .hero-inner {
+      position:relative;
+      z-index:1;
+      display:grid;
+      grid-template-columns:minmax(0, .92fr) minmax(300px, .48fr);
+      gap:48px;
+      align-items:end;
+    }
     .hero-lead {
-      max-width:42rem;
-      margin:30px 0 0;
+      max-width:45rem;
+      margin-top:30px;
       color:rgba(255,255,255,.84);
       font-size:1.08rem;
       line-height:1.82;
@@ -233,103 +253,85 @@
       gap:14px;
       margin-top:34px;
     }
-    .hero-points {
+    .hero-proof {
       display:grid;
-      grid-template-columns:repeat(3, minmax(0, 1fr));
-      gap:14px;
-      margin-top:42px;
-      max-width:820px;
+      gap:13px;
+      margin:0;
+      padding:0;
+      list-style:none;
     }
-    .hero-point {
-      padding:18px 18px 20px;
+    .hero-proof li {
+      padding:18px 20px;
+      color:rgba(255,255,255,.8);
       border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.045);
-      color:rgba(255,255,255,.78);
-      font-size:.9rem;
-      line-height:1.55;
+      background:rgba(255,255,255,.05);
+      backdrop-filter:blur(10px);
     }
-    .hero-point strong {
+    .hero-proof strong {
       display:block;
-      margin-bottom:5px;
+      margin-bottom:4px;
       color:var(--white);
-      font-size:.76rem;
+      font-size:.78rem;
+      font-weight:900;
       text-transform:uppercase;
       letter-spacing:.13em;
     }
 
     .section {
-      padding:104px 0;
+      padding:108px 0;
       background:var(--paper);
     }
+    .section.cream { background:var(--cream); }
     .section.dark {
       background:var(--forest);
       color:var(--white);
     }
-    .section.cream { background:var(--cream); }
     .section-head {
       max-width:760px;
-      margin-bottom:44px;
-    }
-    .section-title {
-      max-width:14ch;
-      font-size:clamp(2.45rem, 5vw, 4.3rem);
-      line-height:1.02;
+      margin-bottom:46px;
     }
     .section-lead {
-      max-width:44rem;
-      margin:24px 0 0;
+      max-width:45rem;
+      margin-top:24px;
       color:var(--muted);
       font-size:1.02rem;
       line-height:1.86;
     }
-    .dark .section-lead { color:rgba(255,255,255,.74); }
+    .dark .section-lead { color:rgba(255,255,255,.75); }
 
-    .problem-grid {
+    .recover-grid {
       display:grid;
-      grid-template-columns:1.05fr .95fr;
-      gap:54px;
-      align-items:start;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:16px;
     }
-    .ordinary-list {
-      display:grid;
-      grid-template-columns:repeat(2, minmax(0, 1fr));
-      gap:14px;
-      margin:0;
-      padding:0;
-      list-style:none;
-    }
-    .ordinary-list li {
-      min-height:118px;
-      padding:24px;
+    .recover-tile {
+      min-height:205px;
+      display:flex;
+      flex-direction:column;
+      justify-content:space-between;
+      padding:30px 26px;
       background:var(--white);
       border:1px solid var(--line);
-      box-shadow:0 18px 40px rgba(30,24,18,.05);
+      box-shadow:0 18px 46px rgba(27,22,17,.045);
+      transition:transform .25s var(--ease), box-shadow .25s var(--ease), border-color .25s var(--ease);
     }
-    .ordinary-list strong {
-      display:block;
-      margin-bottom:8px;
-      font-family:Georgia, "Times New Roman", serif;
-      font-size:1.28rem;
-      font-weight:400;
-      line-height:1.22;
+    .recover-tile:hover {
+      transform:translateY(-3px);
+      border-color:rgba(184,143,85,.42);
+      box-shadow:0 28px 64px rgba(27,22,17,.09);
     }
-    .ordinary-list span {
-      color:var(--muted);
-      font-size:.94rem;
-      line-height:1.62;
+    .recover-tile span {
+      color:var(--cedar);
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
+      text-transform:uppercase;
     }
-    .plain-card {
-      padding:34px;
-      background:var(--white);
-      border:1px solid var(--line);
-      box-shadow:var(--shadow);
+    .recover-tile h3 {
+      max-width:11ch;
+      font-size:1.68rem;
+      line-height:1.08;
     }
-    .plain-card p {
-      margin:0;
-      color:var(--muted);
-      line-height:1.86;
-    }
-    .plain-card p + p { margin-top:18px; }
 
     .difference-grid {
       display:grid;
@@ -337,110 +339,94 @@
       gap:18px;
     }
     .difference-card {
-      padding:32px;
+      min-height:270px;
+      padding:34px 32px;
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.045);
+      transition:transform .24s var(--ease), background .24s var(--ease);
     }
-    .difference-card h3 {
-      margin-bottom:16px;
-      font-size:1.55rem;
-      line-height:1.18;
+    .difference-card:hover {
+      transform:translateY(-2px);
+      background:rgba(255,255,255,.065);
     }
+    .difference-card .kicker {
+      display:block;
+      margin-bottom:42px;
+      color:var(--cedar);
+      font-size:.68rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.16em;
+    }
+    .difference-card h3 { margin-bottom:16px; }
     .difference-card p {
-      margin:0;
       color:rgba(255,255,255,.72);
+      line-height:1.72;
     }
     .difference-card.featured {
       background:rgba(184,143,85,.14);
-      border-color:rgba(184,143,85,.55);
-    }
-
-    .steps-grid {
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0, 1fr));
-      gap:16px;
-      counter-reset:step;
-    }
-    .step {
-      position:relative;
-      padding:30px 26px;
-      min-height:268px;
-      background:var(--white);
-      border:1px solid var(--line);
-      counter-increment:step;
-    }
-    .step::before {
-      content:counter(step, decimal-leading-zero);
-      display:block;
-      margin-bottom:28px;
-      color:var(--cedar);
-      font-size:.78rem;
-      font-weight:800;
-      letter-spacing:.16em;
-    }
-    .step h3 {
-      margin-bottom:14px;
-      font-size:1.38rem;
-      line-height:1.18;
-    }
-    .step p {
-      margin:0;
-      color:var(--muted);
-      font-size:.94rem;
-      line-height:1.72;
+      border-color:rgba(184,143,85,.54);
     }
 
     .product-layout {
       display:grid;
-      grid-template-columns:.86fr 1.14fr;
-      gap:48px;
+      grid-template-columns:.84fr 1.16fr;
+      gap:54px;
       align-items:start;
     }
     .product-copy {
       position:sticky;
-      top:106px;
+      top:108px;
     }
     .product-copy .btn { margin-top:30px; }
-    .mockup-grid {
+    .mockup-stack {
       display:grid;
-      gap:16px;
+      gap:18px;
     }
     .mockup {
+      display:grid;
+      grid-template-columns:170px 1fr;
+      gap:24px;
       padding:24px;
-      background:rgba(255,255,255,.055);
       border:1px solid rgba(255,255,255,.13);
+      background:rgba(255,255,255,.052);
     }
-    .mockup-top {
+    .mockup-index {
       display:flex;
+      flex-direction:column;
       justify-content:space-between;
-      gap:14px;
-      margin-bottom:18px;
+      min-height:160px;
+      padding:20px;
+      background:rgba(16,36,27,.36);
+      border:1px solid rgba(255,255,255,.1);
+    }
+    .mockup-index strong {
       color:var(--cedar);
-      font-size:.7rem;
-      font-weight:800;
+      font-size:.72rem;
+      font-weight:900;
       text-transform:uppercase;
-      letter-spacing:.15em;
+      letter-spacing:.16em;
     }
-    .mockup h3 {
-      margin-bottom:12px;
-      font-size:1.48rem;
-      line-height:1.18;
+    .mockup-index span {
+      color:rgba(255,255,255,.58);
+      font-size:.76rem;
+      line-height:1.45;
     }
+    .mockup h3 { margin-bottom:12px; }
     .mockup p {
-      margin:0;
       color:rgba(255,255,255,.72);
-      font-size:.94rem;
+      line-height:1.72;
     }
     .mock-lines {
       display:grid;
-      gap:8px;
+      gap:9px;
       margin-top:18px;
     }
     .mock-lines span {
       display:block;
       height:10px;
       border-radius:20px;
-      background:rgba(255,255,255,.12);
+      background:rgba(255,255,255,.13);
     }
     .mock-lines span:nth-child(2) { width:78%; }
     .mock-lines span:nth-child(3) { width:56%; }
@@ -452,36 +438,96 @@
     }
     .mock-metric {
       padding:14px 12px;
+      border:1px solid rgba(255,255,255,.11);
       background:rgba(16,36,27,.34);
-      border:1px solid rgba(255,255,255,.1);
-      color:rgba(255,255,255,.72);
+      color:rgba(255,255,255,.7);
       font-size:.78rem;
       line-height:1.42;
     }
     .mock-metric strong {
       display:block;
       color:var(--white);
-      font-size:1.02rem;
       font-family:Georgia, "Times New Roman", serif;
+      font-size:1.04rem;
       font-weight:400;
+    }
+
+    .map-grid {
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:16px;
+      counter-reset:stage;
+    }
+    .map-stage {
+      position:relative;
+      min-height:250px;
+      padding:32px 28px;
+      background:var(--white);
+      border:1px solid var(--line);
+      counter-increment:stage;
+    }
+    .map-stage::before {
+      content:counter(stage, decimal-leading-zero);
+      display:block;
+      margin-bottom:46px;
+      color:var(--cedar);
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
+    }
+    .map-stage h3 {
+      margin-bottom:14px;
+      font-size:1.52rem;
+    }
+    .map-stage p {
+      color:var(--muted);
+      line-height:1.7;
+    }
+
+    .steps-grid {
+      display:grid;
+      grid-template-columns:repeat(4, minmax(0, 1fr));
+      gap:16px;
+      counter-reset:step;
+    }
+    .step {
+      min-height:260px;
+      padding:30px 26px;
+      background:rgba(255,255,255,.055);
+      border:1px solid rgba(255,255,255,.13);
+      counter-increment:step;
+    }
+    .step::before {
+      content:counter(step, decimal-leading-zero);
+      display:block;
+      margin-bottom:34px;
+      color:var(--cedar);
+      font-size:.72rem;
+      font-weight:900;
+      letter-spacing:.16em;
+    }
+    .step h3 { margin-bottom:14px; }
+    .step p {
+      color:rgba(255,255,255,.72);
+      line-height:1.72;
     }
 
     .packages-grid {
       display:grid;
-      grid-template-columns:.9fr 1.2fr .9fr;
+      grid-template-columns:.92fr 1.18fr .92fr;
       gap:18px;
       align-items:stretch;
     }
     .package {
       display:flex;
       flex-direction:column;
-      padding:34px 30px;
+      padding:36px 32px;
       background:var(--white);
       border:1px solid var(--line);
     }
     .package.featured {
-      background:var(--forest);
       color:var(--white);
+      background:var(--forest);
       border-color:var(--forest);
       box-shadow:var(--shadow);
     }
@@ -489,162 +535,170 @@
       margin-bottom:22px;
       color:var(--cedar);
       font-size:.68rem;
-      font-weight:800;
+      font-weight:900;
       text-transform:uppercase;
       letter-spacing:.16em;
     }
     .package h3 {
-      font-size:1.72rem;
-      line-height:1.1;
+      font-size:1.78rem;
+      line-height:1.08;
     }
     .price {
-      margin:22px 0 8px;
+      margin:24px 0 9px;
       font-family:Georgia, "Times New Roman", serif;
-      font-size:2.6rem;
+      font-size:2.7rem;
       line-height:1;
     }
     .package-note {
-      margin:0 0 22px;
+      margin-bottom:24px;
       color:var(--muted);
       font-size:.9rem;
+      line-height:1.55;
     }
-    .featured .package-note { color:rgba(255,255,255,.68); }
+    .package.featured .package-note { color:rgba(255,255,255,.68); }
     .package ul {
       display:grid;
-      gap:11px;
-      margin:0 0 28px;
+      gap:12px;
+      margin:0;
       padding:0;
       list-style:none;
       color:var(--muted);
       font-size:.94rem;
       line-height:1.55;
     }
-    .featured ul { color:rgba(255,255,255,.76); }
+    .package.featured ul { color:rgba(255,255,255,.76); }
     .package li::before {
-      content:"–";
-      margin-right:8px;
-      color:var(--cedar);
+      content:"";
+      display:inline-block;
+      width:6px;
+      height:6px;
+      margin:0 10px 2px 0;
+      background:var(--cedar);
     }
-    .package .btn { margin-top:auto; }
-
-    .proof-grid {
-      display:grid;
-      grid-template-columns:repeat(4, minmax(0, 1fr));
-      gap:14px;
-    }
-    .proof-card {
-      padding:26px 24px;
-      background:var(--white);
-      border:1px solid var(--line);
-    }
-    .proof-card strong {
-      display:block;
-      margin-bottom:10px;
-      font-family:Georgia, "Times New Roman", serif;
-      font-size:1.35rem;
-      font-weight:400;
-      line-height:1.2;
-    }
-    .proof-card span {
-      color:var(--muted);
-      font-size:.94rem;
-      line-height:1.62;
+    .packages-cta {
+      margin-top:34px;
+      display:flex;
+      justify-content:center;
     }
 
-    .about-grid,
-    .place-grid {
+    .place-grid,
+    .about-grid {
       display:grid;
-      grid-template-columns:.9fr 1.1fr;
-      gap:56px;
+      grid-template-columns:.95fr 1.05fr;
+      gap:58px;
       align-items:center;
     }
-    .portrait,
-    .place-photo {
+    .place-photo,
+    .portrait {
       overflow:hidden;
-      border-radius:var(--radius);
       box-shadow:var(--shadow);
     }
+    .place-photo img,
     .portrait img {
       width:100%;
-      aspect-ratio:4 / 5;
+      height:100%;
       object-fit:cover;
     }
-    .place-photo img {
-      width:100%;
-      aspect-ratio:5 / 4;
-      object-fit:cover;
-    }
+    .place-photo img { aspect-ratio:5 / 4; }
+    .portrait img { aspect-ratio:4 / 5; object-position:center top; }
     .check-list {
       display:grid;
-      gap:13px;
-      margin:28px 0 0;
+      gap:14px;
+      margin:30px 0 0;
       padding:0;
       list-style:none;
       color:var(--muted);
+      line-height:1.62;
     }
-    .dark .check-list { color:rgba(255,255,255,.72); }
+    .dark .check-list { color:rgba(255,255,255,.74); }
     .check-list li {
       display:grid;
       grid-template-columns:auto 1fr;
-      gap:10px;
+      gap:11px;
     }
     .check-list li::before {
-      content:"✓";
-      color:var(--cedar);
-      font-weight:800;
+      content:"";
+      width:7px;
+      height:7px;
+      margin-top:.7em;
+      background:var(--cedar);
+    }
+    .about-note {
+      margin-top:28px;
+      padding:24px;
+      border:1px solid var(--line);
+      background:rgba(255,255,255,.62);
+      color:var(--muted);
+      line-height:1.75;
     }
 
     .final-cta {
-      padding:96px 0;
-      background:linear-gradient(135deg, var(--forest), #0b1812);
+      padding:104px 0;
       color:var(--white);
       text-align:center;
+      background:
+        linear-gradient(rgba(16,36,27,.9), rgba(16,36,27,.94)),
+        url("./images/las.webp") center / cover no-repeat;
     }
-    .final-cta .section-title {
-      max-width:16ch;
+    .final-cta h2 {
+      max-width:15ch;
       margin:0 auto;
     }
     .final-cta .section-lead {
       margin-left:auto;
       margin-right:auto;
-      color:rgba(255,255,255,.76);
+      color:rgba(255,255,255,.78);
     }
-    .final-cta .btn { margin-top:28px; }
+    .final-cta .btn { margin-top:30px; }
 
     .footer {
       padding:34px 0;
-      background:#0a1711;
       color:rgba(255,255,255,.48);
+      background:#0a1711;
       font-size:.82rem;
     }
     .footer-inner {
       display:flex;
+      flex-wrap:wrap;
       justify-content:space-between;
       gap:20px;
-      flex-wrap:wrap;
     }
     .footer a { color:rgba(255,255,255,.64); }
 
-    @media (max-width:980px) {
+    .reveal {
+      opacity:0;
+      transform:translateY(18px);
+      transition:opacity .55s var(--ease), transform .55s var(--ease);
+    }
+    .reveal.is-visible {
+      opacity:1;
+      transform:translateY(0);
+    }
+
+    @media (max-width:1024px) {
       .nav-links { display:none; }
       .hamburger { display:block; }
-      .hero-points,
-      .difference-grid,
-      .steps-grid,
-      .proof-grid {
-        grid-template-columns:repeat(2, minmax(0, 1fr));
-      }
-      .problem-grid,
+      .hero-inner,
       .product-layout,
-      .about-grid,
-      .place-grid {
+      .place-grid,
+      .about-grid {
         grid-template-columns:1fr;
       }
-      .product-copy { position:static; }
+      .hero-inner { gap:34px; }
+      .hero-proof {
+        grid-template-columns:repeat(3, minmax(0, 1fr));
+      }
+      .recover-grid,
+      .map-grid,
+      .steps-grid {
+        grid-template-columns:repeat(2, minmax(0, 1fr));
+      }
+      .difference-grid,
       .packages-grid {
         grid-template-columns:1fr;
       }
       .package.featured { order:-1; }
+      .product-copy { position:static; }
     }
 
     @media (max-width:640px) {
@@ -658,21 +712,28 @@
       .logo { font-size:1.18rem; }
       .hero {
         min-height:auto;
-        padding:100px 0 58px;
+        padding:102px 0 58px;
       }
+      .hero-inner { gap:26px; }
       h1 {
-        max-width:12ch;
-        font-size:clamp(2.55rem, 13vw, 3.1rem);
+        max-width:11.5ch;
+        font-size:clamp(2.62rem, 13.2vw, 3.18rem);
         line-height:1;
       }
+      h2 {
+        max-width:13ch;
+        font-size:clamp(2.05rem, 10.3vw, 2.72rem);
+        line-height:1.06;
+      }
+      h3 { font-size:1.34rem; }
       .hero-lead {
         margin-top:22px;
         font-size:.98rem;
         line-height:1.76;
       }
-      .hero-actions,
-      .section-cta {
+      .hero-actions {
         width:100%;
+        gap:10px;
       }
       .btn {
         width:100%;
@@ -680,56 +741,87 @@
         padding-left:18px;
         padding-right:18px;
       }
-      .hero-points,
-      .ordinary-list,
+      .hero-proof,
+      .recover-grid,
       .difference-grid,
-      .steps-grid,
+      .mockup,
       .mock-metrics,
-      .proof-grid {
+      .map-grid,
+      .steps-grid,
+      .packages-grid {
         grid-template-columns:1fr;
       }
-      .hero-point {
+      .hero-proof li {
         padding:16px 18px;
       }
       .section {
         padding:78px 0;
       }
       .section-head {
-        margin-bottom:32px;
-      }
-      .section-title {
-        max-width:13ch;
-        font-size:clamp(2.05rem, 10.5vw, 2.72rem);
-        line-height:1.06;
+        margin-bottom:34px;
       }
       .section-lead {
         margin-top:20px;
         font-size:.96rem;
         line-height:1.82;
       }
-      .plain-card,
+      .recover-tile {
+        min-height:142px;
+        padding:24px 22px;
+      }
+      .recover-tile h3 {
+        max-width:14ch;
+        font-size:1.48rem;
+      }
       .difference-card,
-      .step,
       .mockup,
+      .map-stage,
+      .step,
       .package,
-      .proof-card {
+      .about-note {
         padding:26px 22px;
       }
-      .ordinary-list li {
-        min-height:auto;
-        padding:22px;
-      }
+      .difference-card,
+      .map-stage,
       .step {
         min-height:auto;
       }
-      .product-copy .btn { margin-top:24px; }
-      .price { font-size:2.35rem; }
-      .portrait img,
-      .place-photo img {
+      .difference-card .kicker,
+      .map-stage::before,
+      .step::before {
+        margin-bottom:26px;
+      }
+      .mockup-index {
+        min-height:auto;
+        gap:26px;
+      }
+      .price { font-size:2.34rem; }
+      .packages-cta { margin-top:26px; }
+      .place-photo img,
+      .portrait img {
         aspect-ratio:1 / 1;
+      }
+      .final-cta {
+        padding:82px 0;
       }
       .footer-inner {
         display:grid;
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      html { scroll-behavior:auto; }
+      *,
+      *::before,
+      *::after {
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        scroll-behavior:auto !important;
+        transition-duration:.01ms !important;
+      }
+      .reveal {
+        opacity:1;
+        transform:none;
       }
     }
   </style>
@@ -739,10 +831,10 @@
   <nav class="nav" aria-label="Nawigacja główna">
     <a class="logo" href="./index.html">Studio <span>Las</span></a>
     <ul class="nav-links">
-      <li><a href="#proces">Proces</a></li>
-      <li><a href="#praktyka">Jak to wygląda</a></li>
+      <li><a href="#odzyskac">Co odzyskać</a></li>
+      <li><a href="#praktyka">Proces</a></li>
+      <li><a href="#mapa">12 tygodni</a></li>
       <li><a href="#pakiety">Pakiety</a></li>
-      <li><a href="./metoda-i-pakiety.html">Metoda</a></li>
       <li><a href="./blog.html">Blog</a></li>
       <li><a class="nav-cta" href="./ankieta-kontakt.html#ankieta">Ankieta</a></li>
     </ul>
@@ -752,11 +844,11 @@
   </nav>
 
   <div class="mobile-menu" id="mobileMenu">
-    <a href="#proces">Proces</a>
-    <a href="#praktyka">Jak to wygląda</a>
+    <a href="#odzyskac">Co odzyskać</a>
+    <a href="#praktyka">Proces w praktyce</a>
+    <a href="#mapa">Mapa 12 tygodni</a>
     <a href="#pakiety">Pakiety</a>
-    <a href="./metoda-i-pakiety.html">Metoda</a>
-    <a href="./blog.html">Blog</a>
+    <a href="#damian">Damian</a>
     <a href="./ankieta-kontakt.html#ankieta">Wypełnij ankietę</a>
   </div>
 
@@ -765,97 +857,72 @@
       <div class="hero-bg" aria-hidden="true">
         <img src="./images/studio-latem.webp" alt="" />
       </div>
-      <div class="container">
-        <div class="hero-content">
+      <div class="container hero-inner">
+        <div>
           <p class="eyebrow">Studio Las · Prace Duże pod Warszawą</p>
           <h1>Zwykłe rzeczy znów mają być łatwiejsze.</h1>
           <p class="hero-lead">
-            Spokojny proces 1:1 dla osób 40+ po bólu, kontuzji albo długiej przerwie. Nie pracujemy po to, żeby lepiej ćwiczyć. Pracujemy po to, żeby poranek, schody, spacer i zwykły dzień przestały wymagać negocjacji z ciałem.
+            12 tygodni spokojnej pracy 1:1 dla osób 40+, które chcą wrócić do ruchu po bólu, kontuzji albo długiej przerwie — bez presji, tłumu i przypadkowych ćwiczeń.
           </p>
           <div class="hero-actions">
             <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Wypełnij krótką ankietę</a>
-            <a class="btn btn-outline" href="#praktyka">Zobacz proces</a>
-          </div>
-          <div class="hero-points">
-            <div class="hero-point"><strong>Dla osób 40+</strong>po bólu, kontuzji lub długiej przerwie od ruchu.</div>
-            <div class="hero-point"><strong>12 tygodni</strong>FUNDAMENT: praca 1:1, plan domowy i raport efektów.</div>
-            <div class="hero-point"><strong>Bez tłumu</strong>prywatne studio w lesie, spokojne tempo i jasne decyzje.</div>
+            <a class="btn btn-outline" href="#praktyka">Zobacz, jak wygląda proces</a>
           </div>
         </div>
-      </div>
-    </section>
-
-    <section class="section cream" id="problem">
-      <div class="container problem-grid">
-        <div>
-          <p class="eyebrow">Problem</p>
-          <h2 class="section-title">Ciało zaczyna ograniczać zwykłe życie.</h2>
-          <p class="section-lead">
-            To nie musi wyglądać dramatycznie. Czasem zaczyna się od poranka, którego nie da się przejść bez sztywności. Od schodów, które wymagają planu. Od spaceru, po którym sprawdzasz, czy ból wróci.
-          </p>
-        </div>
-        <ul class="ordinary-list">
-          <li><strong>Schody</strong><span>bez zatrzymywania się i sprawdzania, czy kolano „wytrzyma”.</span></li>
-          <li><strong>Poranek</strong><span>bez pierwszych dziesięciu minut sztywności i ostrożności.</span></li>
-          <li><strong>Spacer</strong><span>bez kalkulowania trasy, tempa i tego, czy potem będzie gorzej.</span></li>
-          <li><strong>Buty</strong><span>bez kombinowania, podpierania się i unikania skłonu.</span></li>
-          <li><strong>Biurko</strong><span>bez barków przy uszach i karku, który przejmuje cały dzień.</span></li>
-          <li><strong>Rodzina</strong><span>bez mówienia „nie teraz”, bo ciało znowu nie daje pewności.</span></li>
+        <ul class="hero-proof" aria-label="Trzy powody zaufania">
+          <li><strong>Prywatna praca 1:1</strong>bez tłumu, porównań i presji tempa.</li>
+          <li><strong>Diagnostyka + plan</strong>najpierw punkt startowy, potem działanie.</li>
+          <li><strong>Raport po ok. 12 tygodniach</strong>widzisz, co się zmieniło i co dalej.</li>
         </ul>
       </div>
     </section>
 
-    <section class="section dark" id="roznica">
+    <section class="section cream" id="odzyskac">
       <div class="container">
-        <div class="section-head">
-          <p class="eyebrow">Różnica</p>
-          <h2 class="section-title">To nie jest zwykły trening ani bierna rehabilitacja.</h2>
+        <div class="section-head reveal">
+          <p class="eyebrow">Co chcesz odzyskać?</p>
+          <h2>Nie chodzi o wynik na treningu. Chodzi o zwykły dzień.</h2>
           <p class="section-lead">
-            Studio Las jest dla osób, które potrzebują prowadzenia: spokojnego ruchu, diagnostyki, planu i decyzji, co dalej. Nie wycisku. Nie przypadkowych ćwiczeń. Nie kolejnej listy zaleceń bez odpowiedzialności za proces.
+            Kiedy ciało zaczyna ograniczać życie, najpierw znikają małe rzeczy. Nie spektakularne cele, tylko ruchy, które kiedyś były oczywiste.
           </p>
         </div>
-        <div class="difference-grid">
-          <article class="difference-card">
-            <h3>Nie zwykły trening personalny</h3>
-            <p>Nie zaczynamy od ciężaru, tempa i ambicji. Najpierw sprawdzamy, czego ciało się boi, co ogranicza ruch i jaki pierwszy etap jest bezpieczny.</p>
-          </article>
-          <article class="difference-card">
-            <h3>Nie bierna rehabilitacja</h3>
-            <p>Jeśli potrzebujesz leczenia, decyzję podejmuje lekarz lub fizjoterapeuta. Tutaj uczysz ciało znowu działać w codziennym życiu.</p>
-          </article>
-          <article class="difference-card featured">
-            <h3>Proces Studio Las</h3>
-            <p>Ankieta, diagnostyka, trening 1:1, plan domowy, panel klienta i raport. Jedna spokojna ścieżka zamiast chaosu prób.</p>
-          </article>
+        <div class="recover-grid">
+          <article class="recover-tile reveal"><span>01</span><h3>Poranek bez sztywności</h3></article>
+          <article class="recover-tile reveal"><span>02</span><h3>Schody bez negocjacji</h3></article>
+          <article class="recover-tile reveal"><span>03</span><h3>Spacer bez kalkulowania bólu</h3></article>
+          <article class="recover-tile reveal"><span>04</span><h3>But bez kombinowania</h3></article>
+          <article class="recover-tile reveal"><span>05</span><h3>Zakupy bez obawy o plecy</h3></article>
+          <article class="recover-tile reveal"><span>06</span><h3>Podłoga bez lęku, że nie wstaniesz</h3></article>
+          <article class="recover-tile reveal"><span>07</span><h3>Biurko bez ciągłego napięcia</h3></article>
+          <article class="recover-tile reveal"><span>08</span><h3>Zabawa z dzieckiem lub wnukiem</h3></article>
         </div>
       </div>
     </section>
 
-    <section class="section" id="proces">
+    <section class="section dark" id="nie-trening">
       <div class="container">
-        <div class="section-head">
-          <p class="eyebrow">System 4 Kroków</p>
-          <h2 class="section-title">Od pierwszej rozmowy do decyzji, co dalej.</h2>
+        <div class="section-head reveal">
+          <p class="eyebrow">To nie jest zwykły trening</p>
+          <h2>Nie potrzebujesz przypadkowego zestawu ćwiczeń.</h2>
           <p class="section-lead">
-            Raport nie jest osobnym piątym etapem. Jest częścią czwartego kroku: spokojnego sprawdzenia, co naprawdę zmieniło się po pracy.
+            Studio Las jest dla osób, które potrzebują prowadzenia: sprawdzenia punktu startowego, spokojnej pracy i decyzji, co naprawdę ma sens.
           </p>
         </div>
-        <div class="steps-grid">
-          <article class="step">
-            <h3>Ankieta i rozmowa</h3>
-            <p>Opisujesz sytuację, ból, obawy i cel. Oddzwaniam i sprawdzamy, czy Studio Las jest dobrym miejscem na start.</p>
+        <div class="difference-grid">
+          <article class="difference-card reveal">
+            <span class="kicker">Nie siłownia</span>
+            <h3>Bez tłumu i presji wyniku.</h3>
+            <p>Nie zaczynamy od ambicji, ciężaru i tempa. Najpierw sprawdzamy, czego ciało unika i gdzie trzeba odbudować zaufanie.</p>
           </article>
-          <article class="step">
-            <h3>Diagnostyka i punkt startowy</h3>
-            <p>W studio robimy wywiad, analizę Tanita RD-545 i proste testy ruchowe. Bez oceniania formy.</p>
+          <article class="difference-card reveal">
+            <span class="kicker">Nie bierna rehabilitacja</span>
+            <h3>Nie leżysz i nie czekasz.</h3>
+            <p>Jeśli potrzebujesz leczenia, kierunek wyznacza lekarz lub fizjoterapeuta. Tutaj uczysz ciało znowu działać w ruchu.</p>
           </article>
-          <article class="step">
-            <h3>FUNDAMENT</h3>
-            <p>12 tygodni pracy 1:1, krótki plan domowy i korekty po drodze. Proces ma pasować do realnego życia.</p>
-          </article>
-          <article class="step">
-            <h3>Raport i decyzja</h3>
-            <p>Po ok. 12 tygodniach sprawdzamy efekt i decydujemy: rozwój, lżejsza kontynuacja albo samodzielność.</p>
+          <article class="difference-card featured reveal">
+            <span class="kicker">Proces funkcji</span>
+            <h3>Praca nad tym, co ma wrócić do życia.</h3>
+            <p>Schody, spacer, poranek, biurko, podnoszenie zakupów, wejście do samochodu. Konkret zamiast fitnessowego hałasu.</p>
           </article>
         </div>
       </div>
@@ -863,53 +930,123 @@
 
     <section class="section dark" id="praktyka">
       <div class="container product-layout">
-        <div class="product-copy">
-          <p class="eyebrow">Produkt, nie hasło</p>
-          <h2 class="section-title">Jak wygląda proces w praktyce.</h2>
+        <div class="product-copy reveal">
+          <p class="eyebrow">Jak wygląda proces w praktyce</p>
+          <h2>Produkt jest widoczny. Nie musisz wierzyć w obietnicę na słowo.</h2>
           <p class="section-lead">
-            Premium nie polega na większej liczbie ćwiczeń. Polega na tym, że wiesz, co robimy, po co to robimy i jak sprawdzimy, czy zwykłe rzeczy stają się łatwiejsze.
+            Widzisz punkt startowy, zadania między sesjami, porządek pracy i raport po ok. 12 tygodniach. To nie jest aplikacja fitness. To spokojny system prowadzenia.
           </p>
           <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Zacznij od ankiety</a>
         </div>
 
-        <div class="mockup-grid" aria-label="Przykładowe elementy procesu">
-          <article class="mockup">
-            <div class="mockup-top"><span>Ankieta</span><span>przykład widoku</span></div>
-            <h3>Najpierw opisujesz zwykły dzień.</h3>
-            <p>Nie tylko „co boli”, ale kiedy ciało zaczyna ograniczać życie: rano, przy schodach, po pracy, na spacerze.</p>
-            <div class="mock-lines" aria-hidden="true"><span></span><span></span><span></span></div>
-          </article>
-          <article class="mockup">
-            <div class="mockup-top"><span>Diagnostyka</span><span>przykład widoku</span></div>
-            <h3>Punkt startowy bez presji.</h3>
-            <p>Tanita, testy ruchowe, rozmowa i decyzja, jaki pierwszy etap ma sens. To nie jest egzamin z formy.</p>
-            <div class="mock-metrics" aria-hidden="true">
-              <div class="mock-metric"><strong>0–10</strong>ból i pewność ruchu</div>
-              <div class="mock-metric"><strong>RD-545</strong>pomiar Tanita</div>
-              <div class="mock-metric"><strong>4 testy</strong>ruch i kontrola</div>
+        <div class="mockup-stack" aria-label="Przykładowe widoki procesu">
+          <article class="mockup reveal">
+            <div class="mockup-index"><strong>Ankieta</strong><span>przykład widoku, nie dane klienta</span></div>
+            <div>
+              <h3>Pokazuje punkt startowy.</h3>
+              <p>Opisujesz ból, ograniczenia i zwykłe sytuacje, które zaczęły wymagać ostrożności: schody, poranek, spacer, praca przy biurku.</p>
+              <div class="mock-lines" aria-hidden="true"><span></span><span></span><span></span></div>
             </div>
           </article>
-          <article class="mockup">
-            <div class="mockup-top"><span>Plan domowy</span><span>przykład widoku</span></div>
-            <h3>Krótko, konkretnie, do wykonania.</h3>
-            <p>2–4 zadania między sesjami. Tyle, żeby ciało uczyło się regularnie, ale bez dokładania kolejnego ciężaru do życia.</p>
-            <div class="mock-lines" aria-hidden="true"><span></span><span></span><span></span></div>
-          </article>
-          <article class="mockup">
-            <div class="mockup-top"><span>Panel klienta</span><span>przykład widoku</span></div>
-            <h3>Wiesz, co jest następnym krokiem.</h3>
-            <p>Panel to kierunek pracy: spokojny widok procesu, zadań i decyzji dla klienta. Bez publicznego dostępu z poziomu strony sprzedażowej.</p>
-            <div class="mock-lines" aria-hidden="true"><span></span><span></span><span></span></div>
-          </article>
-          <article class="mockup">
-            <div class="mockup-top"><span>Raport</span><span>przykład widoku</span></div>
-            <h3>Po 12 tygodniach sprawdzamy zmianę.</h3>
-            <p>Ból, funkcja, testy ruchowe, pomiary Tanita i rekomendacja: co dalej, żeby nie wracać do punktu zero.</p>
-            <div class="mock-metrics" aria-hidden="true">
-              <div class="mock-metric"><strong>ból</strong>skala i sytuacje</div>
-              <div class="mock-metric"><strong>funkcja</strong>schody, spacer, skłon</div>
-              <div class="mock-metric"><strong>plan</strong>następna decyzja</div>
+          <article class="mockup reveal">
+            <div class="mockup-index"><strong>Diagnostyka</strong><span>przykład widoku, nie dane klienta</span></div>
+            <div>
+              <h3>Tanita, testy, wywiad.</h3>
+              <p>Sprawdzamy tło sytuacji i ruch bez oceniania formy. Celem jest jasny pierwszy etap, a nie pokaz siły.</p>
+              <div class="mock-metrics" aria-hidden="true">
+                <div class="mock-metric"><strong>0-10</strong>ból i pewność</div>
+                <div class="mock-metric"><strong>RD-545</strong>Tanita</div>
+                <div class="mock-metric"><strong>testy</strong>ruch i kontrola</div>
+              </div>
             </div>
+          </article>
+          <article class="mockup reveal">
+            <div class="mockup-index"><strong>Plan domowy</strong><span>przykład widoku, nie dane klienta</span></div>
+            <div>
+              <h3>2-4 konkretne zadania między sesjami.</h3>
+              <p>Krótko i wykonalnie. Tyle, żeby ciało uczyło się regularnie, ale bez dokładania kolejnego obowiązku do życia.</p>
+              <div class="mock-lines" aria-hidden="true"><span></span><span></span><span></span></div>
+            </div>
+          </article>
+          <article class="mockup reveal">
+            <div class="mockup-index"><strong>Panel klienta</strong><span>przykład widoku, nie dane klienta</span></div>
+            <div>
+              <h3>Porządek procesu, nie aplikacja fitness.</h3>
+              <p>Panel ma przypominać, co jest następnym krokiem i co robisz między spotkaniami. Bez publicznego demo i bez obietnicy magicznej technologii.</p>
+              <div class="mock-lines" aria-hidden="true"><span></span><span></span><span></span></div>
+            </div>
+          </article>
+          <article class="mockup reveal">
+            <div class="mockup-index"><strong>Raport</strong><span>przykład widoku, nie dane klienta</span></div>
+            <div>
+              <h3>Co się zmieniło i co dalej.</h3>
+              <p>Po ok. 12 tygodniach porównujemy ból, funkcję, testy ruchowe, pomiary i najważniejsze sytuacje z życia.</p>
+              <div class="mock-metrics" aria-hidden="true">
+                <div class="mock-metric"><strong>ból</strong>skala i sytuacje</div>
+                <div class="mock-metric"><strong>funkcja</strong>schody, spacer, skłon</div>
+                <div class="mock-metric"><strong>plan</strong>dalsza decyzja</div>
+              </div>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cream" id="mapa">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">Mapa 12 tygodni</p>
+          <h2>Cztery spokojne etapy zamiast wielkiej rewolucji.</h2>
+          <p class="section-lead">
+            Nie obiecuję nowego życia w siedem dni. FUNDAMENT ma zmniejszyć chaos, odbudować rytm i sprawić, że jedna ważna rzecz z codzienności stanie się wyraźnie łatwiejsza.
+          </p>
+        </div>
+        <div class="map-grid">
+          <article class="map-stage reveal">
+            <h3>Tygodnie 1-3</h3>
+            <p>Mniej chaosu, pierwszy rytm i zadania, które da się realnie wykonać między sesjami.</p>
+          </article>
+          <article class="map-stage reveal">
+            <h3>Tygodnie 4-6</h3>
+            <p>Mniej ostrożności w codziennym ruchu. Ciało zaczyna dostawać powtarzalny sygnał bezpieczeństwa.</p>
+          </article>
+          <article class="map-stage reveal">
+            <h3>Tygodnie 7-9</h3>
+            <p>Więcej energii, stabilniejszy dzień i większa pewność w ruchach, których wcześniej unikałeś.</p>
+          </article>
+          <article class="map-stage reveal">
+            <h3>Tygodnie 10-12</h3>
+            <p>Jedna rzecz z życia ma być wyraźnie łatwiejsza: schody, spacer, poranek, skłon albo podnoszenie.</p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" id="system">
+      <div class="container">
+        <div class="section-head reveal">
+          <p class="eyebrow">System 4 Kroków</p>
+          <h2>Prosta logika, która porządkuje całą pracę.</h2>
+          <p class="section-lead">
+            Raport nie jest piątym krokiem. Jest częścią decyzji po FUNDAMENCIE: sprawdzamy efekt i wybieramy, co dalej.
+          </p>
+        </div>
+        <div class="steps-grid">
+          <article class="step reveal">
+            <h3>Ankieta i rozmowa</h3>
+            <p>Opisujesz sytuację, a ja sprawdzam, czy Studio Las jest dobrym miejscem na start.</p>
+          </article>
+          <article class="step reveal">
+            <h3>Diagnostyka i punkt startowy</h3>
+            <p>Wywiad, Tanita, testy ruchowe i jasny plan pierwszego etapu.</p>
+          </article>
+          <article class="step reveal">
+            <h3>FUNDAMENT</h3>
+            <p>12 tygodni pracy 1:1 plus plan domowy dopasowany do realnego życia.</p>
+          </article>
+          <article class="step reveal">
+            <h3>Raport efektów i decyzja</h3>
+            <p>Sprawdzamy zmianę i decydujemy: rozwój, lżejsza kontynuacja albo samodzielność.</p>
           </article>
         </div>
       </div>
@@ -917,121 +1054,106 @@
 
     <section class="section cream" id="pakiety">
       <div class="container">
-        <div class="section-head">
+        <div class="section-head reveal">
           <p class="eyebrow">Pakiety</p>
-          <h2 class="section-title">Kupujesz prowadzenie, nie godzinę treningu.</h2>
+          <h2>Cena jest częścią spokojnej decyzji.</h2>
           <p class="section-lead">
-            Cena jest częścią jasnej decyzji. Nowa osoba zaczyna od ankiety i diagnostyki. FUNDAMENT jest pierwszym pełnym procesem. ROZWÓJ jest dopiero kontynuacją.
+            Nie kupujesz godziny treningu. Kupujesz prowadzenie, diagnostykę, plan i porządek pracy. Nowa osoba zaczyna od ankiety i diagnostyki.
           </p>
         </div>
         <div class="packages-grid">
-          <article class="package">
+          <article class="package reveal">
             <div class="package-label">Start</div>
             <h3>Diagnostyka</h3>
             <div class="price">400 zł</div>
-            <p class="package-note">75–90 minut · odliczane od FUNDAMENTU</p>
+            <p class="package-note">75-90 minut. Odliczane od FUNDAMENTU, jeśli idziemy dalej.</p>
             <ul>
               <li>wywiad i analiza sytuacji</li>
               <li>pomiar Tanita RD-545</li>
               <li>testy ruchowe i punkt startowy</li>
               <li>rekomendacja pierwszego etapu</li>
             </ul>
-            <a class="btn btn-outline" href="./ankieta-kontakt.html#ankieta">Wypełnij ankietę</a>
           </article>
 
-          <article class="package featured">
-            <div class="package-label">Główny proces</div>
+          <article class="package featured reveal">
+            <div class="package-label">Główny zakup</div>
             <h3>FUNDAMENT</h3>
-            <div class="price">3 600 zł</div>
-            <p class="package-note">12 tygodni · 12 sesji 1:1 + plan domowy + raport</p>
+            <div class="price">3600 zł</div>
+            <p class="package-note">12 tygodni. 12 sesji 1:1, plan domowy i raport efektów.</p>
             <ul>
               <li>spokojna praca 1:1 w Studio Las</li>
-              <li>plan domowy dopasowany do życia</li>
+              <li>plan domowy między sesjami</li>
               <li>korekty po drodze i decyzje etapowe</li>
               <li>raport efektów i rekomendacja, co dalej</li>
             </ul>
-            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Zacznij od ankiety</a>
           </article>
 
-          <article class="package">
+          <article class="package reveal">
             <div class="package-label">Kontynuacja</div>
             <h3>ROZWÓJ</h3>
-            <div class="price">3 000 zł</div>
-            <p class="package-note">12 tygodni · tylko po FUNDAMENCIE</p>
+            <div class="price">3000 zł</div>
+            <p class="package-note">12 tygodni. Tylko jako kontynuacja po FUNDAMENCIE.</p>
             <ul>
               <li>utrwalanie efektów</li>
               <li>budowanie siły i sprawności</li>
-              <li>praca pod sport lub aktywne życie</li>
+              <li>praca pod aktywne życie lub sport</li>
               <li>bez cofania się do punktu zero</li>
             </ul>
-            <a class="btn btn-outline" href="./metoda-i-pakiety.html#pakiety">Zobacz szczegóły</a>
           </article>
         </div>
-      </div>
-    </section>
-
-    <section class="section" id="dowod">
-      <div class="container">
-        <div class="section-head">
-          <p class="eyebrow">Dowód zmiany</p>
-          <h2 class="section-title">Nie udajemy opinii. Mierzymy to, co ma wrócić do życia.</h2>
-          <p class="section-lead">
-            Jeśli nie mamy prawdziwej zgody na publikację historii klienta, nie tworzymy fikcyjnych rekomendacji. W procesie szukamy konkretnych zmian: mniej bólu, więcej funkcji, więcej zaufania do ciała.
-          </p>
-        </div>
-        <div class="proof-grid">
-          <article class="proof-card"><strong>Ból i pewność</strong><span>Co dzieje się rano, po pracy, na schodach i podczas spaceru.</span></article>
-          <article class="proof-card"><strong>Funkcja</strong><span>Skłon, wstawanie, zakres ruchu, kontrola i siła w prostych zadaniach.</span></article>
-          <article class="proof-card"><strong>Parametry</strong><span>Tanita RD-545 i pomiary, które pomagają zobaczyć tło zmiany.</span></article>
-          <article class="proof-card"><strong>Decyzja</strong><span>Po 12 tygodniach wiesz, czy iść dalej, zwolnić czy pracować samodzielnie.</span></article>
-        </div>
-      </div>
-    </section>
-
-    <section class="section cream" id="damian">
-      <div class="container about-grid">
-        <div class="portrait">
-          <img src="./images/IMG_3853.webp" alt="Damian Krawiec, Studio Las" loading="lazy" />
-        </div>
-        <div>
-          <p class="eyebrow">Damian Krawiec</p>
-          <h2 class="section-title">Prowadzę proces, nie liczę powtórzeń.</h2>
-          <p class="section-lead">
-            Łączę doświadczenie treningowe, medyczne i pracę z ludźmi pod presją. W Studio Las najważniejsze jest spokojne tempo, jasna decyzja i szacunek do historii ciała, z którą przychodzisz.
-          </p>
-          <ul class="check-list">
-            <li>15+ lat pracy w treningu i fitnessie</li>
-            <li>specjalizacja: trening medyczny, ból, powrót po kontuzjach</li>
-            <li>praca 1:1 z osobami, które potrzebują bezpieczeństwa, nie wycisku</li>
-          </ul>
+        <div class="packages-cta reveal">
+          <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Wypełnij krótką ankietę</a>
         </div>
       </div>
     </section>
 
     <section class="section dark" id="miejsce">
       <div class="container place-grid">
-        <div>
+        <div class="reveal">
           <p class="eyebrow">Miejsce</p>
-          <h2 class="section-title">Las nie jest dekoracją. Jest warunkiem pracy.</h2>
+          <h2>Las nie jest dekoracją. Jest warunkiem pracy.</h2>
           <p class="section-lead">
-            Studio Las nie udaje klubu fitness. To prywatna przestrzeń w Pracach Dużych pod Warszawą: bez tłumu, hałasu i porównywania się z innymi.
+            Studio Las to prywatna przestrzeń pod Warszawą, w której łatwiej wrócić do ruchu bez tłumu, hałasu i porównywania się z innymi.
           </p>
           <ul class="check-list">
-            <li>prywatna sala do pracy 1:1</li>
-            <li>cisza, zieleń i brak przypadkowych osób</li>
+            <li>cisza i prywatność zamiast sali pełnej ludzi</li>
+            <li>brak przypadkowych bodźców i fitnessowego tempa</li>
             <li>parking, prysznic, ręczniki i spokojny powrót po sesji</li>
           </ul>
         </div>
-        <div class="place-photo">
+        <div class="place-photo reveal">
           <img src="./images/studio-interior.webp" alt="Wnętrze Studio Las" loading="lazy" />
         </div>
       </div>
     </section>
 
+    <section class="section cream" id="damian">
+      <div class="container about-grid">
+        <div class="portrait reveal">
+          <img src="./images/damian-about.webp" alt="Damian Krawiec, Studio Las" loading="lazy" />
+        </div>
+        <div class="reveal">
+          <p class="eyebrow">Damian Krawiec</p>
+          <h2>Nie jestem trenerem od liczenia powtórzeń.</h2>
+          <p class="section-lead">
+            Prowadzę proces powrotu do ruchu. Łączę doświadczenie treningowe, medyczne i pracę z ludźmi pod presją, ale bez robienia z tego militarnej marki.
+          </p>
+          <ul class="check-list">
+            <li>15+ lat pracy w treningu i fitnessie</li>
+            <li>specjalizacja: trening medyczny, ból i powrót po kontuzjach</li>
+            <li>praca 1:1 z osobami, które potrzebują bezpieczeństwa, nie wycisku</li>
+          </ul>
+          <p class="about-note">
+            Najważniejsze nie jest to, ile powtórzeń zrobisz. Najważniejsze jest to, czy po kilku tygodniach zwykły ruch przestaje być negocjacją z ciałem.
+          </p>
+        </div>
+      </div>
+    </section>
+
     <section class="final-cta" id="ankieta">
-      <div class="container">
+      <div class="container reveal">
         <p class="eyebrow">Pierwszy krok</p>
-        <h2 class="section-title">Nie musisz wiedzieć, od czego zacząć.</h2>
+        <h2>Nie musisz wiedzieć, od czego zacząć.</h2>
         <p class="section-lead">
           Od tego jest ankieta i rozmowa. Opisujesz sytuację, ja sprawdzam, czy mogę Ci realnie pomóc, i dopiero wtedy decydujemy, czy diagnostyka w Studio Las ma sens.
         </p>
@@ -1069,6 +1191,22 @@
           hamburger.setAttribute("aria-label", "Otwórz menu");
         });
       });
+    }
+
+    const revealItems = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("is-visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12 });
+
+      revealItems.forEach(item => observer.observe(item));
+    } else {
+      revealItems.forEach(item => item.classList.add("is-visible"));
     }
   </script>
 </body>
