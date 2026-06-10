@@ -280,6 +280,9 @@
     .fitness-age {
       border-top:1px solid rgba(33,26,22,.08);
     }
+    .fitness-age h2 {
+      max-width:16ch;
+    }
     .fitness-age-layout {
       display:grid;
       grid-template-columns:.82fr 1.18fr;
@@ -312,7 +315,6 @@
       display:grid;
       gap:22px;
     }
-    .fitness-age-field label,
     .fitness-question legend {
       display:block;
       margin:0 0 12px;
@@ -322,18 +324,6 @@
       font-weight:400;
       line-height:1.22;
     }
-    .fitness-age-field input {
-      width:100%;
-      min-height:58px;
-      padding:14px 16px;
-      color:var(--ink);
-      background:#f8f5ee;
-      border:1px solid var(--line);
-      border-radius:0;
-      font:inherit;
-      font-size:1.05rem;
-    }
-    .fitness-age-field input:focus,
     .fitness-option:focus-within {
       outline:2px solid rgba(183,139,82,.34);
       outline-offset:2px;
@@ -352,6 +342,12 @@
       font-weight:900;
       text-transform:uppercase;
       letter-spacing:.15em;
+    }
+    .fitness-instruction {
+      margin-bottom:14px;
+      color:var(--muted);
+      font-size:.94rem;
+      line-height:1.68;
     }
     .fitness-options {
       display:grid;
@@ -408,35 +404,6 @@
       padding-top:28px;
       border-top:1px solid var(--line);
     }
-    .fitness-metrics {
-      display:grid;
-      grid-template-columns:repeat(3, minmax(0, 1fr));
-      gap:12px;
-    }
-    .fitness-metric {
-      min-height:116px;
-      padding:18px;
-      background:#f8f5ee;
-      border:1px solid var(--line);
-    }
-    .fitness-metric span {
-      display:block;
-      margin-bottom:12px;
-      color:var(--muted);
-      font-size:.68rem;
-      font-weight:900;
-      text-transform:uppercase;
-      letter-spacing:.14em;
-      line-height:1.45;
-    }
-    .fitness-metric strong {
-      display:block;
-      color:var(--forest);
-      font-family:Georgia, "Times New Roman", serif;
-      font-size:2rem;
-      font-weight:400;
-      line-height:1;
-    }
     .fitness-interpretation h3 {
       margin-bottom:12px;
       font-size:1.68rem;
@@ -454,6 +421,10 @@
     .fitness-faq {
       margin-top:34px;
       padding-top:28px;
+      border-top:1px solid var(--line);
+    }
+    .fitness-disclaimer {
+      padding-top:18px;
       border-top:1px solid var(--line);
     }
     .fitness-faq h3 {
@@ -972,7 +943,6 @@
       }
       .hero-facts,
       .pain-list,
-      .fitness-metrics,
       .recover-grid,
       .process-cards,
       .steps-grid,
@@ -1022,9 +992,6 @@
       .fitness-actions .btn,
       .fitness-result-cta .btn {
         width:100%;
-      }
-      .fitness-metric {
-        min-height:auto;
       }
       .visit-step {
         grid-template-columns:1fr;
@@ -1081,7 +1048,7 @@
 
   <div class="mobile-menu" id="mobileMenu">
     <a href="#pierwszy-krok">Pierwszy krok</a>
-    <a href="#wiek-sprawnosci">Wiek Sprawności</a>
+    <a href="#wiek-sprawnosci">Swoboda ruchu</a>
     <a href="#odzyskac">Co odzyskać</a>
     <a href="#praca-1-1">Praca 1:1</a>
     <a href="#dla-kogo">Dla kogo</a>
@@ -1118,80 +1085,101 @@
     <section class="section cream fitness-age" id="wiek-sprawnosci" aria-labelledby="wiek-sprawnosci-title">
       <div class="container fitness-age-layout">
         <div class="fitness-age-copy reveal">
-          <p class="eyebrow">Wiek Sprawności™</p>
-          <h2 id="wiek-sprawnosci-title">Ile lat ma Twoje ciało?</h2>
+          <p class="eyebrow">Swoboda ruchu</p>
+          <h2 id="wiek-sprawnosci-title">7 ruchów, które mówią o Twoim ciele więcej niż PESEL</h2>
           <p class="section-lead">
-            Masz swój wiek z dowodu. Ale ciało może działać młodziej albo starzej. Wiek Sprawności™ to krótka, orientacyjna ocena 5 codziennych funkcji: wstawania, równowagi, siły nóg, marszu i pewności ruchu.
+            Nie potrzebujesz siłowni ani specjalistycznego sprzętu. Wystarczy kilka prostych ruchów, które kiedyś były naturalne. Jeśli dziś stają się trudne, ciało zaczyna mówić coś ważnego.
           </p>
-          <p class="section-lead">
-            Nie chodzi o sport. Chodzi o to, czy ciało nadal pozwala Ci żyć normalnie.
-          </p>
-          <button class="btn btn-primary" id="fitnessStart" type="button">Sprawdź swój Wiek Sprawności</button>
+          <button class="btn btn-primary" id="fitnessStart" type="button">Sprawdź swoją swobodę ruchu</button>
           <p class="fitness-age-note">
-            To zajmie około 3–5 minut. Bez logowania. Bez oceniania. Wynik jest orientacyjny i nie zastępuje konsultacji medycznej.
+            To nie jest diagnoza medyczna. To orientacyjny test swobody ruchu — do wykonania spokojnie, bez bólu i bez forsowania.
           </p>
         </div>
 
         <div>
           <div class="fitness-tool" id="fitnessTool" hidden>
             <form class="fitness-form" id="fitnessForm" novalidate>
-              <div class="fitness-age-field">
-                <label for="fitnessAgeInput">Ile masz lat?</label>
-                <input id="fitnessAgeInput" name="age" type="number" min="30" max="85" inputmode="numeric" autocomplete="off" />
-              </div>
-
               <fieldset class="fitness-question" data-question>
-                <small>Próba 1 — Wstawanie z krzesła</small>
-                <legend>Ile razy wstaniesz z krzesła w 30 sekund, bez używania rąk?</legend>
+                <small>Ruch 1 — Skarpetka lub but</small>
+                <legend>Skarpetka lub but</legend>
+                <p class="fitness-instruction">Stań na jednej nodze. Spróbuj założyć skarpetkę albo but bez podpierania się ściany, krzesła lub drugiej osoby.</p>
+                <p class="fitness-instruction">Czy potrafisz zrobić to swobodnie?</p>
                 <div class="fitness-options">
-                  <label class="fitness-option"><input type="radio" name="chair" value="0" />0–5 razy</label>
-                  <label class="fitness-option"><input type="radio" name="chair" value="1" />6–9 razy</label>
-                  <label class="fitness-option"><input type="radio" name="chair" value="2" />10–14 razy</label>
-                  <label class="fitness-option"><input type="radio" name="chair" value="3" />15+ razy</label>
+                  <label class="fitness-option"><input type="radio" name="sock" value="0" />Tak, swobodnie</label>
+                  <label class="fitness-option"><input type="radio" name="sock" value="1" />Tak, ale z trudnością</label>
+                  <label class="fitness-option"><input type="radio" name="sock" value="2" />Nie</label>
                 </div>
               </fieldset>
 
               <fieldset class="fitness-question" data-question>
-                <small>Próba 2 — Równowaga</small>
-                <legend>Jak długo utrzymasz stanie na jednej nodze bez podpierania się?</legend>
+                <small>Ruch 2 — Podłoga</small>
+                <legend>Podłoga</legend>
+                <p class="fitness-instruction">Usiądź na podłodze. Następnie spróbuj wrócić do pozycji stojącej bez użycia rąk.</p>
+                <p class="fitness-instruction">Czy potrafisz zrobić to swobodnie?</p>
                 <div class="fitness-options">
-                  <label class="fitness-option"><input type="radio" name="balance" value="0" />Mniej niż 5 sekund</label>
-                  <label class="fitness-option"><input type="radio" name="balance" value="1" />5–14 sekund</label>
-                  <label class="fitness-option"><input type="radio" name="balance" value="2" />15–29 sekund</label>
-                  <label class="fitness-option"><input type="radio" name="balance" value="3" />30+ sekund</label>
+                  <label class="fitness-option"><input type="radio" name="floor" value="0" />Tak, swobodnie</label>
+                  <label class="fitness-option"><input type="radio" name="floor" value="1" />Tak, ale z trudnością</label>
+                  <label class="fitness-option"><input type="radio" name="floor" value="2" />Nie</label>
                 </div>
               </fieldset>
 
               <fieldset class="fitness-question" data-question>
-                <small>Próba 3 — Podłoga</small>
-                <legend>Czy potrafisz zejść na podłogę i wstać bez dużego lęku, bólu albo kombinowania?</legend>
+                <small>Ruch 3 — Dłonie za plecami</small>
+                <legend>Dłonie za plecami</legend>
+                <p class="fitness-instruction">Jedną rękę przenieś nad barkiem od góry. Drugą rękę poprowadź za plecami od dołu. Spróbuj zbliżyć lub połączyć dłonie za plecami. Powtórz na drugą stronę.</p>
+                <p class="fitness-instruction">Czy po obu stronach potrafisz zrobić to swobodnie?</p>
                 <div class="fitness-options">
-                  <label class="fitness-option"><input type="radio" name="floor" value="0" />Nie / unikam tego</label>
-                  <label class="fitness-option"><input type="radio" name="floor" value="1" />Tak, ale z dużą pomocą rąk, ściany lub mebli</label>
-                  <label class="fitness-option"><input type="radio" name="floor" value="2" />Tak, ale wolno i ostrożnie</label>
-                  <label class="fitness-option"><input type="radio" name="floor" value="3" />Tak, swobodnie</label>
+                  <label class="fitness-option"><input type="radio" name="hands" value="0" />Tak, swobodnie</label>
+                  <label class="fitness-option"><input type="radio" name="hands" value="1" />Tak, ale z trudnością</label>
+                  <label class="fitness-option"><input type="radio" name="hands" value="2" />Nie</label>
                 </div>
               </fieldset>
 
               <fieldset class="fitness-question" data-question>
-                <small>Próba 4 — Marsz</small>
-                <legend>Ile minut możesz iść szybkim marszem bez silnej zadyszki i bez narastającego bólu?</legend>
+                <small>Ruch 4 — Pełny przysiad</small>
+                <legend>Pełny przysiad</legend>
+                <p class="fitness-instruction">Stań wygodnie. Wykonaj jeden pełny przysiad, schodząc możliwie nisko, bez odrywania pięt od podłogi.</p>
+                <p class="fitness-instruction">Czy potrafisz zrobić to swobodnie?</p>
                 <div class="fitness-options">
-                  <label class="fitness-option"><input type="radio" name="walk" value="0" />Mniej niż 5 minut</label>
-                  <label class="fitness-option"><input type="radio" name="walk" value="1" />5–10 minut</label>
-                  <label class="fitness-option"><input type="radio" name="walk" value="2" />11–20 minut</label>
-                  <label class="fitness-option"><input type="radio" name="walk" value="3" />Ponad 20 minut</label>
+                  <label class="fitness-option"><input type="radio" name="squat" value="0" />Tak, swobodnie</label>
+                  <label class="fitness-option"><input type="radio" name="squat" value="1" />Tak, ale z trudnością</label>
+                  <label class="fitness-option"><input type="radio" name="squat" value="2" />Nie</label>
                 </div>
               </fieldset>
 
               <fieldset class="fitness-question" data-question>
-                <small>Próba 5 — Schody / zakupy</small>
-                <legend>Czy wniesienie zakupów albo wejście po schodach wymaga od Ciebie kalkulowania?</legend>
+                <small>Ruch 5 — Dotknięcie podłogi</small>
+                <legend>Dotknięcie podłogi</legend>
+                <p class="fitness-instruction">Stań prosto. Nie uginając kolan, spróbuj dotknąć podłogi dłońmi.</p>
+                <p class="fitness-instruction">Czy potrafisz zrobić to swobodnie?</p>
                 <div class="fitness-options">
-                  <label class="fitness-option"><input type="radio" name="stairs" value="0" />Tak, często tego unikam</label>
-                  <label class="fitness-option"><input type="radio" name="stairs" value="1" />Tak, robię to z dużą ostrożnością</label>
-                  <label class="fitness-option"><input type="radio" name="stairs" value="2" />Czasem czuję ograniczenie, ale daję radę</label>
-                  <label class="fitness-option"><input type="radio" name="stairs" value="3" />Nie, to normalna rzecz</label>
+                  <label class="fitness-option"><input type="radio" name="toeTouch" value="0" />Tak, swobodnie</label>
+                  <label class="fitness-option"><input type="radio" name="toeTouch" value="1" />Tak, ale z trudnością</label>
+                  <label class="fitness-option"><input type="radio" name="toeTouch" value="2" />Nie</label>
+                </div>
+              </fieldset>
+
+              <fieldset class="fitness-question" data-question>
+                <small>Ruch 6 — Ręce nad głową</small>
+                <legend>Ręce nad głową</legend>
+                <p class="fitness-instruction">Stań prosto. Unieś wyprostowane ręce pionowo nad głowę. Spróbuj zrobić to bez wyginania pleców i bez wypychania żeber do przodu.</p>
+                <p class="fitness-instruction">Czy potrafisz zrobić to swobodnie?</p>
+                <div class="fitness-options">
+                  <label class="fitness-option"><input type="radio" name="overhead" value="0" />Tak, swobodnie</label>
+                  <label class="fitness-option"><input type="radio" name="overhead" value="1" />Tak, ale z trudnością</label>
+                  <label class="fitness-option"><input type="radio" name="overhead" value="2" />Nie</label>
+                </div>
+              </fieldset>
+
+              <fieldset class="fitness-question" data-question>
+                <small>Ruch 7 — Spojrzenie za siebie</small>
+                <legend>Spojrzenie za siebie</legend>
+                <p class="fitness-instruction">Stojąc lub siedząc, obróć głowę i spróbuj spojrzeć za siebie przez lewe ramię. Następnie przez prawe ramię.</p>
+                <p class="fitness-instruction">Czy po obu stronach możesz wykonać ruch swobodnie i bez dyskomfortu?</p>
+                <div class="fitness-options">
+                  <label class="fitness-option"><input type="radio" name="lookBack" value="0" />Tak, swobodnie</label>
+                  <label class="fitness-option"><input type="radio" name="lookBack" value="1" />Tak, ale z trudnością</label>
+                  <label class="fitness-option"><input type="radio" name="lookBack" value="2" />Nie</label>
                 </div>
               </fieldset>
 
@@ -1202,21 +1190,6 @@
             </form>
 
             <div class="fitness-result" id="fitnessResult" aria-live="polite" hidden>
-              <div class="fitness-metrics" aria-label="Wynik testu Wiek Sprawności">
-                <div class="fitness-metric">
-                  <span>Twój wiek kalendarzowy</span>
-                  <strong id="calendarAgeResult">—</strong>
-                </div>
-                <div class="fitness-metric">
-                  <span>Orientacyjny Wiek Sprawności™</span>
-                  <strong id="fitnessAgeResult">—</strong>
-                </div>
-                <div class="fitness-metric">
-                  <span>Różnica</span>
-                  <strong id="fitnessDiffResult">—</strong>
-                </div>
-              </div>
-
               <div class="fitness-interpretation">
                 <h3 id="fitnessResultTitle"></h3>
                 <p id="fitnessResultCopy"></p>
@@ -1224,32 +1197,32 @@
 
               <div class="fitness-result-cta">
                 <p>Chcesz, żebym pomógł Ci odczytać ten wynik w kontekście bólu, wieku, pracy i historii kontuzji?</p>
-                <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Wypełnij krótką ankietę</a>
+                <a class="btn btn-primary" id="fitnessResultCta" href="./ankieta-kontakt.html#ankieta">Zacznij od krótkiej ankiety</a>
               </div>
-
-              <p class="fitness-disclaimer">
-                Wiek Sprawności™ jest orientacyjnym narzędziem edukacyjnym. Nie jest diagnozą medyczną i nie zastępuje konsultacji z lekarzem, fizjoterapeutą ani innym specjalistą.
-              </p>
             </div>
+
+            <p class="fitness-disclaimer">
+              Ten test jest orientacyjnym narzędziem edukacyjnym. Nie jest diagnozą medyczną i nie zastępuje konsultacji z lekarzem, fizjoterapeutą ani innym specjalistą. Jeśli któryś ruch powoduje ból, zawroty głowy lub lęk przed upadkiem — nie wykonuj go na siłę.
+            </p>
           </div>
 
-          <div class="fitness-faq reveal" aria-label="Najczęstsze pytania o Wiek Sprawności">
+          <div class="fitness-faq reveal" aria-label="Najczęstsze pytania o swobodę ruchu">
             <h3>Najczęstsze pytania</h3>
             <details>
-              <summary>Czy Wiek Sprawności™ jest diagnozą?</summary>
-              <p>Nie. To orientacyjna ocena codziennych funkcji ruchowych. Nie diagnozuje chorób i nie zastępuje konsultacji medycznej.</p>
+              <summary>Czy to jest test medyczny?</summary>
+              <p>Nie. To prosta, orientacyjna ocena swobody ruchu. Nie diagnozuje chorób i nie zastępuje konsultacji medycznej.</p>
             </details>
             <details>
-              <summary>Czy muszę być sprawny, żeby zrobić test?</summary>
-              <p>Nie. Test jest dla osób, które chcą spokojnie sprawdzić punkt startowy. Jeśli coś boli albo budzi lęk, nie wykonuj próby na siłę.</p>
+              <summary>Co jeśli nie potrafię wykonać któregoś ruchu?</summary>
+              <p>Nie rób go na siłę. Sam fakt, że ciało unika danego ruchu albo wykonuje go z dużą trudnością, jest informacją. W Studio Las traktuję to jako punkt wyjścia, nie powód do oceniania.</p>
             </details>
             <details>
-              <summary>Co zrobić, jeśli wynik mnie zaniepokoi?</summary>
-              <p>Najrozsądniej potraktować go jako sygnał do rozmowy. W Studio Las pierwszy krok to ankieta, telefon i spokojna diagnostyka, nie przypadkowy trening.</p>
+              <summary>Czy te ruchy można odzyskać?</summary>
+              <p>W wielu przypadkach tak, ale nie przez przypadkowe rozciąganie czy mocniejszy trening. Najpierw trzeba zrozumieć, dlaczego ciało ogranicza dany ruch, a potem dobrać spokojny proces pracy.</p>
             </details>
             <details>
-              <summary>Czy ten wynik można poprawić?</summary>
-              <p>W wielu przypadkach tak. Siła, równowaga, marsz i pewność ruchu dobrze reagują na spokojną, regularną pracę dopasowaną do człowieka.</p>
+              <summary>Dla kogo jest ten test?</summary>
+              <p>Dla osób, które czują, że ciało nie daje im już takiej swobody jak kiedyś — po przerwie, bólu, kontuzji, stresie albo po prostu z wiekiem.</p>
             </details>
           </div>
         </div>
@@ -1549,41 +1522,42 @@
     const fitnessStart = document.getElementById("fitnessStart");
     const fitnessTool = document.getElementById("fitnessTool");
     const fitnessForm = document.getElementById("fitnessForm");
-    const fitnessAgeInput = document.getElementById("fitnessAgeInput");
     const fitnessError = document.getElementById("fitnessError");
     const fitnessResult = document.getElementById("fitnessResult");
-    const calendarAgeResult = document.getElementById("calendarAgeResult");
-    const fitnessAgeResult = document.getElementById("fitnessAgeResult");
-    const fitnessDiffResult = document.getElementById("fitnessDiffResult");
     const fitnessResultTitle = document.getElementById("fitnessResultTitle");
     const fitnessResultCopy = document.getElementById("fitnessResultCopy");
-    const fitnessGroups = ["chair", "balance", "floor", "walk", "stairs"];
+    const fitnessResultCta = document.getElementById("fitnessResultCta");
+    const fitnessGroups = ["sock", "floor", "hands", "squat", "toeTouch", "overhead", "lookBack"];
 
-    const getFitnessInterpretation = score => {
-      if (score <= 3) {
+    const getFitnessInterpretation = problemScore => {
+      if (problemScore <= 2) {
         return {
-          title:"Twoje ciało prawdopodobnie traci rezerwę szybciej, niż czujesz na co dzień.",
-          copy:"To nie znaczy, że jest za późno. Ale jeśli zwykłe rzeczy — schody, podłoga, zakupy, spacer — zaczynają wymagać strategii, ciało nie potrzebuje mocniejszego treningu. Potrzebuje spokojnego punktu startowego."
+          title:"Twoje ciało ma jeszcze dużą swobodę ruchu.",
+          copy:"To dobry znak. Nie chodzi jednak o to, żeby czekać, aż coś zacznie boleć albo ograniczać. Po 40. roku życia sprawność najczęściej nie znika nagle. Znika po cichu, gdy przestajemy używać pewnych zakresów ruchu.",
+          cta:"Zobacz, jak pracujemy 1:1"
         };
       }
 
-      if (score <= 9) {
+      if (problemScore <= 6) {
         return {
-          title:"Jeszcze działasz, ale ciało zaczyna negocjować.",
-          copy:"To jest najważniejszy moment. Nie wtedy, gdy już nie możesz. Właśnie teraz, gdy jeszcze możesz, ale czujesz, że część ruchów kosztuje więcej niż kiedyś. Tu jest największy zwrot z dobrze ustawionej pracy."
+          title:"Twoje ciało zaczyna wysyłać pierwsze sygnały.",
+          copy:"To zwykle najlepszy moment na działanie. Jeszcze funkcjonujesz normalnie, ale niektóre ruchy zaczynają kosztować więcej niż kiedyś. W Studio Las właśnie ten etap traktuję poważnie — zanim ograniczenia staną się codziennością.",
+          cta:"Omów wynik z trenerem"
         };
       }
 
-      if (score <= 12) {
+      if (problemScore <= 10) {
         return {
-          title:"Masz bazę. Teraz chodzi o to, żeby jej nie stracić.",
-          copy:"Dobry wynik nie oznacza, że można odpuścić. Po 40. roku życia ciało traci rezerwę po cichu. Siła, równowaga i wydolność nie znikają jednego dnia. Znikają wtedy, gdy zbyt długo nie są używane."
+          title:"Część naturalnych ruchów nie jest już taka oczywista.",
+          copy:"To nie znaczy, że jesteś niesprawny. To znaczy, że ciało zaczęło omijać pewne zakresy, pozycje i ruchy. Im dłużej ich nie używasz, tym bardziej stają się obce. Tu potrzebny jest spokojny, dobrze ustawiony proces — nie przypadkowe ćwiczenia z internetu.",
+          cta:"Umów spokojną diagnostykę"
         };
       }
 
       return {
-        title:"Twoje ciało ma dobrą rezerwę sprawności.",
-        copy:"To jest moment na mądre utrzymanie formy, nie przypadkowe dociskanie. Dobrze prowadzona siła, równowaga i mobilność mogą pomóc zachować niezależność na lata."
+        title:"Twoje ciało prawdopodobnie mocno ogranicza swobodę ruchu.",
+        copy:"Jeśli większość tych ruchów jest trudna albo niemożliwa, nie chodzi o ambicję ani motywację. Chodzi o bezpieczny punkt startowy. W Studio Las nie zaczyna się od mocnego treningu, tylko od zrozumienia, co ciało jeszcze toleruje, czego unika i od czego trzeba zacząć.",
+        cta:"Zacznij od krótkiej ankiety"
       };
     };
 
@@ -1594,55 +1568,35 @@
 
         requestAnimationFrame(() => {
           fitnessTool.scrollIntoView({ behavior:"smooth", block:"start" });
-          if (fitnessAgeInput) fitnessAgeInput.focus({ preventScroll:true });
+          const firstInput = fitnessForm.querySelector("input");
+          if (firstInput) firstInput.focus({ preventScroll:true });
         });
       });
 
       fitnessForm.addEventListener("submit", event => {
         event.preventDefault();
 
-        const age = Number(fitnessAgeInput.value);
         const answers = fitnessGroups.map(name => fitnessForm.querySelector(`input[name="${name}"]:checked`));
         const missingAnswer = answers.some(answer => !answer);
 
-        if (!Number.isInteger(age) || age < 30 || age > 85 || missingAnswer) {
+        if (missingAnswer) {
           if (fitnessError) {
-            fitnessError.textContent = "Uzupełnij wiek i wszystkie odpowiedzi, żebym mógł pokazać wynik.";
+            fitnessError.textContent = "Zaznacz odpowiedź przy każdym ruchu, żebym mógł pokazać wynik.";
           }
           if (fitnessResult) fitnessResult.hidden = true;
 
-          if (!Number.isInteger(age) || age < 30 || age > 85) {
-            fitnessAgeInput.focus();
-          } else {
-            const missingGroup = fitnessGroups.find(name => !fitnessForm.querySelector(`input[name="${name}"]:checked`));
-            const firstInput = fitnessForm.querySelector(`input[name="${missingGroup}"]`);
-            if (firstInput) firstInput.focus();
-          }
+          const missingGroup = fitnessGroups.find(name => !fitnessForm.querySelector(`input[name="${name}"]:checked`));
+          const firstMissingInput = fitnessForm.querySelector(`input[name="${missingGroup}"]`);
+          if (firstMissingInput) firstMissingInput.focus();
           return;
         }
 
-        const score = answers.reduce((total, answer) => total + Number(answer.value), 0);
-        let calculatedAge = age;
+        const problemScore = answers.reduce((total, answer) => total + Number(answer.value), 0);
+        const interpretation = getFitnessInterpretation(problemScore);
 
-        if (score <= 3) {
-          calculatedAge = age + 15;
-        } else if (score <= 6) {
-          calculatedAge = age + 10;
-        } else if (score <= 9) {
-          calculatedAge = age + 5;
-        } else if (score >= 13) {
-          calculatedAge = age - 5;
-        }
-
-        const clampedFitnessAge = Math.min(85, Math.max(30, calculatedAge));
-        const difference = clampedFitnessAge - age;
-        const interpretation = getFitnessInterpretation(score);
-
-        calendarAgeResult.textContent = `${age} lat`;
-        fitnessAgeResult.textContent = `${clampedFitnessAge} lat`;
-        fitnessDiffResult.textContent = difference === 0 ? "zgodny z wiekiem" : `${difference > 0 ? "+" : ""}${difference} lat`;
         fitnessResultTitle.textContent = interpretation.title;
         fitnessResultCopy.textContent = interpretation.copy;
+        if (fitnessResultCta) fitnessResultCta.textContent = interpretation.cta;
 
         if (fitnessError) fitnessError.textContent = "";
         if (fitnessResult) {
