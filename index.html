@@ -45,6 +45,7 @@
     img { display:block; max-width:100%; }
     a { color:inherit; text-decoration:none; }
     button { font:inherit; color:inherit; }
+    [hidden] { display:none !important; }
 
     .container {
       width:min(1160px, calc(100% - 56px));
@@ -274,6 +275,205 @@
       font-weight:900;
       text-transform:uppercase;
       letter-spacing:.13em;
+    }
+
+    .fitness-age {
+      border-top:1px solid rgba(33,26,22,.08);
+    }
+    .fitness-age-layout {
+      display:grid;
+      grid-template-columns:.82fr 1.18fr;
+      gap:54px;
+      align-items:start;
+    }
+    .fitness-age-copy {
+      position:sticky;
+      top:106px;
+    }
+    .fitness-age-copy .btn { margin-top:30px; }
+    .fitness-age-note,
+    .fitness-disclaimer {
+      margin-top:18px;
+      color:var(--muted);
+      font-size:.88rem;
+      line-height:1.68;
+    }
+    .fitness-tool {
+      padding:34px;
+      background:var(--white);
+      border:1px solid var(--line);
+      box-shadow:var(--shadow);
+    }
+    .fitness-tool[hidden],
+    .fitness-result[hidden] {
+      display:none;
+    }
+    .fitness-form {
+      display:grid;
+      gap:22px;
+    }
+    .fitness-age-field label,
+    .fitness-question legend {
+      display:block;
+      margin:0 0 12px;
+      color:var(--ink);
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:1.28rem;
+      font-weight:400;
+      line-height:1.22;
+    }
+    .fitness-age-field input {
+      width:100%;
+      min-height:58px;
+      padding:14px 16px;
+      color:var(--ink);
+      background:#f8f5ee;
+      border:1px solid var(--line);
+      border-radius:0;
+      font:inherit;
+      font-size:1.05rem;
+    }
+    .fitness-age-field input:focus,
+    .fitness-option:focus-within {
+      outline:2px solid rgba(183,139,82,.34);
+      outline-offset:2px;
+    }
+    .fitness-question {
+      margin:0;
+      padding:22px 0 0;
+      border:0;
+      border-top:1px solid var(--line);
+    }
+    .fitness-question small {
+      display:block;
+      margin-bottom:14px;
+      color:var(--cedar-dark);
+      font-size:.68rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.15em;
+    }
+    .fitness-options {
+      display:grid;
+      gap:10px;
+    }
+    .fitness-option {
+      position:relative;
+      display:grid;
+      grid-template-columns:auto 1fr;
+      gap:12px;
+      align-items:start;
+      min-height:56px;
+      padding:14px 15px;
+      color:var(--muted);
+      background:#f8f5ee;
+      border:1px solid var(--line);
+      cursor:pointer;
+      transition:border-color .2s var(--ease), background .2s var(--ease), color .2s var(--ease);
+    }
+    .fitness-option:hover {
+      color:var(--ink);
+      border-color:rgba(183,139,82,.42);
+      background:#fbfaf7;
+    }
+    .fitness-option input {
+      width:18px;
+      height:18px;
+      margin:.2em 0 0;
+      accent-color:var(--cedar);
+    }
+    .fitness-option:has(input:checked) {
+      color:var(--ink);
+      border-color:rgba(183,139,82,.62);
+      background:rgba(183,139,82,.11);
+    }
+    .fitness-error {
+      min-height:1.6em;
+      color:#8f3c24;
+      font-size:.92rem;
+      font-weight:800;
+      line-height:1.55;
+    }
+    .fitness-actions {
+      display:flex;
+      flex-wrap:wrap;
+      gap:12px;
+      align-items:center;
+      padding-top:4px;
+    }
+    .fitness-result {
+      display:grid;
+      gap:18px;
+      margin-top:28px;
+      padding-top:28px;
+      border-top:1px solid var(--line);
+    }
+    .fitness-metrics {
+      display:grid;
+      grid-template-columns:repeat(3, minmax(0, 1fr));
+      gap:12px;
+    }
+    .fitness-metric {
+      min-height:116px;
+      padding:18px;
+      background:#f8f5ee;
+      border:1px solid var(--line);
+    }
+    .fitness-metric span {
+      display:block;
+      margin-bottom:12px;
+      color:var(--muted);
+      font-size:.68rem;
+      font-weight:900;
+      text-transform:uppercase;
+      letter-spacing:.14em;
+      line-height:1.45;
+    }
+    .fitness-metric strong {
+      display:block;
+      color:var(--forest);
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:2rem;
+      font-weight:400;
+      line-height:1;
+    }
+    .fitness-interpretation h3 {
+      margin-bottom:12px;
+      font-size:1.68rem;
+    }
+    .fitness-interpretation p,
+    .fitness-result-cta p {
+      color:var(--muted);
+      line-height:1.78;
+    }
+    .fitness-result-cta {
+      display:grid;
+      gap:16px;
+      padding-top:4px;
+    }
+    .fitness-faq {
+      margin-top:34px;
+      padding-top:28px;
+      border-top:1px solid var(--line);
+    }
+    .fitness-faq h3 {
+      margin-bottom:14px;
+      font-size:1.42rem;
+    }
+    .fitness-faq details {
+      padding:16px 0;
+      border-bottom:1px solid var(--line);
+    }
+    .fitness-faq summary {
+      color:var(--ink);
+      font-weight:900;
+      cursor:pointer;
+    }
+    .fitness-faq p {
+      max-width:46rem;
+      margin-top:10px;
+      color:var(--muted);
+      line-height:1.72;
     }
 
     .section {
@@ -708,6 +908,7 @@
       .hamburger { display:block; }
       .hero-inner,
       .motivation-grid,
+      .fitness-age-layout,
       .first-step-layout,
       .work-layout,
       .place-grid,
@@ -723,6 +924,7 @@
         grid-template-columns:1fr;
       }
       .package.featured { order:-1; }
+      .fitness-age-copy,
       .first-step-copy { position:static; }
       .work-layout .work-photo { order:-1; }
       .work-photo img { aspect-ratio:16 / 10; }
@@ -770,6 +972,7 @@
       }
       .hero-facts,
       .pain-list,
+      .fitness-metrics,
       .recover-grid,
       .process-cards,
       .steps-grid,
@@ -786,6 +989,7 @@
       }
       .quiet-panel,
       .pain-list li,
+      .fitness-tool,
       .recover-tile,
       .visit-step,
       .process-card,
@@ -801,6 +1005,26 @@
       .recover-tile h3 {
         max-width:14ch;
         font-size:1.42rem;
+      }
+      .fitness-age-layout {
+        gap:34px;
+      }
+      .fitness-age-copy .btn {
+        margin-top:24px;
+      }
+      .fitness-question legend {
+        font-size:1.17rem;
+      }
+      .fitness-option {
+        min-height:62px;
+        padding:15px 14px;
+      }
+      .fitness-actions .btn,
+      .fitness-result-cta .btn {
+        width:100%;
+      }
+      .fitness-metric {
+        min-height:auto;
       }
       .visit-step {
         grid-template-columns:1fr;
@@ -857,6 +1081,7 @@
 
   <div class="mobile-menu" id="mobileMenu">
     <a href="#pierwszy-krok">Pierwszy krok</a>
+    <a href="#wiek-sprawnosci">Wiek Sprawności</a>
     <a href="#odzyskac">Co odzyskać</a>
     <a href="#praca-1-1">Praca 1:1</a>
     <a href="#dla-kogo">Dla kogo</a>
@@ -887,6 +1112,147 @@
           <li><strong>Spokojny start</strong>ankieta, rozmowa, diagnostyka i decyzja bez presji.</li>
           <li><strong>Około 12 tygodni</strong>pracy nad ruchem, pewnością ciała i codzienną funkcją.</li>
         </ul>
+      </div>
+    </section>
+
+    <section class="section cream fitness-age" id="wiek-sprawnosci" aria-labelledby="wiek-sprawnosci-title">
+      <div class="container fitness-age-layout">
+        <div class="fitness-age-copy reveal">
+          <p class="eyebrow">Wiek Sprawności™</p>
+          <h2 id="wiek-sprawnosci-title">Ile lat ma Twoje ciało?</h2>
+          <p class="section-lead">
+            Masz swój wiek z dowodu. Ale ciało może działać młodziej albo starzej. Wiek Sprawności™ to krótka, orientacyjna ocena 5 codziennych funkcji: wstawania, równowagi, siły nóg, marszu i pewności ruchu.
+          </p>
+          <p class="section-lead">
+            Nie chodzi o sport. Chodzi o to, czy ciało nadal pozwala Ci żyć normalnie.
+          </p>
+          <button class="btn btn-primary" id="fitnessStart" type="button">Sprawdź swój Wiek Sprawności</button>
+          <p class="fitness-age-note">
+            To zajmie około 3–5 minut. Bez logowania. Bez oceniania. Wynik jest orientacyjny i nie zastępuje konsultacji medycznej.
+          </p>
+        </div>
+
+        <div>
+          <div class="fitness-tool" id="fitnessTool" hidden>
+            <form class="fitness-form" id="fitnessForm" novalidate>
+              <div class="fitness-age-field">
+                <label for="fitnessAgeInput">Ile masz lat?</label>
+                <input id="fitnessAgeInput" name="age" type="number" min="30" max="85" inputmode="numeric" autocomplete="off" />
+              </div>
+
+              <fieldset class="fitness-question" data-question>
+                <small>Próba 1 — Wstawanie z krzesła</small>
+                <legend>Ile razy wstaniesz z krzesła w 30 sekund, bez używania rąk?</legend>
+                <div class="fitness-options">
+                  <label class="fitness-option"><input type="radio" name="chair" value="0" />0–5 razy</label>
+                  <label class="fitness-option"><input type="radio" name="chair" value="1" />6–9 razy</label>
+                  <label class="fitness-option"><input type="radio" name="chair" value="2" />10–14 razy</label>
+                  <label class="fitness-option"><input type="radio" name="chair" value="3" />15+ razy</label>
+                </div>
+              </fieldset>
+
+              <fieldset class="fitness-question" data-question>
+                <small>Próba 2 — Równowaga</small>
+                <legend>Jak długo utrzymasz stanie na jednej nodze bez podpierania się?</legend>
+                <div class="fitness-options">
+                  <label class="fitness-option"><input type="radio" name="balance" value="0" />Mniej niż 5 sekund</label>
+                  <label class="fitness-option"><input type="radio" name="balance" value="1" />5–14 sekund</label>
+                  <label class="fitness-option"><input type="radio" name="balance" value="2" />15–29 sekund</label>
+                  <label class="fitness-option"><input type="radio" name="balance" value="3" />30+ sekund</label>
+                </div>
+              </fieldset>
+
+              <fieldset class="fitness-question" data-question>
+                <small>Próba 3 — Podłoga</small>
+                <legend>Czy potrafisz zejść na podłogę i wstać bez dużego lęku, bólu albo kombinowania?</legend>
+                <div class="fitness-options">
+                  <label class="fitness-option"><input type="radio" name="floor" value="0" />Nie / unikam tego</label>
+                  <label class="fitness-option"><input type="radio" name="floor" value="1" />Tak, ale z dużą pomocą rąk, ściany lub mebli</label>
+                  <label class="fitness-option"><input type="radio" name="floor" value="2" />Tak, ale wolno i ostrożnie</label>
+                  <label class="fitness-option"><input type="radio" name="floor" value="3" />Tak, swobodnie</label>
+                </div>
+              </fieldset>
+
+              <fieldset class="fitness-question" data-question>
+                <small>Próba 4 — Marsz</small>
+                <legend>Ile minut możesz iść szybkim marszem bez silnej zadyszki i bez narastającego bólu?</legend>
+                <div class="fitness-options">
+                  <label class="fitness-option"><input type="radio" name="walk" value="0" />Mniej niż 5 minut</label>
+                  <label class="fitness-option"><input type="radio" name="walk" value="1" />5–10 minut</label>
+                  <label class="fitness-option"><input type="radio" name="walk" value="2" />11–20 minut</label>
+                  <label class="fitness-option"><input type="radio" name="walk" value="3" />Ponad 20 minut</label>
+                </div>
+              </fieldset>
+
+              <fieldset class="fitness-question" data-question>
+                <small>Próba 5 — Schody / zakupy</small>
+                <legend>Czy wniesienie zakupów albo wejście po schodach wymaga od Ciebie kalkulowania?</legend>
+                <div class="fitness-options">
+                  <label class="fitness-option"><input type="radio" name="stairs" value="0" />Tak, często tego unikam</label>
+                  <label class="fitness-option"><input type="radio" name="stairs" value="1" />Tak, robię to z dużą ostrożnością</label>
+                  <label class="fitness-option"><input type="radio" name="stairs" value="2" />Czasem czuję ograniczenie, ale daję radę</label>
+                  <label class="fitness-option"><input type="radio" name="stairs" value="3" />Nie, to normalna rzecz</label>
+                </div>
+              </fieldset>
+
+              <p class="fitness-error" id="fitnessError" role="alert" aria-live="polite"></p>
+              <div class="fitness-actions">
+                <button class="btn btn-primary" type="submit">Pokaż wynik</button>
+              </div>
+            </form>
+
+            <div class="fitness-result" id="fitnessResult" aria-live="polite" hidden>
+              <div class="fitness-metrics" aria-label="Wynik testu Wiek Sprawności">
+                <div class="fitness-metric">
+                  <span>Twój wiek kalendarzowy</span>
+                  <strong id="calendarAgeResult">—</strong>
+                </div>
+                <div class="fitness-metric">
+                  <span>Orientacyjny Wiek Sprawności™</span>
+                  <strong id="fitnessAgeResult">—</strong>
+                </div>
+                <div class="fitness-metric">
+                  <span>Różnica</span>
+                  <strong id="fitnessDiffResult">—</strong>
+                </div>
+              </div>
+
+              <div class="fitness-interpretation">
+                <h3 id="fitnessResultTitle"></h3>
+                <p id="fitnessResultCopy"></p>
+              </div>
+
+              <div class="fitness-result-cta">
+                <p>Chcesz, żebym pomógł Ci odczytać ten wynik w kontekście bólu, wieku, pracy i historii kontuzji?</p>
+                <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Wypełnij krótką ankietę</a>
+              </div>
+
+              <p class="fitness-disclaimer">
+                Wiek Sprawności™ jest orientacyjnym narzędziem edukacyjnym. Nie jest diagnozą medyczną i nie zastępuje konsultacji z lekarzem, fizjoterapeutą ani innym specjalistą.
+              </p>
+            </div>
+          </div>
+
+          <div class="fitness-faq reveal" aria-label="Najczęstsze pytania o Wiek Sprawności">
+            <h3>Najczęstsze pytania</h3>
+            <details>
+              <summary>Czy Wiek Sprawności™ jest diagnozą?</summary>
+              <p>Nie. To orientacyjna ocena codziennych funkcji ruchowych. Nie diagnozuje chorób i nie zastępuje konsultacji medycznej.</p>
+            </details>
+            <details>
+              <summary>Czy muszę być sprawny, żeby zrobić test?</summary>
+              <p>Nie. Test jest dla osób, które chcą spokojnie sprawdzić punkt startowy. Jeśli coś boli albo budzi lęk, nie wykonuj próby na siłę.</p>
+            </details>
+            <details>
+              <summary>Co zrobić, jeśli wynik mnie zaniepokoi?</summary>
+              <p>Najrozsądniej potraktować go jako sygnał do rozmowy. W Studio Las pierwszy krok to ankieta, telefon i spokojna diagnostyka, nie przypadkowy trening.</p>
+            </details>
+            <details>
+              <summary>Czy ten wynik można poprawić?</summary>
+              <p>W wielu przypadkach tak. Siła, równowaga, marsz i pewność ruchu dobrze reagują na spokojną, regularną pracę dopasowaną do człowieka.</p>
+            </details>
+          </div>
+        </div>
       </div>
     </section>
 
@@ -1177,6 +1543,112 @@
           hamburger.setAttribute("aria-expanded", "false");
           hamburger.setAttribute("aria-label", "Otwórz menu");
         });
+      });
+    }
+
+    const fitnessStart = document.getElementById("fitnessStart");
+    const fitnessTool = document.getElementById("fitnessTool");
+    const fitnessForm = document.getElementById("fitnessForm");
+    const fitnessAgeInput = document.getElementById("fitnessAgeInput");
+    const fitnessError = document.getElementById("fitnessError");
+    const fitnessResult = document.getElementById("fitnessResult");
+    const calendarAgeResult = document.getElementById("calendarAgeResult");
+    const fitnessAgeResult = document.getElementById("fitnessAgeResult");
+    const fitnessDiffResult = document.getElementById("fitnessDiffResult");
+    const fitnessResultTitle = document.getElementById("fitnessResultTitle");
+    const fitnessResultCopy = document.getElementById("fitnessResultCopy");
+    const fitnessGroups = ["chair", "balance", "floor", "walk", "stairs"];
+
+    const getFitnessInterpretation = score => {
+      if (score <= 3) {
+        return {
+          title:"Twoje ciało prawdopodobnie traci rezerwę szybciej, niż czujesz na co dzień.",
+          copy:"To nie znaczy, że jest za późno. Ale jeśli zwykłe rzeczy — schody, podłoga, zakupy, spacer — zaczynają wymagać strategii, ciało nie potrzebuje mocniejszego treningu. Potrzebuje spokojnego punktu startowego."
+        };
+      }
+
+      if (score <= 9) {
+        return {
+          title:"Jeszcze działasz, ale ciało zaczyna negocjować.",
+          copy:"To jest najważniejszy moment. Nie wtedy, gdy już nie możesz. Właśnie teraz, gdy jeszcze możesz, ale czujesz, że część ruchów kosztuje więcej niż kiedyś. Tu jest największy zwrot z dobrze ustawionej pracy."
+        };
+      }
+
+      if (score <= 12) {
+        return {
+          title:"Masz bazę. Teraz chodzi o to, żeby jej nie stracić.",
+          copy:"Dobry wynik nie oznacza, że można odpuścić. Po 40. roku życia ciało traci rezerwę po cichu. Siła, równowaga i wydolność nie znikają jednego dnia. Znikają wtedy, gdy zbyt długo nie są używane."
+        };
+      }
+
+      return {
+        title:"Twoje ciało ma dobrą rezerwę sprawności.",
+        copy:"To jest moment na mądre utrzymanie formy, nie przypadkowe dociskanie. Dobrze prowadzona siła, równowaga i mobilność mogą pomóc zachować niezależność na lata."
+      };
+    };
+
+    if (fitnessStart && fitnessTool && fitnessForm) {
+      fitnessStart.addEventListener("click", () => {
+        fitnessTool.hidden = false;
+        fitnessStart.hidden = true;
+
+        requestAnimationFrame(() => {
+          fitnessTool.scrollIntoView({ behavior:"smooth", block:"start" });
+          if (fitnessAgeInput) fitnessAgeInput.focus({ preventScroll:true });
+        });
+      });
+
+      fitnessForm.addEventListener("submit", event => {
+        event.preventDefault();
+
+        const age = Number(fitnessAgeInput.value);
+        const answers = fitnessGroups.map(name => fitnessForm.querySelector(`input[name="${name}"]:checked`));
+        const missingAnswer = answers.some(answer => !answer);
+
+        if (!Number.isInteger(age) || age < 30 || age > 85 || missingAnswer) {
+          if (fitnessError) {
+            fitnessError.textContent = "Uzupełnij wiek i wszystkie odpowiedzi, żebym mógł pokazać wynik.";
+          }
+          if (fitnessResult) fitnessResult.hidden = true;
+
+          if (!Number.isInteger(age) || age < 30 || age > 85) {
+            fitnessAgeInput.focus();
+          } else {
+            const missingGroup = fitnessGroups.find(name => !fitnessForm.querySelector(`input[name="${name}"]:checked`));
+            const firstInput = fitnessForm.querySelector(`input[name="${missingGroup}"]`);
+            if (firstInput) firstInput.focus();
+          }
+          return;
+        }
+
+        const score = answers.reduce((total, answer) => total + Number(answer.value), 0);
+        let calculatedAge = age;
+
+        if (score <= 3) {
+          calculatedAge = age + 15;
+        } else if (score <= 6) {
+          calculatedAge = age + 10;
+        } else if (score <= 9) {
+          calculatedAge = age + 5;
+        } else if (score >= 13) {
+          calculatedAge = age - 5;
+        }
+
+        const clampedFitnessAge = Math.min(85, Math.max(30, calculatedAge));
+        const difference = clampedFitnessAge - age;
+        const interpretation = getFitnessInterpretation(score);
+
+        calendarAgeResult.textContent = `${age} lat`;
+        fitnessAgeResult.textContent = `${clampedFitnessAge} lat`;
+        fitnessDiffResult.textContent = difference === 0 ? "zgodny z wiekiem" : `${difference > 0 ? "+" : ""}${difference} lat`;
+        fitnessResultTitle.textContent = interpretation.title;
+        fitnessResultCopy.textContent = interpretation.copy;
+
+        if (fitnessError) fitnessError.textContent = "";
+        if (fitnessResult) {
+          fitnessResult.hidden = false;
+          fitnessResult.scrollIntoView({ behavior:"smooth", block:"nearest" });
+        }
       });
     }
 
