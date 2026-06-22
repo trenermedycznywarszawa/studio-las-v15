@@ -1,4 +1,4 @@
 ﻿User-agent: *
 Allow: /
 
-Sitemap: https://trenermedycznywarszawa.github.io/studio-las-v14/sitemap.xml
+Sitemap: https://trenermedycznywarszawa.github.io/studio-las-v15/sitemap.xml
