@@ -42,6 +42,8 @@ The seed file uses fixed fake UUIDs and `example.test` emails only. The RLS test
 
 Importer planning is documented in `IMPORTER_DESIGN.md`. No importer is implemented in this phase.
 
+Importer design review has been completed against the current OS 8.0 localStorage structures. The next implementation step should be a dry-run-only importer that reads an exported `studioLasOS_v3` backup and reports mappings, conflicts, skipped records, and `needs_review` without writing production data.
+
 ## Included In This Phase
 
 - Core tables for trainers, clients, process data, plans, reports, documents, and legacy import audit.

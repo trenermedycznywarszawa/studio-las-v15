@@ -20,6 +20,30 @@ Final result:
 
 The importer is still not implemented. The next step is importer design, then a separate implementation phase.
 
+## Importer Design Review Status
+
+Importer design review was completed against the current `studio-management-os-3.0.html` localStorage structures.
+
+Required V1 coverage now includes:
+
+- `studioLasOS_v3.clients[]`
+- `client.intake`
+- `client.sessions[]`
+- `client.preSessionChecks[]`
+- `client.postSessionNotes[]`
+- `client.tasks[]`
+- `client.measurements[]`
+- `client.polarSessions[]`
+- `client.testResults[]`
+- `client.homePlan` and `client.homePlan.exercises[]`
+- `client.reports[]`
+- `studioLasExerciseLibraryV1`
+- `studioLasGuidance_v1`
+- `studioLasGuidancePilot_v1`
+- Tanita `pdfDataUrl` through Storage, never SQL text
+
+The first importer implementation should start with `dry_run` only. No frontend integration, JS importer, or Auth/client login work exists in this phase.
+
 ## Source
 
 The current OS 8.0 browser state lives under:

@@ -44,6 +44,12 @@ Dodatkowe zrodla, jesli sa dostepne:
 - `studioLasGuidance_v1`
 - `studioLasGuidancePilot_v1`
 
+Klucze techniczne, ktorych importer V1 nie powinien przenosic jako danych klienta:
+
+- `studioLasClientPanelUnlocked_*` - stan sesji przegladarki, ignorowac,
+- seed/version keys biblioteki cwiczen, np. wersja core/strength/video seedow - ignorowac jako metadane runtime,
+- `studioLasOS_v1` - tylko legacy fallback; V1 importera obsluguje eksport OS 8.0 po migracji do `studioLasOS_v3`.
+
 Importer powinien przyjmowac:
 
 - plik JSON backupu,
@@ -53,6 +59,8 @@ Importer powinien przyjmowac:
 - opcjonalny prefix Storage dla dokumentow.
 
 Przed kazdym importem nalezy zapisac nienaruszony backup JSON w Storage albo w bezpiecznym miejscu poza baza.
+
+Importer V1 powinien najpierw dzialac w trybie `dry_run`. Tryb `apply` moze byc wlaczony dopiero, gdy raport dry-run pokazuje kompletne liczniki, brak krytycznych bledow i jawna liste `needs_review`.
 
 ## 3. Mapowanie danych
 
@@ -78,10 +86,10 @@ Mapowanie:
 - `client.fears` -> `clients.fears`
 - `client.healthStatus` -> `clients.health_status`
 - `client.contraindications` -> `clients.contraindications`
-- `client.redFlagsText` -> `clients.red_flags_text`
-- `client.communicationProfile` -> `clients.communication_profile`
+- `client.redFlags` / `client.redFlagsText` -> `clients.red_flags_text`
+- `client.neuroType` / `client.neuroProfile` / `client.communicationProfile` -> `clients.communication_profile`
 - `client.nextMilestone` -> `clients.next_milestone`
-- `client.workingHypothesis` -> `clients.working_hypothesis`
+- `client.decisionLogic` / `client.workingHypothesis` -> `clients.working_hypothesis`
 - importer input `trainer_id` -> `clients.owner_trainer_id`
 
 Uwagi:
@@ -89,6 +97,54 @@ Uwagi:
 - `stage` musi przejsc walidacje `1..4`; wartosci niepewne ida do `stage_raw` i `legacy_import_records.status = 'needs_review'`.
 - `clients.status` domyslnie `active`.
 - Importer nie tworzy kont klienta w Auth w pierwszej wersji.
+- Po utworzeniu klienta importer powinien utworzyc `client_trainers` dla `trainer_id` jako `primary`, ale tylko przez admin/service role.
+- `red_flags_text`, `contraindications` i `working_hypothesis` pozostaja trainer-only; nie wolno ich projektowac do widokow klienta.
+
+### client_intakes
+
+Zrodlo: `client.intake`
+
+Mapowanie:
+
+- `intake.importedAt` -> `client_intakes.imported_at`
+- parent client -> `client_intakes.client_id`
+- generated source id or path -> `client_intakes.legacy_id`
+- `intake.source` -> `client_intakes.source`
+- `intake.raw` -> `client_intakes.raw_payload`
+- `intake.summary` -> `client_intakes.summary`
+- `intake.goals` -> `client_intakes.goals`
+- `intake.mainGoal` -> `client_intakes.main_goal`
+- `intake.motivation` -> `client_intakes.motivation`
+- `intake.expectations` -> `client_intakes.expectations`
+- `intake.readiness` -> `client_intakes.readiness_text`
+- `intake.painAreas` -> `client_intakes.pain_areas`
+- `intake.medicalFlags` -> `client_intakes.medical_flags`
+- `intake.movementLimitations` -> `client_intakes.movement_limitations`
+- `intake.lifestyleFlags` -> `client_intakes.lifestyle_flags`
+- `intake.trainingPreferences` -> `client_intakes.training_preferences`
+- `intake.flags` -> `client_intakes.flags`
+- `intake.communicationStyle` -> `client_intakes.communication_style`
+- `intake.complianceForecast` -> `client_intakes.compliance_forecast`
+- `intake.firstSessionFocus` -> `client_intakes.first_session_focus`
+- `intake.riskLevel` -> `client_intakes.risk_level`
+- `intake.trainerNotes` -> `client_intakes.trainer_notes`
+
+Uwagi:
+
+- Raw intake jest wrazliwy i nie trafia do widokow klienta.
+- `riskLevel` musi pasowac do `low|medium|high`; inne wartosci ida do `needs_review`.
+- Jesli czesc danych z ankiety zostala skopiowana na poziom `client`, importer zachowuje je rowniez w `raw_payload`, zeby nie zgubic kontekstu.
+
+### client_access_credentials
+
+Zrodlo: `client.clientAccessCode`, `client.clientAccessUpdatedAt`
+
+Decyzja V1:
+
+- plaintext `clientAccessCode` nie moze trafic do SQL ani do `raw_payload` w formie jawnej,
+- importer V1 domyslnie nie tworzy `client_access_credentials`,
+- jezeli zostanie zatwierdzony tryb migracji kodow, importer musi zapisac tylko hash do `client_access_credentials.code_hash` i `clientAccessUpdatedAt` do `code_updated_at`,
+- bez zatwierdzonej strategii hashowania rekord trafia do `legacy_import_records.status = 'needs_review'` z notatka bez ujawniania kodu.
 
 ### sessions
 
@@ -105,8 +161,8 @@ Mapowanie:
 - `session.mobilityIndex` -> `sessions.mobility_index`
 - `session.sleepQuality` -> `sessions.sleep_quality`
 - `session.exercises` / `session.exercisesText` -> `sessions.exercises_text`
-- `session.trainerObservation` -> `sessions.trainer_observation`
-- `session.trainerDecision` -> `sessions.trainer_decision`
+- `session.notes` / `session.trainerObservation` -> `sessions.trainer_observation`
+- `session.decision` / `session.trainerDecision` -> `sessions.trainer_decision`
 - `session.milestone` -> `sessions.milestone`
 - `session.clientSummary` -> `sessions.client_summary`
 - `session.clientNextStep` -> `sessions.client_next_step`
@@ -116,6 +172,71 @@ Uwagi:
 
 - Brak daty sesji to `needs_review`.
 - Dane trenerskie pozostaja w tabeli bazowej, nie w widokach klienta.
+
+### pre_session_checks
+
+Zrodlo: `client.preSessionChecks[]`
+
+Mapowanie:
+
+- `check.id` -> `pre_session_checks.legacy_id`
+- parent client -> `pre_session_checks.client_id`
+- `check.date` -> `pre_session_checks.check_date`
+- `check.painIncreased` -> `pre_session_checks.pain_increased`
+- `check.poorSleep` -> `pre_session_checks.poor_sleep`
+- `check.homePlanDone` -> `pre_session_checks.home_plan_done`
+- `check.newSymptoms` -> `pre_session_checks.new_symptoms`
+- `check.redFlagConcern` -> `pre_session_checks.red_flag_concern`
+- `check.plannedDecision` -> `pre_session_checks.planned_decision`
+- `check.note` -> `pre_session_checks.trainer_note`
+
+Uwagi:
+
+- `red_flag_concern` jest sygnalem procesowym trainer-only, nie surowa etykieta dla klienta.
+- Brak daty lub decyzja spoza check constraint oznacza `needs_review`.
+
+### post_session_observations
+
+Zrodlo: `client.postSessionNotes[]`
+
+Mapowanie:
+
+- `note.id` -> `post_session_observations.legacy_id`
+- parent client -> `post_session_observations.client_id`
+- matched same-date session -> `post_session_observations.session_id`
+- `note.date` -> `post_session_observations.date`
+- `note.whatWeDid` -> `post_session_observations.what_we_did`
+- `note.clientResponse` -> `post_session_observations.client_response`
+- `note.decision` -> `post_session_observations.decision`
+- `note.homeTask` -> `post_session_observations.home_task_text`
+- `note.clientMessage` -> `post_session_observations.client_message`
+- explicit publish decision -> `post_session_observations.client_visible`, `post_session_observations.published_at`
+
+Uwagi:
+
+- `clientMessage` moze byc kandydatem do przyszlej publikacji, ale V1 nie publikuje go automatycznie.
+- `homeTask` moze utworzyc osobny `client_tasks` tylko wtedy, gdy importer potrafi zapewnic idempotencje po source path.
+
+### client_tasks
+
+Zrodlo: `client.tasks[]` oraz opcjonalnie `postSessionNotes[].homeTask`
+
+Mapowanie:
+
+- generated stable path key -> `legacy_import_records.legacy_id`
+- parent client -> `client_tasks.client_id`
+- `task.text` -> `client_tasks.text`
+- `task.done` -> `client_tasks.completed`
+- `task.source` -> `client_tasks.source`
+- `task.dueDate` -> `client_tasks.due_date`
+- `task.completedAt` -> `client_tasks.completed_at`
+- `task.createdAt` -> `client_tasks.created_at`, jesli poprawna data/czas
+
+Uwagi:
+
+- `client_tasks` nie ma kolumny `legacy_id`; idempotencja musi uzywac `legacy_import_records.source_path` albo stabilnego naturalnego klucza.
+- Puste `task.text` oznacza `skipped` albo `needs_review`, ale oryginalny payload musi zostac zapisany w audycie.
+- `client_tasks` sa trainer-only w Phase 1, wiec nie stanowia kontraktu panelu klienta.
 
 ### body_measurements
 
@@ -129,6 +250,7 @@ Mapowanie:
 - `measurement.source` -> `body_measurements.source`
 - `measurement.inputMethod` / `sourceMode` -> `body_measurements.input_method`
 - `measurement.parseStatus` / `pdfAutoFilled` -> `body_measurements.parse_status`
+- `measurement.parsedFields` -> `body_measurements.parsed_fields`
 - `measurement.weightKg` -> `body_measurements.weight_kg`
 - `measurement.fatPercent` -> `body_measurements.fat_percent`
 - `measurement.fatMassKg` -> `body_measurements.fat_mass_kg`
@@ -150,7 +272,9 @@ Mapowanie:
 Uwagi:
 
 - `pdfDataUrl` nigdy nie trafia bezposrednio do SQL.
+- `pdfName`, `sourceMode` i `pdfAutoFilled` sa zachowywane w `legacy_import_records.raw_payload`; `pdfName` dodatkowo moze zostac uzyte jako `client_documents.original_name`.
 - Nieparsowalne pola Tanity ida do `legacy_import_records.raw_payload`.
+- Jesli upload PDF do Storage sie nie uda, pomiar Tanita nadal powinien zostac zaimportowany bez `document_id`, a rekord audytu dla PDF powinien dostac `status = 'needs_review'` albo `error`.
 
 ### training_load_observations
 
@@ -193,20 +317,68 @@ Mapowanie:
 - `testResult.testName` -> `assessment_results.test_name`
 - `testResult.date` / `performedAt` -> `assessment_results.performed_at`
 - `testResult.side` -> `assessment_results.side`
-- `testResult.resultText` -> `assessment_results.result_text`
+- `testResult.result` / `testResult.score` / `testResult.resultText` -> `assessment_results.result_text`
 - `testResult.painBefore` -> `assessment_results.pain_before`
 - `testResult.painAfter` -> `assessment_results.pain_after`
 - `testResult.quality` -> `assessment_results.quality`
 - `testResult.interpretation` -> `assessment_results.interpretation`
 - `testResult.trainerDecision` -> `assessment_results.trainer_decision`
 - `testResult.nextStep` -> `assessment_results.next_step`
-- `testResult.trainerNote` -> `assessment_results.trainer_note`
+- `testResult.notes` / `testResult.trainerNote` -> `assessment_results.trainer_note`
 - client-safe summary -> `assessment_results.client_summary`
 - publish decision -> `assessment_results.client_visible`, `assessment_results.published_at`
 
 Uwagi:
 
 - Wartosci poza check constraints ida do `needs_review`.
+
+### exercises
+
+Zrodlo: `studioLasExerciseLibraryV1`
+
+Mapowanie:
+
+- `exercise.id` -> `exercises.legacy_id`
+- importer input `trainer_id` -> `exercises.owner_trainer_id`
+- `exercise.name` / `technicalName` / `nazwaTechniczna` -> `exercises.name`
+- `exercise.clientName` -> `exercises.client_name`
+- `exercise.category` -> `exercises.category`
+- `exercise.trainingBlock` -> `exercises.training_block`
+- `exercise.subcategory` -> `exercises.subcategory`
+- `exercise.region` -> `exercises.region`
+- `exercise.pattern` -> `exercises.pattern`
+- `exercise.stage` -> `exercises.stage`
+- `exercise.level` -> `exercises.level`
+- `exercise.equipment` -> `exercises.equipment`
+- `exercise.goal` -> `exercises.goal`
+- `exercise.dosageDefault` -> `exercises.dosage_default`
+- `exercise.tempo` -> `exercises.tempo`
+- `exercise.breathing` -> `exercises.breathing`
+- `exercise.clientInstruction` -> `exercises.client_instruction`
+- `exercise.coachNotes` -> `exercises.coach_notes`
+- `exercise.commonMistakes` -> `exercises.common_mistakes`
+- `exercise.stopCriteria` -> `exercises.stop_criteria`
+- `exercise.regressions` -> `exercises.regressions`
+- `exercise.progressions` -> `exercises.progressions`
+- `exercise.contraindications` -> `exercises.contraindications`
+- `exercise.videoUrl` -> `exercises.video_url`
+- `exercise.tags` -> `exercises.tags`
+- `exercise.linkedTests` -> `exercises.linked_tests`
+- `exercise.beginnerFriendly` -> `exercises.beginner_friendly`
+- `exercise.source` -> `exercises.source`
+- `exercise.sourceOrder` -> `exercises.source_order`
+- `exercise.qualityStatus` -> `exercises.quality_status`
+- `exercise.muscleMap` -> `exercises.muscle_map`
+- `exercise.primaryMuscles` -> `exercises.primary_muscles`
+- `exercise.secondaryMuscles` -> `exercises.secondary_muscles`
+- `exercise.supportMuscles` -> `exercises.support_muscles`
+- `exercise.strengthSet` -> `exercises.strength_set`
+
+Uwagi:
+
+- Import biblioteki cwiczen jest pomocniczy dla `home_plan_items.exercise_id`.
+- Brak dopasowania cwiczenia z planu domowego do atlasu nie blokuje importu planu; item zachowuje nazwe i instrukcje.
+- Seed/version keys biblioteki cwiczen nie sa importowane.
 
 ### home_plans
 
@@ -221,6 +393,7 @@ Mapowanie:
 - `homePlan.frequency` -> `home_plans.frequency`
 - `homePlan.duration` -> `home_plans.duration`
 - `homePlan.instructions` -> `home_plans.instructions`
+- `homePlan.updatedAt` -> `home_plans.updated_at`, jesli poprawny timestamp; inaczej raw payload
 - publish decision -> `home_plans.status`, `home_plans.published_at`
 
 Uwagi:
@@ -246,9 +419,9 @@ Mapowanie:
 - `exercise.clientCue` -> `home_plan_items.client_cue`
 - `exercise.stopCriteria` -> `home_plan_items.stop_criteria`
 - `exercise.videoUrl` -> `home_plan_items.video_url`
-- `exercise.sortOrder` -> `home_plan_items.sort_order`
+- array index / `exercise.sortOrder` -> `home_plan_items.sort_order`
 - `exercise.addedAt` -> `home_plan_items.added_at`
-- trainer-only note -> `home_plan_items.trainer_note`
+- `exercise.note` -> `home_plan_items.trainer_note`
 - publish decision -> `home_plan_items.status`, `home_plan_items.published_at`
 
 Uwagi:
@@ -258,6 +431,10 @@ Uwagi:
 ### guidance_events
 
 Zrodlo: `studioLasGuidance_v1` oraz przyszle mapowanie check-inow/daily steps.
+
+Ksztalt OS 8.0:
+
+- `studioLasGuidance_v1[clientLegacyId][date][taskId] = true`
 
 Mapowanie:
 
@@ -273,11 +450,17 @@ Mapowanie:
 Uwagi:
 
 - Tabela nie ma `legacy_id`; kazdy event musi miec `legacy_import_records.source_path` i `target_id`.
+- Stabilny source path powinien miec postac `studioLasGuidance_v1.{clientLegacyId}.{date}.{taskId}`.
+- `taskId` nalezy probowac dopasowac do aktywnego `home_plan_items.legacy_id`, `exercise_id` albo nazwy; brak dopasowania nie blokuje eventu, ale trafia do `payload`.
 - `client.checkins[]` bez stabilnego kontraktu ida do `needs_review`, chyba ze da sie je bezpiecznie sklasyfikowac.
 
 ### guidance_pilots
 
 Zrodlo: `studioLasGuidancePilot_v1`
+
+Ksztalt OS 8.0:
+
+- `studioLasGuidancePilot_v1[clientLegacyId] = { status, startDate, durationWeeks, currentWeek, objective, trainerNote, weeklyFeedback, updatedAt }`
 
 Mapowanie:
 
@@ -289,6 +472,7 @@ Mapowanie:
 - `currentWeek` -> `guidance_pilots.current_week`
 - `objective` -> `guidance_pilots.objective`
 - trainer-only note -> `guidance_pilots.trainer_note`
+- `updatedAt` -> raw payload / audit only, bo tabela nie ma osobnego pola legacy updated time
 
 Feedback tygodniowy:
 
@@ -307,6 +491,7 @@ Mapowanie:
 - `report.id` -> `reports.legacy_id`
 - parent client -> `reports.client_id`
 - `report.type` -> `reports.type`
+- `report.date` -> `legacy_import_records.raw_payload.date`; opcjonalnie `reports.created_at` tylko po zatwierdzeniu reguly
 - inferred or trainer-approved value -> `reports.audience`
 - inferred or trainer-approved value -> `reports.status`
 - `report.title` -> `reports.title`
@@ -318,6 +503,7 @@ Uwagi:
 
 - OS 8.0 nie ma pewnego pola `audience`; importer nie powinien automatycznie publikowac raportu klientowi bez reguly zatwierdzonej przez trenera.
 - Domyslnie niepewne raporty ida jako `audience = 'trainer'`, `status = 'draft'` albo `needs_review`.
+- Obecny schemat nie ma osobnego `report_date`. To nie blokuje V1, ale wymaga zachowania daty z OS 8.0 w audycie i decyzji, czy w przyszlosci dodac kolumne raportowa.
 
 ### client_documents
 
@@ -345,6 +531,8 @@ Uwagi:
 
 - Dokumenty sa trainer-only, chyba ze `audience = 'client'`, `status = 'published'`, `published_at is not null`.
 - Pierwsza wersja importera nie powinna publikowac dokumentow klientowi automatycznie.
+- `client.documents[]` w OS 8.0 nie ma tak stabilnego kontraktu jak Tanita PDF; V1 powinien importowac tylko rekordy z jednoznacznym plikiem/metadanymi, a reszte oznaczyc `needs_review`.
+- `pdfDataUrl` Tanity jest jedynym znanym data-url, ktory V1 powinien probowac przeniesc do Storage.
 
 ### legacy_import_batches
 
@@ -383,6 +571,12 @@ Mapowanie:
 - import status -> `legacy_import_records.status`
 - notes -> `legacy_import_records.notes`
 
+Zasada bezpieczenstwa dla `raw_payload`:
+
+- zachowywac oryginalny kontekst potrzebny do audytu,
+- redagowac sekrety, np. plaintext `clientAccessCode`,
+- nie zapisywac pelnych `pdfDataUrl`/base64; dla PDF wystarcza metadane, hash, nazwa i source path.
+
 Statusy:
 
 - `imported`
@@ -415,6 +609,13 @@ Zasady:
 - kazdy run tworzy osobny `legacy_import_batches`,
 - rekordy juz istniejace powinny dostac nowy wpis audytowy `legacy_import_records`, ale nie duplikowac danych docelowych.
 
+Wazne ograniczenie Phase 1:
+
+- schemat wymusza unikalnosc dla `clients(owner_trainer_id, legacy_id)`, `client_documents(storage_bucket, storage_path)`, `guidance_events` daily unique oraz feedbacku pilota,
+- wiekszosc tabel potomnych nie ma jeszcze unikalnych indeksow `(client_id, legacy_id)`,
+- dlatego importer V1 nie moze robic slepych insertow; przed zapisem musi wyszukac istniejacy rekord po `(client_id, legacy_id)` albo po wpisie `legacy_import_records`,
+- opcjonalne przyszle hardening SQL: dodac unikalne indeksy czesciowe `(client_id, legacy_id) where legacy_id is not null` dla tabel procesowych.
+
 Konflikty:
 
 - jesli docelowy rekord istnieje i rozni sie od backupu, importer nie powinien cicho nadpisywac danych edytowanych po migracji,
@@ -430,12 +631,14 @@ Przyklady:
 - brak wymaganej daty,
 - wartosc poza check constraint,
 - niejednoznaczny `stage`,
+- `client.neuroType` albo `communicationProfile`, jesli nie pasuje do docelowej interpretacji komunikacyjnej,
+- `clientAccessCode`, jesli nie ma zatwierdzonego hashowania,
 - raport bez pewnego `audience`,
+- `report.date`, dopoki nie ma decyzji o kolumnie raportowej albo mapowaniu do `created_at`,
 - Polar legacy fields bez pasujacej sesji,
 - `client.checkins[]` bez stabilnego kontraktu,
 - `client.documents[]` bez stabilnego kontraktu,
-- uszkodzony albo nierozpoznany `pdfDataUrl`,
-- plaintext `clientAccessCode`.
+- uszkodzony albo nierozpoznany `pdfDataUrl`.
 
 Zasada:
 
@@ -443,6 +646,8 @@ Zasada:
 - zapisac oryginalny obiekt w `legacy_import_records.raw_payload`,
 - ustawic `legacy_import_records.status = 'needs_review'`,
 - dodac czytelne `notes`.
+
+`needs_review` nie oznacza porzucenia danych. Oznacza, ze trener lub administrator musi pozniej zdecydowac, czy rekord ma zostac opublikowany, przepisany do konkretnego pola, zarchiwizowany, czy zostawiony tylko w audycie legacy.
 
 ## 7. Tanita pdfDataUrl i Supabase Storage
 
@@ -472,6 +677,13 @@ Storage path powinien byc deterministyczny, np.:
 
 `clients/{client_id}/tanita/{legacy_id_or_hash}.pdf`
 
+Fallback:
+
+- jesli data URL jest uszkodzony, zachowac pomiar Tanita bez dokumentu,
+- nie zapisywac base64 w SQL ani w `legacy_import_records.raw_payload` bez maskowania,
+- zapisac w audycie metadane bledu, np. `source_path`, `pdfName`, rozmiar deklarowany/hash jesli dostepny,
+- oznaczyc PDF jako `needs_review` albo `error`, ale nie blokowac pozostalych danych klienta.
+
 ## 8. Legacy Polar fields
 
 Legacy pola Polar:
@@ -500,11 +712,17 @@ Regula:
 Importer powinien porownac liczby zrodlowe i docelowe:
 
 - clients,
+- client intakes,
 - sessions,
+- pre-session checks,
+- post-session observations,
+- client tasks,
 - body measurements,
 - training load observations,
 - assessment results,
+- exercises,
 - reports,
+- home plans,
 - home plan items,
 - guidance events,
 - guidance pilots,
@@ -559,6 +777,13 @@ Bezpieczna kolejnosc rollbacku:
 
 W pierwszej wersji preferowany rollback to soft delete dla danych procesowych i usuniecie tylko rekordow stricte testowych w pustym projekcie.
 
+Ograniczenie:
+
+- tabele docelowe Phase 1 nie maja `import_batch_id`,
+- rollback musi polegac na `legacy_import_records.target_table` + `target_id`,
+- przed rollbackiem importer powinien sprawdzic, czy rekord nie byl edytowany po imporcie,
+- rollback produkcyjny nie powinien hard-delete'owac danych klienta; preferowane jest `deleted_at` i zachowanie audytu.
+
 ## 11. Czego importer nie robi w pierwszej wersji
 
 Pierwsza wersja nie powinna:
@@ -575,6 +800,8 @@ Pierwsza wersja nie powinna:
 - przepisywac OS 8.0,
 - automatycznie interpretowac niejednoznacznych danych medycznych,
 - publikowac dokumentow klientowi bez jawnego statusu i `published_at`.
+- uruchamiac sie z anon/client tokenem; import wymaga zaufanej sciezki admin/service role,
+- importowac do projektu Supabase bez jawnego potwierdzenia project URL/ref i backupu.
 
 ## 12. Kolejnosc przyszlej implementacji
 
@@ -584,20 +811,35 @@ Rekomendowana kolejnosc:
 2. Dodac tryb `dry_run`, ktory tylko czyta JSON i tworzy raport mapowania bez zapisu.
 3. Dodac parser i walidator wejscia `studioLasOS_v3`.
 4. Dodac tworzenie `legacy_import_batches`.
-5. Dodac import `clients` i `client_intakes`.
-6. Dodac import `sessions`.
-7. Dodac import `body_measurements` bez PDF.
-8. Dodac Storage flow dla Tanita `pdfDataUrl`.
-9. Dodac import `training_load_observations` i reguly legacy Polar fields.
-10. Dodac import `assessment_results`.
-11. Dodac import `home_plans` i `home_plan_items`.
-12. Dodac import `guidance_events`, `guidance_pilots`, `guidance_pilot_feedback`.
-13. Dodac import `reports` jako draft/trainer-only, chyba ze zatwierdzono reguly publikacji.
-14. Dodac import `client_documents`.
-15. Dodac pelny zapis `legacy_import_records`.
-16. Dodac walidacje rekordow po imporcie.
-17. Dodac raport `needs_review`.
-18. Dodac rollback batcha.
-19. Uruchomic importer na fikcyjnym backupie.
-20. Uruchomic importer na kopii testowej prawdziwego backupu.
-21. Dopiero po zatwierdzeniu wynikow projektowac integracje frontendu.
+5. Dodac import `clients`, `client_trainers` i `client_intakes`.
+6. Dodac import `sessions`, `pre_session_checks` i `post_session_observations`.
+7. Dodac import `client_tasks`.
+8. Dodac import `body_measurements` bez PDF.
+9. Dodac Storage flow dla Tanita `pdfDataUrl`.
+10. Dodac import `training_load_observations` i reguly legacy Polar fields.
+11. Dodac import `assessment_results`.
+12. Dodac import `exercises` z `studioLasExerciseLibraryV1`.
+13. Dodac import `home_plans` i `home_plan_items`.
+14. Dodac import `guidance_events`, `guidance_pilots`, `guidance_pilot_feedback`.
+15. Dodac import `reports` jako draft/trainer-only, chyba ze zatwierdzono reguly publikacji.
+16. Dodac import `client_documents`.
+17. Dodac pelny zapis `legacy_import_records`.
+18. Dodac walidacje rekordow po imporcie.
+19. Dodac raport `needs_review`.
+20. Dodac rollback batcha.
+21. Uruchomic importer na fikcyjnym backupie.
+22. Uruchomic importer na kopii testowej prawdziwego backupu.
+23. Dopiero po zatwierdzeniu wynikow projektowac integracje frontendu.
+
+## 13. Decyzje przed implementacja apply-mode
+
+Brak krytycznej zmiany schematu blokujacej importer dry-run.
+
+Decyzje do zatwierdzenia przed realnym zapisem:
+
+- czy dodac osobne `reports.report_date`, czy zostawic date legacy tylko w audycie,
+- czy dodac unikalne indeksy `(client_id, legacy_id)` dla tabel procesowych przed produkcyjnym apply,
+- czy dodac techniczne pola targetowe `import_batch_id`, `legacy_source`, `legacy_path`, `raw_legacy_payload`, `needs_review_reason`, czy zostac przy `legacy_import_records`,
+- czy migrowac `clientAccessCode` przez hashowanie, czy calkowicie porzucic legacy access code na rzecz przyszlego Auth,
+- czy `client.neuroType` jest elementem komunikacji klienta, hipotezy roboczej, czy tylko legacy payload,
+- czy OS 8.0 reports maja byc domyslnie `trainer/draft`, czy czesc z nich moze byc automatycznie `client/published`.
