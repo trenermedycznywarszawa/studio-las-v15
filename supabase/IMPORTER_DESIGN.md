@@ -843,3 +843,40 @@ Decyzje do zatwierdzenia przed realnym zapisem:
 - czy migrowac `clientAccessCode` przez hashowanie, czy calkowicie porzucic legacy access code na rzecz przyszlego Auth,
 - czy `client.neuroType` jest elementem komunikacji klienta, hipotezy roboczej, czy tylko legacy payload,
 - czy OS 8.0 reports maja byc domyslnie `trainer/draft`, czy czesc z nich moze byc automatycznie `client/published`.
+
+## 14. Real dry-run apply-mode gates
+
+Sanitized dry-run on a real OS 8.0 export produced no importer errors and no fatal blockers, but apply-mode must stay conservative.
+
+Required gates before any test apply:
+
+- classify client-level CSV/intake spillover fields before writing,
+- use deterministic `legacy_path` for records without `id`,
+- never import plaintext `clientAccessCode`,
+- keep Tanita PDFs out of SQL until Storage upload flow exists,
+- import OS 8.0 reports as `audience = 'trainer'`, `status = 'draft'` unless a trainer explicitly publishes them.
+
+CSV/intake handling:
+
+- normalize known intake fields into `client_intakes` columns where the schema already has a clear destination,
+- preserve the full sanitized intake context in `client_intakes.raw_payload`,
+- redact secrets and large binary/base64 values before audit storage,
+- do not add new schema only to flatten every questionnaire answer in V1.
+
+Missing id handling:
+
+- `client_intakes`: use `studioLasOS_v3.clients[{clientIndex}].intake`,
+- `client_tasks`: use `studioLasOS_v3.clients[{clientIndex}].tasks[{taskIndex}]`,
+- `home_plans`: use `studioLasOS_v3.clients[{clientIndex}].homePlan`.
+
+These fallback keys are stable for a frozen backup. They are less stable if the source localStorage is edited and re-exported, so apply-mode must also compare source payload hash and existing `legacy_import_records` before writing.
+
+Tanita PDF V1/V2:
+
+- V1 without Storage: import `body_measurements`, set `document_id = null`, record redacted PDF metadata as `needs_review`, and do not create usable `client_documents` rows for missing Storage objects.
+- V2 with Storage: upload PDF, create `client_documents`, then link `body_measurements.document_id`.
+
+Recommendation:
+
+- next implementation may be apply-mode for a test database only, without Storage upload, after dry-run hardening and explicit confirmation of target project.
+- production apply-mode remains blocked until Storage, backup, rollback, and human review workflow are tested.

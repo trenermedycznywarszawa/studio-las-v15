@@ -44,6 +44,16 @@ Required V1 coverage now includes:
 
 The first importer implementation should start with `dry_run` only. No frontend integration, JS importer, or Auth/client login work exists in this phase.
 
+Real export dry-run analysis found no fatal importer errors. Before any apply-mode, the importer must still:
+
+- classify known questionnaire/intake spillover fields,
+- use deterministic `legacy_path` for records without IDs,
+- skip plaintext client access codes unless a hash-only migration is explicitly approved,
+- keep Tanita PDFs out of SQL and defer actual document rows until Storage upload is implemented,
+- import legacy reports as trainer-only drafts by default.
+
+The next safe implementation target is test-database apply-mode without Storage upload, not production migration.
+
 ## Source
 
 The current OS 8.0 browser state lives under:
