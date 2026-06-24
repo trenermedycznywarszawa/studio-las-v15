@@ -1511,9 +1511,9 @@
   <script>
     const APP_VERSION = "9.0";
     const STUDIO_LAS_VERSION = "Studio Las OS 9.0 Supabase Write Preview";
-    const STUDIO_LAS_BUILD = "2026-06-24-CLIENTS-WRITE-V1";
+    const STUDIO_LAS_BUILD = "2026-06-24-CLIENTS-WRITE-V1-DIAG";
     const STUDIO_LAS_BUILD_TIME = "2026-06-24 14:31 Europe/Warsaw";
-    const STUDIO_LAS_BUILD_COMMIT = "f097ded";
+    const STUDIO_LAS_BUILD_COMMIT = "226532a";
     const STUDIO_LAS_EXPECTED_PATH = "/studio-las-v15/";
     const STUDIO_LAS_REPO_EXPECTED_URL = "https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html";
     const STORAGE_KEY = "studioLasOS_v3";
@@ -4615,7 +4615,7 @@
         });
         if (!response.ok) {
           const text = await response.text();
-          throw new Error(`Supabase write failed for ${table}: ${response.status} ${text.slice(0, 320)}`);
+          throw new Error(`Supabase write failed for ${table}: ${response.status} ${text}`);
         }
         const affectedCount = parseSupabaseMutationCount(response);
         if (params.expectAffected && affectedCount === 0) {
@@ -4650,15 +4650,11 @@
         return row;
       }
 
-      async function softDeleteClient(id) {
+      async function softDeleteClient(id, payload) {
         await mutate("clients", {
           method: "PATCH",
           filters: { id: `eq.${id}`, deleted_at: "is.null" },
-          payload: {
-            status: "archived",
-            deleted_at: new Date().toISOString(),
-            updated_at: new Date().toISOString()
-          },
+          payload,
           returning: false,
           count: "exact",
           expectAffected: true
@@ -5076,6 +5072,14 @@
       return payload;
     }
 
+    function redactClientPayloadForLog(payload = {}) {
+      const clone = { ...payload };
+      ["contact", "email", "phone", "motivation", "fears", "health_status", "contraindications", "red_flags_text", "working_hypothesis"].forEach(key => {
+        if (clone[key]) clone[key] = "[redacted]";
+      });
+      return clone;
+    }
+
     function supabaseClientService() {
       const service = createStudioLasSupabaseDataService(getSupabaseConfig());
       if (!service.isConfigured()) throw new Error("Supabase URL or anon key is missing.");
@@ -5084,16 +5088,38 @@
 
     async function supabaseInsertClient(client) {
       const payload = mapClientStateToSupabasePayload(client, { includeOwnerTrainer: true });
-      return supabaseClientService().insertClient(payload);
+      console.info("Studio Las OS: insertClient payload", redactClientPayloadForLog(payload));
+      const row = await supabaseClientService().insertClient(payload);
+      console.info("Studio Las OS: insertClient response", {
+        id: row?.id || null,
+        ownerTrainerId: payload.owner_trainer_id || null,
+        status: row?.status || null
+      });
+      return row;
     }
 
     async function supabaseUpdateClient(id, client) {
       const payload = mapClientStateToSupabasePayload(client);
-      return supabaseClientService().updateClient(id, payload);
+      console.info("Studio Las OS: updateClient payload", {
+        id,
+        payload: redactClientPayloadForLog(payload)
+      });
+      const row = await supabaseClientService().updateClient(id, payload);
+      console.info("Studio Las OS: updateClient response", {
+        id: row?.id || null,
+        status: row?.status || null
+      });
+      return row;
     }
 
     async function supabaseSoftDeleteClient(id) {
-      return supabaseClientService().softDeleteClient(id);
+      const payload = {
+        status: "archived",
+        deleted_at: new Date().toISOString(),
+        updated_at: new Date().toISOString()
+      };
+      console.info("Studio Las OS: softDeleteClient payload", { id, payload });
+      return supabaseClientService().softDeleteClient(id, payload);
     }
 
     function replaceClientInState(savedClient, existing = null) {
@@ -12207,6 +12233,11 @@ Initial 83.45 64.95 18.10
 
     $("#clientForm").addEventListener("submit", async e => {
       e.preventDefault();
+      console.info("Studio Las OS: client submit handler", {
+        dataSource: window.STUDIO_LAS_DATA_SOURCE || null,
+        activeTrainerProfileId: activeTrainerProfileForSupabase() || null,
+        hasAccessToken: Boolean(getSupabaseConfig().accessToken)
+      });
       const fd = new FormData(e.currentTarget);
       const existing = editingClientId ? state.clients.find(client => client.id === editingClientId) : null;
       const c = {
@@ -12246,8 +12277,16 @@ Initial 83.45 64.95 18.10
         sessions: existing?.sessions || []
       };
       const migrated = migrateClient(c);
+      const supabaseModeAtClientSave = isSupabaseMode();
+      console.info("Studio Las OS: supabase mode at client save", {
+        supabaseMode: supabaseModeAtClientSave,
+        dataSource: window.STUDIO_LAS_DATA_SOURCE || null,
+        editing: Boolean(existing),
+        clientId: existing?.id || null,
+        activeTrainerProfileId: activeTrainerProfileForSupabase() || null
+      });
 
-      if (isSupabaseMode()) {
+      if (supabaseModeAtClientSave) {
         const submitButton = e.currentTarget.querySelector("button[type='submit']");
         if (submitButton) submitButton.disabled = true;
         try {

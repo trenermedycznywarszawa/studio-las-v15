@@ -8,7 +8,7 @@ https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0
 
 Cache-busted test URL for this build:
 
-https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html?build=20260624-clients-write-v1
+https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html?build=20260624-clients-write-v1-diag
 
 ## Archived URL
 
@@ -38,7 +38,7 @@ window.STUDIO_LAS_VERSION
 // "Studio Las OS 9.0 Supabase Write Preview"
 
 window.STUDIO_LAS_BUILD
-// "2026-06-24-CLIENTS-WRITE-V1"
+// "2026-06-24-CLIENTS-WRITE-V1-DIAG"
 
 window.STUDIO_LAS_REPO_EXPECTED_URL
 // "https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html"
