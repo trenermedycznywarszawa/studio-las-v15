@@ -4500,6 +4500,27 @@
       };
     }
 
+    function resolveSupabaseBaseUrl(value = "") {
+      const raw = String(value || "").trim().replace(/\/+$/, "");
+      if (!raw) return "";
+      const candidate = /^https?:\/\//i.test(raw)
+        ? raw
+        : (raw.includes(".supabase.co") ? `https://${raw}` : `https://${raw}.supabase.co`);
+      try {
+        const url = new URL(candidate);
+        const isSupabaseHost = /^[a-z0-9-]+\.supabase\.co$/i.test(url.hostname);
+        if (!isSupabaseHost) throw new Error("Supabase host must end with .supabase.co");
+        url.protocol = "https:";
+        url.pathname = "";
+        url.search = "";
+        url.hash = "";
+        return url.origin;
+      } catch (error) {
+        console.warn("Studio Las OS: invalid Supabase URL/ref. Falling back to localStorage.", { value: raw, message: error.message });
+        return "";
+      }
+    }
+
     function setStudioLasDataSource(source, detail = {}) {
       window.STUDIO_LAS_DATA_SOURCE = source;
       try {
@@ -4509,9 +4530,10 @@
     }
 
     function createStudioLasSupabaseDataService(config = {}) {
-      const baseUrl = String(config.url || "").replace(/\/+$/, "");
+      const baseUrl = resolveSupabaseBaseUrl(config.url);
       const anonKey = String(config.anonKey || "");
       const accessToken = String(config.accessToken || "");
+      console.log("Supabase base URL", baseUrl);
 
       function isConfigured() {
         return Boolean(baseUrl && anonKey);
@@ -4525,7 +4547,9 @@
         if (params.limit) query.set("limit", String(params.limit));
         Object.entries(params.filters || {}).forEach(([key, value]) => query.set(key, value));
 
-        const response = await fetch(`${baseUrl}/rest/v1/${table}?${query.toString()}`, {
+        const requestUrl = `${baseUrl}/rest/v1/${table}?${query.toString()}`;
+        console.log("Supabase request URL", requestUrl);
+        const response = await fetch(requestUrl, {
           headers: {
             apikey: anonKey,
             Authorization: `Bearer ${accessToken || anonKey}`,
@@ -4593,8 +4617,12 @@
 
       async function authRequest(endpoint, payload) {
         const config = getSupabaseConfig();
-        if (!config.url || !config.anonKey) throw new Error("Set studioLasSupabaseUrl and studioLasSupabaseAnonKey first.");
-        const response = await fetch(`${String(config.url).replace(/\/+$/, "")}/auth/v1/${endpoint}`, {
+        const authBaseUrl = resolveSupabaseBaseUrl(config.url);
+        console.log("Supabase base URL", authBaseUrl);
+        if (!authBaseUrl || !config.anonKey) throw new Error("Set studioLasSupabaseUrl and studioLasSupabaseAnonKey first.");
+        const requestUrl = `${authBaseUrl}/auth/v1/${endpoint}`;
+        console.log("Supabase request URL", requestUrl);
+        const response = await fetch(requestUrl, {
           method: "POST",
           headers: {
             apikey: config.anonKey,
