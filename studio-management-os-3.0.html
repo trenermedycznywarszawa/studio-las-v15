@@ -3,18 +3,18 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Studio Las OS 8.0 | Client Guidance</title>
-  <meta name="description" content="Studio Las OS 8.0 | Client Guidance" />
+  <title>Studio Las OS 9.0 Supabase Write Preview</title>
+  <meta name="description" content="Studio Las OS 9.0 Supabase Write Preview" />
   <meta name="robots" content="noindex, nofollow" />
   <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23fffaf1'/%3E%3Cpath d='M32 12c9 10 14 20 14 28a14 14 0 0 1-28 0c0-8 5-18 14-28Z' fill='%236f8f68'/%3E%3Cpath d='M32 24v26M23 38h18' stroke='%231f2a24' stroke-width='4' stroke-linecap='round'/%3E%3C/svg%3E" />
-  <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v14/studio-management-os-3.0.html" />
-  <meta property="og:title" content="Studio Las OS 8.0 | Client Guidance" />
-  <meta property="og:description" content="Studio Las OS 8.0 | Client Guidance" />
-  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v14/studio-management-os-3.0.html" />
+  <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html" />
+  <meta property="og:title" content="Studio Las OS 9.0 Supabase Write Preview" />
+  <meta property="og:description" content="Studio Las OS 9.0 Supabase Write Preview" />
+  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html" />
   <meta property="og:locale" content="pl_PL" />
-  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v14/images/damian-about.webp" />
-  <meta name="twitter:title" content="Studio Las OS 8.0 | Client Guidance" />
-  <meta name="twitter:description" content="Studio Las OS 8.0 | Client Guidance" />
+  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v15/images/damian-about.webp" />
+  <meta name="twitter:title" content="Studio Las OS 9.0 Supabase Write Preview" />
+  <meta name="twitter:description" content="Studio Las OS 9.0 Supabase Write Preview" />
   <style>
     :root {
       --ink: #1f2a24;
@@ -1172,14 +1172,14 @@
 <body>
   <div class="app">
     <aside class="side" id="appSidebar">
-      <a class="brand" href="./index.html" aria-label="Studio Las OS 8.0 | Client Guidance — strona główna">
+      <a class="brand" href="./index.html" aria-label="Studio Las OS 9.0 Supabase Write Preview — strona główna">
         <div class="mark" aria-hidden="true">
           <svg viewBox="0 0 36 36" fill="none">
             <path d="M18 3 L26 16 H22 L28 26 H20 L20 33 H16 L16 26 H8 L14 16 H10 Z" fill="var(--green-2)"/>
             <line x1="8" y1="33" x2="28" y2="33" stroke="var(--gold)" stroke-width="1.8" stroke-linecap="round"/>
           </svg>
         </div>
-        <div><strong>Studio Las</strong><span>Studio Las OS 8.0 | Client Guidance</span></div>
+        <div><strong>Studio Las</strong><span>Studio Las OS 9.0 Supabase Write Preview</span></div>
       </a>
       <a class="home-return" href="./index.html">← Strona główna</a>
 
@@ -1232,7 +1232,7 @@
         <div class="actions">
           <button class="btn mobile-menu-btn" id="mobileMenuBtn" type="button" aria-controls="appSidebar" aria-expanded="false">☰ Menu</button>
           <a class="btn top-home-link only-mobile" href="./index.html">← Strona główna</a>
-          <span class="pill gold top-role" id="versionBadge">Studio Las OS 8.0 | Client Guidance</span>
+          <span class="pill gold top-role" id="versionBadge">Studio Las OS 9.0 Supabase Write Preview</span>
           <span class="pill blue top-role" id="roleBadge">Widok trenera</span>
           <button class="btn" id="contextActionBtn" type="button" hidden></button>
           <div class="add-menu-wrap" id="addMenuWrap">
@@ -1366,7 +1366,7 @@
         </div>
         <button class="btn" data-close="polarModal">Zamknij</button>
       </div>
-      <div class="focus-note">Dane z Polar Verity Sense wpisujemy po treningu na podstawie Polar Flow lub kompatybilnej aplikacji. W Studio Las OS 8.0 | Client Guidance zapisujemy interpretację i decyzję trenera, bez automatycznej integracji z opaską.</div>
+      <div class="focus-note">Dane z Polar Verity Sense wpisujemy po treningu na podstawie Polar Flow lub kompatybilnej aplikacji. W Studio Las OS zapisujemy interpretację i decyzję trenera, bez automatycznej integracji z opaską.</div>
       <form id="polarForm" class="form-grid">
         <div class="form-field"><label class="label">Data</label><input type="date" name="date" required /></div>
         <div class="form-field"><label class="label">Typ sesji</label><input name="sessionType" placeholder="np. siła, kontrola, cardio zone 2" /></div>
@@ -1509,7 +1509,13 @@
   <div class="toast" id="toast"></div>
 
   <script>
-    const APP_VERSION = "8.0";
+    const APP_VERSION = "9.0";
+    const STUDIO_LAS_VERSION = "Studio Las OS 9.0 Supabase Write Preview";
+    const STUDIO_LAS_BUILD = "2026-06-24-CLIENTS-WRITE-V1";
+    const STUDIO_LAS_BUILD_TIME = "2026-06-24 14:31 Europe/Warsaw";
+    const STUDIO_LAS_BUILD_COMMIT = "f097ded";
+    const STUDIO_LAS_EXPECTED_PATH = "/studio-las-v15/";
+    const STUDIO_LAS_REPO_EXPECTED_URL = "https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html";
     const STORAGE_KEY = "studioLasOS_v3";
     const LEGACY_KEY = "studioLasOS_v1";
     const GUIDANCE_STORAGE_KEY = "studioLasGuidance_v1";
@@ -1517,6 +1523,12 @@
     const CLIENT_PANEL_UNLOCK_PREFIX = "studioLasClientPanelUnlocked_";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
     const USE_SUPABASE = true;
+    window.STUDIO_LAS_VERSION = STUDIO_LAS_VERSION;
+    window.STUDIO_LAS_BUILD = STUDIO_LAS_BUILD;
+    window.STUDIO_LAS_REPO_EXPECTED_URL = STUDIO_LAS_REPO_EXPECTED_URL;
+    window.STUDIO_LAS_BUILD_COMMIT = STUDIO_LAS_BUILD_COMMIT;
+    window.STUDIO_LAS_BUILD_TIME = STUDIO_LAS_BUILD_TIME;
+    window.STUDIO_LAS_DATA_SOURCE = window.STUDIO_LAS_DATA_SOURCE || "initializing";
     const SUPABASE_CONFIG = {
       url: window.STUDIO_LAS_SUPABASE_URL || readBrowserSetting("studioLasSupabaseUrl"),
       anonKey: window.STUDIO_LAS_SUPABASE_ANON_KEY || readBrowserSetting("studioLasSupabaseAnonKey"),
@@ -3217,7 +3229,7 @@
         tags: ["punkt startowy", "klient początkujący", "bez sprzętu", "do domu"],
         beginnerFriendly: true,
         qualityStatus: "reviewed",
-        source: "Studio Las OS 8.0 | Client Guidance QA",
+        source: "Studio Las OS QA",
         sourceOrder: 2000,
         linkedTests: [],
         strengthSet: false,
@@ -4529,6 +4541,19 @@
       console.info("Studio Las OS: data source", { source, ...detail });
     }
 
+    function announceStudioLasBuild() {
+      const stamp = `${STUDIO_LAS_VERSION} — build ${STUDIO_LAS_BUILD} — ${STUDIO_LAS_BUILD_TIME} — commit ${STUDIO_LAS_BUILD_COMMIT}`;
+      console.info(stamp);
+      console.info("Studio Las OS expected test URL", STUDIO_LAS_REPO_EXPECTED_URL);
+      try {
+        document.body?.setAttribute("data-studio-las-version", STUDIO_LAS_VERSION);
+        document.body?.setAttribute("data-studio-las-build", STUDIO_LAS_BUILD);
+      } catch (error) {}
+      if (!String(window.location.href || "").includes(STUDIO_LAS_EXPECTED_PATH)) {
+        console.warn(`WARNING: You are not testing the current Studio Las OS URL. Expected ${STUDIO_LAS_EXPECTED_PATH}. Current URL: ${window.location.href}`);
+      }
+    }
+
     function createStudioLasSupabaseDataService(config = {}) {
       const baseUrl = resolveSupabaseBaseUrl(config.url);
       const anonKey = String(config.anonKey || "");
@@ -4563,6 +4588,83 @@
         return response.json();
       }
 
+      async function mutate(table, params = {}) {
+        if (!isConfigured()) throw new Error("Supabase URL or anon key is missing.");
+        if (!accessToken) throw new Error("Supabase trainer access token is missing.");
+        const query = new URLSearchParams();
+        if (params.returning !== false) query.set("select", params.select || "*");
+        Object.entries(params.filters || {}).forEach(([key, value]) => query.set(key, value));
+
+        const queryString = query.toString();
+        const requestUrl = `${baseUrl}/rest/v1/${table}${queryString ? `?${queryString}` : ""}`;
+        const prefer = [
+          params.returning === false ? "return=minimal" : "return=representation",
+          params.count ? `count=${params.count}` : ""
+        ].filter(Boolean).join(",");
+        console.log("Supabase request URL", requestUrl);
+        const response = await fetch(requestUrl, {
+          method: params.method || "POST",
+          headers: {
+            apikey: anonKey,
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Prefer: prefer
+          },
+          body: JSON.stringify(params.payload || {})
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Supabase write failed for ${table}: ${response.status} ${text.slice(0, 320)}`);
+        }
+        const affectedCount = parseSupabaseMutationCount(response);
+        if (params.expectAffected && affectedCount === 0) {
+          throw new Error(`Supabase write affected 0 rows for ${table}.`);
+        }
+        if (params.expectAffected && affectedCount === null) {
+          console.warn("Studio Las OS: Supabase write did not include affected-row count", { table });
+        }
+        if (params.returning === false || response.status === 204) return { affectedCount };
+        const result = await response.json().catch(() => null);
+        return Array.isArray(result) ? result[0] : result;
+      }
+
+      async function insertClient(payload) {
+        const row = await mutate("clients", {
+          method: "POST",
+          payload,
+          select: "id,legacy_id,name,contact,email,phone,package,stage,stage_raw,start_date,next_session_date,next_review_date,goal,motivation,fears,health_status,contraindications,red_flags_text,communication_profile,next_milestone,working_hypothesis,status,created_at,updated_at"
+        });
+        if (!row?.id) throw new Error("Supabase did not return the inserted client.");
+        return row;
+      }
+
+      async function updateClient(id, payload) {
+        const row = await mutate("clients", {
+          method: "PATCH",
+          filters: { id: `eq.${id}` },
+          payload,
+          select: "id,legacy_id,name,contact,email,phone,package,stage,stage_raw,start_date,next_session_date,next_review_date,goal,motivation,fears,health_status,contraindications,red_flags_text,communication_profile,next_milestone,working_hypothesis,status,created_at,updated_at"
+        });
+        if (!row?.id) throw new Error("Supabase did not return the updated client.");
+        return row;
+      }
+
+      async function softDeleteClient(id) {
+        await mutate("clients", {
+          method: "PATCH",
+          filters: { id: `eq.${id}`, deleted_at: "is.null" },
+          payload: {
+            status: "archived",
+            deleted_at: new Date().toISOString(),
+            updated_at: new Date().toISOString()
+          },
+          returning: false,
+          count: "exact",
+          expectAffected: true
+        });
+      }
+
       async function loadDashboardState(currentState = {}) {
         const profileRows = await request("profiles", {
           select: "id,role",
@@ -4570,6 +4672,8 @@
         });
         const trainerProfile = (profileRows || []).find(profile => profile.role === "trainer");
         if (!trainerProfile) throw new Error("Authenticated Supabase user is not mapped to a trainer profile.");
+        activeTrainerProfileId = trainerProfile.id;
+        window.STUDIO_LAS_TRAINER_PROFILE_ID = trainerProfile.id;
         console.info("Studio Las OS: trainer authenticated", { profileId: trainerProfile.id });
 
         const [clients, sessions, measurements, reports, intakes] = await Promise.all([
@@ -4609,7 +4713,7 @@
         return mapSupabaseDashboardState({ clients, sessions, measurements, reports, intakes }, currentState);
       }
 
-      return { isConfigured, loadDashboardState };
+      return { isConfigured, loadDashboardState, insertClient, updateClient, softDeleteClient };
     }
 
     function installStudioLasDevAuthHelper() {
@@ -4676,6 +4780,8 @@
 
       function logout() {
         sessionStorage.removeItem("studioLasSupabaseAccessToken");
+        activeTrainerProfileId = "";
+        window.STUDIO_LAS_TRAINER_PROFILE_ID = "";
         setStudioLasDataSource("localStorage", { fallbackUsed: true });
         state = load();
         renderShell();
@@ -4778,6 +4884,27 @@
         tasks: [],
         sessions: []
       };
+    }
+
+    function mapSupabaseClientToState(row = {}, existing = {}) {
+      const mapped = mapSupabaseClient(row);
+      return migrateClient({
+        ...mapped,
+        clientAccessCode: existing.clientAccessCode || mapped.clientAccessCode,
+        clientAccessUpdatedAt: existing.clientAccessUpdatedAt || mapped.clientAccessUpdatedAt,
+        homePlan: existing.homePlan || mapped.homePlan,
+        checkins: Array.isArray(existing.checkins) ? existing.checkins : mapped.checkins,
+        documents: Array.isArray(existing.documents) ? existing.documents : mapped.documents,
+        measurements: Array.isArray(existing.measurements) ? existing.measurements : mapped.measurements,
+        polarSessions: Array.isArray(existing.polarSessions) ? existing.polarSessions : mapped.polarSessions,
+        reports: Array.isArray(existing.reports) ? existing.reports : mapped.reports,
+        preSessionChecks: Array.isArray(existing.preSessionChecks) ? existing.preSessionChecks : mapped.preSessionChecks,
+        postSessionNotes: Array.isArray(existing.postSessionNotes) ? existing.postSessionNotes : mapped.postSessionNotes,
+        testResults: Array.isArray(existing.testResults) ? existing.testResults : mapped.testResults,
+        intake: existing.intake || mapped.intake,
+        tasks: Array.isArray(existing.tasks) ? existing.tasks : mapped.tasks,
+        sessions: Array.isArray(existing.sessions) ? existing.sessions : mapped.sessions
+      });
     }
 
     function mapSupabaseSession(row = {}) {
@@ -4887,6 +5014,97 @@
       return Number.isFinite(number) ? number : "";
     }
 
+    function parseSupabaseMutationCount(response) {
+      const contentRange = response?.headers?.get("content-range") || "";
+      const match = contentRange.match(/\/(\d+|\*)\s*$/);
+      if (!match || match[1] === "*") return null;
+      const count = Number(match[1]);
+      return Number.isFinite(count) ? count : null;
+    }
+
+    function isSupabaseMode() {
+      return Boolean(USE_SUPABASE && window.STUDIO_LAS_DATA_SOURCE === "supabase");
+    }
+
+    function nullIfBlank(value) {
+      const text = String(value ?? "").trim();
+      return text ? text : null;
+    }
+
+    function supabaseDateOrNull(value) {
+      const date = dateOnly(value);
+      return /^\d{4}-\d{2}-\d{2}$/.test(date) ? date : null;
+    }
+
+    function supabaseClientStage(value) {
+      const stage = Number(value);
+      return Number.isFinite(stage) && stage >= 1 && stage <= 4 ? Math.trunc(stage) : 1;
+    }
+
+    function activeTrainerProfileForSupabase() {
+      return activeTrainerProfileId || window.STUDIO_LAS_TRAINER_PROFILE_ID || "";
+    }
+
+    function mapClientStateToSupabasePayload(client = {}, options = {}) {
+      const payload = {
+        name: String(client.name || "Nowy klient").trim() || "Nowy klient",
+        contact: nullIfBlank(client.contact),
+        email: nullIfBlank(client.email),
+        phone: nullIfBlank(client.phone),
+        package: nullIfBlank(client.package || "Diagnostyka"),
+        stage: supabaseClientStage(client.stage),
+        stage_raw: nullIfBlank(client.stageRaw || client.stage),
+        start_date: supabaseDateOrNull(client.startDate),
+        next_session_date: supabaseDateOrNull(client.nextSessionDate),
+        next_review_date: supabaseDateOrNull(client.nextReviewDate),
+        goal: nullIfBlank(client.goal),
+        motivation: nullIfBlank(client.motivation),
+        fears: nullIfBlank(client.fears),
+        health_status: nullIfBlank(client.healthStatus),
+        contraindications: nullIfBlank(client.contraindications),
+        red_flags_text: nullIfBlank(client.redFlags),
+        communication_profile: nullIfBlank(client.neuroType),
+        next_milestone: nullIfBlank(client.nextMilestone),
+        working_hypothesis: nullIfBlank(client.decisionLogic),
+        status: client.status === "archived" ? "archived" : "active",
+        updated_at: new Date().toISOString()
+      };
+      if (options.includeOwnerTrainer) {
+        payload.owner_trainer_id = activeTrainerProfileForSupabase();
+        if (!payload.owner_trainer_id) throw new Error("Missing active trainer profile id for Supabase client insert.");
+      }
+      return payload;
+    }
+
+    function supabaseClientService() {
+      const service = createStudioLasSupabaseDataService(getSupabaseConfig());
+      if (!service.isConfigured()) throw new Error("Supabase URL or anon key is missing.");
+      return service;
+    }
+
+    async function supabaseInsertClient(client) {
+      const payload = mapClientStateToSupabasePayload(client, { includeOwnerTrainer: true });
+      return supabaseClientService().insertClient(payload);
+    }
+
+    async function supabaseUpdateClient(id, client) {
+      const payload = mapClientStateToSupabasePayload(client);
+      return supabaseClientService().updateClient(id, payload);
+    }
+
+    async function supabaseSoftDeleteClient(id) {
+      return supabaseClientService().softDeleteClient(id);
+    }
+
+    function replaceClientInState(savedClient, existing = null) {
+      if (existing) {
+        state.clients = state.clients.map(client => client.id === existing.id ? savedClient : client);
+      } else {
+        state.clients = [...state.clients, savedClient];
+      }
+      state.activeClientId = savedClient.id;
+    }
+
     async function bootstrapSupabaseData() {
       if (!USE_SUPABASE) {
         setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_disabled" });
@@ -4932,6 +5150,7 @@
     let editingMeasurementId = "";
     let editingPolarSessionId = "";
     let editingClientId = "";
+    let activeTrainerProfileId = "";
     let clientPortalShowAllHomeTasks = false;
     let selectedClientPortalReportType = "";
 
@@ -5181,7 +5400,7 @@ Login: ${login}
 Kod: ${c.clientAccessCode}
 
 Użyj linku:
-https://trenermedycznywarszawa.github.io/studio-las-v14/studio-management-os-3.0.html
+https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html
 
 Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
     }
@@ -5725,7 +5944,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
         ${renderGuidedWorkflow(null)}
         <section class="panel">
           <div class="panel-head">
-            <div><h2>Brak klientów</h2><p>Dodaj klienta, żeby rozpocząć pracę w Studio Las OS 8.0 | Client Guidance.</p></div>
+            <div><h2>Brak klientów</h2><p>Dodaj klienta, żeby rozpocząć pracę w Studio Las OS.</p></div>
             <button class="btn primary" id="emptyClientAddBtn" type="button">Dodaj klienta</button>
           </div>
           <p>Po usunięciu ostatniego klienta aplikacja zostaje w spokojnym stanie startowym. Dane nowego klienta będą zapisane lokalnie w tej przeglądarce.</p>
@@ -5758,7 +5977,8 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       const clientMode = viewName === "clientPortal";
       $("#screenTitle").textContent = title[0];
       $("#screenSubtitle").textContent = title[1];
-      $("#versionBadge").textContent = "Studio Las OS 8.0 | Client Guidance";
+      $("#versionBadge").textContent = STUDIO_LAS_VERSION;
+      $("#versionBadge").title = `${STUDIO_LAS_BUILD} · commit ${STUDIO_LAS_BUILD_COMMIT}`;
       $("#roleBadge").textContent = clientMode ? "Widok klienta" : "Widok trenera";
       $("#roleBadge").className = `pill top-role ${clientMode ? "green" : "blue"}`;
       renderTopbarActions(clientMode);
@@ -6361,7 +6581,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
 tu znajdziesz swój Panel klienta Studio Las:
 
 Link:
-https://trenermedycznywarszawa.github.io/studio-las-v14/studio-management-os-3.0.html
+https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html
 
 Login: ${clientLoginLabel(c)}
 Kod dostępu: ${c.clientAccessCode}
@@ -6387,7 +6607,7 @@ Nie chodzi o perfekcję. Chodzi o spokojny rytm.`;
           <section class="grid cols-2">
             <div class="portal-info"><div class="label">Login</div><p>${escapeHtml(clientLoginLabel(c) || c.name)}</p></div>
             <div class="portal-info"><div class="label">Kod dostępu</div><p class="access-code">${escapeHtml(c.clientAccessCode)}</p></div>
-            <div class="portal-info span-2"><div class="label">Link</div><p>https://trenermedycznywarszawa.github.io/studio-las-v14/studio-management-os-3.0.html</p></div>
+            <div class="portal-info span-2"><div class="label">Link</div><p>https://trenermedycznywarszawa.github.io/studio-las-v15/studio-management-os-3.0.html</p></div>
           </section>
           <section>
             <h3>Jak korzystać z panelu</h3>
@@ -6451,18 +6671,26 @@ Nie chodzi o perfekcję. Chodzi o spokojny rytm.`;
       toast("Kod dostępu został zresetowany");
     }
 
-    function deleteClient(clientId) {
+    async function deleteClient(clientId) {
       const client = state.clients.find(item => item.id === clientId);
       if (!client) return toast("Nie znaleziono klienta.");
-      const confirmed = window.confirm(`Usunąć klienta ${client.name}? Lokalne dane tego klienta zostaną usunięte ze Studio Las OS 8.0 | Client Guidance: sesje, pomiary, odczyty Polar, wyniki testów, plan domowy, zadania i raporty.`);
+      const confirmed = window.confirm(`Usunąć klienta ${client.name}? Lokalne dane tego klienta zostaną usunięte ze Studio Las OS: sesje, pomiary, odczyty Polar, wyniki testów, plan domowy, zadania i raporty.`);
       if (!confirmed) return;
       lockClientPanel(clientId);
+      if (isSupabaseMode()) {
+        try {
+          await supabaseSoftDeleteClient(clientId);
+        } catch (error) {
+          console.error("Studio Las OS: Supabase client soft delete failed", error);
+          return toast("Nie udalo sie usunac klienta w Supabase");
+        }
+      }
       state.clients = state.clients.filter(item => item.id !== clientId);
       if (state.activeClientId === clientId) {
         state.activeClientId = state.clients[0]?.id || "";
         viewName = state.clients.length ? "command" : "command";
       }
-      save();
+      if (!isSupabaseMode()) save();
       renderShell();
       toast("Klient usunięty");
     }
@@ -6509,10 +6737,27 @@ Nie chodzi o perfekcję. Chodzi o spokojny rytm.`;
           </div>
         </section>
       `;
-      document.querySelectorAll("[data-stage]").forEach(btn => btn.addEventListener("click", () => {
+      document.querySelectorAll("[data-stage]").forEach(btn => btn.addEventListener("click", async () => {
+        const previousStage = c.stage;
+        const previousDecisionLogic = c.decisionLogic;
         c.stage = Number(btn.dataset.stage);
         c.decisionLogic = `${today()} · etap zmieniony na krok ${c.stage}: ${steps[c.stage - 1][0]}.\n\n${c.decisionLogic || ""}`.trim();
-        save();
+        if (isSupabaseMode()) {
+          try {
+            const row = await supabaseUpdateClient(c.id, c);
+            const savedClient = mapSupabaseClientToState(row, c);
+            replaceClientInState(savedClient, c);
+          } catch (error) {
+            c.stage = previousStage;
+            c.decisionLogic = previousDecisionLogic;
+            console.error("Studio Las OS: Supabase client stage update failed", error);
+            toast("Nie udalo sie zapisac etapu w Supabase");
+            renderShell();
+            return;
+          }
+        } else {
+          save();
+        }
         toast("Etap procesu zaktualizowany");
         renderShell();
       }));
@@ -7467,7 +7712,7 @@ Nie chodzi o perfekcję. Chodzi o spokojny rytm.`;
             <div><h2>Najnowszy odczyt Polar</h2><p>${escapeHtml(c.name)} · tolerancja obciążenia po sesji.</p></div>
             ${pill(latest ? formatDate(latest.date) : "brak odczytu", latest ? assessLoadTolerance(latest).level : "gold")}
           </div>
-          <div class="focus-note">Dane z Polar Verity Sense wpisujemy po treningu na podstawie Polar Flow lub kompatybilnej aplikacji. W Studio Las OS 8.0 | Client Guidance zapisujemy interpretację i decyzję trenera, bez automatycznej integracji z opaską.</div>
+          <div class="focus-note">Dane z Polar Verity Sense wpisujemy po treningu na podstawie Polar Flow lub kompatybilnej aplikacji. W Studio Las OS zapisujemy interpretację i decyzję trenera, bez automatycznej integracji z opaską.</div>
           ${latest ? renderPolarMain(latest) : `<div class="home-plan-empty"><p>Nie ma jeszcze odczytu Polar dla tego klienta. Dodaj pierwszy odczyt po sesji, jeśli chcesz ocenić tolerancję obciążenia.</p><div class="home-plan-actions"><button class="btn primary" id="polarEmptyBtn">Nowy odczyt Polar</button></div></div>`}
         </section>
         <section class="panel">
@@ -11060,10 +11305,24 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
       return client;
     }
 
-    function createClientFromIntakeRow(index) {
+    async function createClientFromIntakeRow(index) {
       const row = pendingIntakeRows[index];
       if (!row) return toast("Nie znaleziono wiersza ankiety");
       const client = mapIntakeRowToClient(row);
+      if (isSupabaseMode()) {
+        try {
+          const dbRow = await supabaseInsertClient(client);
+          const savedClient = mapSupabaseClientToState(dbRow, client);
+          replaceClientInState(savedClient, null);
+        } catch (error) {
+          console.error("Studio Las OS: Supabase intake client create failed", error);
+          return toast("Nie udalo sie zapisac klienta w Supabase");
+        }
+        viewName = "client";
+        renderShell();
+        toast("Utworzono klienta z ankiety");
+        return;
+      }
       state.clients.push(client);
       state.activeClientId = client.id;
       save();
@@ -11072,10 +11331,11 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
       toast("Utworzono klienta z ankiety");
     }
 
-    function linkIntakeRowToActiveClient(index) {
+    async function linkIntakeRowToActiveClient(index) {
       const row = pendingIntakeRows[index];
       const c = activeClient();
       if (!row || !c) return toast("Nie znaleziono ankiety lub aktywnego klienta");
+      const previousClient = structuredClone(c);
       const mappedClient = mapIntakeRowToClient(row);
       c.intake = mappedClient.intake;
       if (!c.goal && mappedClient.goal) c.goal = mappedClient.goal;
@@ -11088,6 +11348,22 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
       c.tasks = Array.isArray(c.tasks) ? c.tasks : [];
       if (!c.tasks.some(task => compareHeader(task.text) === compareHeader("Omówić ankietę i potwierdzić czerwone flagi przed pierwszą sesją"))) {
         c.tasks.push({ text: "Omówić ankietę i potwierdzić czerwone flagi przed pierwszą sesją", done: false, createdAt: today(), source: "intake" });
+      }
+      if (isSupabaseMode()) {
+        try {
+          const dbRow = await supabaseUpdateClient(c.id, c);
+          const savedClient = mapSupabaseClientToState(dbRow, c);
+          replaceClientInState(savedClient, c);
+        } catch (error) {
+          state.clients = state.clients.map(client => client.id === previousClient.id ? previousClient : client);
+          console.error("Studio Las OS: Supabase intake client link failed", error);
+          toast("Nie udalo sie zapisac klienta w Supabase");
+          renderIntake();
+          return;
+        }
+        renderIntake();
+        toast("Ankieta połączona z aktywnym klientem");
+        return;
       }
       save();
       renderIntake();
@@ -11929,7 +12205,7 @@ Initial 83.45 64.95 18.10
       }
     });
 
-    $("#clientForm").addEventListener("submit", e => {
+    $("#clientForm").addEventListener("submit", async e => {
       e.preventDefault();
       const fd = new FormData(e.currentTarget);
       const existing = editingClientId ? state.clients.find(client => client.id === editingClientId) : null;
@@ -11970,6 +12246,31 @@ Initial 83.45 64.95 18.10
         sessions: existing?.sessions || []
       };
       const migrated = migrateClient(c);
+
+      if (isSupabaseMode()) {
+        const submitButton = e.currentTarget.querySelector("button[type='submit']");
+        if (submitButton) submitButton.disabled = true;
+        try {
+          const row = existing
+            ? await supabaseUpdateClient(existing.id, migrated)
+            : await supabaseInsertClient(migrated);
+          const savedClient = mapSupabaseClientToState(row, existing || migrated);
+          replaceClientInState(savedClient, existing);
+          editingClientId = "";
+          e.currentTarget.reset();
+          closeModal("clientModal");
+          viewName = "client";
+          renderShell();
+          toast(existing ? "Klient zaktualizowany" : "Dodano klienta");
+        } catch (error) {
+          console.error("Studio Las OS: Supabase client save failed", error);
+          toast("Nie udalo sie zapisac klienta w Supabase");
+        } finally {
+          if (submitButton) submitButton.disabled = false;
+        }
+        return;
+      }
+
       state.clients = existing
         ? state.clients.map(client => client.id === existing.id ? migrated : client)
         : [...state.clients, migrated];
@@ -12107,6 +12408,7 @@ Initial 83.45 64.95 18.10
       toast("Sesja zapisana");
     });
 
+    announceStudioLasBuild();
     renderShell();
     installStudioLasDevAuthHelper();
     bootstrapSupabaseData();
