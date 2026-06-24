@@ -251,7 +251,7 @@ create table public.body_measurements (
   constraint body_measurements_parse_status_check check (parse_status is null or parse_status in ('not_attempted', 'success', 'partial', 'failed', 'manual_required', 'demo')),
   constraint body_measurements_weight_check check (weight_kg is null or weight_kg between 30 and 250),
   constraint body_measurements_fat_percent_check check (fat_percent is null or fat_percent between 3 and 60),
-  constraint body_measurements_muscle_mass_check check (muscle_mass_kg is null or muscle_mass_kg between 15 and 150),
+  constraint body_measurements_muscle_mass_check check (muscle_mass_kg is null or muscle_mass_kg between 0 and 120),
   constraint body_measurements_water_percent_check check (body_water_percent is null or body_water_percent between 30 and 80),
   constraint body_measurements_bmi_check check (bmi is null or bmi between 12 and 60)
 );

@@ -144,6 +144,14 @@ const PROCESS_DECISIONS = new Set(["zwiększ", "utrzymaj", "zmniejsz", "regenera
 const REPORT_TYPES = new Set(["startMap", "fourWeeks", "twelveWeeks", "continuation"]);
 const EXERCISE_QUALITY_STATUSES = new Set(["reviewed", "needs_review", "draft"]);
 
+const BODY_MEASUREMENT_NUMERIC_RULES = {
+  weight_kg: { sourceField: "weightKg", min: 30, max: 250 },
+  fat_percent: { sourceField: "fatPercent", min: 3, max: 60 },
+  muscle_mass_kg: { sourceField: "muscleMassKg", min: 0, max: 120 },
+  body_water_percent: { sourceField: "bodyWaterPercent", min: 30, max: 80 },
+  bmi: { sourceField: "bmi", min: 12, max: 60 }
+};
+
 const REPORT_SHAPE = {
   summary: {},
   targetCounts: Object.fromEntries(TARGET_TABLES.map((table) => [table, 0])),
@@ -554,6 +562,7 @@ function analyzeBodyMeasurements(measurements, clientPath, clientLegacyId, repor
     ]) {
       checkNumberField(measurement[field], `${sourcePath}.${field}`, "body_measurements", targetField, report);
     }
+    checkBodyMeasurementMetricRanges(measurement, sourcePath, report);
 
     if (measurement.sourceMode !== undefined) {
       addNeedsReview(report, `${sourcePath}.sourceMode`, "body_measurements", "legacy_source_mode", "sourceMode should be normalized into input_method or preserved in audit.", "low");
@@ -1186,20 +1195,53 @@ async function applyBodyMeasurements(ctx, measurements, clientPath, clientId) {
       incrementApply(ctx, "body_measurements", "errors");
       continue;
     }
-    await upsertTarget(ctx, { table: "body_measurements", sourcePath, clientId, legacyId: payload.legacy_id, payload, rawPayload: measurement });
-
-    if (measurement.pdfDataUrl) {
+    const metricIssues = validateBodyMeasurementPayload(payload);
+    if (metricIssues.length) {
       await writeAudit(ctx, {
-        sourcePath: `${sourcePath}.pdfDataUrl`,
+        sourcePath,
         clientId,
-        targetTable: "client_documents",
-        rawPayload: redactedPdfPayload(measurement),
+        targetTable: "body_measurements",
+        rawPayload: measurement,
         status: "needs_review",
-        notes: "tanita_pdf_storage_required_redacted"
+        notes: `invalid_body_measurement_metrics:${metricIssues.join(";")}`
       });
-      incrementApply(ctx, "client_documents", "needsReview");
+      incrementApply(ctx, "body_measurements", "needsReview");
+      await writeTanitaPdfNeedsReview(ctx, measurement, sourcePath, clientId);
+      continue;
     }
+
+    try {
+      await upsertTarget(ctx, { table: "body_measurements", sourcePath, clientId, legacyId: payload.legacy_id, payload, rawPayload: measurement });
+    } catch (error) {
+      if (!isBodyMeasurementCheckConstraintError(error)) throw error;
+      await writeAudit(ctx, {
+        sourcePath,
+        clientId,
+        targetTable: "body_measurements",
+        rawPayload: measurement,
+        status: "needs_review",
+        notes: `body_measurement_check_constraint:${extractConstraintName(error)}`
+      });
+      incrementApply(ctx, "body_measurements", "needsReview");
+      await writeTanitaPdfNeedsReview(ctx, measurement, sourcePath, clientId);
+      continue;
+    }
+
+    await writeTanitaPdfNeedsReview(ctx, measurement, sourcePath, clientId);
   }
+}
+
+async function writeTanitaPdfNeedsReview(ctx, measurement, sourcePath, clientId) {
+  if (!measurement.pdfDataUrl) return;
+  await writeAudit(ctx, {
+    sourcePath: `${sourcePath}.pdfDataUrl`,
+    clientId,
+    targetTable: "client_documents",
+    rawPayload: redactedPdfPayload(measurement),
+    status: "needs_review",
+    notes: "tanita_pdf_storage_required_redacted"
+  });
+  incrementApply(ctx, "client_documents", "needsReview");
 }
 
 async function applyAssessmentResults(ctx, results, clientPath, clientId) {
@@ -1842,6 +1884,50 @@ function checkNumberField(value, sourcePath, table, targetField, report) {
     return;
   }
   addNeedsReview(report, sourcePath, table, "number_parsing_issue", `${targetField} has non-number type ${typeof value}.`, "high");
+}
+
+function checkBodyMeasurementMetricRanges(measurement, sourcePath, report) {
+  for (const [targetField, rule] of Object.entries(BODY_MEASUREMENT_NUMERIC_RULES)) {
+    const value = measurement[rule.sourceField];
+    if (value === undefined || value === null || value === "") continue;
+    const number = parseNumberOrNull(value);
+    if (number === null) continue;
+    if (number < rule.min || number > rule.max) {
+      addNeedsReview(
+        report,
+        `${sourcePath}.${rule.sourceField}`,
+        "body_measurements",
+        "tanita_metric_out_of_range",
+        `${targetField} is outside the accepted Tanita import range and should be reviewed before apply.`,
+        "high"
+      );
+    }
+  }
+}
+
+function validateBodyMeasurementPayload(payload) {
+  const issues = [];
+  for (const [field, rule] of Object.entries(BODY_MEASUREMENT_NUMERIC_RULES)) {
+    if (payload[field] === undefined || payload[field] === null) continue;
+    const number = Number(payload[field]);
+    if (!Number.isFinite(number)) {
+      issues.push(`${field}_not_finite`);
+    } else if (number < rule.min || number > rule.max) {
+      issues.push(`${field}_out_of_range`);
+    }
+  }
+  return issues;
+}
+
+function isBodyMeasurementCheckConstraintError(error) {
+  const message = String(error?.message || error || "");
+  return /body_measurements/i.test(message) && /violates check constraint/i.test(message);
+}
+
+function extractConstraintName(error) {
+  const message = String(error?.message || error || "");
+  const match = message.match(/constraint\s+"?([a-z0-9_]+)"?/i);
+  return match ? match[1] : "unknown_constraint";
 }
 
 function checkEmptyStrings(object, sourcePath, table, fields, report) {

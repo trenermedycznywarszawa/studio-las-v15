@@ -1516,6 +1516,12 @@
     const GUIDANCE_PILOT_STORAGE_KEY = "studioLasGuidancePilot_v1";
     const CLIENT_PANEL_UNLOCK_PREFIX = "studioLasClientPanelUnlocked_";
     const EXERCISE_LIBRARY_KEY = "studioLasExerciseLibraryV1";
+    const USE_SUPABASE = true;
+    const SUPABASE_CONFIG = {
+      url: window.STUDIO_LAS_SUPABASE_URL || readBrowserSetting("studioLasSupabaseUrl"),
+      anonKey: window.STUDIO_LAS_SUPABASE_ANON_KEY || readBrowserSetting("studioLasSupabaseAnonKey"),
+      accessToken: window.STUDIO_LAS_SUPABASE_ACCESS_TOKEN || readBrowserSetting("studioLasSupabaseAccessToken", sessionStorage)
+    };
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
     const TANITA_KEY_FIELDS = ["date", "weightKg", "fatPercent", "muscleMassKg", "fatMassKg", "bodyWaterPercent", "bmrKcal", "visceralFatRating", "bmi"];
     const TANITA_FIELD_LABELS = {
@@ -1539,7 +1545,7 @@
       fatPercent: [3, 60],
       fatMassKg: [1, 120],
       fatFreeMassKg: [20, 180],
-      muscleMassKg: [15, 150],
+      muscleMassKg: [0, 120],
       bodyWaterPercent: [30, 80],
       bodyWaterKg: [15, 120],
       visceralFatRating: [1, 30],
@@ -4476,6 +4482,413 @@
         boneMassKg: 3.50,
         proteinKg: 13.57
       };
+    }
+
+    function readBrowserSetting(key, storage = localStorage) {
+      try {
+        return storage.getItem(key) || "";
+      } catch (error) {
+        return "";
+      }
+    }
+
+    function getSupabaseConfig() {
+      return {
+        url: window.STUDIO_LAS_SUPABASE_URL || readBrowserSetting("studioLasSupabaseUrl") || SUPABASE_CONFIG.url,
+        anonKey: window.STUDIO_LAS_SUPABASE_ANON_KEY || readBrowserSetting("studioLasSupabaseAnonKey") || SUPABASE_CONFIG.anonKey,
+        accessToken: window.STUDIO_LAS_SUPABASE_ACCESS_TOKEN || readBrowserSetting("studioLasSupabaseAccessToken", sessionStorage) || SUPABASE_CONFIG.accessToken
+      };
+    }
+
+    function setStudioLasDataSource(source, detail = {}) {
+      window.STUDIO_LAS_DATA_SOURCE = source;
+      try {
+        document.body?.setAttribute("data-studio-las-data-source", source);
+      } catch (error) {}
+      console.info("Studio Las OS: data source", { source, ...detail });
+    }
+
+    function createStudioLasSupabaseDataService(config = {}) {
+      const baseUrl = String(config.url || "").replace(/\/+$/, "");
+      const anonKey = String(config.anonKey || "");
+      const accessToken = String(config.accessToken || "");
+
+      function isConfigured() {
+        return Boolean(baseUrl && anonKey);
+      }
+
+      async function request(table, params = {}) {
+        if (!isConfigured()) throw new Error("Supabase URL or anon key is missing.");
+        const query = new URLSearchParams();
+        query.set("select", params.select || "*");
+        if (params.order) query.set("order", params.order);
+        if (params.limit) query.set("limit", String(params.limit));
+        Object.entries(params.filters || {}).forEach(([key, value]) => query.set(key, value));
+
+        const response = await fetch(`${baseUrl}/rest/v1/${table}?${query.toString()}`, {
+          headers: {
+            apikey: anonKey,
+            Authorization: `Bearer ${accessToken || anonKey}`,
+            Accept: "application/json"
+          }
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Supabase read failed for ${table}: ${response.status} ${text.slice(0, 240)}`);
+        }
+        return response.json();
+      }
+
+      async function loadDashboardState(currentState = {}) {
+        const profileRows = await request("profiles", {
+          select: "id,role",
+          limit: 1
+        });
+        const trainerProfile = (profileRows || []).find(profile => profile.role === "trainer");
+        if (!trainerProfile) throw new Error("Authenticated Supabase user is not mapped to a trainer profile.");
+        console.info("Studio Las OS: trainer authenticated", { profileId: trainerProfile.id });
+
+        const [clients, sessions, measurements, reports, intakes] = await Promise.all([
+          request("clients", {
+            select: "id,legacy_id,name,contact,email,phone,package,stage,stage_raw,start_date,next_session_date,next_review_date,goal,motivation,fears,health_status,contraindications,red_flags_text,communication_profile,next_milestone,working_hypothesis,status,created_at,updated_at",
+            filters: { deleted_at: "is.null" },
+            order: "name.asc",
+            limit: 5000
+          }),
+          request("sessions", {
+            select: "id,client_id,legacy_id,date,readiness,vas_before,vas_after,mobility_index,sleep_quality,exercises_text,trainer_observation,trainer_decision,milestone,client_summary,client_next_step,created_at,updated_at",
+            filters: { deleted_at: "is.null" },
+            order: "date.asc",
+            limit: 5000
+          }),
+          request("body_measurements", {
+            select: "id,client_id,legacy_id,measured_at,source,input_method,parse_status,parsed_fields,weight_kg,fat_percent,fat_mass_kg,fat_free_mass_kg,muscle_mass_kg,body_water_percent,body_water_kg,visceral_fat_rating,bmr_kcal,metabolic_age,bmi,bone_mass_kg,protein_kg,trainer_interpretation,client_summary,published_at,created_at,updated_at",
+            filters: { deleted_at: "is.null" },
+            order: "measured_at.asc",
+            limit: 5000
+          }),
+          request("reports", {
+            select: "id,client_id,legacy_id,type,audience,status,title,content,published_at,created_at,updated_at",
+            filters: { deleted_at: "is.null" },
+            order: "created_at.asc",
+            limit: 5000
+          }),
+          request("client_intakes", {
+            select: "id,client_id,legacy_id,imported_at,source,raw_payload,summary,goals,main_goal,motivation,expectations,readiness_text,pain_areas,medical_flags,movement_limitations,lifestyle_flags,training_preferences,flags,communication_style,compliance_forecast,first_session_focus,risk_level,trainer_notes,created_at,updated_at",
+            filters: { deleted_at: "is.null" },
+            order: "imported_at.desc",
+            limit: 5000
+          })
+        ]);
+        console.info("Studio Las OS: clients fetched count", { count: clients.length });
+
+        return mapSupabaseDashboardState({ clients, sessions, measurements, reports, intakes }, currentState);
+      }
+
+      return { isConfigured, loadDashboardState };
+    }
+
+    function installStudioLasDevAuthHelper() {
+      if (window.StudioLasDevAuth) return;
+
+      async function authRequest(endpoint, payload) {
+        const config = getSupabaseConfig();
+        if (!config.url || !config.anonKey) throw new Error("Set studioLasSupabaseUrl and studioLasSupabaseAnonKey first.");
+        const response = await fetch(`${String(config.url).replace(/\/+$/, "")}/auth/v1/${endpoint}`, {
+          method: "POST",
+          headers: {
+            apikey: config.anonKey,
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify(payload)
+        });
+        const result = await response.json().catch(() => ({}));
+        if (!response.ok) throw new Error(result.error_description || result.msg || result.error || `Supabase Auth failed: ${response.status}`);
+        return result;
+      }
+
+      async function signIn(email, password) {
+        const session = await authRequest("token?grant_type=password", { email, password });
+        if (!session.access_token) throw new Error("Supabase Auth did not return an access token.");
+        sessionStorage.setItem("studioLasSupabaseAccessToken", session.access_token);
+        console.info("Studio Las OS: trainer authenticated");
+        await bootstrapSupabaseData();
+        return { ok: true, dataSource: window.STUDIO_LAS_DATA_SOURCE };
+      }
+
+      async function sendMagicLink(email) {
+        const config = getSupabaseConfig();
+        await authRequest("otp", {
+          email,
+          create_user: false,
+          options: { email_redirect_to: window.location.href.split("#")[0] }
+        });
+        console.info("Studio Las OS: magic link requested", { redirect: window.location.href.split("#")[0], configured: Boolean(config.url && config.anonKey) });
+        return { ok: true };
+      }
+
+      function captureTokenFromUrl() {
+        const hash = new URLSearchParams(String(window.location.hash || "").replace(/^#/, ""));
+        const token = hash.get("access_token");
+        if (!token) return false;
+        sessionStorage.setItem("studioLasSupabaseAccessToken", token);
+        window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
+        console.info("Studio Las OS: trainer authenticated");
+        bootstrapSupabaseData();
+        return true;
+      }
+
+      function useAccessToken(token) {
+        if (!token) throw new Error("Missing access token.");
+        sessionStorage.setItem("studioLasSupabaseAccessToken", token);
+        console.info("Studio Las OS: trainer authenticated");
+        bootstrapSupabaseData();
+        return { ok: true };
+      }
+
+      function logout() {
+        sessionStorage.removeItem("studioLasSupabaseAccessToken");
+        setStudioLasDataSource("localStorage", { fallbackUsed: true });
+        state = load();
+        renderShell();
+        return { ok: true };
+      }
+
+      window.StudioLasDevAuth = {
+        signIn,
+        sendMagicLink,
+        captureTokenFromUrl,
+        useAccessToken,
+        logout,
+        reload: bootstrapSupabaseData,
+        status: () => ({
+          configured: createStudioLasSupabaseDataService(getSupabaseConfig()).isConfigured(),
+          hasAccessToken: Boolean(getSupabaseConfig().accessToken),
+          dataSource: window.STUDIO_LAS_DATA_SOURCE || "localStorage",
+          clientCount: Array.isArray(state.clients) ? state.clients.length : 0,
+          activeClientId: state.activeClientId || ""
+        })
+      };
+
+      captureTokenFromUrl();
+      console.info("Studio Las OS: dev auth helper ready. Use StudioLasDevAuth.signIn(email, password) for local Supabase read tests.");
+    }
+
+    function mapSupabaseDashboardState(rows, currentState = {}) {
+      const clients = (rows.clients || [])
+        .filter(row => row && row.status !== "archived")
+        .map(mapSupabaseClient);
+      const byClientId = new Map(clients.map(client => [client.id, client]));
+
+      (rows.sessions || []).forEach(row => {
+        const client = byClientId.get(row.client_id);
+        if (client) client.sessions.push(mapSupabaseSession(row));
+      });
+
+      (rows.measurements || []).forEach(row => {
+        const client = byClientId.get(row.client_id);
+        if (client) client.measurements.push(mapSupabaseBodyMeasurement(row));
+      });
+
+      (rows.reports || []).forEach(row => {
+        const client = byClientId.get(row.client_id);
+        if (client) client.reports.push(mapSupabaseReport(row));
+      });
+
+      const latestIntakeByClient = new Map();
+      (rows.intakes || []).forEach(row => {
+        if (!row?.client_id || latestIntakeByClient.has(row.client_id)) return;
+        latestIntakeByClient.set(row.client_id, mapSupabaseIntake(row));
+      });
+      latestIntakeByClient.forEach((intake, clientId) => {
+        const client = byClientId.get(clientId);
+        if (client) client.intake = intake;
+      });
+
+      const activeClientId = byClientId.has(currentState.activeClientId)
+        ? currentState.activeClientId
+        : clients[0]?.id || "";
+
+      return migrateState({ ...currentState, activeClientId, clients });
+    }
+
+    function mapSupabaseClient(row = {}) {
+      return {
+        id: row.id || row.legacy_id || "",
+        legacyId: row.legacy_id || "",
+        name: row.name || "Nowy klient",
+        contact: row.contact || "",
+        email: row.email || "",
+        phone: row.phone || "",
+        clientAccessCode: "",
+        clientAccessUpdatedAt: "",
+        startDate: dateOnly(row.start_date),
+        nextSessionDate: dateOnly(row.next_session_date),
+        nextReviewDate: dateOnly(row.next_review_date),
+        motivation: row.motivation || "",
+        fears: row.fears || "",
+        contraindications: row.contraindications || "",
+        redFlags: row.red_flags_text || "",
+        package: row.package || "Diagnostyka",
+        stage: Number.isFinite(Number(row.stage)) ? Number(row.stage) : 1,
+        stageRaw: row.stage_raw || row.stage || "",
+        healthStatus: row.health_status || "",
+        neuroType: row.communication_profile || "",
+        goal: row.goal || "",
+        nextMilestone: row.next_milestone || "",
+        decisionLogic: row.working_hypothesis || "",
+        homePlan: defaultHomePlan(),
+        checkins: [],
+        documents: [],
+        measurements: [],
+        polarSessions: [],
+        reports: [],
+        preSessionChecks: [],
+        postSessionNotes: [],
+        testResults: [],
+        intake: defaultIntake(),
+        tasks: [],
+        sessions: []
+      };
+    }
+
+    function mapSupabaseSession(row = {}) {
+      return migrateSession({
+        id: row.id || row.legacy_id || "",
+        legacyId: row.legacy_id || "",
+        date: dateOnly(row.date),
+        readiness: numberOrBlank(row.readiness),
+        vasBefore: numberOrBlank(row.vas_before),
+        vasAfter: numberOrBlank(row.vas_after),
+        mobilityIndex: numberOrBlank(row.mobility_index),
+        sleepQuality: row.sleep_quality || "",
+        exercises: Array.isArray(row.exercises_text) ? row.exercises_text : [],
+        notes: row.trainer_observation || "",
+        decision: row.trainer_decision || "",
+        milestone: row.milestone || "",
+        clientSummary: row.client_summary || "",
+        clientNextStep: row.client_next_step || "",
+        createdAt: dateOnly(row.created_at),
+        updatedAt: dateOnly(row.updated_at)
+      });
+    }
+
+    function mapSupabaseBodyMeasurement(row = {}) {
+      const inputMethod = row.input_method || "manual";
+      return migrateMeasurement({
+        id: row.id || row.legacy_id || "",
+        legacyId: row.legacy_id || "",
+        date: dateOnly(row.measured_at),
+        source: row.source || "Tanita",
+        inputMethod,
+        parseStatus: row.parse_status || "not_attempted",
+        parsedFields: Array.isArray(row.parsed_fields) ? row.parsed_fields : [],
+        weightKg: numberOrBlank(row.weight_kg),
+        fatPercent: numberOrBlank(row.fat_percent),
+        fatMassKg: numberOrBlank(row.fat_mass_kg),
+        fatFreeMassKg: numberOrBlank(row.fat_free_mass_kg),
+        muscleMassKg: numberOrBlank(row.muscle_mass_kg),
+        bodyWaterPercent: numberOrBlank(row.body_water_percent),
+        bodyWaterKg: numberOrBlank(row.body_water_kg),
+        visceralFatRating: numberOrBlank(row.visceral_fat_rating),
+        bmrKcal: numberOrBlank(row.bmr_kcal),
+        metabolicAge: numberOrBlank(row.metabolic_age),
+        bmi: numberOrBlank(row.bmi),
+        boneMassKg: numberOrBlank(row.bone_mass_kg),
+        proteinKg: numberOrBlank(row.protein_kg),
+        pdfName: "",
+        pdfDataUrl: "",
+        sourceMode: inputMethod,
+        pdfAutoFilled: inputMethod === "pdf-autofill",
+        trainerInterpretation: row.trainer_interpretation || "",
+        clientSummary: row.client_summary || "",
+        publishedAt: row.published_at || ""
+      });
+    }
+
+    function mapSupabaseReport(row = {}) {
+      return migrateReport({
+        id: row.id || row.legacy_id || "",
+        legacyId: row.legacy_id || "",
+        date: dateOnly(row.published_at || row.created_at || row.updated_at) || today(),
+        type: row.type || "fourWeeks",
+        audience: row.audience || "trainer",
+        status: row.status || "draft",
+        title: row.title || "",
+        content: row.content || "",
+        publishedAt: row.published_at || "",
+        createdAt: row.created_at || "",
+        updatedAt: row.updated_at || ""
+      });
+    }
+
+    function mapSupabaseIntake(row = {}) {
+      return migrateIntake({
+        id: row.id || row.legacy_id || "",
+        legacyId: row.legacy_id || "",
+        importedAt: row.imported_at || row.created_at || "",
+        source: row.source || "CSV",
+        raw: row.raw_payload && typeof row.raw_payload === "object" ? row.raw_payload : {},
+        summary: row.summary || "",
+        goals: Array.isArray(row.goals) ? row.goals : [],
+        mainGoal: row.main_goal || "",
+        motivation: row.motivation || "",
+        expectations: row.expectations || "",
+        readiness: row.readiness_text || "",
+        painAreas: row.pain_areas || "",
+        medicalFlags: Array.isArray(row.medical_flags) ? row.medical_flags : [],
+        movementLimitations: Array.isArray(row.movement_limitations) ? row.movement_limitations : [],
+        lifestyleFlags: Array.isArray(row.lifestyle_flags) ? row.lifestyle_flags : [],
+        trainingPreferences: Array.isArray(row.training_preferences) ? row.training_preferences : [],
+        flags: Array.isArray(row.flags) ? row.flags : [],
+        communicationStyle: row.communication_style || "",
+        complianceForecast: row.compliance_forecast || "",
+        firstSessionFocus: row.first_session_focus || "",
+        riskLevel: row.risk_level || "low",
+        trainerNotes: row.trainer_notes || ""
+      });
+    }
+
+    function dateOnly(value) {
+      return value ? String(value).slice(0, 10) : "";
+    }
+
+    function numberOrBlank(value) {
+      if (value === null || value === undefined || value === "") return "";
+      const number = Number(value);
+      return Number.isFinite(number) ? number : "";
+    }
+
+    async function bootstrapSupabaseData() {
+      if (!USE_SUPABASE) {
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_disabled" });
+        return;
+      }
+      const config = getSupabaseConfig();
+      const service = createStudioLasSupabaseDataService(config);
+      console.info("Studio Las OS: Supabase config loaded", {
+        configured: service.isConfigured(),
+        hasAccessToken: Boolean(config.accessToken)
+      });
+      if (!service.isConfigured()) {
+        console.warn("Studio Las OS: Supabase is enabled but not configured. Falling back to localStorage.");
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_not_configured" });
+        return;
+      }
+      try {
+        const nextState = await service.loadDashboardState(state);
+        if (!Array.isArray(nextState.clients) || !nextState.clients.length) {
+          console.warn("Studio Las OS: Supabase returned no clients. Falling back to localStorage.");
+          setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_empty_clients" });
+          return;
+        }
+        state = nextState;
+        setStudioLasDataSource("supabase", { fallbackUsed: false, clients: state.clients.length });
+        renderShell();
+      } catch (error) {
+        console.warn("Studio Las OS: Supabase load failed. Falling back to localStorage.", error);
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_load_failed" });
+      }
     }
 
     let state = load();
@@ -11667,6 +12080,8 @@ Initial 83.45 64.95 18.10
     });
 
     renderShell();
+    installStudioLasDevAuthHelper();
+    bootstrapSupabaseData();
   </script>
 </body>
 </html>
