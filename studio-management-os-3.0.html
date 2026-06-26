@@ -262,6 +262,54 @@
     .btn.warning { background: rgba(184,137,77,.13); border-color: rgba(184,137,77,.34); color: #76572e; }
     .btn.danger { background: rgba(183,101,88,.1); border-color: rgba(183,101,88,.32); color: #8d3f35; }
 
+    .dev-auth-status {
+      max-width: 1320px;
+      margin: 0 auto;
+      padding: 12px 26px 0;
+    }
+    .dev-auth-strip {
+      border: 1px solid rgba(74,68,57,.14);
+      border-radius: 10px;
+      background: rgba(255,250,241,.78);
+      box-shadow: 0 8px 22px rgba(51,43,31,.05);
+      padding: 9px 10px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+    }
+    .dev-auth-meta {
+      min-width: 0;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 7px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+    .dev-auth-meta code {
+      color: var(--ink);
+      font-family: inherit;
+      font-weight: 800;
+      overflow-wrap: anywhere;
+    }
+    .dev-auth-warning {
+      color: #8d3f35;
+      font-weight: 850;
+    }
+    .dev-auth-actions {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dev-auth-actions .btn {
+      min-height: 34px;
+      padding: 7px 10px;
+      font-size: 12px;
+    }
+
     .content { max-width: 1320px; margin: 0 auto; padding: 26px; display: grid; gap: 18px; }
     .grid { display: grid; gap: 16px; }
     .cols-4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -938,6 +986,9 @@
       .top-role { font-size: 10px; }
       .add-menu-wrap { position: static; }
       .add-menu { left: 18px; right: 18px; width: auto; max-width: none; }
+      .dev-auth-status { width: 100%; padding: 10px 16px 0; }
+      .dev-auth-strip { align-items: flex-start; flex-direction: column; }
+      .dev-auth-actions { width: 100%; flex-wrap: wrap; }
       .content { width: 100%; }
     }
     @media (max-width: 767px) {
@@ -1250,6 +1301,7 @@
           </div>
         </div>
       </header>
+      <section class="dev-auth-status" id="devAuthStatus" aria-live="polite"></section>
       <section class="content" id="view"></section>
     </main>
   </div>
@@ -4533,12 +4585,42 @@
       }
     }
 
+    function isStudioLasSupabaseConfigured(config = getSupabaseConfig()) {
+      return Boolean(resolveSupabaseBaseUrl(config.url) && config.anonKey);
+    }
+
+    function decodeStudioLasJwtPayload(token = "") {
+      try {
+        const payload = String(token || "").split(".")[1];
+        if (!payload) return {};
+        const base64 = payload.replace(/-/g, "+").replace(/_/g, "/");
+        const padded = base64.padEnd(base64.length + ((4 - base64.length % 4) % 4), "=");
+        const json = decodeURIComponent(
+          atob(padded).split("").map(char => `%${char.charCodeAt(0).toString(16).padStart(2, "0")}`).join("")
+        );
+        return JSON.parse(json);
+      } catch (error) {
+        console.warn("Studio Las OS: Supabase JWT payload decode failed", error);
+        return {};
+      }
+    }
+
+    function isStudioLasJwtPayloadActive(payload = {}) {
+      const exp = Number(payload.exp || 0);
+      return !exp || (exp * 1000) > Date.now();
+    }
+
     function setStudioLasDataSource(source, detail = {}) {
       window.STUDIO_LAS_DATA_SOURCE = source;
       try {
         document.body?.setAttribute("data-studio-las-data-source", source);
       } catch (error) {}
       console.info("Studio Las OS: data source", { source, ...detail });
+      try {
+        renderDevAuthStatus();
+      } catch (error) {
+        console.warn("Studio Las OS: dev auth status refresh failed", error);
+      }
     }
 
     function announceStudioLasBuild() {
@@ -4649,7 +4731,7 @@
           method: "PATCH",
           filters: { id: `eq.${id}` },
           payload,
-          select: "id,legacy_id,name,contact,email,phone,package,stage,stage_raw,start_date,next_session_date,next_review_date,goal,motivation,fears,health_status,contraindications,red_flags_text,communication_profile,next_milestone,working_hypothesis,status,created_at,updated_at"
+          select: "id,legacy_id,owner_trainer_id,name,contact,email,phone,package,stage,stage_raw,start_date,next_session_date,next_review_date,goal,motivation,fears,health_status,contraindications,red_flags_text,communication_profile,next_milestone,working_hypothesis,status,created_at,updated_at"
         });
         if (!row?.id) throw new Error("Supabase did not return the updated client.");
         return row;
@@ -4746,6 +4828,7 @@
         sessionStorage.setItem("studioLasSupabaseAccessToken", session.access_token);
         console.info("Studio Las OS: trainer authenticated");
         await bootstrapSupabaseData();
+        renderDevAuthStatus();
         return { ok: true, dataSource: window.STUDIO_LAS_DATA_SOURCE };
       }
 
@@ -4767,7 +4850,8 @@
         sessionStorage.setItem("studioLasSupabaseAccessToken", token);
         window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
         console.info("Studio Las OS: trainer authenticated");
-        bootstrapSupabaseData();
+        bootstrapSupabaseData().finally(() => renderDevAuthStatus());
+        renderDevAuthStatus();
         return true;
       }
 
@@ -4775,7 +4859,8 @@
         if (!token) throw new Error("Missing access token.");
         sessionStorage.setItem("studioLasSupabaseAccessToken", token);
         console.info("Studio Las OS: trainer authenticated");
-        bootstrapSupabaseData();
+        bootstrapSupabaseData().finally(() => renderDevAuthStatus());
+        renderDevAuthStatus();
         return { ok: true };
       }
 
@@ -4786,6 +4871,7 @@
         setStudioLasDataSource("localStorage", { fallbackUsed: true });
         state = load();
         renderShell();
+        renderDevAuthStatus();
         return { ok: true };
       }
 
@@ -4796,16 +4882,24 @@
         useAccessToken,
         logout,
         reload: bootstrapSupabaseData,
-        status: () => ({
-          configured: createStudioLasSupabaseDataService(getSupabaseConfig()).isConfigured(),
-          hasAccessToken: Boolean(getSupabaseConfig().accessToken),
-          dataSource: window.STUDIO_LAS_DATA_SOURCE || "localStorage",
-          clientCount: Array.isArray(state.clients) ? state.clients.length : 0,
-          activeClientId: state.activeClientId || ""
-        })
+        status: () => {
+          const config = getSupabaseConfig();
+          const payload = decodeStudioLasJwtPayload(config.accessToken);
+          return {
+            configured: isStudioLasSupabaseConfigured(config),
+            hasAccessToken: Boolean(config.accessToken),
+            tokenActive: Boolean(config.accessToken && isStudioLasJwtPayloadActive(payload)),
+            email: payload.email || "",
+            userId: payload.sub || "",
+            dataSource: window.STUDIO_LAS_DATA_SOURCE || "localStorage",
+            clientCount: Array.isArray(state.clients) ? state.clients.length : 0,
+            activeClientId: state.activeClientId || ""
+          };
+        }
       };
 
       captureTokenFromUrl();
+      renderDevAuthStatus();
       console.info("Studio Las OS: dev auth helper ready. Use StudioLasDevAuth.signIn(email, password) for local Supabase read tests.");
     }
 
@@ -5125,6 +5219,7 @@
       const row = await supabaseClientService().updateClient(id, payload);
       console.info("Studio Las OS: updateClient response", {
         id: row?.id || null,
+        ownerTrainerId: row?.owner_trainer_id || null,
         status: row?.status || null
       });
       return row;
@@ -5478,6 +5573,117 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
 
     function escapeHtml(str = "") {
       return String(str).replace(/[&<>"']/g, s => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#039;" }[s]));
+    }
+
+    function studioLasDataSourceLabel(source = "") {
+      return String(source || "").toLowerCase() === "supabase" ? "Supabase" : "localStorage";
+    }
+
+    function studioLasDevAuthStatusSnapshot() {
+      const config = getSupabaseConfig();
+      const payload = decodeStudioLasJwtPayload(config.accessToken);
+      const helper = window.StudioLasDevAuth;
+      let helperStatus = {};
+      if (helper && typeof helper.status === "function") {
+        try {
+          helperStatus = helper.status() || {};
+        } catch (error) {
+          console.warn("Studio Las OS: dev auth status read failed", error);
+        }
+      }
+      return {
+        devAuthAvailable: Boolean(helper),
+        configured: typeof helperStatus.configured === "boolean" ? helperStatus.configured : isStudioLasSupabaseConfigured(config),
+        hasAccessToken: typeof helperStatus.hasAccessToken === "boolean" ? helperStatus.hasAccessToken : Boolean(config.accessToken),
+        tokenActive: typeof helperStatus.tokenActive === "boolean"
+          ? helperStatus.tokenActive
+          : Boolean(config.accessToken && isStudioLasJwtPayloadActive(payload)),
+        email: helperStatus.email || payload.email || "",
+        userId: helperStatus.userId || payload.sub || "",
+        dataSource: helperStatus.dataSource || window.STUDIO_LAS_DATA_SOURCE || "localStorage"
+      };
+    }
+
+    function renderDevAuthStatus(clientMode = viewName === "clientPortal") {
+      const box = $("#devAuthStatus");
+      if (!box) return;
+      if (clientMode) {
+        box.hidden = true;
+        box.innerHTML = "";
+        return;
+      }
+
+      const status = studioLasDevAuthStatusSnapshot();
+      const signedIn = Boolean(status.configured && status.hasAccessToken && status.tokenActive);
+      const warnings = [];
+      if (!status.configured) warnings.push("Supabase config: brak");
+      if (status.hasAccessToken && !status.tokenActive) warnings.push("Sesja Supabase wygasła. Odśwież logowanie przed zapisem.");
+      if (!signedIn) warnings.push("Brak aktywnej sesji. Zapisy do Supabase nie będą działały.");
+      const authTone = signedIn ? "green" : "red";
+      const authLabel = signedIn ? "Supabase: zalogowany" : "Supabase: niezalogowany";
+      const tokenLabel = !status.hasAccessToken ? "token: brak" : (status.tokenActive ? "token: aktywny" : "token: wygasł");
+      const devAuthLabel = status.devAuthAvailable ? "" : `<span class="pill red">Dev Auth: niedostępny</span>`;
+
+      box.hidden = false;
+      box.innerHTML = `
+        <div class="dev-auth-strip">
+          <div class="dev-auth-meta">
+            ${devAuthLabel}
+            <span class="pill ${authTone}">${authLabel}</span>
+            <span>email: <code>${escapeHtml(status.email || "brak danych")}</code></span>
+            <span>auth.uid: <code>${escapeHtml(status.userId || "brak danych")}</code></span>
+            <span>${escapeHtml(tokenLabel)}</span>
+            <span>źródło danych: <code>${escapeHtml(studioLasDataSourceLabel(status.dataSource))}</code></span>
+            ${warnings.map(message => `<span class="dev-auth-warning">${escapeHtml(message)}</span>`).join("")}
+          </div>
+          <div class="dev-auth-actions">
+            <button class="btn" id="devAuthRefreshBtn" type="button">Odśwież sesję</button>
+            <button class="btn danger" id="devAuthLogoutBtn" type="button">Wyloguj</button>
+          </div>
+        </div>
+      `;
+      bindDevAuthStatusActions();
+    }
+
+    function bindDevAuthStatusActions() {
+      $("#devAuthRefreshBtn")?.addEventListener("click", handleDevAuthRefreshClick);
+      $("#devAuthLogoutBtn")?.addEventListener("click", handleDevAuthLogoutClick);
+    }
+
+    async function handleDevAuthRefreshClick(event) {
+      const button = event.currentTarget;
+      try {
+        button.disabled = true;
+        if (window.StudioLasDevAuth?.reload) {
+          await window.StudioLasDevAuth.reload();
+        } else if (window.StudioLasDevAuth?.status) {
+          window.StudioLasDevAuth.status();
+        } else {
+          console.warn("Studio Las OS: dev auth refresh unavailable");
+        }
+      } catch (error) {
+        console.warn("Studio Las OS: dev auth refresh failed", error);
+      } finally {
+        button.disabled = false;
+        renderDevAuthStatus();
+      }
+    }
+
+    async function handleDevAuthLogoutClick(event) {
+      const button = event.currentTarget;
+      try {
+        button.disabled = true;
+        if (!window.StudioLasDevAuth?.logout) {
+          console.warn("Studio Las OS: dev auth logout unavailable");
+          return;
+        }
+        await window.StudioLasDevAuth.logout();
+      } catch (error) {
+        console.error("Studio Las OS: dev auth logout failed", error);
+      } finally {
+        button.disabled = false;
+        renderDevAuthStatus();
+      }
     }
 
     function shortText(text = "", maxLength = 150) {
@@ -6026,6 +6232,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       $("#roleBadge").textContent = clientMode ? "Widok klienta" : "Widok trenera";
       $("#roleBadge").className = `pill top-role ${clientMode ? "green" : "blue"}`;
       renderTopbarActions(clientMode);
+      renderDevAuthStatus(clientMode);
       if (!c && viewName !== "command") return renderNoClientState();
       if (viewName === "command") renderCommand();
       if (viewName === "todaySession") renderTodaySession();
@@ -12304,6 +12511,14 @@ Initial 83.45 64.95 18.10
         clientId: existing?.id || null,
         activeTrainerProfileId: activeTrainerProfileForSupabase() || null
       });
+      if (existing) {
+        console.info("Studio Las OS: client update mode", {
+          clientId: existing.id,
+          supabaseMode: supabaseModeAtClientSave,
+          nameBefore: existing.name || "",
+          nameAfter: migrated.name || ""
+        });
+      }
 
       if (supabaseModeAtClientSave) {
         const submitButton = form.querySelector("button[type='submit']");
@@ -12469,6 +12684,7 @@ Initial 83.45 64.95 18.10
     announceStudioLasBuild();
     renderShell();
     installStudioLasDevAuthHelper();
+    renderDevAuthStatus();
     bootstrapSupabaseData();
   </script>
 </body>
