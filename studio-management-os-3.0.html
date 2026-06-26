@@ -12251,12 +12251,13 @@ Initial 83.45 64.95 18.10
 
     $("#clientForm").addEventListener("submit", async e => {
       e.preventDefault();
+      const form = e.currentTarget;
       console.info("Studio Las OS: client submit handler", {
         dataSource: window.STUDIO_LAS_DATA_SOURCE || null,
         activeTrainerProfileId: activeTrainerProfileForSupabase() || null,
         hasAccessToken: Boolean(getSupabaseConfig().accessToken)
       });
-      const fd = new FormData(e.currentTarget);
+      const fd = new FormData(form);
       const existing = editingClientId ? state.clients.find(client => client.id === editingClientId) : null;
       const c = {
         ...(existing || {}),
@@ -12305,7 +12306,7 @@ Initial 83.45 64.95 18.10
       });
 
       if (supabaseModeAtClientSave) {
-        const submitButton = e.currentTarget.querySelector("button[type='submit']");
+        const submitButton = form.querySelector("button[type='submit']");
         if (submitButton) submitButton.disabled = true;
         try {
           const row = existing
@@ -12314,7 +12315,7 @@ Initial 83.45 64.95 18.10
           const savedClient = mapSupabaseClientToState(row, existing || migrated);
           replaceClientInState(savedClient, existing);
           editingClientId = "";
-          e.currentTarget.reset();
+          form.reset();
           closeModal("clientModal");
           viewName = "client";
           renderShell();
@@ -12334,7 +12335,7 @@ Initial 83.45 64.95 18.10
       state.activeClientId = c.id;
       save();
       editingClientId = "";
-      e.currentTarget.reset();
+      form.reset();
       closeModal("clientModal");
       viewName = "client";
       renderShell();
