@@ -4630,10 +4630,15 @@
       }
 
       async function insertClient(payload) {
+        payload = {
+          ...(payload || {}),
+          owner_trainer_id: requireActiveTrainerProfileForClientInsert()
+        };
+        console.log('Studio Las OS: insertClient owner_trainer_id', payload.owner_trainer_id);
         const row = await mutate("clients", {
           method: "POST",
           payload,
-          select: "id,legacy_id,name,contact,email,phone,package,stage,stage_raw,start_date,next_session_date,next_review_date,goal,motivation,fears,health_status,contraindications,red_flags_text,communication_profile,next_milestone,working_hypothesis,status,created_at,updated_at"
+          select: "id,legacy_id,owner_trainer_id,name,contact,email,phone,package,stage,stage_raw,start_date,next_session_date,next_review_date,goal,motivation,fears,health_status,contraindications,red_flags_text,communication_profile,next_milestone,working_hypothesis,status,created_at,updated_at"
         });
         if (!row?.id) throw new Error("Supabase did not return the inserted client.");
         return row;
@@ -5041,6 +5046,20 @@
       return activeTrainerProfileId || window.STUDIO_LAS_TRAINER_PROFILE_ID || "";
     }
 
+    const MISSING_TRAINER_PROFILE_CLIENT_INSERT_ERROR = "Brak aktywnego profilu trenera. Zaloguj sie ponownie do Supabase przed dodaniem klienta.";
+
+    function requireActiveTrainerProfileForClientInsert() {
+      const ownerTrainerId = String(activeTrainerProfileId || "").trim();
+      if (!ownerTrainerId) throw new Error(MISSING_TRAINER_PROFILE_CLIENT_INSERT_ERROR);
+      return ownerTrainerId;
+    }
+
+    function supabaseClientSaveToastMessage(error) {
+      return error?.message === MISSING_TRAINER_PROFILE_CLIENT_INSERT_ERROR
+        ? MISSING_TRAINER_PROFILE_CLIENT_INSERT_ERROR
+        : "Nie udalo sie zapisac klienta w Supabase";
+    }
+
     function mapClientStateToSupabasePayload(client = {}, options = {}) {
       const payload = {
         name: String(client.name || "Nowy klient").trim() || "Nowy klient",
@@ -5066,8 +5085,7 @@
         updated_at: new Date().toISOString()
       };
       if (options.includeOwnerTrainer) {
-        payload.owner_trainer_id = activeTrainerProfileForSupabase();
-        if (!payload.owner_trainer_id) throw new Error("Missing active trainer profile id for Supabase client insert.");
+        payload.owner_trainer_id = requireActiveTrainerProfileForClientInsert();
       }
       return payload;
     }
@@ -11342,7 +11360,7 @@ Interpretacja tolerancji: ${tolerance.label}. ${audience === "trainer" ? toleran
           replaceClientInState(savedClient, null);
         } catch (error) {
           console.error("Studio Las OS: Supabase intake client create failed", error);
-          return toast("Nie udalo sie zapisac klienta w Supabase");
+          return toast(supabaseClientSaveToastMessage(error));
         }
         viewName = "client";
         renderShell();
@@ -12303,7 +12321,7 @@ Initial 83.45 64.95 18.10
           toast(existing ? "Klient zaktualizowany" : "Dodano klienta");
         } catch (error) {
           console.error("Studio Las OS: Supabase client save failed", error);
-          toast("Nie udalo sie zapisac klienta w Supabase");
+          toast(supabaseClientSaveToastMessage(error));
         } finally {
           if (submitButton) submitButton.disabled = false;
         }
