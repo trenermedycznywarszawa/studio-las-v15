@@ -27,7 +27,15 @@ begin;
 set local role authenticated;
 select set_config('request.jwt.claim.sub', '277d6162-60cf-4263-80c8-8e0732749957', true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
-select set_config('request.jwt.claims', '{"sub":"277d6162-60cf-4263-80c8-8e0732749957","role":"authenticated"}', true);
+-- Test-only claim values; these UUIDs and role names are not secrets.
+select set_config(
+  'request.jwt.claims',
+  jsonb_build_object(
+    'sub', current_setting('request.jwt.claim.sub', true),
+    'role', current_setting('request.jwt.claim.role', true)
+  )::text,
+  true
+);
 
 select public.is_current_trainer_profile('11111111-1111-4111-8111-111111111111') as helper_allows;
 

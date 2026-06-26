@@ -276,10 +276,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
+      flex-wrap: wrap;
       gap: 10px;
     }
     .dev-auth-meta {
       min-width: 0;
+      flex: 1 1 520px;
       display: flex;
       align-items: center;
       flex-wrap: wrap;
@@ -298,6 +300,17 @@
       color: #8d3f35;
       font-weight: 850;
     }
+    .dev-auth-feedback {
+      font-weight: 850;
+    }
+    .dev-auth-feedback.success,
+    .dev-auth-login-message.success {
+      color: #3f6f46;
+    }
+    .dev-auth-feedback.error,
+    .dev-auth-login-message.error {
+      color: #8d3f35;
+    }
     .dev-auth-actions {
       flex: 0 0 auto;
       display: flex;
@@ -308,6 +321,50 @@
       min-height: 34px;
       padding: 7px 10px;
       font-size: 12px;
+    }
+    .dev-auth-login {
+      flex: 1 0 100%;
+      display: grid;
+      grid-template-columns: minmax(180px, 1fr) minmax(180px, 1fr) auto;
+      align-items: end;
+      gap: 8px;
+      border-top: 1px solid rgba(74,68,57,.12);
+      padding-top: 9px;
+    }
+    .dev-auth-login .form-field {
+      display: grid;
+      gap: 4px;
+      min-width: 0;
+    }
+    .dev-auth-login label {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 1.2;
+    }
+    .dev-auth-login input {
+      width: 100%;
+      min-height: 36px;
+      border: 1px solid rgba(74,68,57,.18);
+      border-radius: 9px;
+      background: rgba(255,253,248,.95);
+      color: var(--ink);
+      font: inherit;
+      font-size: 13px;
+      padding: 8px 10px;
+    }
+    .dev-auth-login .btn {
+      min-height: 36px;
+      padding: 8px 12px;
+      font-size: 12px;
+      white-space: nowrap;
+    }
+    .dev-auth-login-message {
+      grid-column: 1 / -1;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
     }
 
     .content { max-width: 1320px; margin: 0 auto; padding: 26px; display: grid; gap: 18px; }
@@ -988,7 +1045,10 @@
       .add-menu { left: 18px; right: 18px; width: auto; max-width: none; }
       .dev-auth-status { width: 100%; padding: 10px 16px 0; }
       .dev-auth-strip { align-items: flex-start; flex-direction: column; }
+      .dev-auth-meta { flex: 0 1 auto; width: 100%; align-items: flex-start; }
       .dev-auth-actions { width: 100%; flex-wrap: wrap; }
+      .dev-auth-login { grid-template-columns: 1fr; }
+      .dev-auth-login .btn { width: 100%; }
       .content { width: 100%; }
     }
     @media (max-width: 767px) {
@@ -5305,6 +5365,7 @@
     let activeTrainerProfileId = "";
     let clientPortalShowAllHomeTasks = false;
     let selectedClientPortalReportType = "";
+    let devAuthLoginFeedback = { text: "", tone: "" };
 
     const $ = (sel) => document.querySelector(sel);
     const view = $("#view");
@@ -5617,6 +5678,48 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       };
     }
 
+    function setDevAuthLoginFeedback(text = "", tone = "") {
+      devAuthLoginFeedback = { text, tone };
+    }
+
+    function devAuthLoginFeedbackClass(tone = "") {
+      if (tone === "success") return "success";
+      if (tone === "error") return "error";
+      return "";
+    }
+
+    function devAuthLoginDisabledMessage(status) {
+      if (!status.devAuthAvailable || typeof window.StudioLasDevAuth?.signIn !== "function") {
+        return "Logowanie niedostępne w tej wersji aplikacji.";
+      }
+      if (!status.configured) {
+        return "Supabase config: brak. Nie można się zalogować.";
+      }
+      return "";
+    }
+
+    function renderDevAuthLoginForm(status) {
+      const disabledMessage = devAuthLoginDisabledMessage(status);
+      const disabled = Boolean(disabledMessage);
+      const disabledAttr = disabled ? " disabled" : "";
+      const feedbackClass = devAuthLoginFeedbackClass(devAuthLoginFeedback.tone);
+      const message = devAuthLoginFeedback.text || disabledMessage || "Zaloguj się, aby czytać i zapisywać dane w Supabase.";
+      return `
+        <form class="dev-auth-login" id="devAuthLoginForm" autocomplete="on" novalidate>
+          <div class="form-field">
+            <label for="devAuthLoginEmail">Email</label>
+            <input id="devAuthLoginEmail" name="email" type="email" autocomplete="username" inputmode="email"${disabledAttr}>
+          </div>
+          <div class="form-field">
+            <label for="devAuthLoginPassword">Hasło</label>
+            <input id="devAuthLoginPassword" name="password" type="password" autocomplete="current-password"${disabledAttr}>
+          </div>
+          <button class="btn primary" id="devAuthLoginBtn" type="submit"${disabledAttr}>Zaloguj</button>
+          <div class="dev-auth-login-message ${feedbackClass}">${escapeHtml(message)}</div>
+        </form>
+      `;
+    }
+
     function renderDevAuthStatus(clientMode = viewName === "clientPortal") {
       const box = $("#devAuthStatus");
       if (!box) return;
@@ -5636,6 +5739,18 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       const authLabel = signedIn ? "Supabase: zalogowany" : "Supabase: niezalogowany";
       const tokenLabel = !status.hasAccessToken ? "token: brak" : (status.tokenActive ? "token: aktywny" : "token: wygasł");
       const devAuthLabel = status.devAuthAvailable ? "" : `<span class="pill red">Dev Auth: niedostępny</span>`;
+      const signedInFeedback = signedIn && devAuthLoginFeedback.text
+        ? `<span class="dev-auth-feedback ${devAuthLoginFeedbackClass(devAuthLoginFeedback.tone)}">${escapeHtml(devAuthLoginFeedback.text)}</span>`
+        : "";
+      const authActions = signedIn
+        ? `
+          <div class="dev-auth-actions">
+            <button class="btn" id="devAuthRefreshBtn" type="button">Odśwież sesję</button>
+            <button class="btn danger" id="devAuthLogoutBtn" type="button">Wyloguj</button>
+          </div>
+        `
+        : "";
+      const loginForm = signedIn ? "" : renderDevAuthLoginForm(status);
 
       box.hidden = false;
       box.innerHTML = `
@@ -5647,12 +5762,11 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
             <span>auth.uid: <code>${escapeHtml(status.userId || "brak danych")}</code></span>
             <span>${escapeHtml(tokenLabel)}</span>
             <span>źródło danych: <code>${escapeHtml(studioLasDataSourceLabel(status.dataSource))}</code></span>
+            ${signedInFeedback}
             ${warnings.map(message => `<span class="dev-auth-warning">${escapeHtml(message)}</span>`).join("")}
           </div>
-          <div class="dev-auth-actions">
-            <button class="btn" id="devAuthRefreshBtn" type="button">Odśwież sesję</button>
-            <button class="btn danger" id="devAuthLogoutBtn" type="button">Wyloguj</button>
-          </div>
+          ${authActions}
+          ${loginForm}
         </div>
       `;
       bindDevAuthStatusActions();
@@ -5661,6 +5775,53 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
     function bindDevAuthStatusActions() {
       $("#devAuthRefreshBtn")?.addEventListener("click", handleDevAuthRefreshClick);
       $("#devAuthLogoutBtn")?.addEventListener("click", handleDevAuthLogoutClick);
+      $("#devAuthLoginForm")?.addEventListener("submit", handleDevAuthLoginSubmit);
+    }
+
+    async function handleDevAuthLoginSubmit(event) {
+      event.preventDefault();
+      const form = event.currentTarget;
+      const emailInput = form.querySelector('input[name="email"]');
+      const passwordInput = form.querySelector('input[name="password"]');
+      const submitButton = form.querySelector('button[type="submit"]');
+      const email = String(emailInput?.value || "").trim();
+      const password = String(passwordInput?.value || "");
+
+      try {
+        const status = studioLasDevAuthStatusSnapshot();
+        const disabledMessage = devAuthLoginDisabledMessage(status);
+        if (disabledMessage) {
+          setDevAuthLoginFeedback(disabledMessage, "error");
+          renderDevAuthStatus();
+          return;
+        }
+        if (!email || !password) {
+          setDevAuthLoginFeedback("Podaj email i hasło.", "error");
+          renderDevAuthStatus();
+          return;
+        }
+
+        if (submitButton) {
+          submitButton.disabled = true;
+          submitButton.textContent = "Logowanie...";
+        }
+        setDevAuthLoginFeedback("", "");
+        await window.StudioLasDevAuth.signIn(email, password);
+        if (passwordInput) passwordInput.value = "";
+        setDevAuthLoginFeedback("Zalogowano pomyślnie.", "success");
+        renderDevAuthStatus();
+        toast("Zalogowano pomyślnie.");
+      } catch (error) {
+        console.warn("Studio Las OS: dev auth sign in failed", error);
+        if (passwordInput) passwordInput.value = "";
+        setDevAuthLoginFeedback("Nie udało się zalogować. Sprawdź email i hasło.", "error");
+        renderDevAuthStatus();
+      } finally {
+        if (submitButton?.isConnected) {
+          submitButton.disabled = false;
+          submitButton.textContent = "Zaloguj";
+        }
+      }
     }
 
     async function handleDevAuthRefreshClick(event) {
@@ -5690,6 +5851,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
           console.warn("Studio Las OS: dev auth logout unavailable");
           return;
         }
+        setDevAuthLoginFeedback("", "");
         await window.StudioLasDevAuth.logout();
       } catch (error) {
         console.error("Studio Las OS: dev auth logout failed", error);
