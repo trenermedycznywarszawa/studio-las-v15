@@ -4564,6 +4564,19 @@
       };
     }
 
+    function storeStudioLasSupabaseAccessToken(token = "") {
+      const accessToken = String(token || "");
+      if (!accessToken) throw new Error("Missing access token.");
+      sessionStorage.setItem("studioLasSupabaseAccessToken", accessToken);
+      SUPABASE_CONFIG.accessToken = accessToken;
+    }
+
+    function clearStudioLasSupabaseAccessToken() {
+      sessionStorage.removeItem("studioLasSupabaseAccessToken");
+      SUPABASE_CONFIG.accessToken = "";
+      if (window.STUDIO_LAS_SUPABASE_ACCESS_TOKEN) window.STUDIO_LAS_SUPABASE_ACCESS_TOKEN = "";
+    }
+
     function resolveSupabaseBaseUrl(value = "") {
       const raw = String(value || "").trim().replace(/\/+$/, "");
       if (!raw) return "";
@@ -4825,7 +4838,7 @@
       async function signIn(email, password) {
         const session = await authRequest("token?grant_type=password", { email, password });
         if (!session.access_token) throw new Error("Supabase Auth did not return an access token.");
-        sessionStorage.setItem("studioLasSupabaseAccessToken", session.access_token);
+        storeStudioLasSupabaseAccessToken(session.access_token);
         console.info("Studio Las OS: trainer authenticated");
         await bootstrapSupabaseData();
         renderDevAuthStatus();
@@ -4847,7 +4860,7 @@
         const hash = new URLSearchParams(String(window.location.hash || "").replace(/^#/, ""));
         const token = hash.get("access_token");
         if (!token) return false;
-        sessionStorage.setItem("studioLasSupabaseAccessToken", token);
+        storeStudioLasSupabaseAccessToken(token);
         window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
         console.info("Studio Las OS: trainer authenticated");
         bootstrapSupabaseData().finally(() => renderDevAuthStatus());
@@ -4857,7 +4870,7 @@
 
       function useAccessToken(token) {
         if (!token) throw new Error("Missing access token.");
-        sessionStorage.setItem("studioLasSupabaseAccessToken", token);
+        storeStudioLasSupabaseAccessToken(token);
         console.info("Studio Las OS: trainer authenticated");
         bootstrapSupabaseData().finally(() => renderDevAuthStatus());
         renderDevAuthStatus();
@@ -4865,7 +4878,7 @@
       }
 
       function logout() {
-        sessionStorage.removeItem("studioLasSupabaseAccessToken");
+        clearStudioLasSupabaseAccessToken();
         activeTrainerProfileId = "";
         window.STUDIO_LAS_TRAINER_PROFILE_ID = "";
         setStudioLasDataSource("localStorage", { fallbackUsed: true });
