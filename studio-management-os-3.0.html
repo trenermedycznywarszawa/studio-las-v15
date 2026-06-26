@@ -331,6 +331,15 @@
       border-top: 1px solid rgba(74,68,57,.12);
       padding-top: 9px;
     }
+    .dev-auth-login-form,
+    .dev-auth-login-form input,
+    .dev-auth-login-form button {
+      pointer-events: auto;
+    }
+    .dev-auth-login-form {
+      position: relative;
+      z-index: 20;
+    }
     .dev-auth-login .form-field {
       display: grid;
       gap: 4px;
@@ -352,6 +361,9 @@
       font: inherit;
       font-size: 13px;
       padding: 8px 10px;
+      -webkit-user-select: text;
+      user-select: text;
+      touch-action: manipulation;
     }
     .dev-auth-login .btn {
       min-height: 36px;
@@ -5700,21 +5712,19 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
 
     function renderDevAuthLoginForm(status) {
       const disabledMessage = devAuthLoginDisabledMessage(status);
-      const disabled = Boolean(disabledMessage);
-      const disabledAttr = disabled ? " disabled" : "";
       const feedbackClass = devAuthLoginFeedbackClass(devAuthLoginFeedback.tone);
       const message = devAuthLoginFeedback.text || disabledMessage || "Zaloguj się, aby czytać i zapisywać dane w Supabase.";
       return `
-        <form class="dev-auth-login" id="devAuthLoginForm" autocomplete="on" novalidate>
+        <form class="dev-auth-login dev-auth-login-form" id="devAuthLoginForm" autocomplete="on" novalidate>
           <div class="form-field">
             <label for="devAuthLoginEmail">Email</label>
-            <input id="devAuthLoginEmail" name="email" type="email" autocomplete="username" inputmode="email"${disabledAttr}>
+            <input id="devAuthLoginEmail" name="email" type="email" autocomplete="username" inputmode="email">
           </div>
           <div class="form-field">
             <label for="devAuthLoginPassword">Hasło</label>
-            <input id="devAuthLoginPassword" name="password" type="password" autocomplete="current-password"${disabledAttr}>
+            <input id="devAuthLoginPassword" name="password" type="password" autocomplete="current-password">
           </div>
-          <button class="btn primary" id="devAuthLoginBtn" type="submit"${disabledAttr}>Zaloguj</button>
+          <button class="btn primary" id="devAuthLoginBtn" type="submit">Zaloguj</button>
           <div class="dev-auth-login-message ${feedbackClass}">${escapeHtml(message)}</div>
         </form>
       `;
