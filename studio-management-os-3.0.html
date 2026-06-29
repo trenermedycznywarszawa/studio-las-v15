@@ -1632,6 +1632,7 @@
 
   <div class="toast" id="toast"></div>
 
+  <script src="./studio-las-config.js"></script>
   <script>
     const APP_VERSION = "9.0";
     const STUDIO_LAS_VERSION = "Studio Las OS 9.0 Supabase Write Preview";
@@ -1653,10 +1654,19 @@
     window.STUDIO_LAS_BUILD_COMMIT = STUDIO_LAS_BUILD_COMMIT;
     window.STUDIO_LAS_BUILD_TIME = STUDIO_LAS_BUILD_TIME;
     window.STUDIO_LAS_DATA_SOURCE = window.STUDIO_LAS_DATA_SOURCE || "initializing";
+    const STUDIO_LAS_AUTH_SESSION_KEY = "studioLasSupabaseAccessToken";
+    const STUDIO_LAS_PUBLIC_KEY_PLACEHOLDER = "TU_WSTAW_PUBLISHABLE_KEY_LOKALNIE";
+    let studioLasRuntimeAccessToken = "";
+    let studioLasLastConfigLogSignature = "";
     const SUPABASE_CONFIG = {
-      url: window.STUDIO_LAS_SUPABASE_URL || readBrowserSetting("studioLasSupabaseUrl"),
-      anonKey: window.STUDIO_LAS_SUPABASE_ANON_KEY || readBrowserSetting("studioLasSupabaseAnonKey"),
-      accessToken: window.STUDIO_LAS_SUPABASE_ACCESS_TOKEN || readBrowserSetting("studioLasSupabaseAccessToken", sessionStorage)
+      projectRef: "",
+      url: "",
+      apiKey: "",
+      publishableKey: "",
+      anonKey: "",
+      accessToken: "",
+      source: "none",
+      missingReason: "unresolved"
     };
     const TANITA_FIELD_ORDER = ["date", "weightKg", "fatPercent", "fatMassKg", "fatFreeMassKg", "muscleMassKg", "bodyWaterPercent", "bodyWaterKg", "visceralFatRating", "bmrKcal", "metabolicAge", "bmi", "boneMassKg", "proteinKg"];
     const TANITA_KEY_FIELDS = ["date", "weightKg", "fatPercent", "muscleMassKg", "fatMassKg", "bodyWaterPercent", "bmrKcal", "visceralFatRating", "bmi"];
@@ -4628,23 +4638,96 @@
       }
     }
 
-    function getSupabaseConfig() {
-      return {
-        url: window.STUDIO_LAS_SUPABASE_URL || readBrowserSetting("studioLasSupabaseUrl") || SUPABASE_CONFIG.url,
-        anonKey: window.STUDIO_LAS_SUPABASE_ANON_KEY || readBrowserSetting("studioLasSupabaseAnonKey") || SUPABASE_CONFIG.anonKey,
-        accessToken: window.STUDIO_LAS_SUPABASE_ACCESS_TOKEN || readBrowserSetting("studioLasSupabaseAccessToken", sessionStorage) || SUPABASE_CONFIG.accessToken
+    function isStudioLasPlaceholderKey(value = "") {
+      const raw = String(value || "").trim();
+      return !raw || raw === STUDIO_LAS_PUBLIC_KEY_PLACEHOLDER || /^TU_WSTAW/i.test(raw) || /^YOUR_/i.test(raw);
+    }
+
+    function studioLasConfigCandidate(source, data = {}) {
+      const projectRef = String(data.projectRef || data.ref || "").trim();
+      const rawUrl = String(data.url || data.supabaseUrl || projectRef || "").trim();
+      const url = resolveSupabaseBaseUrl(rawUrl);
+      const publishableKey = String(data.publishableKey || data.publicKey || "").trim();
+      const anonKey = String(data.anonKey || data.apiKey || "").trim();
+      const apiKey = publishableKey || anonKey;
+      const hasAnyConfig = Boolean(projectRef || rawUrl || publishableKey || anonKey);
+      const complete = Boolean(url && apiKey && !isStudioLasPlaceholderKey(apiKey));
+      const missingReason = !url ? "missing_url" : (!apiKey || isStudioLasPlaceholderKey(apiKey) ? "missing_key" : "");
+      return { source, projectRef, url, apiKey: complete ? apiKey : "", publishableKey, anonKey, hasAnyConfig, complete, missingReason };
+    }
+
+    function resolveStudioLasSupabaseConfig() {
+      const central = window.STUDIO_LAS_CONFIG?.supabase || {};
+      const legacy = {
+        projectRef: window.STUDIO_LAS_SUPABASE_PROJECT_REF,
+        url: window.STUDIO_LAS_SUPABASE_URL,
+        publishableKey: window.STUDIO_LAS_SUPABASE_PUBLISHABLE_KEY,
+        anonKey: window.STUDIO_LAS_SUPABASE_ANON_KEY
       };
+      const stored = {
+        projectRef: readBrowserSetting("studioLasSupabaseProjectRef"),
+        url: readBrowserSetting("studioLasSupabaseUrl"),
+        publishableKey: readBrowserSetting("studioLasSupabasePublishableKey"),
+        anonKey: readBrowserSetting("studioLasSupabaseAnonKey")
+      };
+      const candidates = [
+        studioLasConfigCandidate("studio-las-config.js", central),
+        studioLasConfigCandidate("legacy_window_globals", legacy),
+        studioLasConfigCandidate("browser_storage", stored)
+      ];
+      const complete = candidates.find(candidate => candidate.complete);
+      const fallback = candidates.find(candidate => candidate.hasAnyConfig) || candidates[0];
+      const selected = complete || fallback;
+      return {
+        projectRef: selected.projectRef,
+        url: selected.url,
+        apiKey: selected.apiKey,
+        publishableKey: selected.publishableKey,
+        anonKey: selected.anonKey || selected.apiKey,
+        source: selected.source,
+        missingReason: selected.complete ? "" : selected.missingReason
+      };
+    }
+
+    function getStudioLasAccessToken() {
+      if (studioLasRuntimeAccessToken) return studioLasRuntimeAccessToken;
+      const token = readBrowserSetting(STUDIO_LAS_AUTH_SESSION_KEY, sessionStorage);
+      studioLasRuntimeAccessToken = String(token || "");
+      return studioLasRuntimeAccessToken;
+    }
+
+    function getSupabaseConfig() {
+      const resolved = resolveStudioLasSupabaseConfig();
+      const accessToken = getStudioLasAccessToken();
+      const nextConfig = { ...resolved, accessToken };
+      Object.assign(SUPABASE_CONFIG, nextConfig);
+      const signature = `${nextConfig.source}:${nextConfig.url}:${Boolean(nextConfig.apiKey)}:${nextConfig.missingReason}`;
+      if (signature !== studioLasLastConfigLogSignature) {
+        studioLasLastConfigLogSignature = signature;
+        console.info("Studio Las OS: config source", {
+          source: nextConfig.source,
+          configured: isStudioLasSupabaseConfigured(nextConfig),
+          url: nextConfig.url || "missing",
+          keyType: nextConfig.apiKey ? (String(nextConfig.apiKey).startsWith("sb_publishable_") ? "publishable" : "anon_public") : "missing",
+          missingReason: nextConfig.missingReason || ""
+        });
+      }
+      return { ...nextConfig, anonKey: nextConfig.apiKey || nextConfig.anonKey };
     }
 
     function storeStudioLasSupabaseAccessToken(token = "") {
       const accessToken = String(token || "");
       if (!accessToken) throw new Error("Missing access token.");
-      sessionStorage.setItem("studioLasSupabaseAccessToken", accessToken);
+      studioLasRuntimeAccessToken = accessToken;
+      sessionStorage.setItem(STUDIO_LAS_AUTH_SESSION_KEY, accessToken);
       SUPABASE_CONFIG.accessToken = accessToken;
+      console.info("Studio Las OS: auth token stored", { storage: "sessionStorage", runtime: true });
     }
 
     function clearStudioLasSupabaseAccessToken() {
-      sessionStorage.removeItem("studioLasSupabaseAccessToken");
+      studioLasRuntimeAccessToken = "";
+      sessionStorage.removeItem(STUDIO_LAS_AUTH_SESSION_KEY);
+      try { localStorage.removeItem(STUDIO_LAS_AUTH_SESSION_KEY); } catch (error) {}
       SUPABASE_CONFIG.accessToken = "";
       if (window.STUDIO_LAS_SUPABASE_ACCESS_TOKEN) window.STUDIO_LAS_SUPABASE_ACCESS_TOKEN = "";
     }
@@ -4665,13 +4748,14 @@
         url.hash = "";
         return url.origin;
       } catch (error) {
-        console.warn("Studio Las OS: invalid Supabase URL/ref. Falling back to localStorage.", { value: raw, message: error.message });
+        console.warn("Studio Las OS: invalid Supabase URL/ref", { value: raw, message: error.message });
         return "";
       }
     }
 
     function isStudioLasSupabaseConfigured(config = getSupabaseConfig()) {
-      return Boolean(resolveSupabaseBaseUrl(config.url) && config.anonKey);
+      const apiKey = String(config.apiKey || config.publishableKey || config.anonKey || "");
+      return Boolean(resolveSupabaseBaseUrl(config.url || config.projectRef) && apiKey && !isStudioLasPlaceholderKey(apiKey));
     }
 
     function decodeStudioLasJwtPayload(token = "") {
@@ -4697,8 +4781,10 @@
 
     function setStudioLasDataSource(source, detail = {}) {
       window.STUDIO_LAS_DATA_SOURCE = source;
+      window.STUDIO_LAS_DATA_SOURCE_REASON = detail.reason || "";
       try {
         document.body?.setAttribute("data-studio-las-data-source", source);
+        document.body?.setAttribute("data-studio-las-data-source-reason", window.STUDIO_LAS_DATA_SOURCE_REASON);
       } catch (error) {}
       console.info("Studio Las OS: data source", { source, ...detail });
       try {
@@ -4723,16 +4809,16 @@
 
     function createStudioLasSupabaseDataService(config = {}) {
       const baseUrl = resolveSupabaseBaseUrl(config.url);
-      const anonKey = String(config.anonKey || "");
-      const accessToken = String(config.accessToken || "");
+      const apiKey = String(config.apiKey || config.publishableKey || config.anonKey || "");
+      const accessToken = String(config.accessToken || getStudioLasAccessToken());
       console.log("Supabase base URL", baseUrl);
 
       function isConfigured() {
-        return Boolean(baseUrl && anonKey);
+        return Boolean(baseUrl && apiKey && !isStudioLasPlaceholderKey(apiKey));
       }
 
       async function request(table, params = {}) {
-        if (!isConfigured()) throw new Error("Supabase URL or anon key is missing.");
+        if (!isConfigured()) throw new Error("Supabase URL or public key is missing.");
         const query = new URLSearchParams();
         query.set("select", params.select || "*");
         if (params.order) query.set("order", params.order);
@@ -4743,8 +4829,8 @@
         console.log("Supabase request URL", requestUrl);
         const response = await fetch(requestUrl, {
           headers: {
-            apikey: anonKey,
-            Authorization: `Bearer ${accessToken || anonKey}`,
+            apikey: apiKey,
+            ...(accessToken ? { Authorization: `Bearer ${accessToken}` } : {}),
             Accept: "application/json"
           }
         });
@@ -4756,7 +4842,7 @@
       }
 
       async function mutate(table, params = {}) {
-        if (!isConfigured()) throw new Error("Supabase URL or anon key is missing.");
+        if (!isConfigured()) throw new Error("Supabase URL or public key is missing.");
         if (!accessToken) throw new Error("Supabase trainer access token is missing.");
         const query = new URLSearchParams();
         if (params.returning !== false) query.set("select", params.select || "*");
@@ -4772,7 +4858,7 @@
         const response = await fetch(requestUrl, {
           method: params.method || "POST",
           headers: {
-            apikey: anonKey,
+            apikey: apiKey,
             Authorization: `Bearer ${accessToken}`,
             Accept: "application/json",
             "Content-Type": "application/json",
@@ -4884,20 +4970,28 @@
       return { isConfigured, loadDashboardState, insertClient, updateClient, softDeleteClient };
     }
 
-    function installStudioLasDevAuthHelper() {
-      if (window.StudioLasDevAuth) return;
+    function safeStudioLasAuthErrorMessage(error) {
+      return String(error?.message || error || "Supabase Auth failed").slice(0, 180);
+    }
+
+    function installStudioLasAuthHelper() {
+      if (window.StudioLasAuth) {
+        window.StudioLasDevAuth = window.StudioLasAuth;
+        return;
+      }
 
       async function authRequest(endpoint, payload) {
         const config = getSupabaseConfig();
         const authBaseUrl = resolveSupabaseBaseUrl(config.url);
+        const apiKey = String(config.apiKey || config.publishableKey || config.anonKey || "");
         console.log("Supabase base URL", authBaseUrl);
-        if (!authBaseUrl || !config.anonKey) throw new Error("Set studioLasSupabaseUrl and studioLasSupabaseAnonKey first.");
+        if (!authBaseUrl || !apiKey || isStudioLasPlaceholderKey(apiKey)) throw new Error("Supabase config is missing.");
         const requestUrl = `${authBaseUrl}/auth/v1/${endpoint}`;
         console.log("Supabase request URL", requestUrl);
         const response = await fetch(requestUrl, {
           method: "POST",
           headers: {
-            apikey: config.anonKey,
+            apikey: apiKey,
             "Content-Type": "application/json"
           },
           body: JSON.stringify(payload)
@@ -4907,14 +5001,88 @@
         return result;
       }
 
+      function status() {
+        const config = getSupabaseConfig();
+        const token = getStudioLasAccessToken();
+        const payload = decodeStudioLasJwtPayload(token);
+        const tokenActive = Boolean(token && isStudioLasJwtPayloadActive(payload));
+        const nextStatus = {
+          configured: isStudioLasSupabaseConfigured(config),
+          configSource: config.source || "none",
+          configMissingReason: config.missingReason || "",
+          hasAccessToken: Boolean(token),
+          tokenActive,
+          tokenExpired: Boolean(token && !tokenActive),
+          email: payload.email || "",
+          userId: payload.sub || "",
+          dataSource: window.STUDIO_LAS_DATA_SOURCE || "localStorage",
+          dataSourceReason: window.STUDIO_LAS_DATA_SOURCE_REASON || "",
+          clientCount: Array.isArray(state.clients) ? state.clients.length : 0,
+          activeClientId: state.activeClientId || ""
+        };
+        console.info("Studio Las OS: auth status refreshed", {
+          configured: nextStatus.configured,
+          configSource: nextStatus.configSource,
+          hasAccessToken: nextStatus.hasAccessToken,
+          tokenActive: nextStatus.tokenActive,
+          email: nextStatus.email,
+          userId: nextStatus.userId,
+          dataSource: nextStatus.dataSource,
+          reason: nextStatus.dataSourceReason
+        });
+        return nextStatus;
+      }
+
       async function signIn(email, password) {
-        const session = await authRequest("token?grant_type=password", { email, password });
-        if (!session.access_token) throw new Error("Supabase Auth did not return an access token.");
-        storeStudioLasSupabaseAccessToken(session.access_token);
-        console.info("Studio Las OS: trainer authenticated");
-        await bootstrapSupabaseData();
+        const normalizedEmail = String(email || "").trim();
+        const config = getSupabaseConfig();
+        console.info("Studio Las OS: auth login attempt", { email: normalizedEmail, configSource: config.source || "none" });
+        try {
+          const session = await authRequest("token?grant_type=password", { email: normalizedEmail, password });
+          if (!session.access_token) throw new Error("Supabase Auth did not return an access token.");
+          storeStudioLasSupabaseAccessToken(session.access_token);
+          const payload = decodeStudioLasJwtPayload(session.access_token);
+          console.info("Studio Las OS: auth login success", {
+            email: session.user?.email || payload.email || normalizedEmail,
+            userId: session.user?.id || payload.sub || ""
+          });
+          const loadResult = await bootstrapSupabaseData({ afterLogin: true, reason: "after_login" });
+          console.info("Studio Las OS: data source after login", {
+            dataSource: window.STUDIO_LAS_DATA_SOURCE || "localStorage",
+            reason: window.STUDIO_LAS_DATA_SOURCE_REASON || "",
+            clients: loadResult.clientCount || 0
+          });
+          console.info("Studio Las OS: clients fetch after login count", {
+            count: loadResult.clientCount || 0,
+            ok: Boolean(loadResult.ok)
+          });
+          renderDevAuthStatus();
+          return { ok: true, dataLoaded: Boolean(loadResult.ok), ...loadResult };
+        } catch (error) {
+          console.warn("Studio Las OS: auth login failed", { message: safeStudioLasAuthErrorMessage(error) });
+          throw error;
+        }
+      }
+
+      async function refresh() {
+        const current = status();
+        if (!current.configured) {
+          setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "missing_config" });
+          return status();
+        }
+        if (!current.hasAccessToken) {
+          setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "no_session" });
+          return status();
+        }
+        if (!current.tokenActive) {
+          clearStudioLasSupabaseAccessToken();
+          setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "token_expired" });
+          renderShell();
+          return status();
+        }
+        await bootstrapSupabaseData({ reason: "auth_refresh" });
         renderDevAuthStatus();
-        return { ok: true, dataSource: window.STUDIO_LAS_DATA_SOURCE };
+        return status();
       }
 
       async function sendMagicLink(email) {
@@ -4924,7 +5092,7 @@
           create_user: false,
           options: { email_redirect_to: window.location.href.split("#")[0] }
         });
-        console.info("Studio Las OS: magic link requested", { redirect: window.location.href.split("#")[0], configured: Boolean(config.url && config.anonKey) });
+        console.info("Studio Las OS: magic link requested", { redirect: window.location.href.split("#")[0], configured: isStudioLasSupabaseConfigured(config) });
         return { ok: true };
       }
 
@@ -4934,8 +5102,8 @@
         if (!token) return false;
         storeStudioLasSupabaseAccessToken(token);
         window.history.replaceState(null, document.title, window.location.pathname + window.location.search);
-        console.info("Studio Las OS: trainer authenticated");
-        bootstrapSupabaseData().finally(() => renderDevAuthStatus());
+        console.info("Studio Las OS: auth login success", { source: "url_hash" });
+        bootstrapSupabaseData({ reason: "url_token" }).finally(() => renderDevAuthStatus());
         renderDevAuthStatus();
         return true;
       }
@@ -4943,8 +5111,8 @@
       function useAccessToken(token) {
         if (!token) throw new Error("Missing access token.");
         storeStudioLasSupabaseAccessToken(token);
-        console.info("Studio Las OS: trainer authenticated");
-        bootstrapSupabaseData().finally(() => renderDevAuthStatus());
+        console.info("Studio Las OS: auth login success", { source: "manual_token" });
+        bootstrapSupabaseData({ reason: "manual_token" }).finally(() => renderDevAuthStatus());
         renderDevAuthStatus();
         return { ok: true };
       }
@@ -4953,41 +5121,38 @@
         clearStudioLasSupabaseAccessToken();
         activeTrainerProfileId = "";
         window.STUDIO_LAS_TRAINER_PROFILE_ID = "";
-        setStudioLasDataSource("localStorage", { fallbackUsed: true });
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "logout" });
         state = load();
         renderShell();
         renderDevAuthStatus();
         return { ok: true };
       }
 
-      window.StudioLasDevAuth = {
+      function getAccessToken() {
+        return getStudioLasAccessToken();
+      }
+
+      window.StudioLasAuth = {
         signIn,
+        logout,
+        status,
+        refresh,
+        getAccessToken,
         sendMagicLink,
         captureTokenFromUrl,
         useAccessToken,
-        logout,
-        reload: bootstrapSupabaseData,
-        status: () => {
-          const config = getSupabaseConfig();
-          const payload = decodeStudioLasJwtPayload(config.accessToken);
-          return {
-            configured: isStudioLasSupabaseConfigured(config),
-            hasAccessToken: Boolean(config.accessToken),
-            tokenActive: Boolean(config.accessToken && isStudioLasJwtPayloadActive(payload)),
-            email: payload.email || "",
-            userId: payload.sub || "",
-            dataSource: window.STUDIO_LAS_DATA_SOURCE || "localStorage",
-            clientCount: Array.isArray(state.clients) ? state.clients.length : 0,
-            activeClientId: state.activeClientId || ""
-          };
-        }
+        reload: refresh
       };
+      window.StudioLasDevAuth = window.StudioLasAuth;
 
       captureTokenFromUrl();
       renderDevAuthStatus();
-      console.info("Studio Las OS: dev auth helper ready. Use StudioLasDevAuth.signIn(email, password) for local Supabase read tests.");
+      console.info("Studio Las OS: auth helper ready. Use StudioLasAuth.signIn(email, password) for Supabase login.");
     }
 
+    function installStudioLasDevAuthHelper() {
+      installStudioLasAuthHelper();
+    }
     function mapSupabaseDashboardState(rows, currentState = {}) {
       const clients = (rows.clients || [])
         .filter(row => row && row.status !== "archived")
@@ -5279,7 +5444,7 @@
 
     function supabaseClientService() {
       const service = createStudioLasSupabaseDataService(getSupabaseConfig());
-      if (!service.isConfigured()) throw new Error("Supabase URL or anon key is missing.");
+      if (!service.isConfigured()) throw new Error("Supabase URL or public key is missing.");
       return service;
     }
 
@@ -5329,38 +5494,47 @@
       state.activeClientId = savedClient.id;
     }
 
-    async function bootstrapSupabaseData() {
+    async function bootstrapSupabaseData(options = {}) {
+      const result = { ok: false, dataSource: "localStorage", reason: "", clientCount: 0 };
       if (!USE_SUPABASE) {
         setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_disabled" });
-        return;
+        return { ...result, reason: "supabase_disabled" };
       }
       const config = getSupabaseConfig();
       const service = createStudioLasSupabaseDataService(config);
       console.info("Studio Las OS: Supabase config loaded", {
         configured: service.isConfigured(),
+        source: config.source || "none",
         hasAccessToken: Boolean(config.accessToken)
       });
       if (!service.isConfigured()) {
-        console.warn("Studio Las OS: Supabase is enabled but not configured. Falling back to localStorage.");
-        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_not_configured" });
-        return;
+        console.warn("Studio Las OS: Supabase is enabled but not configured. Staying on localStorage.");
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "missing_config" });
+        return { ...result, reason: "missing_config" };
+      }
+      if (!config.accessToken) {
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "no_session" });
+        return { ...result, reason: "no_session" };
+      }
+      const payload = decodeStudioLasJwtPayload(config.accessToken);
+      if (!isStudioLasJwtPayloadActive(payload)) {
+        clearStudioLasSupabaseAccessToken();
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "token_expired" });
+        return { ...result, reason: "token_expired" };
       }
       try {
         const nextState = await service.loadDashboardState(state);
-        if (!Array.isArray(nextState.clients) || !nextState.clients.length) {
-          console.warn("Studio Las OS: Supabase returned no clients. Falling back to localStorage.");
-          setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_empty_clients" });
-          return;
-        }
         state = nextState;
-        setStudioLasDataSource("supabase", { fallbackUsed: false, clients: state.clients.length });
+        const clientCount = Array.isArray(state.clients) ? state.clients.length : 0;
+        setStudioLasDataSource("supabase", { fallbackUsed: false, reason: options.reason || "loaded", clients: clientCount });
         renderShell();
+        return { ok: true, dataSource: "supabase", reason: options.reason || "loaded", clientCount };
       } catch (error) {
-        console.warn("Studio Las OS: Supabase load failed. Falling back to localStorage.", error);
+        console.warn("Studio Las OS: Supabase load failed. Staying on localStorage.", error);
         setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "supabase_load_failed" });
+        return { ...result, reason: "supabase_load_failed", error };
       }
     }
-
     let state = load();
     let viewName = "command";
     let pendingMeasurementPdf = initialMeasurementPdf();
@@ -5378,6 +5552,7 @@
     let clientPortalShowAllHomeTasks = false;
     let selectedClientPortalReportType = "";
     let devAuthLoginFeedback = { text: "", tone: "" };
+    let devAuthLoginEmailValue = "";
 
     const $ = (sel) => document.querySelector(sel);
     const view = $("#view");
@@ -5665,28 +5840,47 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       return String(source || "").toLowerCase() === "supabase" ? "Supabase" : "localStorage";
     }
 
+    function studioLasDataSourceReasonLabel(reason = "") {
+      const labels = {
+        missing_config: "Supabase config: brak. Logowanie niedost\u0119pne.",
+        no_session: "Brak sesji. Zaloguj si\u0119, aby czyta\u0107 i zapisywa\u0107 dane w Supabase.",
+        token_expired: "Token wygas\u0142. Zaloguj si\u0119 ponownie.",
+        supabase_load_failed: "B\u0142\u0105d pobrania klient\u00f3w z Supabase.",
+        supabase_disabled: "Supabase jest wy\u0142\u0105czony w tej wersji.",
+        logout: "Wylogowano. Dane lokalne s\u0105 aktywne."
+      };
+      return labels[reason] || "";
+    }
+
     function studioLasDevAuthStatusSnapshot() {
       const config = getSupabaseConfig();
-      const payload = decodeStudioLasJwtPayload(config.accessToken);
-      const helper = window.StudioLasDevAuth;
+      const token = getStudioLasAccessToken();
+      const payload = decodeStudioLasJwtPayload(token);
+      const helper = window.StudioLasAuth || window.StudioLasDevAuth;
       let helperStatus = {};
       if (helper && typeof helper.status === "function") {
         try {
           helperStatus = helper.status() || {};
         } catch (error) {
-          console.warn("Studio Las OS: dev auth status read failed", error);
+          console.warn("Studio Las OS: auth status read failed", error);
         }
       }
       return {
         devAuthAvailable: Boolean(helper),
         configured: typeof helperStatus.configured === "boolean" ? helperStatus.configured : isStudioLasSupabaseConfigured(config),
-        hasAccessToken: typeof helperStatus.hasAccessToken === "boolean" ? helperStatus.hasAccessToken : Boolean(config.accessToken),
+        configSource: helperStatus.configSource || config.source || "none",
+        configMissingReason: helperStatus.configMissingReason || config.missingReason || "",
+        hasAccessToken: typeof helperStatus.hasAccessToken === "boolean" ? helperStatus.hasAccessToken : Boolean(token),
         tokenActive: typeof helperStatus.tokenActive === "boolean"
           ? helperStatus.tokenActive
-          : Boolean(config.accessToken && isStudioLasJwtPayloadActive(payload)),
+          : Boolean(token && isStudioLasJwtPayloadActive(payload)),
+        tokenExpired: typeof helperStatus.tokenExpired === "boolean"
+          ? helperStatus.tokenExpired
+          : Boolean(token && !isStudioLasJwtPayloadActive(payload)),
         email: helperStatus.email || payload.email || "",
         userId: helperStatus.userId || payload.sub || "",
-        dataSource: helperStatus.dataSource || window.STUDIO_LAS_DATA_SOURCE || "localStorage"
+        dataSource: helperStatus.dataSource || window.STUDIO_LAS_DATA_SOURCE || "localStorage",
+        dataSourceReason: helperStatus.dataSourceReason || window.STUDIO_LAS_DATA_SOURCE_REASON || ""
       };
     }
 
@@ -5701,11 +5895,12 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
     }
 
     function devAuthLoginDisabledMessage(status) {
-      if (!status.devAuthAvailable || typeof window.StudioLasDevAuth?.signIn !== "function") {
-        return "Logowanie niedostępne w tej wersji aplikacji.";
+      const helper = window.StudioLasAuth || window.StudioLasDevAuth;
+      if (!status.devAuthAvailable || typeof helper?.signIn !== "function") {
+        return "Logowanie niedost\u0119pne w tej wersji aplikacji.";
       }
       if (!status.configured) {
-        return "Supabase config: brak. Nie można się zalogować.";
+        return "Supabase config: brak. Logowanie niedost\u0119pne.";
       }
       return "";
     }
@@ -5713,15 +5908,15 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
     function renderDevAuthLoginForm(status) {
       const disabledMessage = devAuthLoginDisabledMessage(status);
       const feedbackClass = devAuthLoginFeedbackClass(devAuthLoginFeedback.tone);
-      const message = devAuthLoginFeedback.text || disabledMessage || "Zaloguj się, aby czytać i zapisywać dane w Supabase.";
+      const message = devAuthLoginFeedback.text || disabledMessage || "Zaloguj si\u0119, aby czyta\u0107 i zapisywa\u0107 dane w Supabase.";
       return `
         <form class="dev-auth-login dev-auth-login-form" id="devAuthLoginForm" autocomplete="on" novalidate>
           <div class="form-field">
             <label for="devAuthLoginEmail">Email</label>
-            <input id="devAuthLoginEmail" name="email" type="email" autocomplete="username" inputmode="email">
+            <input id="devAuthLoginEmail" name="email" type="email" autocomplete="username" inputmode="email" value="${escapeHtml(devAuthLoginEmailValue)}">
           </div>
           <div class="form-field">
-            <label for="devAuthLoginPassword">Hasło</label>
+            <label for="devAuthLoginPassword">Has\u0142o</label>
             <input id="devAuthLoginPassword" name="password" type="password" autocomplete="current-password">
           </div>
           <button class="btn primary" id="devAuthLoginBtn" type="submit">Zaloguj</button>
@@ -5742,20 +5937,22 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       const status = studioLasDevAuthStatusSnapshot();
       const signedIn = Boolean(status.configured && status.hasAccessToken && status.tokenActive);
       const warnings = [];
-      if (!status.configured) warnings.push("Supabase config: brak");
-      if (status.hasAccessToken && !status.tokenActive) warnings.push("Sesja Supabase wygasła. Odśwież logowanie przed zapisem.");
-      if (!signedIn) warnings.push("Brak aktywnej sesji. Zapisy do Supabase nie będą działały.");
+      const reasonMessage = status.dataSource === "supabase" ? "" : studioLasDataSourceReasonLabel(status.dataSourceReason);
+      if (!status.configured) warnings.push("Supabase config: brak. Logowanie niedost\u0119pne.");
+      if (status.tokenExpired) warnings.push("Token wygas\u0142. Zaloguj si\u0119 ponownie.");
+      if (status.configured && !signedIn && !status.tokenExpired) warnings.push("Zaloguj si\u0119, aby czyta\u0107 i zapisywa\u0107 dane w Supabase.");
+      if (reasonMessage && !warnings.includes(reasonMessage)) warnings.push(reasonMessage);
       const authTone = signedIn ? "green" : "red";
       const authLabel = signedIn ? "Supabase: zalogowany" : "Supabase: niezalogowany";
-      const tokenLabel = !status.hasAccessToken ? "token: brak" : (status.tokenActive ? "token: aktywny" : "token: wygasł");
-      const devAuthLabel = status.devAuthAvailable ? "" : `<span class="pill red">Dev Auth: niedostępny</span>`;
+      const tokenLabel = !status.hasAccessToken ? "token: brak" : (status.tokenActive ? "token: aktywny" : "token: wygas\u0142");
+      const devAuthLabel = status.devAuthAvailable ? "" : `<span class="pill red">Auth: niedost\u0119pny</span>`;
       const signedInFeedback = signedIn && devAuthLoginFeedback.text
         ? `<span class="dev-auth-feedback ${devAuthLoginFeedbackClass(devAuthLoginFeedback.tone)}">${escapeHtml(devAuthLoginFeedback.text)}</span>`
         : "";
       const authActions = signedIn
         ? `
           <div class="dev-auth-actions">
-            <button class="btn" id="devAuthRefreshBtn" type="button">Odśwież sesję</button>
+            <button class="btn" id="devAuthRefreshBtn" type="button">Od\u015bwie\u017c status</button>
             <button class="btn danger" id="devAuthLogoutBtn" type="button">Wyloguj</button>
           </div>
         `
@@ -5771,7 +5968,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
             <span>email: <code>${escapeHtml(status.email || "brak danych")}</code></span>
             <span>auth.uid: <code>${escapeHtml(status.userId || "brak danych")}</code></span>
             <span>${escapeHtml(tokenLabel)}</span>
-            <span>źródło danych: <code>${escapeHtml(studioLasDataSourceLabel(status.dataSource))}</code></span>
+            <span>\u017ar\u00f3d\u0142o danych: <code>${escapeHtml(studioLasDataSourceLabel(status.dataSource))}</code></span>
             ${signedInFeedback}
             ${warnings.map(message => `<span class="dev-auth-warning">${escapeHtml(message)}</span>`).join("")}
           </div>
@@ -5796,17 +5993,20 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       const submitButton = form.querySelector('button[type="submit"]');
       const email = String(emailInput?.value || "").trim();
       const password = String(passwordInput?.value || "");
+      devAuthLoginEmailValue = email;
 
       try {
         const status = studioLasDevAuthStatusSnapshot();
         const disabledMessage = devAuthLoginDisabledMessage(status);
         if (disabledMessage) {
+          if (passwordInput) passwordInput.value = "";
           setDevAuthLoginFeedback(disabledMessage, "error");
           renderDevAuthStatus();
           return;
         }
         if (!email || !password) {
-          setDevAuthLoginFeedback("Podaj email i hasło.", "error");
+          if (passwordInput) passwordInput.value = "";
+          setDevAuthLoginFeedback("Podaj email i has\u0142o.", "error");
           renderDevAuthStatus();
           return;
         }
@@ -5816,15 +6016,21 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
           submitButton.textContent = "Logowanie...";
         }
         setDevAuthLoginFeedback("", "");
-        await window.StudioLasDevAuth.signIn(email, password);
+        const auth = window.StudioLasAuth || window.StudioLasDevAuth;
+        const loginResult = await auth.signIn(email, password);
         if (passwordInput) passwordInput.value = "";
-        setDevAuthLoginFeedback("Zalogowano pomyślnie.", "success");
+        if (loginResult?.dataLoaded) {
+          setDevAuthLoginFeedback("Zalogowano pomy\u015blnie.", "success");
+          toast("Zalogowano pomy\u015blnie.");
+        } else {
+          setDevAuthLoginFeedback("Zalogowano, ale nie uda\u0142o si\u0119 pobra\u0107 klient\u00f3w z Supabase.", "error");
+          toast("Zalogowano, ale dane Supabase nie zosta\u0142y pobrane.");
+        }
         renderDevAuthStatus();
-        toast("Zalogowano pomyślnie.");
       } catch (error) {
-        console.warn("Studio Las OS: dev auth sign in failed", error);
+        console.warn("Studio Las OS: auth login failed", { message: safeStudioLasAuthErrorMessage(error) });
         if (passwordInput) passwordInput.value = "";
-        setDevAuthLoginFeedback("Nie udało się zalogować. Sprawdź email i hasło.", "error");
+        setDevAuthLoginFeedback("Nie uda\u0142o si\u0119 zalogowa\u0107. Sprawd\u017a email i has\u0142o.", "error");
         renderDevAuthStatus();
       } finally {
         if (submitButton?.isConnected) {
@@ -5838,15 +6044,16 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       const button = event.currentTarget;
       try {
         button.disabled = true;
-        if (window.StudioLasDevAuth?.reload) {
-          await window.StudioLasDevAuth.reload();
-        } else if (window.StudioLasDevAuth?.status) {
-          window.StudioLasDevAuth.status();
+        const auth = window.StudioLasAuth || window.StudioLasDevAuth;
+        if (auth?.refresh) {
+          await auth.refresh();
+        } else if (auth?.status) {
+          auth.status();
         } else {
-          console.warn("Studio Las OS: dev auth refresh unavailable");
+          console.warn("Studio Las OS: auth refresh unavailable");
         }
       } catch (error) {
-        console.warn("Studio Las OS: dev auth refresh failed", error);
+        console.warn("Studio Las OS: auth refresh failed", error);
       } finally {
         button.disabled = false;
         renderDevAuthStatus();
@@ -5857,20 +6064,20 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       const button = event.currentTarget;
       try {
         button.disabled = true;
-        if (!window.StudioLasDevAuth?.logout) {
-          console.warn("Studio Las OS: dev auth logout unavailable");
+        const auth = window.StudioLasAuth || window.StudioLasDevAuth;
+        if (!auth?.logout) {
+          console.warn("Studio Las OS: auth logout unavailable");
           return;
         }
         setDevAuthLoginFeedback("", "");
-        await window.StudioLasDevAuth.logout();
+        await auth.logout();
       } catch (error) {
-        console.error("Studio Las OS: dev auth logout failed", error);
+        console.error("Studio Las OS: auth logout failed", error);
       } finally {
         button.disabled = false;
         renderDevAuthStatus();
       }
     }
-
     function shortText(text = "", maxLength = 150) {
       const clean = String(text || "").replace(/\s+/g, " ").trim();
       if (clean.length <= maxLength) return clean;
@@ -12866,11 +13073,25 @@ Initial 83.45 64.95 18.10
       toast("Sesja zapisana");
     });
 
-    announceStudioLasBuild();
-    renderShell();
-    installStudioLasDevAuthHelper();
-    renderDevAuthStatus();
-    bootstrapSupabaseData();
+    async function initializeStudioLasApp() {
+      announceStudioLasBuild();
+      installStudioLasAuthHelper();
+      const authStatus = window.StudioLasAuth.status();
+      if (!authStatus.configured) {
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "missing_config" });
+      } else if (!authStatus.hasAccessToken) {
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "no_session" });
+      } else if (!authStatus.tokenActive) {
+        clearStudioLasSupabaseAccessToken();
+        setStudioLasDataSource("localStorage", { fallbackUsed: true, reason: "token_expired" });
+      } else {
+        await bootstrapSupabaseData({ reason: "startup" });
+      }
+      renderShell();
+      renderDevAuthStatus();
+    }
+
+    initializeStudioLasApp();
   </script>
 </body>
 </html>
