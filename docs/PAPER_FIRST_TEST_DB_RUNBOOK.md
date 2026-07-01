@@ -10,25 +10,38 @@ Control checklist:
 
 - `docs/PAPER_FIRST_EXECUTION_CHECKLIST.md`
 
-Do not use this runbook to execute SQL in production.
-
-The first run must happen only on a fresh/test Supabase project.
+Do not use this runbook to execute SQL in production. First run must happen only on a fresh/test Supabase project.
 
 ## 1. Purpose
 
-The goal is to prove that the Paper-first database/RLS layer is safe before any UI work or production execution.
+Prove that the Paper-first database/RLS layer is safe before any UI work or production execution.
 
-This test should confirm:
+The test must confirm:
 
-- the migration applies cleanly,
+- migration applies cleanly,
 - existing `daily_step` behavior still works,
 - clients can create only their own `client_checkin` rows,
+- clients can select only their own `client_checkin` rows,
+- clients cannot update `client_checkin` rows in V1,
 - clients cannot see trainer/private rows,
 - trainers remain scoped to their own clients,
 - duplicate same-day check-ins are blocked,
+- revoked/inactive clients cannot select or insert check-ins,
 - rollback is clear.
 
-## 2. Non-goals
+## 2. V1 immutability rule
+
+For V1:
+
+- client insert is allowed,
+- client select is allowed,
+- client update is not allowed.
+
+Corrections remain trainer-owned.
+
+This avoids the risk of clients moving check-ins to another `home_plan_item_id`, changing the date, or editing history after creation.
+
+## 3. Non-goals
 
 This runbook does not approve:
 
@@ -43,7 +56,7 @@ This runbook does not approve:
 - gamification,
 - wearable integrations.
 
-## 3. Required files
+## 4. Required files
 
 Before testing, confirm these files exist locally:
 
@@ -65,45 +78,44 @@ supabase/migrations/005_clients_trainer_write_rls.sql
 supabase/migrations/011_paper_first_client_checkins.sql
 ```
 
-Also confirm this deprecated file is a no-op only:
+Confirm this deprecated file is no-op only and do not apply it:
 
 ```text
 supabase/migrations/005_paper_first_client_checkins.sql
 ```
 
-## 4. Test DB prerequisites
+## 5. Test DB prerequisites
 
 Use a fresh/test Supabase project.
 
 Required:
 
-- Supabase project dedicated to testing.
-- No production client data.
-- SQL Editor access.
-- Ability to create Auth users.
-- Ability to run migrations manually in order.
-- Ability to inspect RLS policies and table grants.
+- Supabase project dedicated to testing,
+- no production client data,
+- SQL Editor access,
+- ability to create Auth users,
+- ability to run migrations manually in order,
+- ability to inspect RLS policies and table grants.
 
 Recommended test users:
 
-- Trainer A
-- Trainer B
-- Client A assigned to Trainer A
-- Client B assigned to Trainer B
+- Trainer A,
+- Trainer B,
+- Client A assigned to Trainer A,
+- Client B assigned to Trainer B,
+- revoked/inactive Client C for access-revocation tests.
 
-Recommended test clients:
+Recommended test data:
 
-- Client A profile/client record
-- Client B profile/client record
-- Active published home plan for Client A
-- Active published home plan item for Client A
-- Draft/unpublished home plan item for negative tests
+- Active published home plan for Client A,
+- active published home plan item for Client A,
+- draft/unpublished home plan item for Client A,
+- active published home plan for Client B,
+- active published home plan item for Client B.
 
-## 5. Migration order
+## 6. Migration order
 
-On the fresh/test database, apply migrations in order.
-
-Minimum required order:
+Apply manually in order on the test database:
 
 ```text
 001_initial_schema.sql
@@ -111,10 +123,13 @@ Minimum required order:
 003_client_safe_views.sql
 004_body_measurements_kg_constraints.sql
 005_clients_trainer_write_rls.sql
+006_clients_insert_rls_helper.sql       if present
+007_clients_insert_rls_claim_helper.sql if present
+008_clients_insert_rls_policy_minimal.sql if present
+009_clients_select_rls_owner_helper.sql if present
+010_clients_update_rls_owner_helper.sql if present
 011_paper_first_client_checkins.sql
 ```
-
-If migrations `006` through `010` exist in the local checkout, review and apply them in lexical order before `011` unless they are explicitly unrelated and intentionally excluded.
 
 Do not apply deprecated no-op migration content from:
 
@@ -122,11 +137,13 @@ Do not apply deprecated no-op migration content from:
 005_paper_first_client_checkins.sql
 ```
 
-## 6. Preflight SQL checks
+Do not use automated full-folder migration execution until duplicate `005` prefix behavior is resolved.
 
-Run these checks before applying `011_paper_first_client_checkins.sql`.
+## 7. Preflight SQL checks
 
-### 6.1 Confirm guidance_events constraints
+Run before applying `011`.
+
+### 7.1 Confirm `guidance_events` constraints
 
 ```sql
 select conname, pg_get_constraintdef(oid)
@@ -137,11 +154,11 @@ order by conname;
 
 Expected:
 
-- `guidance_events` exists.
-- `kind` accepts `client_checkin`.
-- Foreign key relationship with `home_plan_items` exists.
+- `guidance_events` exists,
+- `kind` accepts `client_checkin`,
+- foreign key relationship with `home_plan_items` exists.
 
-### 6.2 Confirm helper functions
+### 7.2 Confirm helper functions
 
 ```sql
 select proname
@@ -160,13 +177,13 @@ order by proname;
 
 Expected all functions:
 
-- `client_can_access_client`
-- `current_profile_id`
-- `is_client`
-- `is_trainer`
-- `trainer_can_access_client`
+- `client_can_access_client`,
+- `current_profile_id`,
+- `is_client`,
+- `is_trainer`,
+- `trainer_can_access_client`.
 
-### 6.3 Confirm existing guidance_events policies
+### 7.3 Confirm existing guidance policies
 
 ```sql
 select policyname, cmd, qual, with_check
@@ -178,34 +195,11 @@ order by policyname;
 
 Expected:
 
-- Trainer policies exist and are scoped by `trainer_can_access_client(client_id)`.
-- Existing client policies are scoped to `kind = 'daily_step'`.
-- No policy exposes `trainer_marker` to clients.
+- trainer policies exist and are scoped by `trainer_can_access_client(client_id)`,
+- existing client policies are scoped to `kind = 'daily_step'`,
+- no policy exposes `trainer_marker` to clients.
 
-### 6.4 Confirm client-safe views
-
-```sql
-select table_name
-from information_schema.views
-where table_schema = 'public'
-  and table_name in (
-    'client_portal_summary',
-    'client_active_home_plan',
-    'client_visible_reports',
-    'client_visible_measurements',
-    'client_guidance_status'
-  )
-order by table_name;
-```
-
-Expected:
-
-- All listed views exist.
-- No raw `client_checkin` view is required yet.
-
-## 7. Duplicate audit
-
-Run before applying `011`:
+### 7.4 Duplicate audit
 
 ```sql
 select client_id, home_plan_item_id, kind, event_date, count(*)
@@ -220,20 +214,9 @@ Expected:
 
 - zero rows.
 
-If rows are returned:
-
-- stop,
-- do not apply `011`,
-- document duplicates,
-- decide separate test cleanup strategy.
+If rows are returned, stop and do not apply `011`.
 
 ## 8. Apply migration on test DB only
-
-Apply only this file after preflight passes:
-
-```text
-supabase/migrations/011_paper_first_client_checkins.sql
-```
 
 Manual SQL Editor process:
 
@@ -243,7 +226,7 @@ Manual SQL Editor process:
 4. Confirm the project is test DB, not production.
 5. Run the SQL.
 6. Save the execution result.
-7. Record the timestamp and project ref in the test report.
+7. Record timestamp and project ref.
 
 Stop if any SQL error appears.
 
@@ -263,28 +246,24 @@ Expected:
 
 - one row,
 - partial index for `kind = 'client_checkin'`,
-- condition includes `deleted_at is null`.
+- predicate includes `deleted_at is null`.
 
-### 9.2 Confirm new policies exist
+### 9.2 Confirm client_checkin policies
 
 ```sql
 select policyname, cmd
 from pg_policies
 where schemaname = 'public'
   and tablename = 'guidance_events'
-  and policyname in (
-    'guidance_events_client_checkin_select',
-    'guidance_events_client_checkin_insert',
-    'guidance_events_client_checkin_update'
-  )
+  and policyname like 'guidance_events_client_checkin%'
 order by policyname;
 ```
 
 Expected:
 
-- `guidance_events_client_checkin_insert`
-- `guidance_events_client_checkin_select`
-- `guidance_events_client_checkin_update`
+- `guidance_events_client_checkin_insert`,
+- `guidance_events_client_checkin_select`,
+- no `guidance_events_client_checkin_update`.
 
 ### 9.3 Confirm daily_step policies still exist
 
@@ -317,24 +296,10 @@ order by grantee, privilege_type;
 
 Expected:
 
-- authenticated has required table privileges from existing migrations.
-- anon/public are not granted direct access.
+- `authenticated` has required table privileges from existing migrations,
+- no direct `anon` access is required.
 
-## 10. Minimal test data setup
-
-Create or confirm test data:
-
-- Trainer A profile.
-- Trainer B profile.
-- Client A profile and client record linked to Trainer A.
-- Client B profile and client record linked to Trainer B.
-- Active published home plan for Client A.
-- Active published home plan item for Client A.
-- Draft or unpublished home plan item for Client A.
-
-Do not use real client data.
-
-## 11. Trainer RLS test scenarios
+## 10. RLS test scenarios
 
 Run using authenticated context/tooling that respects RLS.
 
@@ -342,7 +307,7 @@ Run using authenticated context/tooling that respects RLS.
 
 - [ ] Trainer A can select Client A `client_checkin` rows.
 - [ ] Trainer A can insert Client A `client_checkin` row if needed.
-- [ ] Trainer A can update Client A `client_checkin` row if needed.
+- [ ] Trainer A can update Client A `client_checkin` row if needed through existing trainer policies.
 
 ### Trainer A negative tests
 
@@ -350,37 +315,27 @@ Run using authenticated context/tooling that respects RLS.
 - [ ] Trainer A cannot insert Client B `client_checkin` row.
 - [ ] Trainer A cannot update Client B `client_checkin` row.
 
-### Existing trainer flow tests
-
-- [ ] Trainer A can still read Client A home plan.
-- [ ] Trainer A can still read Client A reports.
-- [ ] Trainer dashboard data loading is not broken.
-
-## 12. Client RLS test scenarios
-
-Run using Client A authenticated context.
-
 ### Client A positive tests
 
 - [ ] Client A can insert `client_checkin` for own active, published home plan item.
 - [ ] Client A can select own `client_checkin` created by own profile.
-- [ ] Client A can update own `client_checkin` if update is intentionally allowed.
 
 ### Client A negative tests
 
+- [ ] Client A cannot update own `client_checkin`.
 - [ ] Client A cannot insert `client_checkin` for Client B.
 - [ ] Client A cannot insert with `home_plan_item_id = null`.
 - [ ] Client A cannot insert for draft/unpublished home plan item.
 - [ ] Client A cannot insert for archived/deleted home plan item.
 - [ ] Client A cannot spoof `created_by`.
 - [ ] Client A cannot select `trainer_marker` rows.
-- [ ] Client A cannot update a row into another `client_id`.
-- [ ] Client A cannot update a row into another `home_plan_item_id`.
-- [ ] Client A cannot update a row into another `kind`.
 
-## 13. Duplicate behavior test
+### Revoked/inactive client tests
 
-Using Client A or Trainer A context:
+- [ ] Revoked/inactive Client C cannot insert `client_checkin`.
+- [ ] Revoked/inactive Client C cannot select previous `client_checkin` rows.
+
+## 11. Duplicate behavior test
 
 1. Insert first `client_checkin` for same client/item/date.
 2. Insert second `client_checkin` for same client/item/date.
@@ -395,7 +350,7 @@ Also test:
 - same item different date succeeds,
 - same date different item succeeds if product rules allow multiple item-specific check-ins.
 
-## 14. Payload checks
+## 12. Payload checks
 
 Expected payload:
 
@@ -418,9 +373,9 @@ Manual review:
 
 Important:
 
-The migration does not yet enforce payload schema at SQL level. App-level validation is required before UI release.
+The migration does not enforce payload schema at SQL level. App-level validation is required before UI release.
 
-## 15. Existing behavior regression tests
+## 13. Existing behavior regression tests
 
 After migration, confirm:
 
@@ -432,7 +387,7 @@ After migration, confirm:
 - [ ] Client portal still loads.
 - [ ] No app code was changed for this DB test.
 
-## 16. Rollback steps
+## 14. Rollback steps
 
 If test fails, run on test DB only:
 
@@ -452,9 +407,7 @@ Then verify:
 - [ ] Failure is documented.
 - [ ] No UI work starts until failure is resolved.
 
-## 17. Go/no-go report template
-
-After test execution, create a report with this structure:
+## 15. Go/no-go report template
 
 ```text
 # Paper-first Test DB Run Report
@@ -472,7 +425,6 @@ GO / NO-GO:
 - guidance_events constraint:
 - helper functions:
 - existing RLS:
-- client-safe views:
 - duplicate audit:
 
 ## Migration execution
@@ -481,7 +433,8 @@ GO / NO-GO:
 
 ## Post-migration verification
 - index exists:
-- policies exist:
+- select/insert policies exist:
+- update policy absent:
 - grants verified:
 
 ## Trainer RLS tests
@@ -489,6 +442,10 @@ GO / NO-GO:
 - failed:
 
 ## Client RLS tests
+- passed:
+- failed:
+
+## Revoked/inactive client tests
 - passed:
 - failed:
 
@@ -506,44 +463,29 @@ GO / NO-GO:
 ## Recommended next step
 ```
 
-## 18. GO criteria
+## 16. GO criteria
 
-Proceed to the next phase only if:
+Proceed only if:
 
 - migration succeeds on test DB,
 - duplicate audit is clean,
 - index exists,
-- new policies exist,
+- select/insert client_checkin policies exist,
+- client update policy for `client_checkin` is absent,
 - client cannot access another client's data,
 - client cannot access trainer markers,
-- trainer cannot access another trainer's clients,
+- revoked/inactive client cannot select or insert,
 - daily_step still works,
 - client portal still works,
 - trainer dashboard still works,
 - no production data was touched.
 
-## 19. NO-GO criteria
-
-Stop if:
-
-- any test was run on production by mistake,
-- duplicate audit returns rows,
-- migration fails,
-- helper functions are missing,
-- client_checkin kind is missing,
-- client can access another client's data,
-- client can access trainer_marker rows,
-- existing daily_step breaks,
-- app behavior breaks,
-- scope expands beyond DB/RLS test.
-
-## 20. Next phase after GO
+## 17. Next phase after GO
 
 Only after a clean test DB GO:
 
 1. Decide whether to apply the migration to the real Supabase project.
-2. If approved, prepare a separate production execution checklist.
+2. Prepare a separate production execution checklist.
 3. After DB/RLS is stable, implement minimal data adapter.
 4. After adapter, implement minimal client check-in UI.
-5. After client UI, implement trainer review view.
-6. Report integration comes last.
+5. Trainer review and report integration come later.
