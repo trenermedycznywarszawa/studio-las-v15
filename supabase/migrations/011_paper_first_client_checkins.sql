@@ -12,6 +12,10 @@
 -- paper_protocols remains DEFERRED. Paper Protocol is content first, not
 -- infrastructure.
 --
+-- V1 immutability rule:
+-- Clients may insert and select their own client_checkin rows, but clients may
+-- not update client_checkins. Corrections remain trainer-owned for V1.
+--
 -- IMPORTANT BEFORE EXECUTION:
 -- Run a duplicate audit in a test database before applying this migration:
 --
@@ -25,8 +29,8 @@
 -- This mirrors the existing daily_step uniqueness model, but keeps the rule
 -- separate so existing daily_step behavior is not modified.
 --
--- The home_plan_item_id is intentionally constrained by the RLS insert/update
--- policies below: client-created client_checkin rows must reference an active,
+-- The home_plan_item_id is intentionally constrained by the RLS insert policy
+-- below: client-created client_checkin rows must reference an active,
 -- published home_plan_item inside an active, published home_plan. This prevents
 -- client-created null-item check-ins even though the base column is nullable for
 -- other guidance event kinds.
@@ -62,40 +66,6 @@ create policy guidance_events_client_checkin_insert on public.guidance_events
     and public.client_can_access_client(client_id)
     and kind = 'client_checkin'
     and created_by = public.current_profile_id()
-    and home_plan_item_id is not null
-    and exists (
-      select 1
-      from public.home_plan_items hpi
-      join public.home_plans hp on hp.id = hpi.home_plan_id
-      where hpi.id = guidance_events.home_plan_item_id
-        and hpi.client_id = guidance_events.client_id
-        and hpi.status = 'active'
-        and hpi.published_at is not null
-        and hpi.deleted_at is null
-        and hp.status = 'active'
-        and hp.published_at is not null
-        and hp.deleted_at is null
-    )
-  );
-
--- Active clients may update only their own existing Paper-first check-ins.
--- The WITH CHECK repeats the active published assignment guard so clients cannot
--- move a check-in to another item/client/kind through an update.
-create policy guidance_events_client_checkin_update on public.guidance_events
-  for update to authenticated
-  using (
-    public.is_client()
-    and public.client_can_access_client(client_id)
-    and kind = 'client_checkin'
-    and created_by = public.current_profile_id()
-    and deleted_at is null
-  )
-  with check (
-    public.is_client()
-    and public.client_can_access_client(client_id)
-    and kind = 'client_checkin'
-    and created_by = public.current_profile_id()
-    and deleted_at is null
     and home_plan_item_id is not null
     and exists (
       select 1
