@@ -197,11 +197,17 @@ It can represent:
 - trainer marker,
 - future paper-first signal.
 
-In Paper-first tracking, a client check-in should likely be stored as a `guidance_events` row with:
+In Paper-first tracking, a client check-in is stored as a `guidance_events` row with:
 
 - `kind = client_checkin`,
 - `completed` as protocol_done,
 - structured `payload` for energy/symptom/note.
+
+V1 client-side contract:
+
+- one client-created signal per `client_id` / `home_plan_item_id` / `event_date`,
+- second same-day same-item check-in is rejected, not updated,
+- corrections are trainer-owned future scope.
 
 ### 4.9 Report
 
@@ -275,7 +281,7 @@ Paper instruction
 | Assigned concrete actions | `home_plan_items` |
 | Paper protocol content, first stage | `home_plans` / `home_plan_items` content fields |
 | Paper protocol reusable library, future | DEFERRED, possible future `paper_protocols` |
-| Daily paper-first signal | likely `guidance_events` |
+| Daily paper-first signal | `guidance_events` with `kind = 'client_checkin'` |
 | Report output | `reports` |
 | Client-safe visibility | client-safe views/RLS/published summaries |
 
@@ -385,6 +391,7 @@ For a daily client signal, the domain payload should stay minimal:
 
 ```json
 {
+  "schema": "paper_first_checkin_v1",
   "protocol_done": true,
   "energy_score": 7,
   "symptom_score": 3,
@@ -394,9 +401,11 @@ For a daily client signal, the domain payload should stay minimal:
 
 Rules:
 
-- `energy_score` must be 0-10.
-- `symptom_score` must be 0-10.
-- `optional_note` must stay short.
+- `schema` must be `paper_first_checkin_v1`.
+- `protocol_done` must be boolean.
+- `energy_score` must be 0-10 or null when the current UI does not expose it yet.
+- `symptom_score` must be 0-10 or null when the current UI does not expose it yet.
+- `optional_note` must stay short and may be null when the current UI does not expose it yet.
 - No long questionnaire.
 - No streak.
 - No gamification.

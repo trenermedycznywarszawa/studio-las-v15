@@ -2,9 +2,10 @@
 
 This runbook describes how to test the Paper-first `client_checkin` migration on a fresh/test Supabase database.
 
-Target migration:
+Target migrations:
 
-- `supabase/migrations/011_paper_first_client_checkins.sql`
+- `supabase/migrations/011_paper_first_client_checkins.sql` for index/RLS support,
+- `supabase/migrations/013_enforce_immutable_client_checkin_rpc.sql` for the insert-only RPC contract.
 
 Control checklist:
 
@@ -14,7 +15,7 @@ Do not use this runbook to execute SQL in production. First run must happen only
 
 ## 1. Purpose
 
-Prove that the Paper-first database/RLS layer is safe before any UI work or production execution.
+Prove that the Paper-first database/RLS/RPC layer is safe before production execution.
 
 The test must confirm:
 
@@ -76,6 +77,8 @@ supabase/migrations/003_client_safe_views.sql
 supabase/migrations/004_body_measurements_kg_constraints.sql
 supabase/migrations/005_clients_trainer_write_rls.sql
 supabase/migrations/011_paper_first_client_checkins.sql
+supabase/migrations/012_save_client_checkin_rpc.sql
+supabase/migrations/013_enforce_immutable_client_checkin_rpc.sql
 ```
 
 Confirm this deprecated file is no-op only and do not apply it:
@@ -129,6 +132,8 @@ Apply manually in order on the test database:
 009_clients_select_rls_owner_helper.sql if present
 010_clients_update_rls_owner_helper.sql if present
 011_paper_first_client_checkins.sql
+012_save_client_checkin_rpc.sql
+013_enforce_immutable_client_checkin_rpc.sql
 ```
 
 Do not apply deprecated no-op migration content from:
@@ -216,17 +221,18 @@ Expected:
 
 If rows are returned, stop and do not apply `011`.
 
-## 8. Apply migration on test DB only
+## 8. Apply migrations on test DB only
 
 Manual SQL Editor process:
 
 1. Open the test Supabase project.
 2. Open SQL Editor.
-3. Paste the full contents of `011_paper_first_client_checkins.sql`.
-4. Confirm the project is test DB, not production.
-5. Run the SQL.
-6. Save the execution result.
-7. Record timestamp and project ref.
+3. Confirm the project is test DB, not production.
+4. Apply `011_paper_first_client_checkins.sql`.
+5. Apply `012_save_client_checkin_rpc.sql`.
+6. Apply `013_enforce_immutable_client_checkin_rpc.sql`.
+7. Save each execution result.
+8. Record timestamp and project ref.
 
 Stop if any SQL error appears.
 
@@ -299,6 +305,24 @@ Expected:
 - `authenticated` has required table privileges from existing migrations,
 - no direct `anon` access is required.
 
+### 9.5 Confirm immutable RPC
+
+```sql
+select p.proname, pg_get_functiondef(p.oid)
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public'
+  and p.proname = 'save_client_checkin';
+```
+
+Expected:
+
+- `save_client_checkin` is insert-only,
+- no `ON CONFLICT DO UPDATE`,
+- no `UPDATE public.guidance_events`,
+- duplicate same client/item/date raises `client_checkin_already_exists`,
+- execute is granted only to `authenticated`.
+
 ## 10. RLS test scenarios
 
 Run using authenticated context/tooling that respects RLS.
@@ -317,7 +341,8 @@ Run using authenticated context/tooling that respects RLS.
 
 ### Client A positive tests
 
-- [ ] Client A can insert `client_checkin` for own active, published home plan item.
+- [ ] Client A RPC insert succeeds for own active, published home plan item.
+- [ ] Client A direct REST insert is allowed only if the `011` policy allows it and the item is valid.
 - [ ] Client A can select own `client_checkin` created by own profile.
 
 ### Client A negative tests
@@ -342,8 +367,9 @@ Run using authenticated context/tooling that respects RLS.
 
 Expected:
 
-- first insert succeeds,
-- second insert fails because of `guidance_events_client_checkin_unique_idx`.
+- first RPC insert succeeds,
+- second RPC insert fails with `client_checkin_already_exists`,
+- the unique index still protects the same client/item/date invariant under direct table insert attempts.
 
 Also test:
 
@@ -357,6 +383,7 @@ Expected payload:
 ```json
 {
   "schema": "paper_first_checkin_v1",
+  "protocol_done": true,
   "energy_score": 7,
   "symptom_score": 3,
   "optional_note": "Short note"
@@ -373,7 +400,7 @@ Manual review:
 
 Important:
 
-The migration does not enforce payload schema at SQL level. App-level validation is required before UI release.
+The DB/RPC contract supports `protocol_done`, `energy_score`, `symptom_score`, and `optional_note`; current UI may initially send null for fields not yet exposed. Migration `013` enforces the RPC payload shape, while direct REST insert payloads still need review if that path is tested.
 
 ## 13. Existing behavior regression tests
 

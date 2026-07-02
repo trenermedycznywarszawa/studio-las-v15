@@ -4951,12 +4951,12 @@
         if (!eventDate || !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) {
           throw new Error("client_checkin event_date must be a YYYY-MM-DD local date.");
         }
-        const completed = Boolean(params.completed);
+        const protocolDone = Boolean(params.protocolDone ?? params.completed);
         return rpc("save_client_checkin", {
           p_client_id: params.clientId,
           p_home_plan_item_id: params.homePlanItemId,
           p_event_date: eventDate,
-          p_completed: completed
+          p_completed: protocolDone
         });
       }
 
@@ -5773,23 +5773,23 @@
         clientId: String(clientId || "").trim(),
         homePlanItemId: String(homePlanItemId || "").trim(),
         eventDate: dateOnly(eventDate),
-        completed: Boolean(completed)
+        protocolDone: Boolean(completed)
       };
-      console.info("client_checkin upsert started", context);
+      console.info("client_checkin insert started", context);
 
       const unavailableReason = clientCheckinSupabaseUnavailableReason();
       if (unavailableReason) {
-        console.warn("client_checkin upsert failed", { ...context, reason: unavailableReason });
+        console.warn("client_checkin remote insert skipped; using local fallback only", { ...context, reason: unavailableReason });
         return { ok: false, skipped: true, reason: unavailableReason };
       }
       if (!isSupabaseUuid(context.clientId) || !isSupabaseUuid(context.homePlanItemId)) {
-        console.warn("client_checkin upsert failed", { ...context, reason: "missing_supabase_ids" });
+        console.warn("client_checkin remote insert skipped; using local fallback only", { ...context, reason: "missing_supabase_ids" });
         return { ok: false, skipped: true, reason: "missing_supabase_ids" };
       }
 
       try {
         const row = await supabaseClientService().saveClientCheckinEvent(context);
-        console.info("client_checkin upsert success", {
+        console.info("client_checkin insert success", {
           id: row?.id || null,
           clientId: row?.client_id || context.clientId,
           homePlanItemId: row?.home_plan_item_id || context.homePlanItemId,
@@ -5797,31 +5797,56 @@
         });
         return { ok: true, row };
       } catch (error) {
-        console.warn("client_checkin upsert failed", {
+        const message = error?.message || String(error || "Unknown Supabase error");
+        if (message.includes("client_checkin_already_exists")) {
+          console.warn("client_checkin insert rejected as duplicate", { ...context, reason: "client_checkin_already_exists" });
+          return { ok: false, duplicate: true, reason: "client_checkin_already_exists", error };
+        }
+        console.warn("client_checkin insert failed", {
           ...context,
-          message: error?.message || String(error || "Unknown Supabase error")
+          message
         });
         return { ok: false, error };
       }
     }
 
-    function toggleGuidanceStep(clientId, taskId) {
+    async function toggleGuidanceStep(clientId, taskId) {
       const c = state.clients.find(client => client.id === clientId) || activeClient();
       const task = clientGuidanceTasks(c).find(item => item.id === taskId);
       const eventDate = dailyGuidanceDate();
       const current = isGuidanceStepDone(clientId, taskId, eventDate);
-      const completed = !current;
-      setGuidanceStepDone(clientId, taskId, completed, eventDate);
-      renderClientPortal();
-      toast(completed ? "Dzisiejszy krok wykonany." : "Oznaczenie cofnięte.");
-      void saveClientCheckin({
+      if (!task) {
+        console.warn("client_checkin insert skipped", { clientId, taskId, eventDate, reason: "missing_task" });
+        return;
+      }
+      if (current) {
+        console.warn("client_checkin duplicate click ignored", { clientId, taskId, eventDate });
+        toast("Ten sygna\u0142 jest ju\u017c zapisany.");
+        return;
+      }
+
+      const result = await saveClientCheckin({
         clientId,
         homePlanItemId: task?.sourceId || "",
-        completed,
+        completed: true,
         eventDate
       });
-    }
+      if (result.ok || result.skipped || result.duplicate) {
+        setGuidanceStepDone(clientId, taskId, true, eventDate);
+        renderClientPortal();
+        if (result.duplicate) {
+          toast("Ten sygna\u0142 by\u0142 ju\u017c zapisany.");
+        } else if (result.skipped) {
+          toast("Zapisano lokalnie. Zdalny zapis nie by\u0142 dost\u0119pny.");
+        } else {
+          toast("Dzisiejszy sygna\u0142 zapisany.");
+        }
+        return;
+      }
 
+      console.warn("client_checkin local state unchanged after failed remote insert", { clientId, taskId, eventDate });
+      toast("Nie uda\u0142o si\u0119 zapisa\u0107 sygna\u0142u. Spr\u00f3buj ponownie.");
+    }
     window.StudioLasClientCheckins = { saveClientCheckin };
 
     function loadPilotStore() {

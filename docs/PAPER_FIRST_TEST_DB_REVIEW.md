@@ -4,21 +4,24 @@
 
 Reviewed the Paper-first test DB readiness after the V1 immutable client check-in decision.
 
-`supabase/migrations/011_paper_first_client_checkins.sql` is the correct executable Paper-first migration for manual fresh/test DB execution.
+`supabase/migrations/011_paper_first_client_checkins.sql` remains the executable Paper-first index/RLS migration for manual fresh/test DB execution, and `supabase/migrations/013_enforce_immutable_client_checkin_rpc.sql` is the final V1 RPC contract migration.
 
-It now:
+Together they now:
 
-- reuses `public.guidance_events`,
-- adds a `client_checkin` partial unique index,
-- adds a client `client_checkin` select policy,
-- adds a client `client_checkin` insert policy,
-- intentionally does **not** create a client `client_checkin` update policy,
-- does not modify existing `daily_step` policies,
-- does not create new protocol/check-in/report tables.
+- reuse `public.guidance_events`,
+- add a `client_checkin` partial unique index,
+- add a client `client_checkin` select policy,
+- add a client `client_checkin` insert policy,
+- intentionally do **not** create a client `client_checkin` update policy,
+- replace the `012` RPC upsert behavior with insert-only `save_client_checkin`,
+- reject duplicate same client/item/date RPC calls with `client_checkin_already_exists`,
+- store the minimal `paper_first_checkin_v1` payload,
+- do not modify existing `daily_step` policies,
+- do not create new protocol/check-in/report tables.
 
 `supabase/migrations/005_paper_first_client_checkins.sql` is deprecated/no-op only and must not be applied.
 
-No SQL was executed during this review. No application code, auth code, Supabase config, public layout, dependencies, or localStorage fallback were changed.
+No SQL was executed during this review. No auth code, Supabase config, public layout, dependencies, or localStorage fallback were changed.
 
 ## 2. Files reviewed
 
@@ -26,13 +29,15 @@ No SQL was executed during this review. No application code, auth code, Supabase
 - `docs/PAPER_FIRST_EXECUTION_CHECKLIST.md`
 - `docs/PAPER_FIRST_MIGRATION_PROPOSAL.md`
 - `supabase/migrations/011_paper_first_client_checkins.sql`
+- `supabase/migrations/012_save_client_checkin_rpc.sql`
+- `supabase/migrations/013_enforce_immutable_client_checkin_rpc.sql`
 - `supabase/migrations/005_paper_first_client_checkins.sql`
 - `supabase/migrations/005_clients_trainer_write_rls.sql`
 - `supabase/migrations/001_initial_schema.sql`
 - `supabase/migrations/002_rls_policies.sql`
 - `supabase/migrations/003_client_safe_views.sql`
 
-Known later migrations `006` through `010` do not modify `guidance_events`, `daily_step`, or `client_checkin`.
+Known later migrations `006` through `010` do not modify `guidance_events`, `daily_step`, or `client_checkin`. Migration `012` creates the historical RPC upsert; migration `013` replaces that function with the immutable insert-only contract.
 
 ## 3. Findings by severity
 
@@ -85,14 +90,14 @@ Recommendation:
 
 - After migration, inspect `pg_indexes.indexdef` and confirm the exact partial index definition.
 
-#### P2-3: Payload shape is not enforced by SQL
+#### P2-3: Direct REST payload shape is not fully enforced by table policy
 
-The migration does not validate `payload.schema`, score ranges, allowed payload keys, or note length.
+Migration `013` builds the minimal `paper_first_checkin_v1` payload inside the RPC and validates the currently supported/null fields. A direct REST insert that passes the `011` policy can still provide arbitrary payload keys because no table-level payload check exists.
 
 Recommendation:
 
-- Accept for DB/RLS testing.
-- Do not release UI writes until app-side validation exists.
+- Accept for V1 if client UI writes through `save_client_checkin`.
+- Treat direct REST insert as a test-only compatibility path unless a table-level payload constraint is added later.
 
 #### P2-4: Trainer-created `client_checkin` rows can still bypass the client item-link rule
 
@@ -119,7 +124,7 @@ Recommendation:
 Allowed:
 
 - Manual SQL Editor execution against a fresh/test Supabase DB.
-- Apply `011_paper_first_client_checkins.sql` only after prerequisite migrations and duplicate audit pass.
+- Apply `011_paper_first_client_checkins.sql`, `012_save_client_checkin_rpc.sql`, and `013_enforce_immutable_client_checkin_rpc.sql` only after prerequisite migrations and duplicate audit pass.
 - Use the runbook and checklist as execution control documents.
 
 Not allowed:
@@ -148,10 +153,13 @@ Recommended sequence:
 2. Apply prerequisite migrations in order, excluding the deprecated Paper-first `005` no-op.
 3. Run the duplicate audit.
 4. Apply `011_paper_first_client_checkins.sql`.
-5. Verify index definition.
-6. Verify client_checkin select/insert policies exist and update policy is absent.
-7. Verify daily_step behavior still works.
-8. Run trainer, client, duplicate, and revoked/inactive client tests.
+5. Apply `012_save_client_checkin_rpc.sql`.
+6. Apply `013_enforce_immutable_client_checkin_rpc.sql`.
+7. Verify index definition.
+8. Verify client_checkin select/insert policies exist and update policy is absent.
+9. Verify `save_client_checkin` is insert-only and duplicate RPC calls fail with `client_checkin_already_exists`.
+10. Verify daily_step behavior still works.
+11. Run trainer, client, duplicate, and revoked/inactive client tests.
 
 ## 6. Risks
 
@@ -159,7 +167,7 @@ Recommended sequence:
 - Reused test DBs may already contain duplicate `client_checkin` rows.
 - `create unique index if not exists` can skip validation if a wrong same-name index already exists.
 - Trainer-created `client_checkin` rows can still have null `home_plan_item_id` under existing broad trainer policies.
-- Payload shape is not enforced in SQL.
+- RPC payload shape is enforced by `013`; direct REST payload shape is still not table-constrained.
 - Clients can select their own full payload, so the app must keep payload minimal and client-safe.
 - This review approves only fresh/test DB execution, not production.
 
@@ -168,7 +176,7 @@ Recommended sequence:
 Run one manual fresh/test DB execution using `docs/PAPER_FIRST_TEST_DB_RUNBOOK.md`.
 
 Do not execute SQL in production.
-Do not change application code.
+Do not release application code to production before the test DB pass.
 Do not change auth.
 Do not change Supabase config.
 Do not remove localStorage fallback.

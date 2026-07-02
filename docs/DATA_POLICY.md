@@ -84,16 +84,19 @@ The system may include sensitive process context when it is relevant to training
 
 ### Paper-first protocol data
 
-Future paper-first check-ins should be minimal:
+V1 paper-first check-ins are minimal and immutable from the client side:
 
 - date,
 - client_id,
-- protocol_id,
+- home_plan_item_id,
+- schema = `paper_first_checkin_v1`,
 - protocol_done yes/no,
-- energy_score 0-10,
-- symptom_score 0-10,
-- optional note,
+- energy_score 0-10 or null if the current UI does not expose it yet,
+- symptom_score 0-10 or null if the current UI does not expose it yet,
+- optional short note or null if the current UI does not expose it yet,
 - created_at.
+
+A client may create one check-in per client / home-plan item / date. A second same-day same-item signal is rejected, not updated. Corrections are trainer-owned future scope.
 
 No broad daily questionnaire should be added to the check-in.
 
@@ -202,10 +205,11 @@ For daily paper-first check-ins, do not collect:
 
 Minimal daily signal is enough:
 
-- done yes/no,
-- energy 0-10,
-- symptoms 0-10,
-- short optional note.
+- schema = `paper_first_checkin_v1`,
+- protocol_done yes/no,
+- energy 0-10 or null if not exposed in the current UI,
+- symptoms 0-10 or null if not exposed in the current UI,
+- short optional note or null if not exposed in the current UI.
 
 ## 9. Confidentiality rules
 

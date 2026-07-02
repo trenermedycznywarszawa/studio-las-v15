@@ -2,9 +2,10 @@
 
 This checklist is the go/no-go control document for executing the Paper-first `client_checkin` migration.
 
-Target migration:
+Target migrations:
 
-- `supabase/migrations/011_paper_first_client_checkins.sql`
+- `supabase/migrations/011_paper_first_client_checkins.sql` for index/RLS support,
+- `supabase/migrations/013_enforce_immutable_client_checkin_rpc.sql` for the insert-only RPC contract.
 
 Deprecated no-op file:
 
@@ -53,9 +54,11 @@ Corrections remain trainer-owned for V1.
 
 - [ ] Confirm latest `main` is pulled locally.
 - [ ] Confirm `supabase/migrations/011_paper_first_client_checkins.sql` exists.
+- [ ] Confirm `supabase/migrations/012_save_client_checkin_rpc.sql` exists as the historical RPC migration.
+- [ ] Confirm `supabase/migrations/013_enforce_immutable_client_checkin_rpc.sql` exists as the final V1 immutable RPC migration.
 - [ ] Confirm `supabase/migrations/005_paper_first_client_checkins.sql` is deprecated/no-op only.
 - [ ] Confirm no second executable Paper-first migration has a conflicting number.
-- [ ] Confirm no app code/public layout/auth/config/localStorage changes are bundled.
+- [ ] Confirm no unrelated public layout/auth/config/localStorage changes are bundled.
 
 ### Migration sequence
 
@@ -70,8 +73,11 @@ Corrections remain trainer-owned for V1.
   - `008_clients_insert_rls_policy_minimal.sql` if present
   - `009_clients_select_rls_owner_helper.sql` if present
   - `010_clients_update_rls_owner_helper.sql` if present
+  - `011_paper_first_client_checkins.sql`
+  - `012_save_client_checkin_rpc.sql`
+  - `013_enforce_immutable_client_checkin_rpc.sql`
 - [ ] Confirm migrations `006` through `010`, if present, do not conflict with `guidance_events`.
-- [ ] Confirm `011_paper_first_client_checkins.sql` is the intended Paper-first migration.
+- [ ] Confirm `011` is the Paper-first index/RLS migration and `013` replaces the `012` RPC upsert behavior with insert-only semantics.
 
 ### Existing schema confirmation — test DB only
 
@@ -150,6 +156,8 @@ Go only if all helper functions exist.
 - [ ] Do not apply deprecated `005_paper_first_client_checkins.sql`.
 - [ ] Run duplicate audit.
 - [ ] Apply `011_paper_first_client_checkins.sql`.
+- [ ] Apply `012_save_client_checkin_rpc.sql`.
+- [ ] Apply `013_enforce_immutable_client_checkin_rpc.sql`.
 - [ ] Record execution timestamp and project ref.
 
 Stop immediately if:
@@ -195,6 +203,24 @@ Pass only if:
 - [ ] `guidance_events_client_checkin_insert` exists.
 - [ ] `guidance_events_client_checkin_update` does **not** exist.
 
+### Expected RPC
+
+```sql
+select p.proname, pg_get_functiondef(p.oid)
+from pg_proc p
+join pg_namespace n on n.oid = p.pronamespace
+where n.nspname = 'public'
+  and p.proname = 'save_client_checkin';
+```
+
+Pass only if:
+
+- [ ] Function is `SECURITY DEFINER` with explicit safe `search_path`.
+- [ ] Function has no `ON CONFLICT DO UPDATE`.
+- [ ] Function has no `UPDATE public.guidance_events` path.
+- [ ] Function raises `client_checkin_already_exists` for duplicate same client/item/date.
+- [ ] Execute is granted to `authenticated`, not public/anon.
+
 ### Existing daily_step behavior remains unchanged
 
 - [ ] Existing `daily_step` select/insert/update policies still exist.
@@ -233,12 +259,13 @@ Pass only if:
 
 ## 7. Payload safety
 
-Until app validation exists, payload safety is not fully enforced by SQL.
+Migration `013` enforces the RPC payload shape for `save_client_checkin`. Direct REST inserts, if tested through the `011` policy, still need manual review against the same minimal policy.
 
 Manual review:
 
 - [ ] Payload uses `schema = 'paper_first_checkin_v1'`.
-- [ ] Payload contains only `schema`, `energy_score`, `symptom_score`, `optional_note`.
+- [ ] Payload contains only `schema`, `protocol_done`, `energy_score`, `symptom_score`, `optional_note`.
+- [ ] DB/RPC contract supports energy/symptom/note; current UI may initially send null for fields not yet exposed.
 - [ ] No trainer notes are stored in client-created payload.
 - [ ] No medical diagnosis language.
 - [ ] No long daily questionnaire.

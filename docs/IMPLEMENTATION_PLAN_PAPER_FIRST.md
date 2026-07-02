@@ -126,19 +126,24 @@ Fields:
 
 ### 3.3 daily_protocol_checkins
 
+V1 decision: do not create a dedicated `daily_protocol_checkins` table. Store the minimal client signal in `guidance_events` with `kind = 'client_checkin'`.
+
 Purpose: minimal client signal after completing the offline protocol.
 
-Fields:
+Fields in the V1 domain payload / event contract:
 
 - `id`
 - `client_id`
-- `protocol_id`
-- `checkin_date`
+- `home_plan_item_id`
+- `checkin_date` / `event_date`
+- `schema = paper_first_checkin_v1`
 - `protocol_done`
 - `energy_score`
 - `symptom_score`
 - `optional_note`
 - `created_at`
+
+Client-created V1 check-ins are immutable. A second same-day same-item signal is rejected, not updated; corrections are trainer-owned future scope.
 
 ### 3.4 protocol_report_snapshots
 
@@ -164,12 +169,12 @@ Before adding any SQL, compare the proposed structures with current tables.
 
 1. Can `paper_protocols` be represented by `home_plans` or a new protocol table is cleaner?
 2. Can `client_protocol_assignments` be represented by `home_plans` plus status/date fields?
-3. Can `daily_protocol_checkins` be represented by `guidance_events` with `kind = 'client_checkin'` and structured `payload`?
+3. RESOLVED V1: `daily_protocol_checkins` are represented by `guidance_events` with `kind = 'client_checkin'` and structured `payload`.
 4. Is `protocol_report_snapshots` needed, or can report snapshots live in `reports`?
 5. What RLS policies are required so a client can insert only their own check-in?
 6. What data should trainer see that client should not see?
-7. Does any current unique index block repeated check-ins?
-8. Should check-ins be one per client/protocol/date?
+7. RESOLVED V1: `guidance_events_client_checkin_unique_idx` blocks repeated active check-ins for the same client/item/date.
+8. RESOLVED V1: check-ins are one per client/home-plan item/date from the client side.
 9. How will ended client access be revoked?
 10. How will `localStorage` fallback represent this without breaking old data?
 
@@ -256,6 +261,8 @@ Scope:
 - optional note,
 - save takes 30-45 seconds.
 
+DB/RPC contract supports `protocol_done`, `energy_score`, `symptom_score`, and `optional_note`; current UI may initially send null for fields not yet exposed.
+
 No streaks. No points. No notifications.
 
 ### Stage 6 — Trainer review view
@@ -282,7 +289,8 @@ The first implementation should use only this signal:
 
 - `date`,
 - `client_id`,
-- `protocol_id` or assignment/item reference,
+- `home_plan_item_id`,
+- `schema = paper_first_checkin_v1`,
 - `protocol_done`,
 - `energy_score`,
 - `symptom_score`,
@@ -457,8 +465,8 @@ Manual tests should include:
 
 ### Data flow
 
-1. Check-in is saved once per date/protocol/client.
-2. Duplicate same-day check-in behavior is defined.
+1. Check-in is saved once per client/home-plan item/date.
+2. Duplicate same-day same-item check-in is rejected with `client_checkin_already_exists`, not updated.
 3. Supabase save works.
 4. localStorage fallback still works.
 5. Report summary can read the data later.
@@ -516,9 +524,9 @@ OPEN QUESTION 1:
 
 Should paper-first protocols be a new table or a disciplined use of `home_plans` / `home_plan_items`?
 
-OPEN QUESTION 2:
+RESOLVED V1 QUESTION 2:
 
-Should daily check-ins be stored in `guidance_events` using `kind = 'client_checkin'` and `payload`, or in a dedicated table?
+Daily check-ins are stored in `guidance_events` using `kind = 'client_checkin'` and `payload`; no dedicated check-in table is created for V1.
 
 OPEN QUESTION 3:
 
