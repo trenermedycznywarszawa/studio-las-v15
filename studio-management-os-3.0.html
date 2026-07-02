@@ -5558,6 +5558,50 @@
     const view = $("#view");
     const clientSelect = $("#clientSelect");
 
+    const SYNC_META_STATUSES = new Set(["local_only", "queued_local_only", "queued", "synced", "failed"]);
+
+    function createStudioLasRemoteId(prefix = "entity") {
+      const cleanPrefix = String(prefix || "entity")
+        .trim()
+        .toLowerCase()
+        .replace(/[^a-z0-9_]+/g, "_")
+        .replace(/^_+|_+$/g, "") || "entity";
+      try {
+        if (window.crypto && typeof window.crypto.randomUUID === "function") {
+          return `sl_${cleanPrefix}_${window.crypto.randomUUID()}`;
+        }
+      } catch (error) {}
+      const stamp = Date.now().toString(36);
+      const random = Math.random().toString(36).slice(2, 12);
+      return `sl_${cleanPrefix}_${stamp}_${random}`;
+    }
+
+    function createDefaultSyncMeta(prefix) {
+      return {
+        remote_id: createStudioLasRemoteId(prefix),
+        sync_status: "local_only",
+        last_queued_at: null,
+        last_synced_at: null,
+        last_error: null
+      };
+    }
+
+    function ensureSyncMeta(entity, prefix) {
+      try {
+        if (!entity || typeof entity !== "object") return entity;
+        const current = entity._sync && typeof entity._sync === "object" ? entity._sync : {};
+        const remoteId = current.remote_id ? String(current.remote_id) : createStudioLasRemoteId(prefix);
+        entity._sync = {
+          remote_id: remoteId,
+          sync_status: SYNC_META_STATUSES.has(current.sync_status) ? current.sync_status : "local_only",
+          last_queued_at: current.last_queued_at || null,
+          last_synced_at: current.last_synced_at || null,
+          last_error: current.last_error || null
+        };
+      } catch (error) {}
+      return entity;
+    }
+
     function load() {
       try {
         const saved = localStorage.getItem(STORAGE_KEY);
@@ -6933,7 +6977,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       const c = activeClient();
       const fd = new FormData(e.currentTarget);
       c.preSessionChecks = Array.isArray(c.preSessionChecks) ? c.preSessionChecks : [];
-      c.preSessionChecks.push(migratePreSessionCheck({
+      const preSessionCheck = ensureSyncMeta(migratePreSessionCheck({
         id: `pre${Date.now()}`,
         date: today(),
         painIncreased: fd.has("painIncreased"),
@@ -6943,7 +6987,8 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
         redFlagConcern: fd.has("redFlagConcern"),
         plannedDecision: fd.get("plannedDecision"),
         note: String(fd.get("note") || "").trim()
-      }));
+      }), "pre_check");
+      c.preSessionChecks.push(preSessionCheck);
       save();
       toast("Check przed sesją zapisany");
       renderTodaySession();
@@ -6955,7 +7000,7 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
       const fd = new FormData(e.currentTarget);
       const homeTask = String(fd.get("homeTask") || "").trim();
       c.postSessionNotes = Array.isArray(c.postSessionNotes) ? c.postSessionNotes : [];
-      c.postSessionNotes.push(migratePostSessionNote({
+      const postSessionNote = ensureSyncMeta(migratePostSessionNote({
         id: `post${Date.now()}`,
         date: today(),
         whatWeDid: String(fd.get("whatWeDid") || "").trim(),
@@ -6963,10 +7008,11 @@ Po wejściu wybierz Panel klienta i wpisz dane dostępu.`;
         decision: fd.get("decision"),
         homeTask,
         clientMessage: String(fd.get("clientMessage") || "").trim()
-      }));
+      }), "post_note");
+      c.postSessionNotes.push(postSessionNote);
       if (homeTask) {
         c.tasks = Array.isArray(c.tasks) ? c.tasks : [];
-        c.tasks.push({ text: homeTask, done: false, createdAt: today(), source: "postSessionNote" });
+        c.tasks.push(ensureSyncMeta({ id: `task-${Date.now()}`, text: homeTask, done: false, createdAt: today(), source: "postSessionNote" }, "client_task"));
       }
       save();
       toast(homeTask ? "Notatka zapisana i dodano ruch do wykonania" : "Notatka po sesji zapisana");
@@ -7482,14 +7528,19 @@ Nie chodzi o perfekcję. Chodzi o spokojny rytm.`;
         e.preventDefault();
         const text = new FormData(e.currentTarget).get("taskText").trim();
         if (!text) return;
-        c.tasks.push({ text, done: false, createdAt: today() });
+        c.tasks.push(ensureSyncMeta({ id: `task-${Date.now()}`, text, done: false, createdAt: today() }, "client_task"));
         save();
         renderTasks();
         toast("Dodano zadanie");
       });
 
       document.querySelectorAll("[data-task-toggle]").forEach(input => input.addEventListener("change", () => {
-        c.tasks[Number(input.dataset.taskToggle)].done = input.checked;
+        const taskIndex = Number(input.dataset.taskToggle);
+        const task = c.tasks[taskIndex];
+        if (!task) return;
+        if (!task.id) task.id = `task-${Date.now()}-${taskIndex}`;
+        ensureSyncMeta(task, "client_task");
+        task.done = input.checked;
         save();
         renderTasks();
         toast("Zadanie zaktualizowane");
@@ -12965,7 +13016,7 @@ Initial 83.45 64.95 18.10
           return toast("Nie udało się odczytać PDF");
         }
       }
-      const measurement = migrateMeasurement({
+      const measurement = ensureSyncMeta(migrateMeasurement({
         ...(existing || {}),
         id: existing?.id || `m${Date.now()}`,
         date: fd.get("date"),
@@ -12992,7 +13043,7 @@ Initial 83.45 64.95 18.10
         pdfAutoFilled: Boolean(pdf.autoFilled || existing?.pdfAutoFilled),
         trainerInterpretation: fd.get("trainerInterpretation").trim(),
         clientSummary: fd.get("clientSummary").trim()
-      });
+      }), "body_measurement");
       c.measurements = Array.isArray(c.measurements) ? c.measurements : [];
       c.measurements = existing
         ? c.measurements.map(item => item.id === existing.id ? measurement : item)
@@ -13049,7 +13100,7 @@ Initial 83.45 64.95 18.10
       e.preventDefault();
       const c = activeClient();
       const fd = new FormData(e.currentTarget);
-      const session = {
+      const session = ensureSyncMeta({
         id: `s${Date.now()}`,
         date: fd.get("date"),
         readiness: Number(fd.get("readiness")),
@@ -13061,7 +13112,7 @@ Initial 83.45 64.95 18.10
         notes: fd.get("notes").trim(),
         decision: fd.get("decision").trim(),
         milestone: fd.get("milestone").trim()
-      };
+      }, "session");
       c.sessions.push(session);
       if (session.decision) c.decisionLogic = `${session.date} · ${session.decision}\n\n${c.decisionLogic || ""}`.trim();
       if (session.milestone) c.nextMilestone = "";
