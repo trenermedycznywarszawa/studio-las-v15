@@ -4843,7 +4843,7 @@
 
       async function mutate(table, params = {}) {
         if (!isConfigured()) throw new Error("Supabase URL or public key is missing.");
-        if (!accessToken) throw new Error("Supabase trainer access token is missing.");
+        if (!accessToken) throw new Error("Supabase access token is missing.");
         const query = new URLSearchParams();
         if (params.returning !== false) query.set("select", params.select || "*");
         Object.entries(params.filters || {}).forEach(([key, value]) => query.set(key, value));
@@ -4919,6 +4919,47 @@
         });
       }
 
+      async function rpc(functionName, payload = {}, params = {}) {
+        if (!isConfigured()) throw new Error("Supabase URL or public key is missing.");
+        if (!accessToken) throw new Error("Supabase access token is missing.");
+        const query = new URLSearchParams();
+        if (params.select) query.set("select", params.select);
+        const queryString = query.toString();
+        const requestUrl = `${baseUrl}/rest/v1/rpc/${functionName}${queryString ? `?${queryString}` : ""}`;
+        console.log("Supabase request URL", requestUrl);
+        const response = await fetch(requestUrl, {
+          method: "POST",
+          headers: {
+            apikey: apiKey,
+            Authorization: `Bearer ${accessToken}`,
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Prefer: params.returning === false ? "return=minimal" : "return=representation"
+          },
+          body: JSON.stringify(payload || {})
+        });
+        if (!response.ok) {
+          const text = await response.text();
+          throw new Error(`Supabase RPC failed for ${functionName}: ${response.status} ${text}`);
+        }
+        if (params.returning === false || response.status === 204) return null;
+        return response.json().catch(() => null);
+      }
+
+      async function saveClientCheckinEvent(params = {}) {
+        const eventDate = dateOnly(params.eventDate);
+        if (!eventDate || !/^\d{4}-\d{2}-\d{2}$/.test(eventDate)) {
+          throw new Error("client_checkin event_date must be a YYYY-MM-DD local date.");
+        }
+        const completed = Boolean(params.completed);
+        return rpc("save_client_checkin", {
+          p_client_id: params.clientId,
+          p_home_plan_item_id: params.homePlanItemId,
+          p_event_date: eventDate,
+          p_completed: completed
+        });
+      }
+
       async function loadDashboardState(currentState = {}) {
         const profileRows = await request("profiles", {
           select: "id,role",
@@ -4967,7 +5008,7 @@
         return mapSupabaseDashboardState({ clients, sessions, measurements, reports, intakes }, currentState);
       }
 
-      return { isConfigured, loadDashboardState, insertClient, updateClient, softDeleteClient };
+      return { isConfigured, loadDashboardState, insertClient, updateClient, softDeleteClient, saveClientCheckinEvent };
     }
 
     function safeStudioLasAuthErrorMessage(error) {
@@ -5684,7 +5725,7 @@
     function clientGuidanceTasks(c = activeClient()) {
       return activeHomePlanExercises(c).slice(0, 3).map((task, index) => ({
         id: `home-${guidanceTaskId(task)}-${index}`,
-        sourceId: task.id || task.exerciseId || "",
+        sourceId: task.homePlanItemId || task.home_plan_item_id || task.id || task.exerciseId || "",
         title: task.name || "Ruch do wykonania",
         dose: [task.dosage || "", task.frequency || ""].filter(Boolean).join(" · ") || "Krótko i spokojnie, zgodnie z ustaleniem.",
         cue: task.clientCue || "Wykonuj spokojnie, bez pośpiechu i w zakresie, który kontrolujesz.",
@@ -5713,12 +5754,75 @@
       return { tasks, done, total: tasks.length };
     }
 
-    function toggleGuidanceStep(clientId, taskId) {
-      const current = isGuidanceStepDone(clientId, taskId);
-      setGuidanceStepDone(clientId, taskId, !current);
-      renderClientPortal();
-      toast(!current ? "Dzisiejszy krok wykonany." : "Oznaczenie cofnięte.");
+    function isSupabaseUuid(value = "") {
+      return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(value || "").trim());
     }
+
+    function clientCheckinSupabaseUnavailableReason() {
+      if (!USE_SUPABASE) return "supabase_disabled";
+      const config = getSupabaseConfig();
+      if (!isStudioLasSupabaseConfigured(config)) return "missing_config";
+      const token = config.accessToken || getStudioLasAccessToken();
+      if (!token) return "no_session";
+      if (!isStudioLasJwtPayloadActive(decodeStudioLasJwtPayload(token))) return "token_expired";
+      return "";
+    }
+
+    async function saveClientCheckin({ clientId, homePlanItemId, completed, eventDate = dailyGuidanceDate() } = {}) {
+      const context = {
+        clientId: String(clientId || "").trim(),
+        homePlanItemId: String(homePlanItemId || "").trim(),
+        eventDate: dateOnly(eventDate),
+        completed: Boolean(completed)
+      };
+      console.info("client_checkin upsert started", context);
+
+      const unavailableReason = clientCheckinSupabaseUnavailableReason();
+      if (unavailableReason) {
+        console.warn("client_checkin upsert failed", { ...context, reason: unavailableReason });
+        return { ok: false, skipped: true, reason: unavailableReason };
+      }
+      if (!isSupabaseUuid(context.clientId) || !isSupabaseUuid(context.homePlanItemId)) {
+        console.warn("client_checkin upsert failed", { ...context, reason: "missing_supabase_ids" });
+        return { ok: false, skipped: true, reason: "missing_supabase_ids" };
+      }
+
+      try {
+        const row = await supabaseClientService().saveClientCheckinEvent(context);
+        console.info("client_checkin upsert success", {
+          id: row?.id || null,
+          clientId: row?.client_id || context.clientId,
+          homePlanItemId: row?.home_plan_item_id || context.homePlanItemId,
+          eventDate: row?.event_date || context.eventDate
+        });
+        return { ok: true, row };
+      } catch (error) {
+        console.warn("client_checkin upsert failed", {
+          ...context,
+          message: error?.message || String(error || "Unknown Supabase error")
+        });
+        return { ok: false, error };
+      }
+    }
+
+    function toggleGuidanceStep(clientId, taskId) {
+      const c = state.clients.find(client => client.id === clientId) || activeClient();
+      const task = clientGuidanceTasks(c).find(item => item.id === taskId);
+      const eventDate = dailyGuidanceDate();
+      const current = isGuidanceStepDone(clientId, taskId, eventDate);
+      const completed = !current;
+      setGuidanceStepDone(clientId, taskId, completed, eventDate);
+      renderClientPortal();
+      toast(completed ? "Dzisiejszy krok wykonany." : "Oznaczenie cofnięte.");
+      void saveClientCheckin({
+        clientId,
+        homePlanItemId: task?.sourceId || "",
+        completed,
+        eventDate
+      });
+    }
+
+    window.StudioLasClientCheckins = { saveClientCheckin };
 
     function loadPilotStore() {
       try {
