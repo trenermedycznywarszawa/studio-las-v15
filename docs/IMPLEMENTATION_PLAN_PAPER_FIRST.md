@@ -1,10 +1,26 @@
 # Implementation Plan: Paper-first Process Tracking
 
-This document defines the safe implementation plan for Paper-first Process Tracking in Studio Las OS.
+This document defines a safe implementation plan for Paper-first Process Tracking in Studio Las OS.
 
 This is not an implementation commit.
 
 No migrations should be executed from this document without a separate explicit task.
+
+## Governance status
+
+This document is an implementation-level planning document.
+
+It is subordinate to:
+
+1. `docs/constitution/README.md`
+2. `docs/product/README.md`
+3. `docs/product/00_PRODUCT_MODEL.md`
+4. `docs/product/02_STUDIO_LAS_METHOD.md`
+5. future `docs/architecture/` documents
+
+The stages below are not the next source of truth.
+
+Do not proceed from this document directly into schema work until the Architecture layer approves the method-to-OS mapping.
 
 ## 1. Goal
 
@@ -87,11 +103,13 @@ Most important overlap:
 
 Therefore, new paper-first tables must not be added until a schema gap analysis proves they are necessary.
 
-## 3. Proposed data model — describe only, do not migrate yet
+## 3. Proposed data model — conceptual only, do not migrate yet
 
 The following structures are a conceptual target only.
 
 Do not create them yet.
+
+Do not treat them as approved architecture.
 
 ### 3.1 paper_protocols
 
@@ -156,13 +174,25 @@ Fields:
 - `trainer_summary`
 - `created_at`
 
-## 4. Required schema gap analysis before any migration
+## 4. Required architecture approval before any migration
 
-Before adding any SQL, compare the proposed structures with current tables.
+Before adding any SQL, the Architecture layer must answer how the Studio Las Method maps to OS objects.
 
-### 4.1 Questions to answer
+At minimum, Architecture should define:
 
-1. Can `paper_protocols` be represented by `home_plans` or a new protocol table is cleaner?
+- trainer hypothesis representation,
+- paper guidance representation,
+- client signal representation,
+- trainer interpretation representation,
+- report pattern representation,
+- client-safe surfaces,
+- trainer-only surfaces.
+
+Only after that should schema gap analysis decide whether existing tables are sufficient.
+
+### 4.1 Questions to answer later
+
+1. Can `paper_protocols` be represented by `home_plans` or is a new protocol table cleaner?
 2. Can `client_protocol_assignments` be represented by `home_plans` plus status/date fields?
 3. Can `daily_protocol_checkins` be represented by `guidance_events` with `kind = 'client_checkin'` and structured `payload`?
 4. Is `protocol_report_snapshots` needed, or can report snapshots live in `reports`?
@@ -182,13 +212,19 @@ Most conservative first direction:
 - use existing `reports` for report summaries if possible,
 - avoid new tables until proven necessary.
 
-This must be confirmed by actual schema/RLS review.
+This must be confirmed by Architecture and actual schema/RLS review.
 
-## 5. Recommended implementation stages
+## 5. Deferred implementation stages
+
+The stages below are intentionally deferred.
+
+They are not the next task.
+
+They become valid only after the Architecture layer approves the direction.
 
 ### Stage 0 — Documentation foundation
 
-Status: current task.
+Status: completed for the original paper-first documentation phase.
 
 Deliverables:
 
@@ -201,6 +237,8 @@ Deliverables:
 No app code changes.
 
 ### Stage 1 — Schema gap analysis
+
+Status: deferred until Architecture.
 
 Deliverable:
 
@@ -216,6 +254,8 @@ Scope:
 - no migrations yet.
 
 ### Stage 2 — Migration proposal only
+
+Status: deferred until schema gap analysis is approved.
 
 Deliverable:
 
@@ -250,10 +290,7 @@ Scope:
 Scope:
 
 - client sees assigned paper protocol summary,
-- client records done yes/no,
-- energy 0-10,
-- symptom 0-10,
-- optional note,
+- client records only the approved minimal signal,
 - save takes 30-45 seconds.
 
 No streaks. No points. No notifications.
@@ -272,22 +309,29 @@ No automated conclusions.
 
 Scope:
 
-- 4/8/12-week summaries can include adherence, energy, symptoms, and trainer interpretation,
+- 4/8/12-week summaries can include selected signals and trainer interpretation,
 - report remains trainer-authored,
 - AI support, if ever added, supports trainer only.
 
 ## 6. Minimal model for first implementation
 
-The first implementation should use only this signal:
+This section is a candidate implementation model, not approved architecture.
+
+The first implementation should use only the smallest signal approved by the trainer decision and architecture mapping.
+
+Possible signal fields:
 
 - `date`,
 - `client_id`,
 - `protocol_id` or assignment/item reference,
 - `protocol_done`,
-- `energy_score`,
-- `symptom_score`,
-- `optional_note`,
+- optional selected subjective signal,
+- optional short note,
 - `created_at`.
+
+Energy and symptom scores are allowed only if the Architecture layer confirms they are necessary for the specific protocol and report pattern.
+
+They must not become universal daily scoring by default.
 
 Do not add:
 
@@ -361,8 +405,9 @@ Do not duplicate these concepts unless there is a clear reason.
 
 Currently missing or not confirmed:
 
+- Architecture method-to-OS mapping,
 - final paper-first schema decision,
-- client insert permission for daily check-ins,
+- client insert permission for check-ins,
 - RLS policy for client-owned check-ins,
 - client-safe view for protocol assignments/check-ins,
 - trainer review summary for check-ins,
@@ -379,7 +424,8 @@ Adding new tables without checking `guidance_events` may create parallel systems
 
 Mitigation:
 
-- perform schema gap analysis first.
+- perform Architecture mapping first,
+- then perform schema gap analysis.
 
 ### Risk 2 — RLS leakage
 
@@ -421,11 +467,12 @@ Mitigation:
 - no streaks,
 - no gamification,
 - no notifications,
-- no broad tracking.
+- no broad tracking,
+- do not visualize check-ins as compliance pressure.
 
 ### Risk 6 — Report overinterpretation
 
-Energy/symptom scores are subjective signals, not medical conclusions.
+Subjective signals are not medical conclusions.
 
 Mitigation:
 
@@ -457,11 +504,10 @@ Manual tests should include:
 
 ### Data flow
 
-1. Check-in is saved once per date/protocol/client.
-2. Duplicate same-day check-in behavior is defined.
-3. Supabase save works.
-4. localStorage fallback still works.
-5. Report summary can read the data later.
+1. Check-in is saved once per date/protocol/client, or duplicate behavior is explicitly defined.
+2. Supabase save works.
+3. localStorage fallback still works.
+4. Report summary can read the data later.
 
 ### Safety flow
 
@@ -475,6 +521,7 @@ Manual tests should include:
 
 A first paper-first implementation is acceptable only when:
 
+- Architecture has approved the method-to-OS mapping,
 - no public site layout is changed,
 - auth is unchanged,
 - Supabase config is unchanged,
@@ -532,9 +579,13 @@ OPEN QUESTION 5:
 
 What is the final retention policy after RODO/legal review?
 
-## 15. Recommended next Codex prompt
+## 15. Deferred Codex prompt
 
-Use this prompt as the next safe step:
+The previous next step was schema gap analysis.
+
+That is now deferred.
+
+Use this prompt only after the Architecture layer approves the paper-first method-to-OS mapping.
 
 ```text
 Work in repository trenermedycznywarszawa/studio-las-v15.
@@ -552,6 +603,10 @@ Create docs/SCHEMA_GAP_ANALYSIS_PAPER_FIRST.md.
 
 Read:
 - README.md
+- docs/constitution/README.md
+- docs/product/README.md
+- docs/product/00_PRODUCT_MODEL.md
+- docs/product/02_STUDIO_LAS_METHOD.md
 - docs/STUDIO_LAS_OS_BLUEPRINT.md
 - docs/DATA_POLICY.md
 - docs/PAPER_FIRST_PROTOCOLS.md
@@ -569,13 +624,7 @@ Analyze whether Paper-first process tracking should use:
 - existing reports
 or whether new tables are truly needed.
 
-Compare the proposed conceptual model:
-- paper_protocols
-- client_protocol_assignments
-- daily_protocol_checkins
-- protocol_report_snapshots
-
-against the existing schema.
+Compare the proposed conceptual model against the existing schema.
 
 For each proposed table, decide:
 - reuse existing table
