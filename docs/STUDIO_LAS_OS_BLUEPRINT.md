@@ -1,10 +1,19 @@
 # Studio Las OS Blueprint
 
-This document is the product constitution for Studio Las OS.
+This document is an OS-level blueprint for Studio Las OS.
 
-Studio Las OS must protect the Studio Las process from feature chaos. Every future feature should be checked against this document before implementation.
+It is not the product constitution.
 
-## 1. Constitution
+It is subordinate to:
+
+1. `docs/constitution/README.md`
+2. `docs/product/README.md`
+3. `docs/product/00_PRODUCT_MODEL.md`
+4. `docs/product/02_STUDIO_LAS_METHOD.md`
+
+Studio Las OS must protect the Studio Las process from feature chaos. Every future feature should be checked against the Constitution and Product layers before this blueprint is used for implementation decisions.
+
+## 1. OS role
 
 Studio Las OS is a private operating system for the Studio Las 1:1 client process.
 
@@ -230,7 +239,7 @@ Avoid:
 
 ## 12. Feature rules
 
-A feature is allowed only if it supports the 1:1 Studio Las process.
+A feature is allowed only if it supports the 1:1 Studio Las process and does not conflict with the Constitution or Product layers.
 
 Allowed direction:
 
