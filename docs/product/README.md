@@ -31,12 +31,27 @@ Studio Las OS is not the product.
 
 If an app feature conflicts with this folder, the product layer wins.
 
-## Product hierarchy
+## Decision hierarchy
 
-1. Studio Las Constitution
-2. Studio Las Product
-3. Studio Las OS Architecture
-4. Database and implementation details
-5. UI and feature decisions
+All future decisions must follow this hierarchy:
 
-The lower layer must never redefine the higher layer.
+1. Constitution
+2. Product
+3. Architecture
+4. PRD
+5. Implementation
+6. Code
+
+A lower layer must never redefine a higher layer.
+
+If implementation conflicts with Product, Product wins.
+
+If Product conflicts with Constitution, Constitution wins.
+
+## Relationship to Constitution
+
+The Product layer is subordinate to `docs/constitution/README.md`.
+
+The Product layer defines the Studio Las Method.
+
+The Constitution defines the non-negotiable boundaries that the method and OS must preserve.
