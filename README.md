@@ -11,6 +11,23 @@ Core product rule:
 > App records the signal.  
 > Report shows the pattern.
 
+## Source-of-truth hierarchy
+
+All future decisions must follow this hierarchy:
+
+1. Constitution
+2. Product
+3. Architecture
+4. PRD
+5. Implementation
+6. Code
+
+A lower layer must never redefine a higher layer.
+
+If implementation conflicts with Product, Product wins.
+
+If Product conflicts with Constitution, Constitution wins.
+
 ## What Studio Las OS is
 
 Studio Las OS is a private client process system for:
@@ -23,7 +40,7 @@ Studio Las OS is a private client process system for:
 - preparing future 4/8/12-week reports,
 - helping the trainer notice patterns over time.
 
-The system exists to support the Studio Las service model, not to replace it.
+The system exists to support the Studio Las Method, not to replace it.
 
 ## What Studio Las OS is not
 
@@ -69,8 +86,8 @@ Current status:
 
 ## Strategic decisions currently in force
 
-1. The First Diagnostic Visit costs 400 PLN.
-2. The 400 PLN fee is deducted from the package if the client enters the process.
+1. The First Diagnostic Visit currently costs 300 PLN.
+2. The 300 PLN fee may be deducted from the package if the client enters the process under the current offer rules.
 3. The Studio Las process follows the System 4 Kroków.
 4. The app processes health-related data: pain, symptoms, health history, treatment, supplementation, process notes, and individual recommendations.
 5. Data is entered manually.
@@ -82,6 +99,8 @@ Current status:
 11. The public website still leads to the diagnostic form.
 12. The app may be mentioned as part of the process, but not as the main public product.
 13. We are not creating a new application from scratch.
+
+Pricing is business data. If the offer changes, update this section in a focused documentation commit.
 
 ## Architecture overview
 
@@ -101,9 +120,11 @@ Important current files and folders:
 - `strefa-klienta.html` — client zone entry.
 - `studio-management-os-3.0.html` — current OS.
 - `studio-las-config.js` — runtime configuration surface.
+- `docs/constitution/` — highest documentation authority and decision hierarchy.
+- `docs/product/` — Studio Las Method and product layer.
+- `docs/` — operating, architecture, data, implementation, and review documentation.
 - `supabase/migrations/` — database migrations.
 - `supabase/importer/` — legacy import tooling.
-- `docs/` — operating documentation.
 
 ## Current stack
 
@@ -118,25 +139,31 @@ Important current files and folders:
 
 ## Rules for working with this repository
 
-Before changing code, read:
+Before changing code, read in this order:
 
 1. `README.md`
-2. `docs/STUDIO_LAS_OS_BLUEPRINT.md`
-3. `docs/DATA_POLICY.md`
-4. `docs/PAPER_FIRST_PROTOCOLS.md`
-5. `docs/IMPLEMENTATION_PLAN_PAPER_FIRST.md`
+2. `docs/constitution/README.md`
+3. `docs/product/README.md`
+4. `docs/product/00_PRODUCT_MODEL.md`
+5. `docs/product/02_STUDIO_LAS_METHOD.md`
+6. `docs/STUDIO_LAS_OS_BLUEPRINT.md`
+7. `docs/DATA_POLICY.md`
+8. `docs/PAPER_FIRST_PROTOCOLS.md`
+9. Relevant architecture documents when they exist.
+10. Relevant implementation plans only after Architecture approves the direction.
 
 Every change should be small, reversible, and aligned with the private 1:1 service model.
 
 Preferred workflow:
 
-1. Audit current code and data structures.
-2. Describe the intended change.
-3. Check whether existing tables/functions already solve part of the problem.
-4. Avoid broad refactors.
-5. Implement the smallest safe step.
-6. Manually test trainer flow and client flow.
-7. Document risk and next step.
+1. Confirm the source-of-truth layer that governs the change.
+2. Audit current code and data structures.
+3. Describe the intended change.
+4. Check whether existing tables/functions already solve part of the problem.
+5. Avoid broad refactors.
+6. Implement the smallest safe step.
+7. Manually test trainer flow and client flow.
+8. Document risk and next step.
 
 ## Security rules
 
