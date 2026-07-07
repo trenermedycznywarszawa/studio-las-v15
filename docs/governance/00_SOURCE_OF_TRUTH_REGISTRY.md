@@ -76,9 +76,9 @@ If two places define the same concept differently, the registry determines which
 | Report meaning | Product | Report System Product doc | Architecture, PRD, final client reports | Website promises, dashboard UI, raw metrics | High | Report shows pattern after trainer meaning. |
 | Report generation | Architecture | Report Generation Architecture doc | PRD, OS report workflow | Automatic report output | Medium | System may organize evidence; trainer approves meaning. |
 | Measurements | Product + Architecture | Measurement System Product doc | Reports, trainer workspace | Public marketing proof, dashboards | Medium | Measurements exist to support decisions and patterns, not self-optimization. |
-| Pricing | Offer/Pricing Governance | Future offer/pricing governance document | Website, forms, README summaries | Individual HTML pages | Critical | One confirmed price must be owned by one document before public cleanup. |
-| Packages | Offer/Pricing Governance | Future offer/pricing governance document | Website, sales materials | Old offer pages | High | Packages must not be redefined independently by pages. |
-| Diagnostic visit | Offer/Pricing Governance + Product | Future offer/pricing governance document | Website, forms, onboarding | Individual page copy | High | Scope and price must be canonical before PRD and public cleanup. |
+| Pricing | Offer/Pricing Governance | `docs/governance/02_OFFER_AND_PRICING_GOVERNANCE.md` | Website, forms, README summaries | Individual HTML pages | Critical | Canonical diagnostic visit price is 300 PLN; stale projections must be cleaned. |
+| Packages | Offer/Pricing Governance | `docs/governance/02_OFFER_AND_PRICING_GOVERNANCE.md` | Website, sales materials | Old offer pages | High | Packages must not be redefined independently by pages. |
+| Diagnostic visit | Offer/Pricing Governance + Product | `docs/governance/02_OFFER_AND_PRICING_GOVERNANCE.md` | Website, forms, onboarding | Individual page copy | High | Diagnostic visit price is 300 PLN; scope and projections must match governance. |
 | Website copy | Website Content Governance | Future website content governance document | HTML pages, metadata, sitemap | Old pages, blog posts, redirect stubs | High | Website publishes truth; it does not own doctrine. |
 | Blog/education | Content Governance | Future medical/content governance document | Blog pages, educational posts | Product doctrine, medical promises | High | Blog is educational projection, not product authority. |
 | Medical/health claims | Medical Content Governance | Future medical content governance document | Website, blog, forms | Unreviewed page copy | Critical | Any medical/oncology claim requires explicit review authority. |
@@ -199,7 +199,7 @@ Files should not remain ambiguous.
 
 The following areas require cleanup after this registry is accepted:
 
-1. Diagnostic visit price: 300 PLN vs 400 PLN.
+1. Diagnostic visit price: canonical value is now 300 PLN, but stale 400 PLN projections still exist.
 2. Constitution references vs actual Constitution files.
 3. Privacy/Formspree processor wording.
 4. Report as pattern vs report as proof/dashboard.
@@ -214,7 +214,7 @@ The following areas require cleanup after this registry is accepted:
 PRD may not begin until the following are resolved:
 
 1. Constitution state is verified and corrected.
-2. Pricing owner and canonical price are decided.
+2. Pricing owner and canonical price are decided; public projections must still be cleaned.
 3. Privacy/RODO governance owner is defined.
 4. Medical content governance owner is defined.
 5. Client-safe publication boundary is confirmed.
