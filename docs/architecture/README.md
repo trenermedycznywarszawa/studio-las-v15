@@ -33,9 +33,12 @@ All architecture decisions must preserve the core rule:
 1. `00_ARCHITECTURE_PRINCIPLES.md` — architectural boundaries and non-negotiable design principles.
 2. `01_METHOD_TO_OS_MAPPING.md` — translation from Studio Las Method to OS responsibilities.
 3. `02_DATA_MODEL_DECISIONS.md` — data model principles before schema changes.
-4. `03_CLIENT_SAFE_SURFACES.md` — what clients may see and what must stay trainer-only.
-5. `04_TRAINER_WORKSPACE.md` — trainer workspace logic and decision support.
-6. `05_REPORT_GENERATION_ARCHITECTURE.md` — how report architecture supports pattern recognition and next decisions.
+4. `03_ARCHITECTURAL_OBJECTS.md` — stable domain-level architectural objects before implementation.
+5. `04_CLIENT_SAFE_SURFACES.md` — what clients may see and what must stay trainer-only.
+6. `05_TRAINER_WORKSPACE.md` — trainer workspace logic as decision support, not a dashboard.
+7. `06_REPORT_GENERATION_ARCHITECTURE.md` — how report architecture supports pattern recognition and next decisions.
+8. `07_DECISION_ARCHITECTURE.md` — trainer-owned decisions, decision boundaries, and automation limits.
+9. `08_INFORMATION_FLOW.md` — how context, observations, signals, decisions, guidance, and reports move through the method.
 
 ## Architecture rule
 
@@ -71,3 +74,18 @@ Architecture must not pull Studio Las OS toward:
 - gamified engagement loops,
 - database-first product thinking,
 - screen-first product thinking.
+
+## Architecture completion rule
+
+The Architecture layer is ready for PRD only after all documents in the reading order have been reviewed together for:
+
+- consistency with Constitution,
+- consistency with Product,
+- absence of screen-first thinking,
+- absence of database-first thinking,
+- clear decision ownership,
+- clear client-safe boundaries,
+- clear information flow,
+- clear implementation constraints.
+
+Until that review is complete, do not move into PRD, schema design, UI design, or application code.
