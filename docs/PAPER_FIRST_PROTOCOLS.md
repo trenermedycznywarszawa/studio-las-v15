@@ -2,6 +2,16 @@
 
 This document defines the paper-first protocol model for Studio Las OS.
 
+This is an OS support document.
+
+It is subordinate to:
+
+1. `docs/constitution/README.md`
+2. `docs/product/README.md`
+3. `docs/product/00_PRODUCT_MODEL.md`
+4. `docs/product/06_HOME_GUIDANCE_SYSTEM.md`
+5. future Architecture documents
+
 The goal is not to create a new tracking app. The goal is to protect the Studio Las process:
 
 > Paper guides the morning.  
@@ -35,9 +45,8 @@ Paper is the instruction layer.
 The app should:
 
 - record whether the protocol was done,
-- record basic energy,
-- record basic symptoms,
-- allow one short optional note,
+- record only the selected signal approved by the trainer and architecture,
+- allow one short optional note when useful,
 - give the trainer useful signal,
 - prepare data for future 4/8/12-week reports.
 
@@ -108,16 +117,19 @@ Przerwij, jeśli pojawi się wyraźny wzrost bólu, zawroty głowy, nietypowy ob
 
 The digital check-in must take no more than 30-45 seconds.
 
-Required fields:
+This is a conceptual signal model, not a final UI specification and not an approved database schema.
+
+Possible fields:
 
 - `date`
 - `client_id`
-- `protocol_id`
-- `protocol_done`: yes/no
-- `energy_score`: 0-10
-- `symptom_score`: 0-10
-- `optional_note`
+- protocol or assignment reference
+- protocol done: yes/no
+- one selected subjective signal when useful
+- optional short note
 - `created_at`
+
+Energy and symptom scores may be used when they support the trainer decision and report pattern, but they must not become universal daily scoring by default.
 
 Do not add 15 questions.
 
@@ -125,7 +137,13 @@ Do not make it a life survey.
 
 Do not turn it into quantified-self tracking.
 
-## 7. UX shape of the digital check-in
+## 7. Conceptual UX shape of the digital check-in
+
+This section is conceptual.
+
+It is not a UI specification.
+
+The final UI must be approved by the Architecture layer and must preserve the rule that the morning starts on paper, not in the app.
 
 The check-in should feel like:
 
@@ -134,21 +152,18 @@ The check-in should feel like:
 - "Nie oceniaj idealnie. Wystarczy przybliżenie."
 - "Trener zobaczy wzorzec w kontekście całego procesu."
 
-Possible flow:
+Possible conceptual flow:
 
 1. Did you do the assigned paper protocol today?  
    Yes / No
 
-2. Energy today?  
-   0-10
+2. Selected signal for this protocol  
+   Only if the trainer has defined one.
 
-3. Symptoms today?  
-   0-10
-
-4. Optional note  
+3. Optional note  
    One short text field.
 
-5. Save.
+4. Save.
 
 No feed. No streak. No motivational score.
 
@@ -202,15 +217,14 @@ Before implementation, paper-first protocols must be compared with existing stru
 - `guidance_pilots`,
 - `reports`.
 
-Do not add new tables until a schema gap analysis confirms that existing structures are insufficient.
+Do not add new tables until Architecture and schema gap analysis confirm that existing structures are insufficient.
 
 ## 11. Report use
 
 Paper-first data should later help answer:
 
 - Was the protocol actually used?
-- Did energy change across the period?
-- Did symptom level change across the period?
+- Did the selected signal change across the period?
 - Was there a pattern around missed days?
 - Did the protocol reduce chaos or create friction?
 - What should the trainer change next?
@@ -219,14 +233,15 @@ The report should show patterns, not judge the client.
 
 ## 12. Implementation guardrail
 
-The first production version should be boring.
+Do not implement directly from this document.
 
-It should do only this:
+Use this document only after reading:
 
-- trainer assigns a paper protocol,
-- client receives simple instructions,
-- client records one short check-in,
-- trainer can review the signal,
-- report layer can later summarize it.
+1. `docs/constitution/README.md`
+2. `docs/product/README.md`
+3. `docs/product/06_HOME_GUIDANCE_SYSTEM.md`
+4. future Architecture documents
 
-Anything beyond that is out of scope until proven necessary.
+This document protects paper-first logic.
+
+It does not replace architecture.
