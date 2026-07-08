@@ -29,8 +29,8 @@ This document is subordinate to:
 1. `docs/constitution/README.md`
 2. `docs/product/README.md`
 3. `docs/product/02_STUDIO_LAS_METHOD.md`
-4. `docs/product/05_MEASUREMENT_SYSTEM.md`
-5. `docs/product/07_REPORT_SYSTEM.md`
+4. `docs/product/04_MEASUREMENT_SYSTEM.md`
+5. `docs/product/05_REPORT_SYSTEM.md`
 6. `docs/architecture/00_ARCHITECTURE_PRINCIPLES.md`
 7. `docs/architecture/01_METHOD_TO_OS_MAPPING.md`
 8. `docs/architecture/03_ARCHITECTURAL_OBJECTS.md`
@@ -78,12 +78,12 @@ Report generation must follow this order:
 2. Identify possible patterns.
 3. Trainer reviews and interprets.
 4. Trainer decides what is client-safe.
-5. Client-safe report is drafted.
+5. Client-safe report working version is prepared.
 6. Trainer approves or edits.
-7. Report is published.
+7. Report crosses the client-safe publication boundary.
 8. Report becomes part of process history.
 
-The system must not publish raw pattern detection as final report meaning.
+The system must not release raw pattern detection as final report meaning.
 
 ## Report pattern types
 
@@ -198,32 +198,32 @@ Studio Las OS may later assist with:
 - collecting candidate source material,
 - grouping signals by theme,
 - detecting missing report sections,
-- drafting trainer-facing summaries,
+- preparing trainer-facing summaries,
 - checking whether report claims have source support.
 
 Studio Las OS must not:
 
 - generate final report meaning automatically,
-- publish reports without trainer approval,
+- release reports without trainer approval,
 - diagnose,
 - promise outcomes,
 - compare clients,
 - create performance rankings,
 - present certainty where the trainer has uncertainty.
 
-## Report states
+## Report architecture states
 
 Architecturally, a report may pass through these states:
 
 1. Not started.
 2. Source material gathering.
 3. Trainer review.
-4. Draft.
+4. Working version.
 5. Trainer approved.
-6. Published to client.
+6. Released through the client-safe publication boundary.
 7. Archived as process history.
 
-These states are architectural states, not database status values yet.
+These are architecture states, not database status values or workflow requirements.
 
 ## Report visibility
 
@@ -233,15 +233,15 @@ These states are architectural states, not database status values yet.
 - raw notes,
 - hypotheses,
 - uncertainties,
-- draft interpretations,
+- working interpretations,
 - data quality concerns,
-- unpublished report versions.
+- report working versions before client-safe release.
 
 ### Client may see
 
-Only the published client-safe report.
+Only the final client-safe report released by the trainer.
 
-The client should not see draft reports, raw reasoning, hidden uncertainty notes, or technical source material.
+The client should not see working report versions, raw reasoning, hidden uncertainty notes, or technical source material.
 
 ## Report should support next decision
 
@@ -259,22 +259,22 @@ It should help decide:
 
 The report closes one loop and opens the next decision.
 
-## Minimum viable report architecture
+## First architecture slice: report generation
 
-A first version should support:
+The first architecture slice should define only these responsibilities:
 
 1. Selecting report-relevant observations.
-2. Showing candidate patterns to the trainer.
+2. Organizing candidate patterns for trainer review.
 3. Preserving trainer interpretation.
-4. Creating a client-safe draft area.
-5. Requiring trainer approval before publishing.
+4. Preserving a client-safe preparation boundary.
+5. Requiring trainer approval before client-safe release.
 6. Preserving the final report as process history.
 
 Anything beyond this must prove that it improves trainer interpretation or client clarity.
 
 ## Architecture test
 
-Before implementing any report feature, answer:
+Before defining any report capability, answer:
 
 1. What pattern does this help reveal?
 2. Which source material supports it?
