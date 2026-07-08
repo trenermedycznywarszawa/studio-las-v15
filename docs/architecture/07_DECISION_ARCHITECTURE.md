@@ -6,7 +6,7 @@ This document defines how decisions exist in Studio Las OS architecture.
 
 It does not define database schema.
 
-It does not define UI actions.
+It does not define interface actions.
 
 It does not define automation rules.
 
@@ -18,7 +18,7 @@ Studio Las OS may support decisions.
 
 Studio Las OS must not own decisions.
 
-The trainer owns meaning, interpretation, progression, regression, publication, and next-step judgment.
+The trainer owns meaning, interpretation, progression, regression, client-safe report release, and next-step judgment.
 
 ## Authority
 
@@ -27,10 +27,10 @@ This document is subordinate to:
 1. `docs/constitution/README.md`
 2. `docs/product/README.md`
 3. `docs/product/02_STUDIO_LAS_METHOD.md`
-4. `docs/product/04_COACHING_SYSTEM.md`
-5. `docs/product/05_MEASUREMENT_SYSTEM.md`
+4. `docs/product/03_COACHING_SYSTEM.md`
+5. `docs/product/04_MEASUREMENT_SYSTEM.md`
 6. `docs/product/06_HOME_GUIDANCE_SYSTEM.md`
-7. `docs/product/07_REPORT_SYSTEM.md`
+7. `docs/product/05_REPORT_SYSTEM.md`
 8. `docs/architecture/00_ARCHITECTURE_PRINCIPLES.md`
 9. `docs/architecture/01_METHOD_TO_OS_MAPPING.md`
 10. `docs/architecture/03_ARCHITECTURAL_OBJECTS.md`
@@ -49,7 +49,7 @@ A decision is not the same as:
 - a checkbox,
 - a notification,
 - an automated suggestion,
-- a UI state.
+- an interface state.
 
 Data may inform a decision.
 
@@ -70,7 +70,7 @@ The trainer makes the decision.
 - safety response,
 - referral or pause recommendation,
 - report meaning,
-- report publication,
+- client-safe report release,
 - next phase recommendation.
 
 ### Client owns
@@ -277,13 +277,13 @@ Possible decisions:
 - include pattern,
 - exclude pattern,
 - rewrite,
-- publish,
+- release to client,
 - hold as trainer-only,
 - use for next phase only.
 
 OS boundary:
 
-The OS must not publish reports without trainer approval.
+The OS must not release reports without trainer approval.
 
 ### 7. Access decision
 
@@ -296,7 +296,7 @@ Inputs may include:
 - active process status,
 - package relationship,
 - ongoing guidance,
-- administrative state,
+- administrative context,
 - safety and privacy context.
 
 Possible decisions:
@@ -343,7 +343,7 @@ A decision may be:
 - replaced,
 - closed.
 
-These are architectural states, not database fields yet.
+These are architecture states, not schema commitments.
 
 The method should allow learning.
 
@@ -361,13 +361,13 @@ Automation must not:
 - choose regression,
 - decide safety,
 - diagnose,
-- publish reports,
+- release reports to clients,
 - write client-facing meaning without trainer approval,
 - decide that a client succeeded or failed.
 
 ## Decision quality test
 
-Before implementing any decision-support capability, answer:
+Before defining any decision-support capability, answer:
 
 1. What decision is being supported?
 2. Who owns the decision?
@@ -381,6 +381,6 @@ Before implementing any decision-support capability, answer:
 
 ## Final rule
 
-If Studio Las OS cannot clearly name the trainer decision, the feature should not be built.
+If Studio Las OS cannot clearly name the trainer decision, the capability should not leave architecture.
 
 If Studio Las OS starts making the decision, the architecture has failed.

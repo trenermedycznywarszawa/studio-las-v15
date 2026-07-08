@@ -36,9 +36,9 @@ This document is subordinate to:
 1. `docs/constitution/README.md`
 2. `docs/product/README.md`
 3. `docs/product/02_STUDIO_LAS_METHOD.md`
-4. `docs/product/04_COACHING_SYSTEM.md`
+4. `docs/product/03_COACHING_SYSTEM.md`
 5. `docs/product/06_HOME_GUIDANCE_SYSTEM.md`
-6. `docs/product/07_REPORT_SYSTEM.md`
+6. `docs/product/05_REPORT_SYSTEM.md`
 7. `docs/architecture/00_ARCHITECTURE_PRINCIPLES.md`
 8. `docs/architecture/01_METHOD_TO_OS_MAPPING.md`
 9. `docs/architecture/02_DATA_MODEL_DECISIONS.md`
@@ -178,7 +178,7 @@ The app must not replace the paper guide.
 
 Role:
 
-The client performs the assigned guidance away from the screen.
+The client performs the assigned guidance offline, outside the app.
 
 Examples:
 
@@ -275,7 +275,7 @@ Examples:
 
 Architectural rule:
 
-The report is published only after trainer review.
+The report crosses the client-safe publication boundary only after trainer review.
 
 Raw data and private reasoning are not client-safe by default.
 
@@ -327,7 +327,7 @@ Trainer-only information may become client-safe only when:
 3. It removes private reasoning.
 4. It avoids shame, alarm, and overinterpretation.
 5. It supports action, clarity, or understanding.
-6. It is published intentionally.
+6. It crosses the client-safe publication boundary intentionally.
 
 ### Client signal to trainer review
 
@@ -339,7 +339,7 @@ The client should not be pushed to over-monitor themselves.
 
 ### Report back to process
 
-A published report becomes part of process history.
+A client-safe released report becomes part of process history.
 
 It should inform future decisions, but not lock the process into a fixed path.
 
@@ -362,7 +362,7 @@ The following should not flow to client-facing surfaces by default:
 The following should not flow into architecture without justification:
 
 - data collected only because it is easy,
-- fields created for future speculation,
+- data points created for future speculation,
 - metrics that do not support a trainer decision,
 - signals that increase client anxiety,
 - dashboards that do not change action.
@@ -380,16 +380,16 @@ Information flow has failed if:
 - the system rewards more recording rather than better guidance,
 - the product begins to feel like a fitness app or wellness tracker.
 
-## Minimum viable information flow
+## First architecture slice: information flow
 
-A first version should support only:
+The first architecture slice should define only these responsibilities:
 
 1. Trainer assigns paper-first guidance.
 2. Client records a minimal signal later.
 3. Trainer reviews signals in context.
 4. Trainer records the next decision.
 5. Selected information supports report preparation.
-6. Trainer publishes a client-safe report.
+6. Trainer releases a client-safe report.
 
 This is enough for the method.
 
@@ -397,7 +397,7 @@ Everything else must earn its place.
 
 ## Architecture test
 
-Before implementing any information flow, answer:
+Before defining any information flow, answer:
 
 1. Where does this information originate?
 2. Who owns its meaning?
@@ -405,7 +405,7 @@ Before implementing any information flow, answer:
 4. Does it need transformation before the client sees it?
 5. Does it support a trainer decision?
 6. Does it support a future report pattern?
-7. Does it increase screen time?
+7. Does it increase app time?
 8. Does it create self-monitoring pressure?
 9. What should not flow?
 10. What is the smallest safe version?

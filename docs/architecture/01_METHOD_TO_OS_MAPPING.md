@@ -256,7 +256,7 @@ The OS may provide:
 - related session notes,
 - related home guidance,
 - report-ready pattern candidates,
-- trainer-only interpretation field.
+- trainer-only interpretation responsibility.
 
 ### OS boundary
 
@@ -392,11 +392,11 @@ These are architectural concepts, not automatic table names.
 
 Do not create tables directly from this list.
 
-First compare them with existing structures.
+First compare them with current-state implementation audit inputs.
 
-## Existing likely structures to reuse
+## Current-state implementation audit inputs
 
-Before new schema work, inspect whether these existing structures already cover the need:
+Before any future schema proposal, treat the current OS implementation structures as audit inputs to review later:
 
 - `clients`,
 - `client_intakes`,
@@ -412,7 +412,9 @@ Before new schema work, inspect whether these existing structures already cover 
 - `guidance_events`,
 - `reports`.
 
-Reuse is preferred unless it creates semantic confusion or unsafe visibility.
+This list is not an architecture principle, not a preferred future schema, and not an instruction to preserve or extend any table.
+
+Reuse may be appropriate only when it preserves method meaning, visibility boundaries, and process safety.
 
 ## Minimum architecture path
 

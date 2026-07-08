@@ -29,9 +29,9 @@ This document is subordinate to:
 1. `docs/constitution/README.md`
 2. `docs/product/README.md`
 3. `docs/product/02_STUDIO_LAS_METHOD.md`
-4. `docs/product/04_COACHING_SYSTEM.md`
-5. `docs/product/05_MEASUREMENT_SYSTEM.md`
-6. `docs/product/07_REPORT_SYSTEM.md`
+4. `docs/product/03_COACHING_SYSTEM.md`
+5. `docs/product/04_MEASUREMENT_SYSTEM.md`
+6. `docs/product/05_REPORT_SYSTEM.md`
 7. `docs/architecture/00_ARCHITECTURE_PRINCIPLES.md`
 8. `docs/architecture/01_METHOD_TO_OS_MAPPING.md`
 9. `docs/architecture/03_ARCHITECTURAL_OBJECTS.md`
@@ -55,21 +55,21 @@ It should support:
 
 It should not optimize for:
 
-- more screen time,
-- more fields,
+- more app time,
+- more data capture,
 - visual density,
-- live coaching through the interface,
+- live coaching through the OS,
 - client comparison,
 - performance ranking,
 - automated progression.
 
 ## Trainer workspace is decision support
 
-Every workspace element must connect to a trainer decision.
+Every trainer-facing capability must connect to a trainer decision.
 
-If an element only displays information but does not improve a trainer decision, it is architectural noise.
+If a capability only displays information but does not improve a trainer decision, it is architectural noise.
 
-If an element encourages the trainer to collect more data without changing the decision quality, it should not be built.
+If a capability encourages the trainer to collect more data without changing the decision quality, it should not move forward.
 
 ## Core trainer decisions supported
 
@@ -104,7 +104,7 @@ The workspace may surface:
 - warnings or constraints,
 - unfinished trainer decisions.
 
-The workspace must not create a screen that dominates the session.
+The workspace responsibility must not dominate the session.
 
 ### 3. Hypothesis review
 
@@ -129,7 +129,7 @@ Question:
 
 > What should change in the client's paper-first home guidance?
 
-The workspace may show:
+The workspace may support access to:
 
 - assigned guidance,
 - recent completion signal,
@@ -201,11 +201,11 @@ It may contain:
 - hypotheses,
 - uncertainty,
 - risk reasoning,
-- draft report content,
+- report working material,
 - internal interpretation,
 - data quality notes.
 
-None of this becomes client-facing unless intentionally rewritten, approved, and published through a client-safe surface.
+None of this becomes client-facing unless intentionally rewritten, approved, and moved through a client-safe publication boundary.
 
 ## Quiet workspace rule
 
@@ -230,23 +230,23 @@ Do not build the trainer workspace as:
 - a compliance scoreboard,
 - a live session control panel.
 
-## Minimum viable workspace architecture
+## First architecture slice: trainer workspace
 
-A first version should support only:
+The first architecture slice should define only these responsibilities:
 
-1. One client context view.
+1. One trainer-facing client context capability.
 2. One current process focus.
-3. One current hypothesis or trainer note area.
+3. One current hypothesis or trainer note responsibility.
 4. Recent selected signals.
-5. Current home guidance state.
-6. A place to record the next trainer decision.
+5. Current home guidance architecture state.
+6. A responsibility for recording the next trainer decision.
 7. Report preparation notes.
 
 Anything more must prove that it improves a trainer decision.
 
 ## Architecture test
 
-Before implementing any trainer workspace element, answer:
+Before defining any trainer workspace capability, answer:
 
 1. Which trainer decision does this support?
 2. What signal or context is needed?
@@ -255,7 +255,7 @@ Before implementing any trainer workspace element, answer:
 5. Does this reduce or increase trainer cognitive load?
 6. Does this support a future report pattern?
 7. Can an existing object represent it?
-8. What should not be shown here?
+8. What should remain outside this capability?
 9. What is the smallest quiet version?
 
 ## Final rule

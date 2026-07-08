@@ -47,7 +47,7 @@ Every new data idea must pass this sequence:
 9. Can an existing structure represent it safely?
 10. Only then: where should it persist?
 
-If the answer fails before step 10, do not create a field, table, UI element, or storage path.
+If the answer fails before step 10, do not create an implementation artifact, schema object, interface element, or storage path.
 
 ## Architectural objects vs database objects
 
@@ -210,7 +210,7 @@ Boundary:
 
 Measurement must not become quantified-self tracking.
 
-No field should exist because it is merely interesting.
+No data point should exist because it is merely interesting.
 
 ### 8. Trainer Interpretation
 
@@ -425,7 +425,7 @@ Use for:
 - assigned instructions,
 - short explanations,
 - calm summaries,
-- published reports,
+- client-safe released reports,
 - selected process reflections written for the client.
 
 ### Shared operational
@@ -473,11 +473,11 @@ Append-only is preferred when history matters:
 - client signals,
 - trainer decisions,
 - hypothesis changes,
-- published report decisions.
+- client-safe report release decisions.
 
-### Immutable after publication
+### Immutable after client-safe release
 
-Some information should become immutable after publication or decision:
+Some information should become immutable after client-safe release or decision:
 
 - final reports,
 - final decision summaries,
@@ -503,9 +503,9 @@ Before adding data, ask:
 
 If the answer is weak, do not store it.
 
-## Reuse before creation
+## Current-state implementation audit inputs
 
-The current system already contains data structures for:
+The current system already contains implementation structures for:
 
 - clients,
 - intakes,
@@ -517,7 +517,11 @@ The current system already contains data structures for:
 - guidance events,
 - reports.
 
-Architecture should prefer reuse when reuse preserves meaning and safety.
+These structures are audit inputs for future schema decisions.
+
+They are not architecture principles and not a preferred future schema.
+
+Architecture may prefer reuse only when reuse preserves meaning and safety.
 
 Create new structures only when:
 
@@ -532,15 +536,15 @@ Create new structures only when:
 Future schema work must follow these rules:
 
 1. Do not create tables from document headings.
-2. Do not create fields because a UI might need them.
+2. Do not create data points because an interface might request them.
 3. Do not create daily tracking structures by default.
 4. Do not duplicate existing concepts without a gap analysis.
 5. Do not expose trainer-only data through client-safe views.
 6. Do not store sensitive data in URLs, logs, or public files.
 7. Prefer small, testable, reversible schema changes.
-8. Preserve `localStorage` fallback until a separate migration plan removes it.
+8. Treat the existing `localStorage` fallback as a current-state constraint for a future migration plan, not as a preferred future persistence model.
 9. Treat access revocation as part of the data model.
-10. Treat published reports and historical signals as audit-sensitive.
+10. Treat client-safe released reports and historical signals as audit-sensitive.
 
 ## Architecture decision record requirement
 
@@ -562,7 +566,7 @@ Every future schema proposal must include an architecture decision record answer
 Avoid:
 
 - table-per-idea design,
-- dashboard-first fields,
+- dashboard-first data capture,
 - universal daily scoring,
 - hidden compliance tracking,
 - broad wellness questionnaires,
