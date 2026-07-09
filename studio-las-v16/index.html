@@ -398,6 +398,63 @@
       background:var(--cedar);
     }
 
+    .situation-grid {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+      gap:18px;
+      margin-top:34px;
+    }
+    .situation-card {
+      padding:26px;
+      background:var(--white);
+      border:1px solid var(--line);
+      box-shadow:0 14px 38px rgba(22,18,14,.07);
+    }
+    .situation-card p {
+      margin-top:12px;
+      color:var(--muted);
+    }
+    .outcome-panel {
+      display:grid;
+      grid-template-columns:minmax(0, .88fr) minmax(280px, 1.12fr);
+      gap:32px;
+      margin-top:26px;
+      padding:30px;
+      color:var(--white);
+      background:var(--forest);
+      border:1px solid var(--line-dark);
+      box-shadow:var(--shadow);
+    }
+    .outcome-panel p,
+    .outcome-list li {
+      color:rgba(255,255,255,.8);
+    }
+    .outcome-list {
+      display:grid;
+      gap:10px;
+      list-style:none;
+    }
+    .outcome-list li {
+      position:relative;
+      padding-left:24px;
+    }
+    .outcome-list li::before {
+      content:"";
+      position:absolute;
+      left:0;
+      top:.72em;
+      width:10px;
+      height:10px;
+      background:var(--cedar);
+    }
+    .method-note {
+      margin-top:24px;
+      padding:18px;
+      color:var(--ink) !important;
+      background:var(--cream);
+      border-left:4px solid var(--cedar);
+    }
+
     .practice-layout {
       display:grid;
       grid-template-columns:minmax(0, .82fr) minmax(360px, 1.18fr);
@@ -611,6 +668,53 @@
       color:var(--cedar);
     }
 
+    .guidance-grid {
+      display:grid;
+      grid-template-columns:minmax(0, .86fr) minmax(320px, 1.14fr);
+      gap:52px;
+      align-items:start;
+    }
+    .support-panel {
+      padding:30px;
+      color:var(--white);
+      background:var(--forest);
+      border:1px solid var(--line-dark);
+      box-shadow:var(--shadow);
+    }
+    .support-panel p {
+      margin-top:14px;
+      color:rgba(255,255,255,.78);
+    }
+    .support-list {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:24px;
+      list-style:none;
+    }
+    .support-list li {
+      padding:18px;
+      background:var(--white);
+      border:1px solid var(--line);
+      color:var(--muted);
+    }
+    .after-steps {
+      display:grid;
+      grid-template-columns:repeat(auto-fit, minmax(220px, 1fr));
+      gap:18px;
+      margin-top:34px;
+    }
+    .after-step {
+      padding:24px;
+      background:var(--white);
+      border:1px solid var(--line);
+      box-shadow:0 14px 38px rgba(22,18,14,.07);
+    }
+    .after-step p {
+      margin-top:12px;
+      color:var(--muted);
+    }
+
     .place-grid,
     .about-grid {
       display:grid;
@@ -717,10 +821,12 @@
       .problem-grid,
       .practice-layout,
       .sales-block,
+      .guidance-grid,
       .place-grid,
       .about-grid,
       .faq-grid,
-      .section-head {
+      .section-head,
+      .outcome-panel {
         grid-template-columns:1fr;
       }
       .practice-intro {
@@ -780,9 +886,13 @@
       }
       .hero-facts,
       .problem-note,
+      .situation-card,
+      .outcome-panel,
       .fit-box,
       .price-panel,
-      .program-box {
+      .program-box,
+      .support-panel,
+      .after-step {
         padding:22px;
       }
       .practice-step {
@@ -793,7 +903,10 @@
       .visual img {
         min-height:210px;
       }
-      .fit-grid {
+      .fit-grid,
+      .situation-grid,
+      .support-list,
+      .after-steps {
         grid-template-columns:1fr;
       }
       .week-strip {
@@ -842,7 +955,7 @@
       <li><a href="#miejsce">Miejsce</a></li>
       <li><a href="#faq">FAQ</a></li>
       <li><a href="./blog.html">Blog</a></li>
-      <li><a class="nav-cta" href="./ankieta-kontakt.html#ankieta">Zacznij od ankiety</a></li>
+      <li><a class="nav-cta" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy Studio Las jest dla Ciebie</a></li>
     </ul>
     <button class="hamburger" id="hamburger" type="button" aria-label="Otwórz menu" aria-expanded="false" aria-controls="mobileMenu">
       <span></span><span></span><span></span>
@@ -856,7 +969,7 @@
     <a href="#miejsce">Miejsce</a>
     <a href="#faq">FAQ</a>
     <a href="./blog.html">Blog</a>
-    <a href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+    <a href="./ankieta-kontakt.html#ankieta">Sprawdź, czy Studio Las jest dla Ciebie</a>
   </div>
 
   <main>
@@ -872,7 +985,7 @@
             Jeśli ciało zaczęło Cię ograniczać, najpierw trzeba zrozumieć dlaczego. W Studio Las zaczynamy od rozpoznania sytuacji ruchowej, a dopiero potem spokojnie budujemy trening 1:1: bez przypadkowych ćwiczeń, presji i udowadniania formy.
           </p>
           <div class="hero-actions">
-            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy Studio Las jest dla Ciebie</a>
             <a class="btn btn-outline" href="#wspolpraca">Zobacz, jak wygląda współpraca</a>
           </div>
         </div>
@@ -883,43 +996,50 @@
         </ul>
       </div>
     </section>
-
-    <section class="section" id="czym-jest">
-      <div class="container problem-grid">
-        <div class="problem-note reveal">
-          <p>Studio Las nie jest miejscem, gdzie przychodzisz dostać zestaw ćwiczeń.</p>
-        </div>
-        <div class="reveal">
-          <p class="eyebrow">Czym jest Studio Las</p>
-          <h2>Najpierw rozumiemy sytuację. Dopiero potem trenujemy.</h2>
+    <section class="section cream" id="z-czym-przychodzisz">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Z czym przychodzisz?</p>
+            <h2>Nie musisz wiedzieć, jaki trening jest dla Ciebie najlepszy.</h2>
+          </div>
           <p class="section-lead">
-            To prywatna praca z człowiekiem, nie sprzedaż planu z listą ćwiczeń. Najpierw sprawdzamy, dlaczego ciało przestało działać spokojnie: co ogranicza ruch, co wymaga ostrożności i jaki zakres pracy jest bezpieczny.
+            Wystarczy, że wiesz, co dziś jest dla Ciebie trudne. Pierwsza rozmowa i wizyta pomagają nazwać sytuację bez zgadywania, presji i gotowych etykiet.
           </p>
-          <ul class="problem-list section-lead">
-            <li>metoda przed ćwiczeniami,</li>
-            <li>zrozumienie przed intensywnością,</li>
-            <li>prowadzenie trenera przed narzędziami,</li>
-            <li>jasność i bezpieczeństwo przed wynikiem na pokaz.</li>
-          </ul>
         </div>
-      </div>
-    </section>
-
-    <section class="section cream" id="problem">
-      <div class="container problem-grid">
-        <div class="problem-note reveal">
-          <p>To nie musi być brak motywacji. Czasem ciało po prostu przestało dawać poczucie bezpieczeństwa.</p>
+        <div class="situation-grid">
+          <article class="situation-card reveal">
+            <h3>Ból i niepewność ruchu</h3>
+            <p>Kolano, plecy, biodro albo bark dają o sobie znać. Nie wiesz, co możesz robić, a czego lepiej unikać.</p>
+          </article>
+          <article class="situation-card reveal">
+            <h3>Powrót po przerwie</h3>
+            <p>Kiedyś był ruch. Teraz jest sztywność, zmęczenie i poczucie, że trzeba zacząć od nowa, ale mądrze.</p>
+          </article>
+          <article class="situation-card reveal">
+            <h3>Ciało po leczeniu lub trudnym okresie</h3>
+            <p>Chcesz wrócić do sprawności spokojnie, bez presji, porównywania i przypadkowego przeciążania.</p>
+          </article>
+          <article class="situation-card reveal">
+            <h3>Chcę zacząć po 40 bez chaosu</h3>
+            <p>Nie szukasz siłownianej motywacji. Chcesz zrozumieć swoje ciało i wiedzieć, od czego zacząć.</p>
+          </article>
         </div>
-        <div class="reveal">
-          <p class="eyebrow">Rozpoznanie</p>
-          <h2>Jeśli to brzmi znajomo, zaczniemy od uporządkowania sytuacji.</h2>
-          <ul class="problem-list section-lead">
-            <li>Boisz się, że jedno źle dobrane ćwiczenie znowu cofnie Cię o kilka tygodni.</li>
-            <li>Nie wiesz, czy ćwiczyć mimo bólu, czy odpuścić i czekać.</li>
-            <li>Masz wrażenie, że ciało wymaga coraz więcej ostrożności w zwykłych sprawach.</li>
-            <li>Chcesz wrócić do ruchu, ale nie chcesz trafić w hałas, presję i przypadkowe ćwiczenia.</li>
-            <li>Nie potrzebujesz presji, tylko spokojnego prowadzenia i jasnego kierunku.</li>
-          </ul>
+        <div class="outcome-panel reveal">
+          <div>
+            <p class="eyebrow">Po co ten proces?</p>
+            <h3>Po kilku tygodniach celem nie jest tylko lepszy trening.</h3>
+          </div>
+          <div>
+            <p>Celem jest to, żeby zwykłe ruchy były prostsze, spokojniejsze i bardziej przewidywalne.</p>
+            <ul class="outcome-list">
+              <li>łatwiej wstać z krzesła,</li>
+              <li>pewniej schylić się po rzecz z podłogi,</li>
+              <li>spokojniej wejść po schodach,</li>
+              <li>mniej bać się ruchu,</li>
+              <li>lepiej rozumieć, co ciało próbuje powiedzieć.</li>
+            </ul>
+          </div>
         </div>
       </div>
     </section>
@@ -927,13 +1047,14 @@
     <section class="section" id="wspolpraca">
       <div class="container practice-layout">
         <div class="practice-intro reveal">
-          <p class="eyebrow">Jak wygląda współpraca w praktyce</p>
+          <p class="eyebrow">Jak pracujemy w Studio Las</p>
           <h2>Krótka ankieta, pierwsza wizyta, 12 tygodni pracy i jasne podsumowanie.</h2>
           <p class="section-lead">
             Nie kupujesz przypadkowych treningów. Przechodzisz przez prostą sekwencję: krótka ankieta, Pierwsza Wizyta Diagnostyczna za 300 zł, ewentualna 12-tygodniowa praca za 3600 zł oraz podsumowanie, które porządkuje dalszy kierunek.
           </p>
+          <p class="method-note">Papier nadaje kierunek porankowi. Trener pomaga zrozumieć znaczenie sygnałów. Panel zapisuje najważniejsze obserwacje. Raport pokazuje wzór po czasie.</p>
           <div class="cta-row">
-            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy Studio Las jest dla Ciebie</a>
           </div>
         </div>
         <div class="practice-steps">
@@ -958,7 +1079,7 @@
             <div>
               <span class="step-kicker">Krok 2</span>
               <h3>Pierwsza Wizyta Diagnostyczna - 300 zł</h3>
-              <p>Podczas spotkania poznajemy Twój punkt startowy: rozmowa, analiza składu ciała, proste testy ruchowe i ocena tego, co dziś najbardziej ogranicza Twoją sprawność.</p>
+              <p>Podczas spotkania poznajemy Twój punkt startowy: rozmowa, proste testy ruchowe i ocena tego, co dziś najbardziej ogranicza Twoją sprawność. Jeśli ma to sens, wykonujemy prosty pomiar składu ciała jako dodatkowy punkt odniesienia.</p>
               <p class="credit-note">Jeżeli w ciągu 7 dni zdecydujesz się kontynuować pracę, koszt pierwszej wizyty zostanie odliczony od ceny programu.</p>
             </div>
             <div class="visual">
@@ -999,50 +1120,13 @@
         </div>
       </div>
     </section>
-
-    <section class="section mist" id="dla-kogo">
-      <div class="container">
-        <div class="section-head reveal">
-          <div>
-          <p class="eyebrow">Dla kogo / dla kogo nie</p>
-          <h2>Dobry filtr oszczędza czas i nerwy.</h2>
-          </div>
-          <p class="section-lead">
-            Studio Las najlepiej działa wtedy, kiedy potrzebujesz spokojnego prowadzenia 1:1 i jesteś gotowy na minimum kilka tygodni pracy.
-          </p>
-        </div>
-        <div class="fit-grid">
-          <article class="fit-box reveal">
-            <h3>Dla Ciebie, jeśli:</h3>
-            <ul class="check-list">
-              <li>masz 40+ i ból lub spadek sprawności zaczął ograniczać codzienne życie,</li>
-              <li>jesteś po kontuzji albo dłuższej przerwie,</li>
-              <li>nie lubisz zwykłej siłowni,</li>
-              <li>chcesz spokojnego prowadzenia 1:1,</li>
-              <li>jesteś gotowy na minimum kilka tygodni pracy.</li>
-            </ul>
-          </article>
-          <article class="fit-box not reveal">
-            <h3>Nie dla Ciebie, jeśli:</h3>
-            <ul class="check-list">
-              <li>szukasz taniego karnetu,</li>
-              <li>chcesz szybkiej metamorfozy na lato,</li>
-              <li>oczekujesz wycisku zamiast procesu,</li>
-              <li>interesuje Cię tylko pojedynczy trening bez dalszej pracy,</li>
-              <li>nie chcesz brać żadnej odpowiedzialności między spotkaniami.</li>
-            </ul>
-          </article>
-        </div>
-      </div>
-    </section>
-
     <section class="section" id="pierwsza-wizyta">
       <div class="container sales-block">
         <aside class="price-panel reveal">
           <p class="eyebrow">Pierwszy krok</p>
           <h2>Pierwsza Wizyta Diagnostyczna</h2>
           <div class="price">300 zł <small>Ocena funkcjonalna, rozpoznanie sytuacji ruchowej i rekomendacja dalszego kroku.</small></div>
-          <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+          <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy Studio Las jest dla Ciebie</a>
         </aside>
         <div class="sales-copy reveal">
           <p>
@@ -1076,7 +1160,7 @@
             Jeżeli po pierwszej wizycie uznamy, że dalsza współpraca ma sens, zaczynamy 12 tygodni pracy 1:1: jedna sesja tygodniowo w Studio Las, prosty plan między spotkaniami i regularna ocena postępów.
           </p>
           <ul class="check-list">
-            <li>mniej bólu w codziennych czynnościach,</li>
+            <li>mniej niepewności przy codziennych czynnościach,</li>
             <li>większa pewność przy schylaniu, wstawaniu i chodzeniu,</li>
             <li>odbudowa podstawowej siły i kontroli ruchu,</li>
             <li>spokojne tempo bez presji i bez chaosu siłowni,</li>
@@ -1089,9 +1173,73 @@
           <div class="price">3600 zł</div>
           <p class="section-lead">12 tygodni prowadzenia, nie zakup przypadkowych treningów.</p>
           <div class="cta-row">
-            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Zacznij od krótkiej ankiety</a>
+            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Wypełnij krótką ankietę przed pierwszą wizytą</a>
           </div>
         </aside>
+      </div>
+    </section>
+
+    <section class="section cream" id="prowadzenie">
+      <div class="container guidance-grid">
+        <div class="reveal">
+          <p class="eyebrow">Prowadzenie między spotkaniami</p>
+          <h2>Studio Las nie kończy się w momencie wyjścia ze studia.</h2>
+          <p class="section-lead">
+            W trakcie programu możesz korzystać z prostego panelu klienta, który pomaga utrzymać kierunek między spotkaniami. Nie służy do rywalizacji, liczenia serii ani zbierania punktów. Ma jedno zadanie: pomóc Ci wiedzieć, co robić dalej.
+          </p>
+          <p class="method-note">Najważniejsze decyzje nadal podejmuje trener. Panel nie zastępuje relacji, tylko porządkuje proces.</p>
+        </div>
+        <div class="reveal">
+          <aside class="support-panel">
+            <p class="eyebrow">Panel klienta</p>
+            <h3>Proste wsparcie dla 12-tygodniowego procesu</h3>
+            <p>Panel pomaga zapisać ustalenia, utrzymać spokojny rytm pracy i zebrać informacje, które później pomagają przygotować raport z programu.</p>
+          </aside>
+          <ul class="support-list">
+            <li>krótkie wskazówki tygodniowe,</li>
+            <li>plan domowy między sesjami,</li>
+            <li>proste przypomnienia ruchowe,</li>
+            <li>krótkie podsumowania spotkań,</li>
+            <li>informacje do raportu 12-tygodniowego,</li>
+            <li>większy porządek między wizytami.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section mist" id="dla-kogo">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+          <p class="eyebrow">Dla kogo / dla kogo nie</p>
+          <h2>Dobry filtr oszczędza czas i nerwy.</h2>
+          </div>
+          <p class="section-lead">
+            Studio Las najlepiej działa wtedy, kiedy potrzebujesz spokojnego prowadzenia 1:1 i jesteś gotowy na minimum kilka tygodni pracy.
+          </p>
+        </div>
+        <div class="fit-grid">
+          <article class="fit-box reveal">
+            <h3>Dla Ciebie, jeśli:</h3>
+            <ul class="check-list">
+              <li>masz 40+ i ból lub spadek sprawności zaczął ograniczać codzienne życie,</li>
+              <li>jesteś po kontuzji albo dłuższej przerwie,</li>
+              <li>nie lubisz zwykłej siłowni,</li>
+              <li>chcesz spokojnego prowadzenia 1:1,</li>
+              <li>jesteś gotowy na minimum kilka tygodni pracy.</li>
+            </ul>
+          </article>
+          <article class="fit-box not reveal">
+            <h3>Nie dla Ciebie, jeśli:</h3>
+            <ul class="check-list">
+              <li>szukasz taniego karnetu,</li>
+              <li>chcesz szybkiego efektu na pokaz,</li>
+              <li>oczekujesz wycisku zamiast procesu,</li>
+              <li>interesuje Cię tylko pojedynczy trening bez dalszej pracy,</li>
+              <li>nie chcesz brać żadnej odpowiedzialności między spotkaniami.</li>
+            </ul>
+          </article>
+        </div>
       </div>
     </section>
 
@@ -1127,7 +1275,7 @@
           <p class="eyebrow">O Damianie</p>
           <h2>Spokojne prowadzenie procesu, nie losowanie ćwiczeń.</h2>
           <p class="section-lead">
-            Jestem trenerem medycznym po AWF i studiach podyplomowych z fizjoterapii w sporcie. Prowadzę osoby, które chcą wrócić do ruchu po bólu, kontuzji, przerwie albo utracie zaufania do ciała. Najważniejsze jest dla mnie tempo, w którym ciało odzyskuje bezpieczeństwo, a nie efektowny trening na pokaz.
+            Jestem trenerem medycznym po AWF i studiach podyplomowych z fizjoterapii w sporcie. Prowadzę osoby, które chcą wrócić do ruchu po bólu, kontuzji, przerwie albo utracie zaufania do ciała. Przez lata pracy najważniejsze okazało się nie to, żeby dać komuś trudniejszy trening, ale żeby dobrze zobaczyć, od czego ta osoba powinna zacząć.
           </p>
           <ul class="check-list">
             <li>lata doświadczenia w treningu medycznym, terapii ruchem i pracy 1:1,</li>
@@ -1138,8 +1286,44 @@
             <li>brak presji, popisu i treningu pod ego.</li>
           </ul>
           <p class="about-note">
-            Najważniejsze pytanie nie brzmi: ile wyciśniesz? Brzmi: czy po kilku tygodniach zwykłe ruchy są prostsze, spokojniejsze i bardziej przewidywalne.
+            Czasem nie potrzeba więcej motywacji. Potrzeba spokojniejszego początku, lepszego planu i kogoś, kto pomoże odróżnić sygnał ciała od lęku przed ruchem.
           </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section mist" id="po-ankiecie">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+            <p class="eyebrow">Co dzieje się po ankiecie?</p>
+            <h2>Pierwszy kontakt ma zmniejszyć presję, nie ją zwiększyć.</h2>
+          </div>
+          <p class="section-lead">
+            Ankieta nie jest zobowiązaniem do programu. Pomaga sprawdzić, czy pierwsza wizyta w Studio Las ma sens i czy jestem właściwą osobą do pracy z Tobą.
+          </p>
+        </div>
+        <div class="after-steps">
+          <article class="after-step reveal">
+            <span class="step-kicker">Krok 1</span>
+            <h3>Wypełniasz krótką ankietę</h3>
+            <p>Piszesz, z czym przychodzisz, co jest dla Ciebie trudne i czego chcesz uniknąć.</p>
+          </article>
+          <article class="after-step reveal">
+            <span class="step-kicker">Krok 2</span>
+            <h3>Oddzwaniam lub odpisuję</h3>
+            <p>Sprawdzamy, czy pierwsza wizyta w Studio Las ma sens i czy jestem właściwą osobą do pracy z Tobą.</p>
+          </article>
+          <article class="after-step reveal">
+            <span class="step-kicker">Krok 3</span>
+            <h3>Umawiamy pierwszą wizytę diagnostyczną</h3>
+            <p>Na miejscu robimy spokojny wywiad, proste testy ruchowe i ustalamy, od czego zacząć.</p>
+          </article>
+          <article class="after-step reveal">
+            <span class="step-kicker">Krok 4</span>
+            <h3>Dopiero potem decydujesz, co dalej</h3>
+            <p>Nie musisz od razu kupować programu. Pierwsza wizyta ma pomóc podjąć rozsądną decyzję.</p>
+          </article>
         </div>
       </div>
     </section>
@@ -1156,7 +1340,7 @@
         <div class="faq-list reveal">
           <details>
             <summary>Czy pierwsza wizyta jest treningiem?</summary>
-            <p>Nie. To spotkanie diagnostyczne: rozmowa, pomiar Tanita, proste testy ruchowe i omówienie sensownych dalszych kroków.</p>
+            <p>Nie. To spotkanie diagnostyczne: rozmowa, proste testy ruchowe i omówienie sensownych dalszych kroków. Jeśli ma to sens, pomiar składu ciała jest tylko dodatkowym punktem odniesienia.</p>
           </details>
           <details>
             <summary>Czy muszę być w formie?</summary>
@@ -1193,10 +1377,10 @@
     <section class="final-cta" id="ankieta">
       <div class="container reveal">
         <p class="eyebrow">Pierwszy krok</p>
-        <h2>Nie musisz od razu wiedzieć, jaki trening jest dla Ciebie najlepszy.</h2>
-        <p class="section-lead">Od tego jest pierwsza wizyta.</p>
+        <h2>Sprawdź, czy Studio Las jest dla Ciebie.</h2>
+        <p class="section-lead">Wypełnij krótką ankietę. Jeśli pierwsza wizyta ma sens, spokojnie ustalimy następny krok.</p>
         <div class="cta-row">
-          <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+          <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy Studio Las jest dla Ciebie</a>
         </div>
       </div>
     </section>
