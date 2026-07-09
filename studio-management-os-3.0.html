@@ -1731,6 +1731,37 @@
       twelveWeeks: "Raport końcowy",
       continuation: "Plan dalszego prowadzenia"
     };
+    const PRD001_REPORT_SOURCE = "prd001_manual_snapshot";
+    const PRD001_REPORT_TYPE = "twelveWeeks";
+    const PRD001_REPORT_AUDIENCE = "trainer_internal";
+    const PRD001_REPORT_STATUSES = ["draft", "ready_for_review", "approved"];
+    const PRD001_REPORT_FIELDS = [
+      {
+        key: "processSummary",
+        label: "Process summary",
+        helper: "Write the process arc in client-safe wording after trainer review."
+      },
+      {
+        key: "keyPatterns",
+        label: "Key patterns",
+        helper: "Name the pattern the trainer sees. Do not turn numbers into judgment."
+      },
+      {
+        key: "selectedEvidence",
+        label: "Selected evidence",
+        helper: "Include only evidence the trainer chooses as useful context."
+      },
+      {
+        key: "trainerInterpretation",
+        label: "Trainer interpretation",
+        helper: "The trainer gives meaning. Keep it calm and bounded."
+      },
+      {
+        key: "nextRecommendation",
+        label: "Next recommendation",
+        helper: "Describe the next trainer-led decision or direction."
+      }
+    ];
     const EXERCISE_CATEGORIES = ["Przygotowanie ciała / Kontrola ruchu", "Mobilność", "Aktywacja i kontrola", "Siła", "Moc / koordynacja / przygotowanie sportowe", "Funkcja / codzienny ruch", "Mobilizacja", "Rolowanie / tkanki miękkie", "Stabilizacja", "Core", "Izolacja", "Plyometria", "Oddech / regulacja", "Rozciąganie", "Kontrola ruchu"];
     const EXERCISE_REGIONS = ["stopa", "łydka", "udo", "biodro", "kręgosłup lędźwiowy", "kręgosłup piersiowy", "bark", "nadgarstek", "core", "całe ciało"];
     const EXERCISE_STAGES = ["1 Punkt startowy", "2 Nauka ruchu", "3 Budowanie kontroli", "4 Budowanie siły", "5 Progresja", "6 Dynamiczne / sportowe", "2 Kontrola", "3 Siła i stabilność", "4 Integracja", "5 Samodzielność"];
@@ -8857,7 +8888,7 @@ Nie chodzi o perfekcję. Chodzi o spokojny rytm.`;
 
     function savedReportForType(c = activeClient(), type = "startMap") {
       return [...(c?.reports || [])]
-        .filter(report => report.type === type)
+        .filter(report => report.type === type && isClientPortalReport(report))
         .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.id || "").localeCompare(String(a.id || "")))[0] || null;
     }
 
@@ -9250,7 +9281,9 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
     }
 
     function latestReport(c = activeClient()) {
-      return [...(c?.reports || [])].sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.id || "").localeCompare(String(a.id || "")))[0] || null;
+      return [...(c?.reports || [])]
+        .filter(isClientPortalReport)
+        .sort((a, b) => String(b.date || "").localeCompare(String(a.date || "")) || String(b.id || "").localeCompare(String(a.id || "")))[0] || null;
     }
 
     function getLastClientDecisionMessage(c) {
@@ -9729,11 +9762,185 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
       return "0%";
     }
 
+    function isPrd001Report(report = {}) {
+      return report?.source === PRD001_REPORT_SOURCE
+        || (report?.type === PRD001_REPORT_TYPE && report?.audience === PRD001_REPORT_AUDIENCE);
+    }
+
+    function isClientPortalReport(report = {}) {
+      return !isPrd001Report(report) && report?.audience !== PRD001_REPORT_AUDIENCE;
+    }
+
+    function prd001StatusLabel(status = "draft") {
+      return {
+        draft: "Draft",
+        ready_for_review: "Ready for review",
+        approved: "Approved internal snapshot"
+      }[status] || "Draft";
+    }
+
+    function prd001StatusTone(status = "draft") {
+      if (status === "approved") return "green";
+      if (status === "ready_for_review") return "blue";
+      return "gold";
+    }
+
+    function prd001ReportSortValue(report = {}) {
+      return String(report.approvedAt || report.updatedAt || report.date || report.id || "");
+    }
+
+    function currentPrd001Report(c = activeClient()) {
+      const reports = [...(c?.reports || [])]
+        .filter(isPrd001Report)
+        .sort((a, b) => prd001ReportSortValue(b).localeCompare(prd001ReportSortValue(a)));
+      return reports.find(report => report.status === "approved") || reports[0] || null;
+    }
+
+    function emptyPrd001ReportFields() {
+      return PRD001_REPORT_FIELDS.reduce((fields, field) => {
+        fields[field.key] = "";
+        return fields;
+      }, {});
+    }
+
+    function parsePrd001ReportContent(content = "") {
+      const fields = emptyPrd001ReportFields();
+      let currentKey = "";
+      String(content || "").split(/\r?\n/).forEach(line => {
+        const trimmed = line.trim();
+        const match = PRD001_REPORT_FIELDS.find(field => trimmed === `${field.label}:` || trimmed === field.label);
+        if (match) {
+          currentKey = match.key;
+          return;
+        }
+        if (!currentKey) return;
+        fields[currentKey] = `${fields[currentKey]}${fields[currentKey] ? "\n" : ""}${line}`.trimStart();
+      });
+      PRD001_REPORT_FIELDS.forEach(field => {
+        fields[field.key] = String(fields[field.key] || "").trim();
+      });
+      return fields;
+    }
+
+    function buildPrd001ReportContent(fields = {}) {
+      const normalized = { ...emptyPrd001ReportFields(), ...fields };
+      return PRD001_REPORT_FIELDS.map(field => `${field.label}:\n${String(normalized[field.key] || "").trim()}`).join("\n\n").trim();
+    }
+
+    function prd001ReportFieldId(key) {
+      return `prd001${key.charAt(0).toUpperCase()}${key.slice(1)}`;
+    }
+
+    function renderPrd001ReportSnapshot(c = activeClient()) {
+      const report = currentPrd001Report(c);
+      const status = PRD001_REPORT_STATUSES.includes(report?.status) ? report.status : "draft";
+      const approved = status === "approved";
+      const fields = parsePrd001ReportContent(report?.content || "");
+      const meta = report
+        ? `${formatDate(report.date)}${report.updatedAt ? ` · Updated ${formatDate(String(report.updatedAt).slice(0, 10))}` : ""}${report.approvedAt ? ` · Approved ${formatDate(String(report.approvedAt).slice(0, 10))}` : ""}`
+        : "No PRD 001 snapshot yet";
+      const readonlyAttr = approved ? "readonly" : "";
+      return `
+        <section class="panel report-prd001">
+          <div class="panel-head">
+            <div>
+              <h2>Trainer-only 12-week report draft</h2>
+              <p>Manual PRD 001 flow. Paper guides the morning. Trainer gives meaning. App records the signal. Report shows the pattern.</p>
+            </div>
+            ${pill(prd001StatusLabel(status), prd001StatusTone(status))}
+          </div>
+          <div class="report-actions">
+            <p><strong>Client-safe wording.</strong> This is a trainer-owned internal snapshot. It is not sent to the client portal and it does not use the legacy generated report, print, or PDF path.</p>
+            <p class="meta">${escapeHtml(meta)} · Type: 12-week only · Audience: trainer_internal</p>
+          </div>
+          <div class="form-grid">
+            ${PRD001_REPORT_FIELDS.map(field => `
+              <div class="form-field span-2">
+                <label class="label" for="${prd001ReportFieldId(field.key)}">${escapeHtml(field.label)}</label>
+                <textarea id="${prd001ReportFieldId(field.key)}" rows="4" ${readonlyAttr} placeholder="${escapeHtml(field.helper)}">${escapeHtml(fields[field.key] || "")}</textarea>
+                <p class="meta">${escapeHtml(field.helper)}</p>
+              </div>
+            `).join("")}
+          </div>
+          ${approved ? `
+            <div class="report-actions">
+              <p><strong>Approved internal snapshot.</strong> This PRD 001 report is read-only in this flow.</p>
+            </div>
+          ` : `
+            <div class="actions" style="justify-content:flex-start; margin-top:12px">
+              <button class="btn" id="prd001SaveDraftBtn" type="button">Save draft</button>
+              <button class="btn warning" id="prd001ReadyBtn" type="button">Mark ready for review</button>
+              <button class="btn primary" id="prd001ApproveBtn" type="button">Approve internal snapshot</button>
+            </div>
+          `}
+        </section>
+      `;
+    }
+
+    function collectPrd001ReportFields() {
+      return PRD001_REPORT_FIELDS.reduce((fields, field) => {
+        fields[field.key] = $(`#${prd001ReportFieldId(field.key)}`)?.value.trim() || "";
+        return fields;
+      }, {});
+    }
+
+    function validatePrd001ReportFields(fields = {}, nextStatus = "draft") {
+      const filled = PRD001_REPORT_FIELDS.filter(field => fields[field.key]);
+      if (!filled.length) return "Add trainer-written content before saving this snapshot.";
+      if (nextStatus !== "draft") {
+        const missing = PRD001_REPORT_FIELDS.filter(field => !fields[field.key]).map(field => field.label);
+        if (missing.length) return `Complete all client-safe sections first: ${missing.join(", ")}.`;
+      }
+      return "";
+    }
+
+    function savePrd001ReportSnapshot(c, nextStatus = "draft") {
+      const status = PRD001_REPORT_STATUSES.includes(nextStatus) ? nextStatus : "draft";
+      const existing = currentPrd001Report(c);
+      if (existing?.status === "approved") {
+        toast("Approved internal snapshot is read-only.");
+        return;
+      }
+      const fields = collectPrd001ReportFields();
+      const validationMessage = validatePrd001ReportFields(fields, status);
+      if (validationMessage) {
+        toast(validationMessage);
+        return;
+      }
+      const now = new Date().toISOString();
+      const nextReport = migrateReport({
+        ...(existing || {}),
+        id: existing?.id || `prd001-${Date.now()}`,
+        date: existing?.date || today(),
+        type: PRD001_REPORT_TYPE,
+        source: PRD001_REPORT_SOURCE,
+        status,
+        audience: PRD001_REPORT_AUDIENCE,
+        content: buildPrd001ReportContent(fields),
+        approvedAt: status === "approved" ? now : "",
+        updatedAt: now
+      });
+      c.reports = Array.isArray(c.reports) ? c.reports : [];
+      const existingIndex = existing?.id ? c.reports.findIndex(report => report.id === existing.id) : -1;
+      if (existingIndex >= 0) c.reports[existingIndex] = nextReport;
+      else c.reports.push(nextReport);
+      save();
+      renderReport();
+      toast(status === "approved" ? "Approved internal snapshot saved" : `PRD 001 snapshot status: ${prd001StatusLabel(status)}`);
+    }
+
+    function bindPrd001ReportSnapshot(c = activeClient()) {
+      $("#prd001SaveDraftBtn")?.addEventListener("click", () => savePrd001ReportSnapshot(c, "draft"));
+      $("#prd001ReadyBtn")?.addEventListener("click", () => savePrd001ReportSnapshot(c, "ready_for_review"));
+      $("#prd001ApproveBtn")?.addEventListener("click", () => savePrd001ReportSnapshot(c, "approved"));
+    }
+
     function renderReport() {
       const c = activeClient();
       const currentType = "fourWeeks";
       const currentAudience = "client";
       view.innerHTML = `
+        ${renderPrd001ReportSnapshot(c)}
         <section class="panel report-shell">
           <div class="panel-head">
             <div><h2>Raport premium</h2><p>Język spokojny, konkretny i oparty o realne dane procesu.</p></div>
@@ -9773,6 +9980,7 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
           ${renderReportHistory(c)}
         </section>
       `;
+      bindPrd001ReportSnapshot(c);
       const updateReport = () => {
         const selectedType = $("#reportTypeSelect").value;
         $("#reportQualityGate").innerHTML = renderReportQualityGate(c, selectedType);
