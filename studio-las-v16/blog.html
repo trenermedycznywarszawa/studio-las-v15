@@ -1,0 +1,754 @@
+<!DOCTYPE html>
+<html lang="pl">
+<!-- Studio Las public website v16 -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Blog Studio Las | Ból, ruch i trening medyczny</title>
+  <meta name="description" content="Historie i artykuły Studio Las o bólu pleców, powrocie po kontuzji, treningu medycznym, energii, stresie i odzyskiwaniu zaufania do ciała." />
+      <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v16/blog.html" />
+  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v16/blog.html" />
+  <meta property="og:locale" content="pl_PL" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+:root{
+  --forest:#1C2B24;--anthracite:#2D2D2D;--cedar:#B8935A;--cedar-light:#D4AC78;
+  --offwhite:#F7F4EF;--white:#FFFFFF;--grey-soft:#E8E4DC;--grey-text:#6B6560;
+  --font-display:'Cormorant Garant',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+  --max-w:1120px;--t:.3s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font-body);font-weight:300;color:var(--anthracite);background:var(--offwhite);line-height:1.7;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}a{color:inherit;text-decoration:none}
+.container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px}
+.reveal{opacity:0;transform:translateY(20px);transition:opacity .65s ease,transform .65s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* NAV */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;background:var(--forest);box-shadow:0 2px 24px rgba(0,0,0,.15)}
+.nav-logo{font-family:var(--font-display);font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white)}
+.nav-logo span{color:var(--cedar)}
+.nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none}
+.nav-links a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t)}
+.nav-links a:hover,.nav-links a.active{color:var(--cedar-light)}
+
+.client-panel-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.78);transition:color var(--t),text-shadow var(--t),transform var(--t),border-color var(--t)}
+.client-panel-link:hover,.client-panel-link:focus-visible{color:var(--cedar-light);text-shadow:0 0 18px rgba(141,173,120,.28);transform:translateY(-1px)}
+.client-panel-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.92;transition:opacity var(--t),transform var(--t)}
+.client-panel-link:hover .client-panel-icon,.client-panel-link:focus-visible .client-panel-icon{opacity:1;transform:translateY(-1px)}
+.nav-mobile .client-panel-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.86)}
+.nav-cta{color:var(--white)!important;border:1px solid var(--cedar);padding:9px 20px;font-size:.75rem!important;transition:background var(--t)!important}
+.nav-cta:hover{background:var(--cedar)!important}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--white)}
+.nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;background:var(--forest);padding:24px;z-index:99;flex-direction:column;gap:20px}
+.nav-mobile.open{display:flex}
+.nav-mobile a{color:rgba(255,255,255,.85);font-size:1rem;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.nav-mobile .btn-primary{margin-top:8px;text-align:center}
+
+/* BUTTONS */
+.btn-primary{display:inline-block;background:var(--cedar);color:var(--white);font-family:var(--font-body);font-size:.8rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:16px 36px;border:none;cursor:pointer;transition:background var(--t),transform var(--t)}
+.btn-primary:hover{background:var(--cedar-light);transform:translateY(-1px)}
+
+/* PAGE HERO */
+#page-hero{background:var(--forest);padding:140px 0 72px;position:relative;overflow:hidden}
+#page-hero::before{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background-image:url('./images/studio-latem.webp');background-size:cover;background-position:center;opacity:.08;mask-image:linear-gradient(to left,rgba(0,0,0,.5),transparent);-webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.5),transparent)}
+.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:36px;font-size:.75rem;color:rgba(255,255,255,.4)}
+.breadcrumb a{color:rgba(255,255,255,.4);transition:color var(--t)}
+.breadcrumb a:hover{color:var(--cedar-light)}
+.page-hero-label{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.page-hero-label::before{content:'';display:inline-block;width:24px;height:1px;background:var(--cedar)}
+.page-hero-title{font-family:var(--font-display);font-size:clamp(2.4rem,5vw,3.8rem);font-weight:300;line-height:1.1;color:var(--white);margin-bottom:20px;max-width:640px}
+.page-hero-title em{font-style:italic;color:var(--cedar-light)}
+.page-hero-sub{font-size:1rem;font-weight:300;color:rgba(255,255,255,.6);max-width:520px;line-height:1.8}
+
+/* FILTER BAR */
+#filter-bar{background:var(--white);border-bottom:1px solid var(--grey-soft);padding:0;position:sticky;top:68px;z-index:90}
+.filter-inner{display:flex;align-items:center;gap:0;overflow-x:auto;scrollbar-width:none}
+.filter-inner::-webkit-scrollbar{display:none}
+.filter-btn{font-size:.72rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:var(--grey-text);padding:16px 22px;border:none;background:none;cursor:pointer;white-space:nowrap;border-bottom:2px solid transparent;transition:all var(--t);font-family:var(--font-body)}
+.filter-btn:hover{color:var(--anthracite)}
+.filter-btn.active{color:var(--cedar);border-bottom-color:var(--cedar)}
+
+/* FEATURED POSTS */
+#featured{padding:80px 0 0;background:var(--offwhite)}
+.section-label{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar);margin-bottom:16px;display:block}
+.featured-grid{display:grid;grid-template-columns:1.4fr 1fr;gap:2px;margin-top:40px}
+.featured-main{background:var(--white);display:flex;flex-direction:column;overflow:hidden;transition:transform var(--t)}
+.featured-main:hover{transform:translateY(-3px)}
+.featured-img{width:100%;aspect-ratio:16/9;object-fit:cover;display:block;filter:brightness(.82);transition:filter var(--t),transform var(--t)}
+.featured-main:hover .featured-img{filter:brightness(.92);transform:scale(1.02)}
+.featured-img-placeholder{width:100%;aspect-ratio:16/9;background:var(--forest);display:flex;align-items:center;justify-content:center;position:relative;overflow:hidden}
+.featured-img-placeholder-text{position:relative;z-index:1;font-family:var(--font-display);font-size:1.1rem;font-weight:300;color:rgba(255,255,255,.7);text-align:center;padding:20px}
+
+.featured-content{padding:32px 36px 36px;flex:1;display:flex;flex-direction:column}
+.featured-meta{display:flex;align-items:center;gap:12px;margin-bottom:16px}
+.post-tag{font-size:.62rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--cedar);background:rgba(184,147,90,.08);padding:4px 10px}
+.post-date{font-size:.72rem;color:var(--grey-text)}
+.post-read{font-size:.72rem;color:var(--grey-text)}
+.featured-title{font-family:var(--font-display);font-size:clamp(1.4rem,2.5vw,1.9rem);font-weight:400;color:var(--anthracite);line-height:1.25;margin-bottom:14px;transition:color var(--t)}
+.featured-main:hover .featured-title{color:var(--cedar)}
+.featured-lead{font-size:.9rem;font-weight:300;color:var(--grey-text);line-height:1.75;flex:1;margin-bottom:24px}
+.post-read-link{font-size:.75rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cedar);display:flex;align-items:center;gap:8px;transition:gap var(--t)}
+.featured-main:hover .post-read-link{gap:12px}
+
+.featured-side{display:flex;flex-direction:column;gap:2px}
+.featured-side-card{background:var(--white);padding:28px 28px;display:flex;flex-direction:column;flex:1;transition:transform var(--t);overflow:hidden}
+.featured-side-card:hover{transform:translateX(3px)}
+.featured-main.hidden,.featured-side-card.hidden,#featured.hidden{display:none}
+.side-img-wrap{width:100%;aspect-ratio:3/2;background:var(--offwhite);margin-bottom:20px;overflow:hidden;position:relative}
+.side-img-wrap img{width:100%;height:100%;object-fit:cover;display:block;opacity:.72;transition:opacity var(--t),transform var(--t)}
+.featured-side-card:hover .side-img-wrap img{opacity:.9;transform:scale(1.03)}
+.side-title{font-family:var(--font-display);font-size:1.15rem;font-weight:400;color:var(--anthracite);line-height:1.3;margin-bottom:10px;margin-top:4px;transition:color var(--t)}
+.featured-side-card:hover .side-title{color:var(--cedar)}
+.side-lead{font-size:.82rem;font-weight:300;color:var(--grey-text);line-height:1.65;flex:1;margin-bottom:16px}
+
+/* ALL POSTS GRID */
+#all-posts{padding:64px 0 96px;background:var(--offwhite)}
+.posts-header{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:40px;flex-wrap:wrap;gap:12px}
+.posts-count{font-size:.78rem;font-weight:300;color:var(--grey-text)}
+.posts-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px}
+.post-card{background:var(--white);display:flex;flex-direction:column;transition:transform var(--t);overflow:hidden}
+.post-card:hover{transform:translateY(-3px)}
+.post-card.hidden{display:none}
+.post-card-img{width:100%;aspect-ratio:16/9;background:var(--offwhite);position:relative;overflow:hidden}
+.post-card-img img{width:100%;height:100%;object-fit:cover;display:block;opacity:.72;transition:opacity var(--t),transform var(--t)}
+.post-card:hover .post-card-img img{opacity:.92;transform:scale(1.03)}
+.post-card-body{padding:24px 24px 28px;flex:1;display:flex;flex-direction:column}
+.post-card-meta{display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap}
+.post-card-title{font-family:var(--font-display);font-size:1.15rem;font-weight:400;color:var(--anthracite);line-height:1.3;margin-bottom:10px;flex:1;transition:color var(--t)}
+.post-card:hover .post-card-title{color:var(--cedar)}
+.post-card-lead{font-size:.82rem;font-weight:300;color:var(--grey-text);line-height:1.65;margin-bottom:18px}
+.post-card-footer{display:flex;justify-content:space-between;align-items:center;border-top:1px solid var(--grey-soft);padding-top:14px;margin-top:auto}
+.post-card-date{font-size:.72rem;color:var(--grey-text)}
+.post-card-link{font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--cedar);transition:color var(--t)}
+.post-card:hover .post-card-link{color:var(--anthracite)}
+
+/* CTA BANNER */
+#blog-cta{background:var(--anthracite);padding:80px 0;text-align:center}
+.bcta-label{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px;display:block}
+.bcta-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:300;color:var(--white);line-height:1.2;margin-bottom:16px}
+.bcta-title em{font-style:italic;color:var(--cedar-light)}
+.bcta-sub{font-size:.95rem;font-weight:300;color:rgba(255,255,255,.6);max-width:440px;margin:0 auto 40px;line-height:1.75}
+
+/* FOOTER */
+footer{background:var(--forest);padding:60px 0 36px}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-logo{font-family:var(--font-display);font-size:1.3rem;font-weight:500;color:var(--white);letter-spacing:.08em;margin-bottom:16px}
+.footer-logo span{color:var(--cedar)}
+.footer-tagline{font-size:.82rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.7;max-width:280px}
+.footer-col-title{font-size:.68rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);transition:color var(--t)}
+.footer-links a:hover{color:var(--cedar-light)}
+.footer-ci{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);margin-bottom:10px;line-height:1.6}
+.footer-ci a{color:rgba(255,255,255,.6);transition:color var(--t)}
+.footer-ci a:hover{color:var(--cedar-light)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-copy{font-size:.75rem;color:rgba(255,255,255,.3)}
+.footer-legal{display:flex;gap:20px}
+.footer-legal a{font-size:.75rem;color:rgba(255,255,255,.3);transition:color var(--t)}
+.footer-legal a:hover{color:rgba(255,255,255,.6)}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .nav-links{display:none}.nav-hamburger{display:flex}
+  .featured-grid{grid-template-columns:1fr}
+  .featured-side{flex-direction:row}
+  .featured-side-card{flex-direction:column}
+  .posts-grid{grid-template-columns:1fr 1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:600px){
+  .posts-grid{grid-template-columns:1fr}
+  .featured-side{flex-direction:column}
+  .footer-grid{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;align-items:flex-start}
+}
+
+/* Unified global navigation */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(23,37,30,.94);box-shadow:0 2px 24px rgba(0,0,0,.15);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
+.site-logo{font-family:var(--font-display,var(--display,Georgia,serif));font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white,#fff)}
+.site-logo span{color:var(--cedar-light,var(--cedar,#b8935a))}
+.site-nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none;margin:0;padding:0}
+.site-nav-links a,.site-nav-mobile a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t,var(--transition,.25s ease)),background var(--t,var(--transition,.25s ease)),border-color var(--t,var(--transition,.25s ease)),transform var(--t,var(--transition,.25s ease))}
+.site-nav-links a:hover,.site-nav-links a.active,.site-nav-mobile a:hover,.site-nav-mobile a.active{color:var(--cedar-light,#d5b982)}
+.site-nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border:1px solid var(--cedar,#b8935a);background:transparent;color:rgba(255,255,255,.86)!important;line-height:1;white-space:nowrap}
+.site-nav-cta:hover,.site-nav-cta.active{background:rgba(184,147,90,.12);color:var(--cedar-light,#d5b982)!important;border-color:var(--cedar-light,#d5b982)}
+.site-client-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.68)!important;white-space:nowrap}
+.site-client-link:hover,.site-client-link:focus-visible{color:var(--cedar-light,#d5b982)!important;transform:translateY(-1px)}
+.site-client-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.site-nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:0;padding:8px}
+.site-nav-toggle span{display:block;width:24px;height:2px;background:var(--white,#fff)}
+.site-nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;flex-direction:column;gap:16px;padding:24px;background:var(--forest,#17251e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.site-nav-mobile.open{display:flex}
+.site-nav-mobile a{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.site-nav-mobile .site-nav-cta{margin-top:4px;padding:14px 18px;border-bottom:1px solid var(--cedar,#b8935a)}
+.site-nav-mobile .site-client-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.72)!important}
+@media(max-width:980px){.site-nav-links{display:none}.site-nav-toggle{display:flex}}
+@media(max-width:640px){.site-nav{height:64px;padding:0 18px}.site-nav-mobile{top:64px;max-height:calc(100vh - 64px);overflow-y:auto}.site-logo{font-size:1.25rem}}
+</style>
+  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v16/images/damian-about.webp" />
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Nawigacja główna">
+  <a class="site-logo" href="./index.html">Studio <span>Las</span></a>
+  <ul class="site-nav-links">
+    <li><a href="./index.html">Strona główna</a></li>
+    <li><a href="./metoda-i-pakiety.html">Metoda i pakiety</a></li>
+    <li><a href="./blog.html" class="active">Blog</a></li>
+    <li><a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a></li>
+    </ul>
+  <button class="site-nav-toggle" id="hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" type="button">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="site-nav-mobile nav-mobile" id="navMobile">
+  <a href="./index.html">Strona główna</a>
+  <a href="./metoda-i-pakiety.html">Metoda i pakiety</a>
+  <a href="./blog.html" class="active">Blog</a>
+  <a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a>
+  </div>
+
+<!-- HERO -->
+<section id="page-hero">
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="./index.html">Strona główna</a><span>›</span><span>Blog</span>
+    </nav>
+    <p class="page-hero-label">Wiedza i praktyka</p>
+    <h1 class="page-hero-title">Artykuły o bólu,<br>ruchu i <em>zaufaniu do ciała</em></h1>
+    <p class="page-hero-sub">
+      Blog Studio Las jest przede wszystkim o powrocie do ruchu: bólu, sprawności 40+, diagnostyce funkcjonalnej, spokojnym procesie 12 tygodni i odzyskiwaniu samodzielności bez chaosu przypadkowych planów.
+    </p>
+  </div>
+</section>
+
+<!-- FILTER BAR -->
+<div id="filter-bar">
+  <div class="container">
+    <div class="filter-inner" id="filterBtns">
+      <button class="filter-btn active" data-filter="all">Wszystkie</button>
+      <button class="filter-btn" data-filter="bol">Ból i kontuzje</button>
+      <button class="filter-btn" data-filter="trening">Trening medyczny</button>
+      <button class="filter-btn" data-filter="styl">Styl życia</button>
+      <button class="filter-btn" data-filter="studio">O Studio Las</button>
+      <button class="filter-btn" data-filter="sezonowe">Sezonowe</button>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURED -->
+<section id="featured">
+  <div class="container">
+    <span class="section-label reveal">Polecane</span>
+    <div class="featured-grid reveal" style="transition-delay:.05s">
+
+      <!-- FEATURED MAIN: Tomasz case study -->
+      <a href="./blog/post-od-bolu-do-ruchu-tomasz.html" class="featured-main" data-cats="bol trening">
+        <div class="featured-img-placeholder">
+          <img src="./images/outdoor.webp" alt="Trener Studio Las w terenie górskim" class="featured-img">
+        </div>
+        <div class="featured-content">
+          <div class="featured-meta">
+            <span class="post-tag">Case study</span>
+            <span class="post-date">15 Listopada 2025</span>
+            <span class="post-read">12 min czytania</span>
+          </div>
+          <h2 class="featured-title">Od bólu do ruchu: Jak Tomasz (42 lata) wrócił do biegania po 3 latach przerwy</h2>
+          <p class="featured-lead">Historia stopniowego powrotu do ruchu: od niepewności i bólu do spokojnego biegania. Bez obietnic na skróty, za to z rozpoznaniem sytuacji, bezpiecznym zakresem pracy i konsekwentnym procesem.</p>
+          <span class="post-read-link">Czytaj dalej →</span>
+        </div>
+      </a>
+
+      <!-- FEATURED SIDE -->
+      <div class="featured-side">
+        <a href="./blog/post-dlaczego-nie-ma-20-maszyn.html" class="featured-side-card" data-cats="trening studio">
+          <div class="side-img-wrap"><img src="./images/studio-interior.webp" alt="Kameralne wnętrze Studio Las" loading="lazy" decoding="async"></div>
+          <div class="featured-meta">
+            <span class="post-tag">Filozofia</span>
+            <span class="post-date">8 Listopada 2025</span>
+          </div>
+          <h3 class="side-title">Dlaczego w Studio Las nie ma 20 maszyn treningowych (i czemu to przewaga, nie brak)</h3>
+          <p class="side-lead">50 błyszczących maszyn, rzędy bieżni. Wychodzisz spocony. Ale czy jesteś silniejszy? Odpowiedź zaskakuje.</p>
+          <span class="post-read-link" style="font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--cedar)">Czytaj →</span>
+        </a>
+
+        <a href="./blog/post-diagnostyka-funkcjonalna.html" class="featured-side-card" data-cats="trening bol">
+          <div class="side-img-wrap"><img src="./images/blog-3.webp" alt="Obserwacja ruchu i diagnostyka funkcjonalna" loading="lazy" decoding="async"></div>
+          <div class="featured-meta">
+            <span class="post-tag">Diagnostyka funkcjonalna</span>
+            <span class="post-date">11 Października 2025</span>
+          </div>
+          <h3 class="side-title">Diagnostyka funkcjonalna bez spiny: od czego bezpiecznie zacząć?</h3>
+          <p class="side-lead">O obserwacji ruchu, bezpiecznym zakresie pracy i decyzji, które ćwiczenia mają sens na starcie.</p>
+          <span class="post-read-link" style="font-size:.72rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--cedar)">Czytaj →</span>
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- ALL POSTS -->
+<section id="all-posts">
+  <div class="container">
+    <div class="posts-header">
+      <span class="section-label" style="margin-bottom:0">Wszystkie artykuły</span>
+      <span class="posts-count" id="postsCount">19 wpisów</span>
+    </div>
+
+    <div class="posts-grid" id="postsGrid">
+
+
+      <a href="./blog/post-model-bolu.html" class="post-card reveal" data-cats="bol trening">
+        <div class="post-card-img"><img src="./images/1.webp" alt="Trening medyczny i praca z ruchem" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Ból i kontuzje</span>
+            <span class="post-date">24 Kwi 2026</span>
+            <span class="post-read">14 min</span>
+          </div>
+          <h3 class="post-card-title">Twój ból nie jest tylko w ciele. Biopsychospołeczny model bólu w praktyce</h3>
+          <p class="post-card-lead">Dlaczego MRI nie zawsze wyjaśnia ból i czemu skuteczny powrót do ruchu wymaga spojrzenia szerzej niż tylko na tkanki.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">24 Kwi 2026</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-skad-wiem.html" class="post-card reveal" data-cats="trening studio">
+        <div class="post-card-img"><img src="./images/MK4_0694_preview.webp" alt="Trener medyczny podczas pracy edukacyjnej" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Trening medyczny</span>
+            <span class="post-date">24 Kwi 2026</span>
+            <span class="post-read">11 min</span>
+          </div>
+          <h3 class="post-card-title">Skąd wiem, że to działa? Evidence-Based Practice w treningu medycznym</h3>
+          <p class="post-card-lead">O tym, dlaczego doświadczenie trenera musi spotkać się z badaniami, obserwacją klienta i spokojną decyzją kliniczną.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">24 Kwi 2026</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-trening-funkcjonalny.html" class="post-card reveal" data-cats="trening bol">
+        <div class="post-card-img"><img src="./images/training.webp" alt="Trening funkcjonalny w studiu" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Trening medyczny</span>
+            <span class="post-date">14 Kwi 2026</span>
+            <span class="post-read">9 min</span>
+          </div>
+          <h3 class="post-card-title">Trening funkcjonalny w Studio Las: siła, wytrzymałość i sprawność u osób z bólem</h3>
+          <p class="post-card-lead">Trening funkcjonalny to nie lista ćwiczeń, tylko ruch zaprojektowany pod konkretny przypadek i realne życie.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">14 Kwi 2026</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-trening-onkologia.html" class="post-card reveal" data-cats="trening bol">
+        <div class="post-card-img"><img src="./images/studio-latem.webp" alt="Kameralne Studio Las w lesie" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Trening medyczny</span>
+            <span class="post-date">14 Kwi 2026</span>
+            <span class="post-read">9 min</span>
+          </div>
+          <h3 class="post-card-title">Trening po leczeniu onkologicznym: dlaczego kameralne studio jest spokojniejsze niż zwykła siłownia</h3>
+          <p class="post-card-lead">Jak może wyglądać ostrożny powrót do ruchu po chemioterapii lub radioterapii, bez presji i bez przypadkowego obciążania.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">14 Kwi 2026</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-od-bolu-do-ruchu-tomasz.html" class="post-card reveal" data-cats="bol trening">
+        <div class="post-card-img"><img src="./images/IMG_0617.webp" alt="Powrót do ruchu w naturalnym terenie" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Case study</span>
+            <span class="post-date">15 Lis 2025</span>
+            <span class="post-read">12 min</span>
+          </div>
+          <h3 class="post-card-title">Od bólu do ruchu: jak Tomasz wrócił do biegania po 3 latach przerwy</h3>
+          <p class="post-card-lead">Historia pracy z bólem, lękiem przed ruchem i stopniowym powrotem do aktywności bez obietnic na skróty.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">15 Lis 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-dlaczego-nie-ma-20-maszyn.html" class="post-card reveal" data-cats="trening studio">
+        <div class="post-card-img"><img src="./images/studio-interior.webp" alt="Wnętrze kameralnego studia bez nadmiaru maszyn" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">O Studio Las</span>
+            <span class="post-date">8 Lis 2025</span>
+            <span class="post-read">10 min</span>
+          </div>
+          <h3 class="post-card-title">Dlaczego w Studio Las nie ma 20 maszyn treningowych</h3>
+          <p class="post-card-lead">Dlaczego kameralna przestrzeń, obserwacja ruchu i praca 1:1 są ważniejsze niż rzędy sprzętu.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">8 Lis 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-neurotyp-trening.html" class="post-card reveal" data-cats="trening neurotypy">
+        <div class="post-card-img"><img src="./images/damian-profilowe.webp" alt="Indywidualny trening dopasowany do układu nerwowego" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Neurotypy</span>
+            <span class="post-date">1 Lis 2025</span>
+            <span class="post-read">14 min</span>
+          </div>
+          <h3 class="post-card-title">Trening dopasowany do neurotypu: dlaczego nienawidzisz siłowni i jak to naprawić</h3>
+          <p class="post-card-lead">O tym, dlaczego jeden plan nie działa na wszystkich i jak dopasować trening do sposobu reagowania układu nerwowego.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">1 Lis 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-dlaczego-trening-300.html" class="post-card reveal" data-cats="studio">
+        <div class="post-card-img"><img src="./images/damian-about.webp" alt="Damian Krawiec, trener medyczny Studio Las" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">O Studio Las</span>
+            <span class="post-date">25 Paź 2025</span>
+            <span class="post-read">7 min</span>
+          </div>
+          <h3 class="post-card-title">Dlaczego mój trening kosztuje 300 zł? (I dlaczego to może być najtańsza droga do trwałego efektu)</h3>
+          <p class="post-card-lead">99 zł to dostęp. 300 zł to odpowiedzialność. A to nie jest to samo.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">25 Paź 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-kim-jestem.html" class="post-card reveal" style="transition-delay:.05s" data-cats="studio">
+        <div class="post-card-img"><img src="./images/spadochroniarstwo2.webp" alt="Doświadczenie i droga zawodowa trenera" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">O mnie</span>
+            <span class="post-date">18 Paź 2025</span>
+            <span class="post-read">9 min</span>
+          </div>
+          <h3 class="post-card-title">Kim jestem i dlaczego facet po AWF-ie i szkole oficerskiej otworzył studio w lesie pod Tarczynem</h3>
+          <p class="post-card-lead">Nie zostałem trenerem dlatego, że lubię fitness. Moja droga wyglądała inaczej.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">18 Paź 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-diagnostyka-funkcjonalna.html" class="post-card reveal" style="transition-delay:.1s" data-cats="trening">
+        <div class="post-card-img"><img src="./images/blog-3.webp" alt="Obserwacja ruchu i diagnostyka funkcjonalna" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Trening medyczny</span>
+            <span class="post-date">11 Paź 2025</span>
+            <span class="post-read">8 min</span>
+          </div>
+          <h3 class="post-card-title">Diagnostyka funkcjonalna bez spiny. Dlaczego czasem wystarczy dobrze poprowadzić ruch</h3>
+          <p class="post-card-lead">Zamiast godziny testów z checklisty – jedno proste zadanie ruchowe. To nie lenistwo. I często działa lepiej.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">11 Paź 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-jelita-sibo-imo-sifo.html" class="post-card reveal" data-cats="styl trening">
+        <div class="post-card-img"><img src="./images/IMG_2382.webp" alt="Spokojne jezioro i regeneracja organizmu" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Styl życia</span>
+            <span class="post-date">30 Kwi 2026</span>
+            <span class="post-read">14 min</span>
+          </div>
+          <h3 class="post-card-title">Jelita, które sabotują Twój trening. Czym jest SIBO, IMO i SIFO</h3>
+          <p class="post-card-lead">Zmęczenie mimo treningów, wzdęcia i brak efektów. Dlaczego żaden plan treningowy nie zadziała, jeśli ciało jest przeciążone od środka.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">30 Kwi 2026</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-skoki-w-treningu.html" class="post-card reveal" data-cats="trening bol">
+        <div class="post-card-img"><img src="./images/hyrox1.webp" alt="Dynamiczny trening i przygotowanie motoryczne" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Kontuzje</span>
+            <span class="post-date">4 Paź 2025</span>
+            <span class="post-read">10 min</span>
+          </div>
+          <h3 class="post-card-title">Skoki w treningu: kiedy mają sens, a kiedy prosisz się o kłopoty</h3>
+          <p class="post-card-lead">Skoki wyglądają efektownie. Ale to jedna z bardziej kapryśnych form treningu przy historii bólu.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">4 Paź 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./post-3-minutowy-reset.html" class="post-card reveal" style="transition-delay:.05s" data-cats="styl">
+        <div class="post-card-img"><img src="./images/IMG_2421.webp" alt="Spokojny krajobraz jako symbol krótkiej regeneracji" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Styl życia</span>
+            <span class="post-date">27 Wrz 2025</span>
+            <span class="post-read">6 min</span>
+          </div>
+          <h3 class="post-card-title">3-minutowy reset w pracy. Jak odpuścić napięcie, gdy siedzisz 8 godzin przy biurku</h3>
+          <p class="post-card-lead">Ciężka głowa, spięte barki. Można to zmienić w 3 minuty między mailami.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">27 Wrz 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-stres-w-pracy.html" class="post-card reveal" style="transition-delay:.1s" data-cats="styl">
+        <div class="post-card-img"><img src="./images/las.webp" alt="Leśna ścieżka i wyciszenie po pracy" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Regeneracja</span>
+            <span class="post-date">20 Wrz 2025</span>
+            <span class="post-read">8 min</span>
+          </div>
+          <h3 class="post-card-title">Stres w pracy: kiedy ciało mówi dość</h3>
+          <p class="post-card-lead">Wracasz z biura z głową jak balon. To nie jest Twój defekt charakteru. I można to zmienić.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">20 Wrz 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-fizjoterapia-w-firmie.html" class="post-card reveal" data-cats="styl">
+        <div class="post-card-img"><img src="./images/MK4_0694_preview.webp" alt="Praca z ciałem poza klasycznym biurem" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Dla firm</span>
+            <span class="post-date">13 Wrz 2025</span>
+            <span class="post-read">9 min</span>
+          </div>
+          <h3 class="post-card-title">Fizjoterapia w firmie? Z perspektywy kręgosłupa – to nie benefit, tylko gaśnica</h3>
+          <p class="post-card-lead">Kilkanaście lat przy biurku, złoty pakiet benefitów – i ból karku, L4. Co realnie działa?</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">13 Wrz 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-dno-miednicy.html" class="post-card reveal" style="transition-delay:.05s" data-cats="trening">
+        <div class="post-card-img"><img src="./images/572843d1d26d70ef11f5c724c512a90d.webp" alt="Spokojna przestrzeń do bezpiecznego treningu medycznego" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Po porodzie</span>
+            <span class="post-date">6 Wrz 2025</span>
+            <span class="post-read">7 min</span>
+          </div>
+          <h3 class="post-card-title">Dlaczego każdy trener medyczny powinien znać mięśnie dna miednicy?</h3>
+          <p class="post-card-lead">Kobiety po porodzie, bóle pleców – źródło problemu często kryje się niżej, niż się wydaje.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">6 Wrz 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-reedukacja-oddechowa.html" class="post-card reveal" style="transition-delay:.1s" data-cats="trening">
+        <div class="post-card-img"><img src="./images/IMG_0941.webp" alt="Woda i oddech jako obraz regulacji napięcia" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Oddech</span>
+            <span class="post-date">30 Sie 2025</span>
+            <span class="post-read">6 min</span>
+          </div>
+          <h3 class="post-card-title">Dlaczego każdy trener medyczny powinien znać reedukację oddechową?</h3>
+          <p class="post-card-lead">Płytki oddech sabotuje każdy martwy ciąg i przysiad. Prawidłowy oddech to fundament stabilizacji.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">30 Sie 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-urazy-na-nartach.html" class="post-card reveal" data-cats="sezonowe bol">
+        <div class="post-card-img"><img src="./images/narciarstwo.webp" alt="Narciarz na stoku w sezonie zimowym" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Sezonowe</span>
+            <span class="post-date">23 Sie 2025</span>
+            <span class="post-read">11 min</span>
+          </div>
+          <h3 class="post-card-title">Najczęstsze urazy na nartach – jak przygotować się, żeby wrócić ze stoku na nogach</h3>
+          <p class="post-card-lead">ACL, MCL, łąkotki, bark. Brak przygotowania fizycznego bardzo szybko kończy się bólem.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">23 Sie 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+      <a href="./blog/post-kciuk-narciarza.html" class="post-card reveal" style="transition-delay:.05s" data-cats="sezonowe bol">
+        <div class="post-card-img"><img src="./images/IMG_3853.webp" alt="Sporty zimowe i ryzyko urazów dłoni" loading="lazy" decoding="async"></div>
+        <div class="post-card-body">
+          <div class="post-card-meta">
+            <span class="post-tag">Kontuzje</span>
+            <span class="post-date">16 Sie 2025</span>
+            <span class="post-read">9 min</span>
+          </div>
+          <h3 class="post-card-title">Kciuk narciarza – mała kontuzja, duży problem. Jak jej nie zbagatelizować?</h3>
+          <p class="post-card-lead">Brzmi jak drobiazg. Ale uraz tego stawu potrafi skutecznie utrudnić codzienne życie przez miesiące.</p>
+          <div class="post-card-footer">
+            <span class="post-card-date">16 Sie 2025</span>
+            <span class="post-card-link">Czytaj →</span>
+          </div>
+        </div>
+      </a>
+
+    </div><!-- /posts-grid -->
+  </div>
+</section>
+
+<!-- CTA -->
+<section id="blog-cta">
+  <div class="container reveal">
+    <span class="bcta-label">Gotowy na pierwszy krok?</span>
+    <h2 class="bcta-title">Czytanie to dobry start.<br><em>Działanie zmienia więcej.</em></h2>
+    <p class="bcta-sub">Jeśli któryś artykuł opisuje Twoją sytuację, zacznij od krótkiej ankiety. Oddzwonię i spokojnie sprawdzimy, czy pierwsza wizyta ma sens.</p>
+    <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Zacznij od krótkiej ankiety →</a>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Studio <span>Las</span></div>
+        <p class="footer-tagline">Spokojny powrót do ruchu, sprawność 40+ i zaufanie do ciała.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Nawigacja</div>
+        <ul class="footer-links">
+          <li><a href="./index.html">Strona główna</a></li>
+          <li><a href="./metoda-i-pakiety.html">Metoda i pakiety</a></li>
+          <li><a href="./blog.html">Blog</a></li>
+          <li><a href="./ankieta-kontakt.html#ankieta">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Kontakt</div>
+        <p class="footer-ci">ul. Pracka 1J, 05-504 Prace Duże</p>
+        <p class="footer-ci"><a href="tel:+48503975998">503 975 998</a></p>
+        <p class="footer-ci"><a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></p>
+        <p class="footer-ci" style="margin-top:16px;font-size:.78rem;opacity:.7">Pon–Pt: 16:00–22:00 · Sob–Nd: po umówieniu</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Studio Las · Damian Krawiec. Wszelkie prawa zastrzeżone.</p>
+      <div class="footer-legal"><span>Polityka prywatności</span><span>Regulamin</span></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Hamburger
+document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navMobile').classList.toggle('open'));
+document.querySelectorAll('#navMobile a').forEach(l=>l.addEventListener('click',()=>document.getElementById('navMobile').classList.remove('open')));
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.08,rootMargin:'0px 0px -28px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Filter
+const filterBtns=document.querySelectorAll('.filter-btn');
+const postCards=document.querySelectorAll('.post-card[data-cats]');
+const featuredSection=document.getElementById('featured');
+const countEl=document.getElementById('postsCount');
+const postsSection=document.getElementById('all-posts');
+
+function postCountText(count){
+  return count+(count===1?' wpis':count<5?' wpisy':' wpisów');
+}
+
+filterBtns.forEach(btn=>{
+  btn.addEventListener('click',()=>{
+    filterBtns.forEach(b=>b.classList.remove('active'));
+    btn.classList.add('active');
+    const f=btn.dataset.filter;
+    let shown=0;
+    postCards.forEach(card=>{
+      const cats=(card.dataset.cats||'').split(/\s+/);
+      const match=f==='all'||cats.includes(f);
+      card.classList.toggle('hidden',!match);
+      if(match)shown++;
+    });
+    featuredSection.classList.toggle('hidden',f!=='all');
+    const url=new URL(window.location.href);
+    if(f==='all'){
+      url.searchParams.delete('kategoria');
+    } else {
+      url.searchParams.set('kategoria',f);
+    }
+    window.history.replaceState({},'',url);
+    postsSection.scrollIntoView({behavior:'smooth',block:'start'});
+    countEl.textContent=postCountText(shown);
+  });
+});
+
+const initialFilter=new URLSearchParams(window.location.search).get('kategoria');
+if(initialFilter){
+  const initialBtn=document.querySelector(`.filter-btn[data-filter="${initialFilter}"]`);
+  if(initialBtn)initialBtn.click();
+} else {
+  countEl.textContent=postCountText(postCards.length);
+}
+</script>
+<script>
+(function initSiteNavigation(){
+  const toggle=document.getElementById('hamburger');
+  const menu=document.getElementById('navMobile');
+  if(!toggle||!menu)return;
+  const setOpen=(open)=>{
+    menu.classList.toggle('open',open);
+    toggle.setAttribute('aria-expanded',open?'true':'false');
+    toggle.setAttribute('aria-label',open?'Zamknij menu':'Otwórz menu');
+  };
+  toggle.addEventListener('click',(event)=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    setOpen(!menu.classList.contains('open'));
+  },true);
+  menu.querySelectorAll('a').forEach(link=>{
+    link.addEventListener('click',()=>setOpen(false));
+  });
+  document.addEventListener('keydown',(event)=>{
+    if(event.key==='Escape')setOpen(false);
+  });
+})();
+</script>
+</body>
+</html>

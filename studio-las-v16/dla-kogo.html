@@ -1,0 +1,756 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Dla kogo jest Studio Las | Trening medyczny pod Warszawą</title>
+  <meta name="description" content="Studio Las to kameralne studio treningu medycznego pod Warszawą. Sprawdź, czy jesteś we właściwym miejscu – ból przewlekły, powrót po kontuzji, lęk przed siłownią, osoby 40+, 50+, po leczeniu onkologicznym." />
+      <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v16/dla-kogo.html" />
+  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v16/dla-kogo.html" />
+  <meta property="og:locale" content="pl_PL" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+:root{
+  --forest:#1C2B24;--anthracite:#2D2D2D;--cedar:#B8935A;--cedar-light:#D4AC78;
+  --offwhite:#F7F4EF;--white:#FFFFFF;--grey-soft:#E8E4DC;--grey-text:#6B6560;
+  --font-display:'Cormorant Garant',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+  --max-w:1120px;--t:.3s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font-body);font-weight:300;color:var(--anthracite);background:var(--offwhite);line-height:1.7;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}a{color:inherit;text-decoration:none}
+.container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px}
+.reveal{opacity:0;transform:translateY(24px);transition:opacity .7s ease,transform .7s ease}
+.reveal.visible{opacity:1;transform:none}
+
+/* NAV */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;background:var(--forest);box-shadow:0 2px 24px rgba(0,0,0,.15)}
+.nav-logo{font-family:var(--font-display);font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white)}
+.nav-logo span{color:var(--cedar)}
+.nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none}
+.nav-links a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t)}
+.nav-links a:hover,.nav-links a.active{color:var(--cedar-light)}
+
+.client-panel-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.78);transition:color var(--t),text-shadow var(--t),transform var(--t),border-color var(--t)}
+.client-panel-link:hover,.client-panel-link:focus-visible{color:var(--cedar-light);text-shadow:0 0 18px rgba(141,173,120,.28);transform:translateY(-1px)}
+.client-panel-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.92;transition:opacity var(--t),transform var(--t)}
+.client-panel-link:hover .client-panel-icon,.client-panel-link:focus-visible .client-panel-icon{opacity:1;transform:translateY(-1px)}
+.nav-mobile .client-panel-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.86)}
+.nav-cta{color:var(--white)!important;border:1px solid var(--cedar);padding:9px 20px;font-size:.75rem!important;transition:background var(--t)!important}
+.nav-cta:hover{background:var(--cedar)!important}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--white)}
+.nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;background:var(--forest);padding:24px;z-index:99;flex-direction:column;gap:20px}
+.nav-mobile.open{display:flex}
+.nav-mobile a{color:rgba(255,255,255,.85);font-size:1rem;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+
+/* BUTTONS */
+.btn-primary{display:inline-block;background:var(--cedar);color:var(--white);font-family:var(--font-body);font-size:.8rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:16px 36px;border:none;cursor:pointer;transition:background var(--t),transform var(--t)}
+.btn-primary:hover{background:var(--cedar-light);transform:translateY(-1px)}
+.btn-ghost-dark{display:inline-block;color:var(--cedar);font-family:var(--font-body);font-size:.8rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:15px 36px;border:1px solid var(--cedar);transition:all var(--t)}
+.btn-ghost-dark:hover{background:var(--cedar);color:var(--white)}
+
+/* PAGE HERO */
+#page-hero{background:var(--forest);padding:140px 0 80px;position:relative;overflow:hidden}
+#page-hero::before{content:'';position:absolute;top:0;right:0;width:45%;height:100%;background-image:url('./images/studio-latem.webp');background-size:cover;background-position:center;opacity:.1;mask-image:linear-gradient(to left,rgba(0,0,0,.6),transparent);-webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.6),transparent)}
+.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:36px;font-size:.75rem;color:rgba(255,255,255,.4)}
+.breadcrumb a{color:rgba(255,255,255,.4);transition:color var(--t)}
+.breadcrumb a:hover{color:var(--cedar-light)}
+.page-hero-label{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px;display:flex;align-items:center;gap:12px}
+.page-hero-label::before{content:'';display:inline-block;width:24px;height:1px;background:var(--cedar)}
+.page-hero-title{font-family:var(--font-display);font-size:clamp(2.4rem,5vw,4rem);font-weight:300;line-height:1.1;color:var(--white);margin-bottom:24px;max-width:700px}
+.page-hero-title em{font-style:italic;color:var(--cedar-light)}
+.page-hero-sub{font-size:1rem;font-weight:300;color:rgba(255,255,255,.65);max-width:540px;line-height:1.8;margin-bottom:40px}
+.hero-segment-links{display:flex;gap:0;margin-top:40px;border-top:1px solid rgba(255,255,255,.1);flex-wrap:wrap}
+.hero-seg-link{font-size:.72rem;font-weight:400;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);padding:14px 22px;border-right:1px solid rgba(255,255,255,.08);transition:color var(--t),background var(--t)}
+.hero-seg-link:hover{color:var(--cedar-light);background:rgba(255,255,255,.04)}
+
+/* SHARED SECTION */
+.section{padding:96px 0}
+.section-dark{background:var(--forest);color:var(--white)}
+.section-white{background:var(--white)}
+.section-warm{background:var(--offwhite)}
+.section-anthracite{background:var(--anthracite)}
+.section-label{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar);margin-bottom:16px;display:block}
+.section-dark .section-label{color:var(--cedar-light)}
+.section-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3rem);font-weight:300;line-height:1.2;margin-bottom:20px}
+.section-dark .section-title{color:var(--white)}
+.section-lead{font-size:1rem;font-weight:300;color:var(--grey-text);line-height:1.85;max-width:600px}
+.section-dark .section-lead{color:rgba(255,255,255,.65)}
+
+/* QUICK FILTER TOP */
+#quick-filter{background:var(--white);padding:56px 0;border-bottom:1px solid var(--grey-soft)}
+.filter-intro{text-align:center;margin-bottom:48px}
+.filter-intro p{font-size:.9rem;font-weight:300;color:var(--grey-text);max-width:480px;margin:12px auto 0;line-height:1.75}
+.filter-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center}
+.chip{font-size:.78rem;font-weight:400;letter-spacing:.05em;color:var(--anthracite);background:var(--offwhite);border:1px solid var(--grey-soft);padding:10px 20px;cursor:pointer;transition:all var(--t)}
+.chip:hover,.chip.active{background:var(--cedar);border-color:var(--cedar);color:var(--white)}
+
+/* SEGMENT CARDS */
+#segmenty{background:var(--offwhite)}
+.segments-intro{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:end;margin-bottom:72px}
+.segment-card{background:var(--white);margin-bottom:2px;overflow:hidden;transition:transform var(--t)}
+.segment-card:hover{transform:translateY(-3px)}
+.segment-card.hidden{display:none}
+
+.sc-header{padding:36px 40px 28px;display:flex;align-items:flex-start;gap:24px;border-bottom:1px solid var(--grey-soft)}
+.sc-icon{width:52px;height:52px;background:var(--offwhite);border:1px solid var(--grey-soft);display:flex;align-items:center;justify-content:center;font-size:1.4rem;flex-shrink:0;transition:background var(--t),border-color var(--t)}
+.segment-card:hover .sc-icon{background:var(--cedar);border-color:var(--cedar)}
+.sc-header-text{}
+.sc-tag{font-size:.62rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--cedar);margin-bottom:8px}
+.sc-title{font-family:var(--font-display);font-size:1.5rem;font-weight:500;color:var(--anthracite);line-height:1.25;margin-bottom:6px}
+.sc-subtitle{font-size:.85rem;font-weight:300;color:var(--grey-text);line-height:1.5}
+
+.sc-body{display:grid;grid-template-columns:1fr 1fr;gap:0}
+.sc-problem{padding:28px 40px;background:var(--offwhite);border-right:1px solid var(--grey-soft)}
+.sc-solution{padding:28px 40px}
+.sc-col-label{font-size:.62rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--grey-text);margin-bottom:14px}
+.sc-list{list-style:none;display:flex;flex-direction:column;gap:9px}
+.sc-list li{font-size:.86rem;font-weight:300;color:var(--anthracite);padding-left:16px;position:relative;line-height:1.55}
+.sc-list li::before{content:'';position:absolute;left:0;top:10px;width:6px;height:1px;background:var(--cedar)}
+.sc-solution .sc-list li::before{background:var(--forest)}
+
+.sc-footer{padding:20px 40px;background:var(--forest);display:flex;align-items:center;justify-content:space-between;gap:16px}
+.sc-result{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.75);line-height:1.55;flex:1}
+.sc-result strong{color:var(--cedar-light);font-weight:500}
+.sc-cta{font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:var(--cedar-light);white-space:nowrap;border-bottom:1px solid rgba(184,147,90,.4);padding-bottom:2px;transition:color var(--t),border-color var(--t);flex-shrink:0}
+.sc-cta:hover{color:var(--white);border-color:var(--white)}
+
+/* SPECIAL: Onkologia card */
+.segment-card.oncology .sc-header{background:var(--forest)}
+.segment-card.oncology .sc-icon{background:rgba(255,255,255,.08);border-color:rgba(255,255,255,.15)}
+.segment-card.oncology .sc-tag{color:var(--cedar-light)}
+.segment-card.oncology .sc-title{color:var(--white)}
+.segment-card.oncology .sc-subtitle{color:rgba(255,255,255,.6)}
+.segment-card.oncology .sc-footer{background:rgba(28,43,36,.7)}
+
+/* NIE DLA KOGO */
+#nie-dla-kogo{background:var(--anthracite)}
+.ndk-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start;margin-top:56px}
+.ndk-intro{}
+.ndk-intro-body{font-size:.95rem;font-weight:300;color:rgba(255,255,255,.65);line-height:1.85;margin-bottom:32px}
+.ndk-list-wrap{}
+.ndk-items{display:flex;flex-direction:column;gap:2px}
+.ndk-item{background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.07);padding:20px 24px;display:flex;align-items:flex-start;gap:16px;transition:background var(--t)}
+.ndk-item:hover{background:rgba(255,255,255,.07)}
+.ndk-x{width:28px;height:28px;background:rgba(255,255,255,.07);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:.8rem;color:rgba(255,255,255,.4);flex-shrink:0;margin-top:1px}
+.ndk-text{font-size:.88rem;font-weight:300;color:rgba(255,255,255,.7);line-height:1.6}
+.ndk-text strong{font-weight:500;color:rgba(255,255,255,.9)}
+
+/* PROCES – jak to wygląda dla każdego */
+#proces-ogolny{background:var(--white)}
+.proces-header{display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:end;margin-bottom:64px}
+.proces-steps{display:grid;grid-template-columns:repeat(4,1fr);gap:0;position:relative}
+.proces-steps::before{content:'';position:absolute;top:26px;left:calc(12.5% + 12px);right:calc(12.5% + 12px);height:1px;background:var(--grey-soft);z-index:0}
+.ps{padding:0 16px 0 0;position:relative;z-index:1}
+.ps-num{width:52px;height:52px;border-radius:50%;background:var(--offwhite);border:1px solid var(--grey-soft);display:flex;align-items:center;justify-content:center;font-family:var(--font-display);font-size:1.2rem;font-weight:300;color:var(--cedar);margin-bottom:20px;transition:all var(--t)}
+.ps:hover .ps-num{background:var(--cedar);border-color:var(--cedar);color:var(--white)}
+.ps-title{font-family:var(--font-display);font-size:1.05rem;font-weight:500;color:var(--anthracite);margin-bottom:8px;line-height:1.3}
+.ps-body{font-size:.83rem;font-weight:300;color:var(--grey-text);line-height:1.7}
+
+/* FINAL CTA */
+#final-cta{background:var(--forest);padding:100px 0;text-align:center}
+.fct-eyebrow{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px}
+.fct-title{font-family:var(--font-display);font-size:clamp(2rem,4vw,3.4rem);font-weight:300;color:var(--white);line-height:1.2;margin-bottom:20px}
+.fct-title em{font-style:italic;color:var(--cedar-light)}
+.fct-sub{font-size:.95rem;font-weight:300;color:rgba(255,255,255,.6);max-width:460px;margin:0 auto 48px;line-height:1.75}
+.fct-actions{display:flex;gap:16px;justify-content:center;flex-wrap:wrap}
+
+/* FOOTER */
+footer{background:var(--forest);padding:60px 0 36px;border-top:1px solid rgba(255,255,255,.06)}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-logo{font-family:var(--font-display);font-size:1.3rem;font-weight:500;color:var(--white);letter-spacing:.08em;margin-bottom:16px}
+.footer-logo span{color:var(--cedar)}
+.footer-tagline{font-size:.82rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.7;max-width:280px}
+.footer-col-title{font-size:.68rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);transition:color var(--t)}
+.footer-links a:hover{color:var(--cedar-light)}
+.footer-ci{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);margin-bottom:10px;line-height:1.6}
+.footer-ci a{color:rgba(255,255,255,.6);transition:color var(--t)}
+.footer-ci a:hover{color:var(--cedar-light)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-copy{font-size:.75rem;color:rgba(255,255,255,.3)}
+.footer-legal{display:flex;gap:20px}
+.footer-legal a{font-size:.75rem;color:rgba(255,255,255,.3);transition:color var(--t)}
+.footer-legal a:hover{color:rgba(255,255,255,.6)}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .nav-links{display:none}.nav-hamburger{display:flex}
+  .section{padding:64px 0}
+  .segments-intro{grid-template-columns:1fr;gap:24px}
+  .sc-body{grid-template-columns:1fr}
+  .sc-problem{border-right:none;border-bottom:1px solid var(--grey-soft)}
+  .sc-footer{flex-direction:column;align-items:flex-start}
+  .ndk-grid{grid-template-columns:1fr;gap:40px}
+  .proces-header{grid-template-columns:1fr;gap:24px}
+  .proces-steps{grid-template-columns:1fr 1fr;gap:32px}
+  .proces-steps::before{display:none}
+  .hero-segment-links{display:none}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:600px){
+  .sc-header{padding:24px;flex-direction:column;gap:16px}
+  .sc-body,.sc-footer,.sc-problem,.sc-solution{padding:20px 24px}
+  .filter-chips{gap:6px}
+  .fct-actions{flex-direction:column;align-items:center}
+  .proces-steps{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;align-items:flex-start}
+}
+
+/* Unified global navigation */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(23,37,30,.94);box-shadow:0 2px 24px rgba(0,0,0,.15);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
+.site-logo{font-family:var(--font-display,var(--display,Georgia,serif));font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white,#fff)}
+.site-logo span{color:var(--cedar-light,var(--cedar,#b8935a))}
+.site-nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none;margin:0;padding:0}
+.site-nav-links a,.site-nav-mobile a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t,var(--transition,.25s ease)),background var(--t,var(--transition,.25s ease)),border-color var(--t,var(--transition,.25s ease)),transform var(--t,var(--transition,.25s ease))}
+.site-nav-links a:hover,.site-nav-links a.active,.site-nav-mobile a:hover,.site-nav-mobile a.active{color:var(--cedar-light,#d5b982)}
+.site-nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border:1px solid var(--cedar,#b8935a);background:transparent;color:rgba(255,255,255,.86)!important;line-height:1;white-space:nowrap}
+.site-nav-cta:hover,.site-nav-cta.active{background:rgba(184,147,90,.12);color:var(--cedar-light,#d5b982)!important;border-color:var(--cedar-light,#d5b982)}
+.site-client-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.68)!important;white-space:nowrap}
+.site-client-link:hover,.site-client-link:focus-visible{color:var(--cedar-light,#d5b982)!important;transform:translateY(-1px)}
+.site-client-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.site-nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:0;padding:8px}
+.site-nav-toggle span{display:block;width:24px;height:2px;background:var(--white,#fff)}
+.site-nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;flex-direction:column;gap:16px;padding:24px;background:var(--forest,#17251e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.site-nav-mobile.open{display:flex}
+.site-nav-mobile a{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.site-nav-mobile .site-nav-cta{margin-top:4px;padding:14px 18px;border-bottom:1px solid var(--cedar,#b8935a)}
+.site-nav-mobile .site-client-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.72)!important}
+@media(max-width:980px){.site-nav-links{display:none}.site-nav-toggle{display:flex}}
+@media(max-width:640px){.site-nav{height:64px;padding:0 18px}.site-nav-mobile{top:64px;max-height:calc(100vh - 64px);overflow-y:auto}.site-logo{font-size:1.25rem}}
+</style>
+  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v16/images/damian-about.webp" />
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Nawigacja główna">
+  <a class="site-logo" href="./index.html">Studio <span>Las</span></a>
+  <ul class="site-nav-links">
+    <li><a href="./index.html">Strona główna</a></li>
+    <li><a href="./metoda-i-pakiety.html">Metoda i pakiety</a></li>
+    <li><a href="./blog.html">Blog</a></li>
+    <li><a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a></li>
+    </ul>
+  <button class="site-nav-toggle" id="hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" type="button">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="site-nav-mobile nav-mobile" id="navMobile">
+  <a href="./index.html">Strona główna</a>
+  <a href="./metoda-i-pakiety.html">Metoda i pakiety</a>
+  <a href="./blog.html">Blog</a>
+  <a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a>
+  </div>
+
+<!-- PAGE HERO -->
+<section id="page-hero">
+  <div class="container">
+    <nav class="breadcrumb">
+      <a href="./index.html">Strona główna</a><span>›</span><span>Dla kogo</span>
+    </nav>
+    <p class="page-hero-label">Zanim zaczniesz</p>
+    <h1 class="page-hero-title">Sprawdź, czy Studio Las<br>jest <em>właśnie dla Ciebie</em></h1>
+    <p class="page-hero-sub">
+      Pracuję z kilkoma osobami tygodniowo – nie z kilkudziesięcioma. Dlatego od razu mówię wprost,
+      komu mogę realnie pomóc, a komu nie. Poniżej znajdziesz swój profil
+      i dowiesz się, czego możesz oczekiwać od współpracy.
+    </p>
+    <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Wypełnij ankietę diagnostyczną</a>
+    <nav class="hero-segment-links" aria-label="Segmenty">
+      <a href="#bol-i-kontuzje" class="hero-seg-link">Ból i kontuzje</a>
+      <a href="#powrot-po-operacji" class="hero-seg-link">Po operacji</a>
+      <a href="#lek-przed-ruchem" class="hero-seg-link">Lęk przed siłownią</a>
+      <a href="#osoby-50" class="hero-seg-link">50+</a>
+      <a href="#po-porodzie" class="hero-seg-link">Po porodzie</a>
+      <a href="#onkologia" class="hero-seg-link">Po leczeniu onkologicznym</a>
+      <a href="#testy-sprawnosciowe" class="hero-seg-link">Testy sprawnościowe</a>
+    </nav>
+  </div>
+</section>
+
+<!-- QUICK FILTER -->
+<section id="quick-filter">
+  <div class="container">
+    <div class="filter-intro">
+      <span style="font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar)">Szybki filtr</span>
+      <p>Kliknij na to, co Cię dotyczy – strona pokaże właściwe sekcje</p>
+    </div>
+    <div class="filter-chips" id="filterChips">
+      <div class="chip active" data-filter="all">Pokaż wszystko</div>
+      <div class="chip" data-filter="bol">Ból przewlekły</div>
+      <div class="chip" data-filter="kontuzja">Po kontuzji / operacji</div>
+      <div class="chip" data-filter="silownia">Lęk przed siłownią</div>
+      <div class="chip" data-filter="senior">50+ / senior fitness</div>
+      <div class="chip" data-filter="porod">Po porodzie</div>
+      <div class="chip" data-filter="onko">Po leczeniu onkologicznym</div>
+      <div class="chip" data-filter="testy">Testy sprawnościowe</div>
+    </div>
+  </div>
+</section>
+
+<!-- SEGMENTY -->
+<section id="segmenty" class="section section-warm">
+  <div class="container">
+    <div class="segments-intro">
+      <div class="reveal">
+        <span class="section-label">Twój profil</span>
+        <h2 class="section-title">Kto przychodzi<br>do Studio Las</h2>
+      </div>
+      <p class="section-lead reveal" style="transition-delay:.1s">
+        Każda z poniższych grup ma inny punkt startowy, inne obawy i inny cel.
+        Wspólne jest jedno: wszystkie potrzebują spokojnego, indywidualnego procesu –
+        a nie kolejnej siłowni z kartą miesięczną.
+      </p>
+    </div>
+
+    <!-- 1. BÓL PRZEWLEKŁY -->
+    <div class="segment-card reveal" id="bol-i-kontuzje" data-seg="bol">
+      <div class="sc-header">
+        <div class="sc-icon">🦴</div>
+        <div class="sc-header-text">
+          <div class="sc-tag">Segment główny</div>
+          <div class="sc-title">Przewlekły ból pleców, kolan, barków lub bioder</div>
+          <div class="sc-subtitle">Osoby 40+, które żyją z bólem od miesięcy lub lat i szukają rozwiązania innego niż kolejny kurs tabletek</div>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-problem">
+          <div class="sc-col-label">Twoja sytuacja</div>
+          <ul class="sc-list">
+            <li>Ból pojawia się przy siedzeniu, wstawaniu, prowadzeniu auta, schodzeniu ze schodów</li>
+            <li>Byłeś u lekarza, fizjoterapeuty – pomogło na chwilę, ale ból wraca</li>
+            <li>Masz wyniki badań (MRI, RTG), ale nikt nie powiedział Ci co z tym zrobić ruchowo</li>
+            <li>Boisz się, że trening „tylko zaszkodzi" – bo już to przerabiałeś</li>
+            <li>Siedzący tryb pracy i stres dokładają napięcia, którego nie dajesz rady rozładować</li>
+          </ul>
+        </div>
+        <div class="sc-solution">
+          <div class="sc-col-label">Co proponuję</div>
+          <ul class="sc-list">
+            <li>Diagnostyka: Tanita + testy ruchowe + wywiad, żeby znać przyczynę, nie tylko objaw</li>
+            <li>Naprawa wzorców ruchowych, które generują ból – zanim dołożymy siłę</li>
+            <li>Stopniowa progresja bez presji i bez „orania się" – w tempie, które Twoje ciało akceptuje</li>
+            <li>Plan domowy 2–4 ćwiczeń, który możesz robić między sesjami bez strachu</li>
+            <li>Praca nad 4 filarami: ruch, sen, odżywianie, stres – bo ból rzadko ma jedną przyczynę</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-result">Efekt po 12 tygodniach: <strong>mniejszy ból lub nauczenie się zarządzania nim</strong>, bezpieczny trening do samodzielnego kontynuowania, konkretne liczby w Raporcie Dobrostanu.</div>
+        <a href="./ankieta-kontakt.html#ankieta" class="sc-cta">Wypełnij ankietę →</a>
+      </div>
+    </div>
+
+    <!-- 2. PO KONTUZJI / OPERACJI -->
+    <div class="segment-card reveal" id="powrot-po-operacji" data-seg="kontuzja">
+      <div class="sc-header">
+        <div class="sc-icon">🔧</div>
+        <div class="sc-header-text">
+          <div class="sc-tag">Segment główny</div>
+          <div class="sc-title">Powrót po kontuzji lub operacji ortopedycznej</div>
+          <div class="sc-subtitle">Kolano, kręgosłup, bark, Achilles – osoby po zakończonej fizjoterapii, które chcą wrócić do normalnej aktywności bez nawrotów</div>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-problem">
+          <div class="sc-col-label">Twoja sytuacja</div>
+          <ul class="sc-list">
+            <li>Skończyłeś rehabilitację – lekarz powiedział „jest dobrze", ale Ty wciąż się boisz</li>
+            <li>Chcesz wrócić do sportu, aktywności, normalnego życia – ale nie wiesz jak to zrobić bezpiecznie</li>
+            <li>Klasyczna siłownia cię przeraża – nikt tam nie wie o Twojej historii zdrowia</li>
+            <li>Boisz się, że „znowu strzeli" i wrócisz do punktu wyjścia</li>
+          </ul>
+        </div>
+        <div class="sc-solution">
+          <div class="sc-col-label">Co proponuję</div>
+          <ul class="sc-list">
+            <li>Czytam Twoją dokumentację medyczną przed pierwszym spotkaniem – widzę pełny obraz</li>
+            <li>Buduję program oparty na zaleceniach lekarza / fizjoterapeuty, nie wbrew nim</li>
+            <li>Stabilizacja i siła funkcjonalna w ruchach z życia: schody, dźwiganie, bieganie</li>
+            <li>Praca z lękiem przed ruchem – to często blokuje bardziej niż samo ciało</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-result">Efekt: <strong>powrót do aktywności z poczuciem kontroli i bezpieczeństwa</strong>, bez ciągłego strachu, że kolejny krok „coś zerwie".</div>
+        <a href="./ankieta-kontakt.html#ankieta" class="sc-cta">Wypełnij ankietę →</a>
+      </div>
+    </div>
+
+    <!-- 3. LĘK PRZED SIŁOWNIĄ -->
+    <div class="segment-card reveal" id="lek-przed-ruchem" data-seg="silownia">
+      <div class="sc-header">
+        <div class="sc-icon">🌲</div>
+        <div class="sc-header-text">
+          <div class="sc-tag">Segment główny</div>
+          <div class="sc-title">Lęk przed siłownią i ruchem w miejscach publicznych</div>
+          <div class="sc-subtitle">Osoby, które chcą zadbać o siebie, ale tłum, ocenianie i hałas klasycznej siłowni działają na nie paraliżująco</div>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-problem">
+          <div class="sc-col-label">Twoja sytuacja</div>
+          <ul class="sc-list">
+            <li>Czujesz się oceniany na siłowni – przez innych ćwiczących, przez pracowników, przez kamery</li>
+            <li>Hałas, muzyka na pełen regulator, tłum przy maszynach – to nie dla Ciebie</li>
+            <li>Masz karnety, które wygasają nienależyte – bo wejście tam wymaga od Ciebie zbyt wiele energii</li>
+            <li>Wolisz prywatność i spokój – szczególnie gdy zaczynacie od zera</li>
+          </ul>
+        </div>
+        <div class="sc-solution">
+          <div class="sc-col-label">Co proponuję</div>
+          <ul class="sc-list">
+            <li>Kameralne studio w lesie – zero tłumu, zero patrzących ludzi, zero oceniania</li>
+            <li>Zawsze pracujemy sam na sam – tylko Ty i trener, nikt inny w sali</li>
+            <li>Tempem i intensywnością zarządzasz razem ze mną – bez presji „daj z siebie wszystko"</li>
+            <li>Las za oknem działa na układ nerwowy lepiej niż lustrzane ściany i motywacyjne hasła</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-result">Efekt: <strong>trening, który lubisz i do którego wracasz</strong> – nie dlatego, że musisz, ale dlatego, że czujesz się w nim bezpiecznie.</div>
+        <a href="./ankieta-kontakt.html#ankieta" class="sc-cta">Wypełnij ankietę →</a>
+      </div>
+    </div>
+
+    <!-- 4. 50+ -->
+    <div class="segment-card reveal" id="osoby-50" data-seg="senior">
+      <div class="sc-header">
+        <div class="sc-icon">⚖️</div>
+        <div class="sc-header-text">
+          <div class="sc-tag">Senior fitness / pre-senior</div>
+          <div class="sc-title">Osoby 50+ – zachowanie sprawności i niezależności</div>
+          <div class="sc-subtitle">Profilaktyka zamiast „gaszenia pożarów" – siła funkcjonalna, równowaga, mobilność i pewność siebie w codziennych czynnościach</div>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-problem">
+          <div class="sc-col-label">Twoja sytuacja</div>
+          <ul class="sc-list">
+            <li>Czujesz, że sprawność spada – wolniej wstajesz, szybciej się męczysz, gorzej śpisz</li>
+            <li>Klasyczna siłownia wydaje się miejscem „dla młodych" – nie czujesz się tam na miejscu</li>
+            <li>Boisz się kontuzji – upadek, naciągnięcie, coś w kręgosłupie – i nie chcesz ryzykować</li>
+            <li>Lekarze mówią „ruszaj się", ale nikt nie mówi jak to robić bezpiecznie przy Twoich problemach</li>
+          </ul>
+        </div>
+        <div class="sc-solution">
+          <div class="sc-col-label">Co proponuję</div>
+          <ul class="sc-list">
+            <li>Program nastawiony na funkcję, nie estetykę: wchodzenie po schodach, noszenie zakupów, ogród</li>
+            <li>Trening równowagi i propriocepcji – redukcja ryzyka upadków i kontuzji</li>
+            <li>Indywidualne tempo – bez porównywania się z kimkolwiek, bez pośpiechu</li>
+            <li>Monitoring składu ciała (Tanita) – szczególnie ważny przy naturalnej utracie masy mięśniowej po 50.</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-result">Efekt: <strong>więcej sprawności na co dzień, mniejsze ryzyko kontuzji i upadków</strong>, poczucie że „jeszcze dużo mogę" – bo możesz.</div>
+        <a href="./ankieta-kontakt.html#ankieta" class="sc-cta">Wypełnij ankietę →</a>
+      </div>
+    </div>
+
+    <!-- 5. PO PORODZIE -->
+    <div class="segment-card reveal" id="po-porodzie" data-seg="porod">
+      <div class="sc-header">
+        <div class="sc-icon">🌿</div>
+        <div class="sc-header-text">
+          <div class="sc-tag">Segment specjalistyczny</div>
+          <div class="sc-title">Kobiety po porodzie i powrót do aktywności</div>
+          <div class="sc-subtitle">Bezpieczny powrót do formy po porodzie z uwzględnieniem mięśni brzucha, dna miednicy i aktualnego poziomu energii</div>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-problem">
+          <div class="sc-col-label">Twoja sytuacja</div>
+          <ul class="sc-list">
+            <li>Chcesz wrócić do aktywności, ale nie wiesz co jest bezpieczne, a co nie po porodzie</li>
+            <li>Klasyczna siłownia nie bierze pod uwagę Twojej historii – mięśni brzucha, miednicy, zmęczenia</li>
+            <li>Brakuje Ci energii i czasu – trening musi być efektywny, nie heroiczny</li>
+            <li>Boisz się, że za szybki powrót zaszkodzi – i masz rację, że się boisz</li>
+          </ul>
+        </div>
+        <div class="sc-solution">
+          <div class="sc-col-label">Co proponuję</div>
+          <ul class="sc-list">
+            <li>Praca wyłącznie po zgody lekarza ginekologa lub położnej – bezpieczeństwo ponad wszystko</li>
+            <li>Odbudowa mięśni brzucha i dna miednicy we właściwej kolejności i tempie</li>
+            <li>Program dopasowany do aktualnego poziomu energii, snu i obciążeń w domu</li>
+            <li>Kameralne studio – prywatność, cisza, bez presji "efektów na Instagramie"</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-result">Efekt: <strong>bezpieczny i trwały powrót do formy</strong> – bez bólu miednicy, bez nadwyrężenia i bez poczucia, że musisz „zasuwać jak kiedyś".</div>
+        <a href="./ankieta-kontakt.html#ankieta" class="sc-cta">Wypełnij ankietę →</a>
+      </div>
+    </div>
+
+    <!-- 6. ONKOLOGIA -->
+    <div class="segment-card oncology reveal" id="onkologia" data-seg="onko">
+      <div class="sc-header">
+        <div class="sc-icon">🍃</div>
+        <div class="sc-header-text">
+          <div class="sc-tag">Segment specjalistyczny</div>
+          <div class="sc-title">Osoby w trakcie lub po leczeniu onkologicznym</div>
+          <div class="sc-subtitle">Bardzo spokojny, kameralny powrót do ruchu – z poszanowaniem aktualnego stanu zdrowia i w ścisłej współpracy z lekarzem prowadzącym</div>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-problem">
+          <div class="sc-col-label">Dlaczego Studio Las</div>
+          <ul class="sc-list">
+            <li>Klasyczne siłownie to tłum, pot, duża rotacja osób – ryzyko infekcji przy osłabionej odporności</li>
+            <li>Brak miejsc, gdzie można spokojnie wrócić do ruchu po chemii lub radioterapii</li>
+            <li>Zmęczenie, zmiany w składzie ciała, lęk – potrzebne jest zrozumienie, nie standardowy program</li>
+          </ul>
+        </div>
+        <div class="sc-solution">
+          <div class="sc-col-label">Co proponuję</div>
+          <ul class="sc-list">
+            <li>Studio 1:1 w lesie – kontrolowana, kameralna przestrzeń, minimum ryzyka infekcji</li>
+            <li>Wyłącznie po pisemnym dopuszczeniu od lekarza prowadzącego – bezpieczeństwo bez kompromisów</li>
+            <li>Tempo i obciążenia dostosowane do aktualnego stanu, nie do żadnej „normy"</li>
+            <li>Las i cisza – badania shinrin-yoku sugerują, że kontakt z naturą obniża kortyzol i wspiera regenerację</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-result">To jest wyjątkowo delikatny obszar. <strong>Zamiast ankiety – zapraszam najpierw do rozmowy.</strong> Razem ocenimy, czy i kiedy możemy zacząć.</div>
+        <a href="./trening-po-leczeniu-onkologicznym.html" class="sc-cta">Dowiedz się więcej →</a>
+      </div>
+    </div>
+
+    <!-- 7. TESTY SPRAWNOŚCIOWE -->
+    <div class="segment-card reveal" id="testy-sprawnosciowe" data-seg="testy">
+      <div class="sc-header">
+        <div class="sc-icon">🎯</div>
+        <div class="sc-header-text">
+          <div class="sc-tag">Segment wąski</div>
+          <div class="sc-title">Przygotowanie do testów sprawnościowych i Hyrox</div>
+          <div class="sc-subtitle">WP, WAT, Policja, Straż Pożarna, Hyrox – dla osób, które chcą realnego przygotowania od kogoś, kto sam przez to przeszedł</div>
+        </div>
+      </div>
+      <div class="sc-body">
+        <div class="sc-problem">
+          <div class="sc-col-label">Twoja sytuacja</div>
+          <ul class="sc-list">
+            <li>Masz termin testu lub startu i potrzebujesz konkretnego planu – nie ogólników z YouTuba</li>
+            <li>Plany „z internetu" powodują przetrenowanie lub ból, zanim dojdziesz do startu</li>
+            <li>Brakuje Ci kogoś, kto wie jak wygląda selekcja od środka i potrafi to przełożyć na trening</li>
+          </ul>
+        </div>
+        <div class="sc-solution">
+          <div class="sc-col-label">Co proponuję</div>
+          <ul class="sc-list">
+            <li>Praktyczna wiedza z jednostki wojskowej, przełożona na konkretny plan przygotowań</li>
+            <li>Siła funkcjonalna na power racku, wydolność na airbike i bieżni, technika pod testy</li>
+            <li>Plan dopasowany do Twojego czasu, pracy i życia – bez „zajeżdżania się" dla wyniku</li>
+          </ul>
+        </div>
+      </div>
+      <div class="sc-footer">
+        <div class="sc-result">To jest <strong>węższy, dodatkowy nurt</strong> – nie główny profil studia. Pracuję z ograniczoną liczbą osób z tego segmentu. Napisz w ankiecie o swoim terminie i celu.</div>
+        <a href="./ankieta-kontakt.html#ankieta" class="sc-cta">Wypełnij ankietę →</a>
+      </div>
+    </div>
+
+  </div><!-- /container -->
+</section>
+
+
+<!-- NIE DLA KOGO -->
+<section id="nie-dla-kogo" class="section section-anthracite">
+  <div class="container">
+    <div class="ndk-grid">
+      <div class="reveal">
+        <span class="section-label" style="color:var(--cedar-light)">Uczciwa rozmowa</span>
+        <h2 class="section-title" style="color:var(--white)">Studio Las<br>nie jest dla każdego.</h2>
+        <p class="ndk-intro-body">
+          Wolę powiedzieć Ci to teraz, niż żebyś przyjechał i okazało się, że
+          źle trafiony. To nie jest miejsce dla każdego – i to jest zamierzone.
+          Pracuję z małą liczbą klientów właśnie po to, żeby każda współpraca
+          miała sens.
+        </p>
+        <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Sprawdź, czy to dla Ciebie →</a>
+      </div>
+      <div class="ndk-list-wrap reveal" style="transition-delay:.15s">
+        <div class="ndk-items">
+          <div class="ndk-item">
+            <div class="ndk-x">✕</div>
+            <div class="ndk-text"><strong>Szukasz „wycisku" jak na crossficie.</strong> Nie robimy tu zawodów. Nie ma tablic wyników ani rywalizacji. To nie jest obóz przetrwania.</div>
+          </div>
+          <div class="ndk-item">
+            <div class="ndk-x">✕</div>
+            <div class="ndk-text"><strong>Chcesz „szybkiej metamorfozy na lato".</strong> Jeśli zależy Ci na 8 kg w 6 tygodni, nie jestem właściwą osobą. Tu pracujemy na efekty, które zostają.</div>
+          </div>
+          <div class="ndk-item">
+            <div class="ndk-x">✕</div>
+            <div class="ndk-text"><strong>Zależy Ci przede wszystkim na cenie.</strong> Mam drogie pakiety i mam drogie pakiety. Jeśli głównym kryterium jest najtaniej – lepiej skieruj się gdzie indziej.</div>
+          </div>
+          <div class="ndk-item">
+            <div class="ndk-x">✕</div>
+            <div class="ndk-text"><strong>Nie jesteś gotowy na minimum 12 tygodni regularnej pracy.</strong> Jeden trening tygodniowo przez 3 miesiące. Jeśli to brzmi jak za dużo – na razie nie zaczynajmy.</div>
+          </div>
+          <div class="ndk-item">
+            <div class="ndk-x">✕</div>
+            <div class="ndk-text"><strong>Chcesz trenować bez żadnej diagnostyki.</strong> Każda nowa osoba zaczyna od wizyty diagnostycznej. Bez wyjątków. To nie jest formalność – to podstawa bezpiecznej pracy.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- JAK WYGLĄDA PROCES -->
+<section id="proces-ogolny" class="section section-white">
+  <div class="container">
+    <div class="proces-header">
+      <div class="reveal">
+        <span class="section-label">Bez względu na segment</span>
+        <h2 class="section-title">Każdy zaczyna<br>od tego samego procesu</h2>
+      </div>
+      <p class="section-lead reveal" style="transition-delay:.1s">
+        Niezależnie od tego, czy przychodzisz z bólem lędźwi, po operacji kolana
+        czy żeby przygotować się do testów – pierwsze kroki są zawsze takie same.
+        To nie jest przypadkowe.
+      </p>
+    </div>
+    <div class="proces-steps">
+      <div class="ps reveal">
+        <div class="ps-num">01</div>
+        <div class="ps-title">Ankieta online</div>
+        <div class="ps-body">5 minut, żeby zrozumieć Twoją sytuację przed rozmową. Bez medycznego żargonu – piszesz swoimi słowami.</div>
+      </div>
+      <div class="ps reveal" style="transition-delay:.1s">
+        <div class="ps-num">02</div>
+        <div class="ps-title">Krótka rozmowa</div>
+        <div class="ps-body">Oddzwaniam w ciągu 24h. Sprawdzamy razem czy mogę Ci realnie pomóc. Bez presji, bez sprzedaży.</div>
+      </div>
+      <div class="ps reveal" style="transition-delay:.2s">
+        <div class="ps-num">03</div>
+        <div class="ps-title">Wizyta diagnostyczna</div>
+        <div class="ps-body">75–90 min w studio. Tanita, testy ruchowe, wywiad. Wychodzisz z jasnym planem na 12 tygodni. Koszt 300 zł (odliczane od pakietu).</div>
+      </div>
+      <div class="ps reveal" style="transition-delay:.3s">
+        <div class="ps-num">04</div>
+        <div class="ps-title">Decyzja bez presji</div>
+        <div class="ps-body">Po diagnostyce masz czas na przemyślenie. Nie ma presji decyzji na miejscu. Decydujesz, kiedy jesteś gotowy.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+<!-- FINAL CTA -->
+<section id="final-cta">
+  <div class="container reveal">
+    <p class="fct-eyebrow">Następny krok</p>
+    <h2 class="fct-title">Rozpoznałeś się<br>w którymś z <em>tych profili?</em></h2>
+    <p class="fct-sub">Wypełnij ankietę. Oddzwonię i w krótkiej rozmowie powiemy sobie wprost – czy i jak mogę Ci pomóc. Bez zobowiązań.</p>
+    <div class="fct-actions">
+      <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Wypełnij ankietę diagnostyczną →</a>
+      <a href="./metoda-i-pakiety.html" class="btn-ghost-dark">Zobacz metodę i pakiety</a>
+    </div>
+  </div>
+</section>
+
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Studio <span>Las</span></div>
+        <p class="footer-tagline">Nie dla każdego. Dla osób, które traktują zdrowie jako inwestycję, nie wydatek.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Nawigacja</div>
+        <ul class="footer-links">
+          <li><a href="./index.html">Strona główna</a></li>
+          <li><a href="./metoda-i-pakiety.html">Metoda i pakiety</a></li>
+          <li><a href="./dla-kogo.html">Dla kogo</a></li>
+          <li><a href="./trening-po-leczeniu-onkologicznym.html">Trening po leczeniu onkologicznym</a></li>
+          <li><a href="./ankieta-kontakt.html#ankieta">Ankieta i kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Kontakt</div>
+        <p class="footer-ci">ul. Pracka 1J, 05-504 Prace Duże</p>
+        <p class="footer-ci"><a href="tel:+48503975998">503 975 998</a></p>
+        <p class="footer-ci"><a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></p>
+        <p class="footer-ci" style="margin-top:16px;font-size:.78rem;opacity:.7">Pon–Pt: 16:00–22:00 · Sob–Nd: po umówieniu</p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Studio Las · Damian Krawiec. Wszelkie prawa zastrzeżone.</p>
+      <div class="footer-legal"><span>Polityka prywatności</span><span>Regulamin</span></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Hamburger
+document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navMobile').classList.toggle('open'));
+document.querySelectorAll('#navMobile a').forEach(l=>l.addEventListener('click',()=>document.getElementById('navMobile').classList.remove('open')));
+
+// Scroll reveal
+const obs=new IntersectionObserver(entries=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -32px 0px'});
+document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+
+// Filter chips
+const chips=document.querySelectorAll('.chip');
+const cards=document.querySelectorAll('.segment-card[data-seg]');
+chips.forEach(chip=>{
+  chip.addEventListener('click',()=>{
+    chips.forEach(c=>c.classList.remove('active'));
+    chip.classList.add('active');
+    const filter=chip.dataset.filter;
+    cards.forEach(card=>{
+      if(filter==='all'||card.dataset.seg===filter){
+        card.classList.remove('hidden');
+        // re-trigger reveal if needed
+        card.classList.remove('visible');
+        setTimeout(()=>obs.observe(card),50);
+      } else {
+        card.classList.add('hidden');
+      }
+    });
+    if(filter!=='all'){
+      const first=document.querySelector('.segment-card:not(.hidden)');
+      if(first)setTimeout(()=>first.scrollIntoView({behavior:'smooth',block:'start',inline:'nearest'}),100);
+    }
+  });
+});
+</script>
+<script>
+(function initSiteNavigation(){
+  const toggle=document.getElementById('hamburger');
+  const menu=document.getElementById('navMobile');
+  if(!toggle||!menu)return;
+  const setOpen=(open)=>{
+    menu.classList.toggle('open',open);
+    toggle.setAttribute('aria-expanded',open?'true':'false');
+    toggle.setAttribute('aria-label',open?'Zamknij menu':'Otwórz menu');
+  };
+  toggle.addEventListener('click',(event)=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    setOpen(!menu.classList.contains('open'));
+  },true);
+  menu.querySelectorAll('a').forEach(link=>{
+    link.addEventListener('click',()=>setOpen(false));
+  });
+  document.addEventListener('keydown',(event)=>{
+    if(event.key==='Escape')setOpen(false);
+  });
+})();
+</script>
+</body>
+</html>
