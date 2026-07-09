@@ -1738,28 +1738,28 @@
     const PRD001_REPORT_FIELDS = [
       {
         key: "processSummary",
-        label: "Process summary",
-        helper: "Write the process arc in client-safe wording after trainer review."
+        label: "Podsumowanie procesu",
+        helper: "Opisz przebieg procesu spokojnym językiem po przeglądzie trenera."
       },
       {
         key: "keyPatterns",
-        label: "Key patterns",
-        helper: "Name the pattern the trainer sees. Do not turn numbers into judgment."
+        label: "Najważniejsze wzorce",
+        helper: "Nazwij wzorzec widoczny dla trenera. Nie zamieniaj liczb w ocenę."
       },
       {
         key: "selectedEvidence",
-        label: "Selected evidence",
-        helper: "Include only evidence the trainer chooses as useful context."
+        label: "Wybrane sygnały",
+        helper: "Uwzględnij tylko te sygnały, które trener wybiera jako użyteczny kontekst."
       },
       {
         key: "trainerInterpretation",
-        label: "Trainer interpretation",
-        helper: "The trainer gives meaning. Keep it calm and bounded."
+        label: "Interpretacja trenera",
+        helper: "To trener nadaje znaczenie. Zachowaj spokojny i ograniczony zakres."
       },
       {
         key: "nextRecommendation",
-        label: "Next recommendation",
-        helper: "Describe the next trainer-led decision or direction."
+        label: "Dalszy kierunek",
+        helper: "Opisz kolejną decyzję lub kierunek prowadzenia po stronie trenera."
       }
     ];
     const EXERCISE_CATEGORIES = ["Przygotowanie ciała / Kontrola ruchu", "Mobilność", "Aktywacja i kontrola", "Siła", "Moc / koordynacja / przygotowanie sportowe", "Funkcja / codzienny ruch", "Mobilizacja", "Rolowanie / tkanki miękkie", "Stabilizacja", "Core", "Izolacja", "Plyometria", "Oddech / regulacja", "Rozciąganie", "Kontrola ruchu"];
@@ -9773,10 +9773,10 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
 
     function prd001StatusLabel(status = "draft") {
       return {
-        draft: "Draft",
-        ready_for_review: "Ready for review",
-        approved: "Approved internal snapshot"
-      }[status] || "Draft";
+        draft: "Szkic",
+        ready_for_review: "Gotowe do sprawdzenia",
+        approved: "Zatwierdzony zapis wewnętrzny"
+      }[status] || "Szkic";
     }
 
     function prd001StatusTone(status = "draft") {
@@ -9837,21 +9837,21 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
       const approved = status === "approved";
       const fields = parsePrd001ReportContent(report?.content || "");
       const meta = report
-        ? `${formatDate(report.date)}${report.updatedAt ? ` · Updated ${formatDate(String(report.updatedAt).slice(0, 10))}` : ""}${report.approvedAt ? ` · Approved ${formatDate(String(report.approvedAt).slice(0, 10))}` : ""}`
-        : "No PRD 001 snapshot yet";
+        ? `${formatDate(report.date)}${report.updatedAt ? ` · Aktualizacja ${formatDate(String(report.updatedAt).slice(0, 10))}` : ""}${report.approvedAt ? ` · Zatwierdzono ${formatDate(String(report.approvedAt).slice(0, 10))}` : ""}`
+        : "Nie ma jeszcze zapisu raportu PRD 001";
       const readonlyAttr = approved ? "readonly" : "";
       return `
         <section class="panel report-prd001">
           <div class="panel-head">
             <div>
-              <h2>Trainer-only 12-week report draft</h2>
-              <p>Manual PRD 001 flow. Paper guides the morning. Trainer gives meaning. App records the signal. Report shows the pattern.</p>
+              <h2>Szkic raportu 12-tygodniowego dla trenera</h2>
+              <p>Ręczny przebieg PRD 001. Papier porządkuje przygotowanie. Trener nadaje znaczenie. Aplikacja zapisuje sygnał. Raport pokazuje wzorzec.</p>
             </div>
             ${pill(prd001StatusLabel(status), prd001StatusTone(status))}
           </div>
           <div class="report-actions">
-            <p><strong>Client-safe wording.</strong> This is a trainer-owned internal snapshot. It is not sent to the client portal and it does not use the legacy generated report, print, or PDF path.</p>
-            <p class="meta">${escapeHtml(meta)} · Type: 12-week only · Audience: trainer_internal</p>
+            <p><strong>Język bezpieczny dla klienta.</strong> To wewnętrzny zapis prowadzony przez trenera. Nie trafia do portalu klienta i nie korzysta ze starej ścieżki raportu, druku ani PDF.</p>
+            <p class="meta">${escapeHtml(meta)} · Typ: tylko 12 tygodni · Odbiorca: trainer_internal</p>
           </div>
           <div class="form-grid">
             ${PRD001_REPORT_FIELDS.map(field => `
@@ -9864,13 +9864,13 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
           </div>
           ${approved ? `
             <div class="report-actions">
-              <p><strong>Approved internal snapshot.</strong> This PRD 001 report is read-only in this flow.</p>
+              <p><strong>Zatwierdzony zapis wewnętrzny.</strong> Ten raport PRD 001 jest w tym przebiegu tylko do odczytu.</p>
             </div>
           ` : `
             <div class="actions" style="justify-content:flex-start; margin-top:12px">
-              <button class="btn" id="prd001SaveDraftBtn" type="button">Save draft</button>
-              <button class="btn warning" id="prd001ReadyBtn" type="button">Mark ready for review</button>
-              <button class="btn primary" id="prd001ApproveBtn" type="button">Approve internal snapshot</button>
+              <button class="btn" id="prd001SaveDraftBtn" type="button">Zapisz szkic</button>
+              <button class="btn warning" id="prd001ReadyBtn" type="button">Oznacz jako gotowe do sprawdzenia</button>
+              <button class="btn primary" id="prd001ApproveBtn" type="button">Zatwierdź zapis wewnętrzny</button>
             </div>
           `}
         </section>
@@ -9886,10 +9886,10 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
 
     function validatePrd001ReportFields(fields = {}, nextStatus = "draft") {
       const filled = PRD001_REPORT_FIELDS.filter(field => fields[field.key]);
-      if (!filled.length) return "Add trainer-written content before saving this snapshot.";
+      if (!filled.length) return "Dodaj treść opracowaną przez trenera przed zapisaniem raportu.";
       if (nextStatus !== "draft") {
         const missing = PRD001_REPORT_FIELDS.filter(field => !fields[field.key]).map(field => field.label);
-        if (missing.length) return `Complete all client-safe sections first: ${missing.join(", ")}.`;
+        if (missing.length) return `Najpierw uzupełnij wszystkie sekcje bezpieczne dla klienta: ${missing.join(", ")}.`;
       }
       return "";
     }
@@ -9898,7 +9898,7 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
       const status = PRD001_REPORT_STATUSES.includes(nextStatus) ? nextStatus : "draft";
       const existing = currentPrd001Report(c);
       if (existing?.status === "approved") {
-        toast("Approved internal snapshot is read-only.");
+        toast("Zatwierdzony zapis wewnętrzny jest tylko do odczytu.");
         return;
       }
       const fields = collectPrd001ReportFields();
@@ -9926,7 +9926,7 @@ Ten raport ma pomagać Ci rozumieć drogę, a nie oceniać wynik.`;
       else c.reports.push(nextReport);
       save();
       renderReport();
-      toast(status === "approved" ? "Approved internal snapshot saved" : `PRD 001 snapshot status: ${prd001StatusLabel(status)}`);
+      toast(status === "approved" ? "Zapis wewnętrzny został zatwierdzony i zapisany" : `Status zapisu PRD 001: ${prd001StatusLabel(status)}`);
     }
 
     function bindPrd001ReportSnapshot(c = activeClient()) {
