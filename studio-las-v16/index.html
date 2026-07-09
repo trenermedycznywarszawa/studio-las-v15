@@ -1,0 +1,1254 @@
+<!DOCTYPE html>
+<html lang="pl">
+<!-- Studio Las public website v16 -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Las | Pierwsza Wizyta Diagnostyczna i spokojna praca 1:1</title>
+  <meta name="description" content="Prywatna praca 1:1 w lesie pod Warszawą. Dla osób 40+, które chcą odzyskać zaufanie do ciała bez chaosu siłowni i przypadkowych ćwiczeń." />
+  <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v16/index.html" />
+  <meta property="og:title" content="Studio Las | Odzyskaj zaufanie do ciała bez chaosu siłowni" />
+  <meta property="og:description" content="Krótka ankieta, Pierwsza Wizyta Diagnostyczna 300 zł i 12 tygodni spokojnej pracy 1:1, jeśli dalszy proces ma sens." />
+  <meta property="og:type" content="website" />
+  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v16/index.html" />
+  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v16/images/studio-latem.webp" />
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' fill='%2310241b'/%3E%3Cpath d='M32 10 50 54H14L32 10Z' fill='%23b47c43'/%3E%3Cpath d='M32 22 42 54H22L32 22Z' fill='%23f3eee6'/%3E%3C/svg%3E" />
+
+  <style>
+    :root {
+      --forest:#10241b;
+      --forest-soft:#183528;
+      --moss:#516b4f;
+      --cedar:#b47c43;
+      --cedar-dark:#80562f;
+      --clay:#9f6b54;
+      --mist:#e7ece4;
+      --cream:#f3eee6;
+      --paper:#fbfaf7;
+      --white:#fff;
+      --ink:#221b16;
+      --muted:#6e675f;
+      --line:rgba(34,27,22,.15);
+      --line-dark:rgba(255,255,255,.18);
+      --shadow:0 22px 60px rgba(22,18,14,.13);
+      --ease:cubic-bezier(.22,.61,.36,1);
+    }
+
+    * { box-sizing:border-box; }
+    html {
+      scroll-behavior:smooth;
+      scroll-padding-top:88px;
+    }
+    body {
+      margin:0;
+      overflow-x:hidden;
+      background:var(--paper);
+      color:var(--ink);
+      font-family:Inter, "Segoe UI", system-ui, -apple-system, sans-serif;
+      font-size:16px;
+      line-height:1.68;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+    img {
+      display:block;
+      width:100%;
+      max-width:100%;
+      height:auto;
+    }
+    a {
+      color:inherit;
+      text-decoration:none;
+    }
+    button {
+      font:inherit;
+      color:inherit;
+    }
+    p,
+    h1,
+    h2,
+    h3 {
+      margin:0;
+    }
+    ul {
+      margin:0;
+      padding:0;
+    }
+
+    .container {
+      width:min(1160px, calc(100% - 40px));
+      margin:0 auto;
+    }
+
+    .nav {
+      position:fixed;
+      inset:0 0 auto 0;
+      z-index:50;
+      min-height:74px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:22px;
+      padding:0 clamp(20px, 4vw, 48px);
+      color:var(--white);
+      background:rgba(16,36,27,.92);
+      border-bottom:1px solid rgba(255,255,255,.1);
+      backdrop-filter:blur(18px);
+    }
+    .logo {
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:1.34rem;
+      line-height:1;
+      white-space:nowrap;
+    }
+    .logo span {
+      color:var(--cedar);
+    }
+    .nav-links {
+      display:flex;
+      align-items:center;
+      gap:24px;
+      list-style:none;
+      font-size:.78rem;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:0;
+    }
+    .nav-links a {
+      color:rgba(255,255,255,.76);
+      transition:color .2s var(--ease);
+    }
+    .nav-links a:hover,
+    .nav-links a:focus-visible {
+      color:var(--white);
+    }
+    .nav-cta {
+      display:inline-flex;
+      align-items:center;
+      min-height:42px;
+      padding:10px 16px;
+      color:var(--white) !important;
+      background:var(--cedar);
+      border:1px solid var(--cedar);
+    }
+    .hamburger {
+      display:none;
+      width:44px;
+      height:44px;
+      padding:10px;
+      border:1px solid rgba(255,255,255,.18);
+      background:transparent;
+      cursor:pointer;
+    }
+    .hamburger span {
+      display:block;
+      height:2px;
+      margin:5px 0;
+      background:var(--white);
+    }
+    .mobile-menu {
+      position:fixed;
+      z-index:49;
+      top:74px;
+      left:0;
+      right:0;
+      display:none;
+      flex-direction:column;
+      padding:16px 24px 24px;
+      background:var(--forest);
+      border-bottom:1px solid rgba(255,255,255,.12);
+      box-shadow:0 22px 60px rgba(0,0,0,.24);
+    }
+    .mobile-menu.open {
+      display:flex;
+    }
+    .mobile-menu a {
+      padding:14px 0;
+      color:rgba(255,255,255,.84);
+      border-bottom:1px solid rgba(255,255,255,.09);
+      font-size:.84rem;
+      font-weight:800;
+      text-transform:uppercase;
+      letter-spacing:0;
+    }
+
+    .btn {
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      min-height:54px;
+      padding:15px 22px;
+      border:1px solid transparent;
+      font-size:.78rem;
+      font-weight:850;
+      line-height:1.2;
+      text-transform:uppercase;
+      letter-spacing:0;
+      text-align:center;
+      transition:transform .2s var(--ease), background .2s var(--ease), border-color .2s var(--ease);
+    }
+    .btn:hover,
+    .btn:focus-visible {
+      transform:translateY(-1px);
+    }
+    .btn-primary {
+      color:var(--white);
+      background:var(--cedar);
+      border-color:var(--cedar);
+    }
+    .btn-primary:hover,
+    .btn-primary:focus-visible {
+      background:var(--cedar-dark);
+      border-color:var(--cedar-dark);
+    }
+    .btn-outline {
+      color:var(--cedar-dark);
+      background:transparent;
+      border-color:rgba(128,86,47,.45);
+    }
+    .dark .btn-outline,
+    .hero .btn-outline,
+    .final-cta .btn-outline {
+      color:var(--white);
+      border-color:rgba(255,255,255,.42);
+    }
+
+    .eyebrow {
+      margin:0 0 15px;
+      color:var(--cedar);
+      font-size:.78rem;
+      font-weight:850;
+      text-transform:uppercase;
+      letter-spacing:0;
+    }
+    h1,
+    h2,
+    h3 {
+      font-family:Georgia, "Times New Roman", serif;
+      font-weight:400;
+      letter-spacing:0;
+    }
+    h1 {
+      max-width:11.5ch;
+      font-size:clamp(3.05rem, 7vw, 6.25rem);
+      line-height:.98;
+    }
+    h2 {
+      max-width:15ch;
+      font-size:clamp(2.16rem, 4.35vw, 4.25rem);
+      line-height:1.04;
+    }
+    h3 {
+      font-size:1.38rem;
+      line-height:1.18;
+    }
+    .section-lead {
+      max-width:760px;
+      margin-top:22px;
+      color:var(--muted);
+      font-size:clamp(1.04rem, 1.8vw, 1.24rem);
+      line-height:1.72;
+    }
+    .dark .section-lead,
+    .hero .section-lead,
+    .final-cta .section-lead {
+      color:rgba(255,255,255,.8);
+    }
+
+    .section {
+      padding:96px 0;
+      background:var(--paper);
+    }
+    .cream {
+      background:var(--cream);
+    }
+    .mist {
+      background:var(--mist);
+    }
+    .dark {
+      color:var(--white);
+      background:var(--forest);
+    }
+    .section-head {
+      display:grid;
+      grid-template-columns:minmax(0, .9fr) minmax(280px, 1fr);
+      gap:52px;
+      align-items:end;
+      margin-bottom:42px;
+    }
+
+    .hero {
+      position:relative;
+      min-height:92svh;
+      display:flex;
+      align-items:end;
+      overflow:hidden;
+      padding:128px 0 62px;
+      color:var(--white);
+      background:var(--forest);
+    }
+    .hero::before {
+      content:"";
+      position:absolute;
+      inset:0;
+      z-index:1;
+      background:
+        linear-gradient(90deg, rgba(16,36,27,.94) 0%, rgba(16,36,27,.72) 44%, rgba(16,36,27,.2) 100%),
+        linear-gradient(0deg, rgba(16,36,27,.78) 0%, rgba(16,36,27,.04) 42%);
+    }
+    .hero-bg {
+      position:absolute;
+      inset:0;
+      z-index:0;
+    }
+    .hero-bg img {
+      height:100%;
+      object-fit:cover;
+      object-position:center;
+    }
+    .hero-inner {
+      position:relative;
+      z-index:2;
+      display:grid;
+      grid-template-columns:minmax(0, 1.08fr) minmax(280px, .72fr);
+      gap:44px;
+      align-items:end;
+    }
+    .hero-copy {
+      max-width:820px;
+    }
+    .hero-lead {
+      max-width:700px;
+      margin-top:26px;
+      color:rgba(255,255,255,.84);
+      font-size:clamp(1.08rem, 2vw, 1.32rem);
+      line-height:1.65;
+    }
+    .hero-actions,
+    .cta-row {
+      display:flex;
+      flex-wrap:wrap;
+      gap:14px;
+      margin-top:30px;
+    }
+    .hero-facts {
+      display:grid;
+      gap:14px;
+      list-style:none;
+      padding:20px;
+      border:1px solid rgba(255,255,255,.2);
+      background:rgba(16,36,27,.52);
+      backdrop-filter:blur(14px);
+    }
+    .hero-facts li {
+      padding-bottom:14px;
+      border-bottom:1px solid rgba(255,255,255,.12);
+      color:rgba(255,255,255,.78);
+    }
+    .hero-facts li:last-child {
+      padding-bottom:0;
+      border-bottom:0;
+    }
+    .hero-facts strong {
+      display:block;
+      color:var(--white);
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:1.18rem;
+      font-weight:400;
+      line-height:1.2;
+      margin-bottom:4px;
+    }
+
+    .problem-grid {
+      display:grid;
+      grid-template-columns:minmax(0, .88fr) minmax(320px, 1.12fr);
+      gap:58px;
+      align-items:start;
+    }
+    .problem-note {
+      padding:28px;
+      color:var(--white);
+      background:var(--forest);
+      border-left:5px solid var(--cedar);
+      box-shadow:var(--shadow);
+    }
+    .problem-note p {
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:clamp(1.5rem, 2.6vw, 2.35rem);
+      line-height:1.18;
+    }
+    .problem-list {
+      display:grid;
+      gap:14px;
+      list-style:none;
+    }
+    .problem-list li {
+      position:relative;
+      padding:20px 20px 20px 52px;
+      background:rgba(255,255,255,.58);
+      border:1px solid var(--line);
+    }
+    .problem-list li::before {
+      content:"";
+      position:absolute;
+      left:20px;
+      top:29px;
+      width:12px;
+      height:12px;
+      background:var(--cedar);
+    }
+
+    .practice-layout {
+      display:grid;
+      grid-template-columns:minmax(0, .82fr) minmax(360px, 1.18fr);
+      gap:52px;
+      align-items:start;
+    }
+    .practice-intro {
+      position:sticky;
+      top:104px;
+    }
+    .practice-steps {
+      display:grid;
+      gap:22px;
+    }
+    .practice-step {
+      display:grid;
+      grid-template-columns:minmax(0, 1fr) minmax(220px, .72fr);
+      gap:24px;
+      align-items:center;
+      padding:28px;
+      background:var(--white);
+      border:1px solid var(--line);
+      box-shadow:0 14px 38px rgba(22,18,14,.08);
+    }
+    .step-kicker {
+      display:inline-flex;
+      align-items:center;
+      min-height:28px;
+      margin-bottom:14px;
+      padding:4px 10px;
+      color:var(--cedar-dark);
+      background:rgba(180,124,67,.12);
+      font-size:.78rem;
+      font-weight:850;
+      text-transform:uppercase;
+    }
+    .practice-step p {
+      margin-top:12px;
+      color:var(--muted);
+    }
+    .credit-note {
+      margin-top:13px !important;
+      padding:14px;
+      color:var(--ink) !important;
+      background:var(--cream);
+      border-left:4px solid var(--cedar);
+    }
+    .visual {
+      min-height:230px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      color:var(--ink);
+      background:var(--mist);
+      border:1px solid rgba(34,27,22,.1);
+    }
+    .visual img {
+      height:100%;
+      min-height:230px;
+      object-fit:cover;
+    }
+    .phone-mock {
+      width:min(190px, 78%);
+      padding:14px;
+      background:var(--paper);
+      border:1px solid var(--line);
+      box-shadow:0 18px 38px rgba(22,18,14,.14);
+    }
+    .phone-line {
+      height:10px;
+      margin:10px 0;
+      background:rgba(16,36,27,.14);
+    }
+    .phone-line:nth-child(2) { width:70%; }
+    .phone-line:nth-child(3) { width:92%; }
+    .phone-line:nth-child(4) { width:58%; }
+    .phone-button {
+      height:34px;
+      margin-top:18px;
+      background:var(--cedar);
+    }
+    .pdf-mock {
+      width:min(260px, 86%);
+      padding:22px;
+      background:var(--paper);
+      border:1px solid var(--line);
+      box-shadow:0 18px 38px rgba(22,18,14,.14);
+    }
+    .pdf-title {
+      margin-bottom:16px;
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:1.32rem;
+      line-height:1.12;
+    }
+    .pdf-rule {
+      height:1px;
+      margin:13px 0;
+      background:var(--line);
+    }
+    .pdf-line {
+      height:9px;
+      margin:9px 0;
+      background:rgba(16,36,27,.12);
+    }
+    .pdf-line.short { width:62%; }
+    .continuation {
+      padding:30px;
+      color:var(--white);
+      background:var(--forest);
+      border:1px solid var(--line-dark);
+    }
+    .week-strip {
+      display:grid;
+      grid-template-columns:repeat(12, 1fr);
+      gap:5px;
+      margin-top:22px;
+    }
+    .week-strip span {
+      min-height:38px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      color:var(--forest);
+      background:var(--cedar);
+      font-size:.72rem;
+      font-weight:850;
+    }
+
+    .fit-grid {
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:22px;
+    }
+    .fit-box {
+      padding:30px;
+      background:var(--white);
+      border:1px solid var(--line);
+      box-shadow:0 14px 38px rgba(22,18,14,.07);
+    }
+    .fit-box.not {
+      background:#f7f1ec;
+    }
+    .check-list {
+      display:grid;
+      gap:12px;
+      margin-top:20px;
+      list-style:none;
+    }
+    .check-list li {
+      position:relative;
+      padding-left:28px;
+      color:var(--muted);
+    }
+    .check-list li::before {
+      content:"";
+      position:absolute;
+      left:0;
+      top:.72em;
+      width:10px;
+      height:10px;
+      background:var(--cedar);
+    }
+    .dark .check-list li {
+      color:rgba(255,255,255,.8);
+    }
+
+    .sales-block {
+      display:grid;
+      grid-template-columns:minmax(0, .92fr) minmax(320px, 1.08fr);
+      gap:54px;
+      align-items:start;
+    }
+    .price-panel {
+      padding:30px;
+      color:var(--white);
+      background:var(--forest);
+      border:1px solid var(--line-dark);
+      box-shadow:var(--shadow);
+    }
+    .price {
+      margin:8px 0 18px;
+      font-family:Georgia, "Times New Roman", serif;
+      font-size:clamp(2.6rem, 5vw, 4.1rem);
+      line-height:1;
+    }
+    .price small {
+      display:block;
+      margin-top:8px;
+      color:rgba(255,255,255,.74);
+      font-family:Inter, "Segoe UI", system-ui, sans-serif;
+      font-size:1rem;
+      line-height:1.4;
+    }
+    .sales-copy {
+      display:grid;
+      gap:18px;
+    }
+    .sales-copy p {
+      color:var(--muted);
+    }
+    .dark .sales-copy p {
+      color:rgba(255,255,255,.78);
+    }
+    .program-box {
+      padding:34px;
+      background:rgba(255,255,255,.07);
+      border:1px solid var(--line-dark);
+    }
+    .program-box .price {
+      color:var(--cedar);
+    }
+
+    .place-grid,
+    .about-grid {
+      display:grid;
+      grid-template-columns:minmax(0, .94fr) minmax(340px, 1.06fr);
+      gap:52px;
+      align-items:center;
+    }
+    .photo-stack {
+      display:grid;
+      grid-template-columns:1fr .78fr;
+      gap:14px;
+      align-items:end;
+    }
+    .photo-stack img {
+      min-height:430px;
+      object-fit:cover;
+      border:1px solid rgba(255,255,255,.16);
+    }
+    .photo-stack img:nth-child(2) {
+      min-height:300px;
+    }
+    .portrait img {
+      aspect-ratio:4 / 5;
+      object-fit:cover;
+      border:1px solid var(--line);
+    }
+    .about-note {
+      margin-top:24px;
+      padding:22px;
+      background:var(--cream);
+      border-left:4px solid var(--cedar);
+    }
+
+    .faq-grid {
+      display:grid;
+      grid-template-columns:minmax(0, .72fr) minmax(360px, 1.28fr);
+      gap:52px;
+      align-items:start;
+    }
+    .faq-list {
+      display:grid;
+      gap:12px;
+    }
+    details {
+      background:var(--white);
+      border:1px solid var(--line);
+    }
+    summary {
+      cursor:pointer;
+      padding:20px 22px;
+      font-weight:850;
+      line-height:1.35;
+    }
+    details p {
+      padding:0 22px 22px;
+      color:var(--muted);
+    }
+
+    .final-cta {
+      padding:98px 0;
+      color:var(--white);
+      background:
+        linear-gradient(90deg, rgba(16,36,27,.95), rgba(16,36,27,.68)),
+        url("./images/studio-latem.webp") center / cover;
+    }
+    .final-cta h2 {
+      max-width:13ch;
+    }
+
+    .footer {
+      padding:28px 0;
+      color:rgba(255,255,255,.72);
+      background:#0b1812;
+      font-size:.92rem;
+    }
+    .footer-inner {
+      display:flex;
+      justify-content:space-between;
+      gap:20px;
+      flex-wrap:wrap;
+    }
+    .footer a {
+      color:rgba(255,255,255,.86);
+    }
+
+    .reveal {
+      opacity:0;
+      transform:translateY(18px);
+      transition:opacity .65s var(--ease), transform .65s var(--ease);
+    }
+    .reveal.visible {
+      opacity:1;
+      transform:none;
+    }
+
+    @media (max-width:1040px) {
+      .nav-links {
+        display:none;
+      }
+      .hamburger {
+        display:block;
+      }
+      .hero-inner,
+      .problem-grid,
+      .practice-layout,
+      .sales-block,
+      .place-grid,
+      .about-grid,
+      .faq-grid,
+      .section-head {
+        grid-template-columns:1fr;
+      }
+      .practice-intro {
+        position:static;
+      }
+    }
+
+    @media (max-width:760px) {
+      html {
+        scroll-padding-top:72px;
+      }
+      body {
+        font-size:15px;
+        line-height:1.62;
+      }
+      .container {
+        width:min(100% - 28px, 1160px);
+      }
+      .nav {
+        min-height:64px;
+        padding:0 14px;
+      }
+      .logo {
+        font-size:1.18rem;
+      }
+      .mobile-menu {
+        top:64px;
+      }
+      .section {
+        padding:70px 0;
+      }
+      .hero {
+        min-height:auto;
+        padding:112px 0 48px;
+      }
+      .hero::before {
+        background:
+          linear-gradient(90deg, rgba(16,36,27,.95), rgba(16,36,27,.72)),
+          linear-gradient(0deg, rgba(16,36,27,.78), rgba(16,36,27,.18));
+      }
+      h1 {
+        max-width:10.8ch;
+        font-size:clamp(2.72rem, 16vw, 4rem);
+      }
+      h2 {
+        max-width:12.5ch;
+      }
+      .hero-actions,
+      .cta-row {
+        display:grid;
+      }
+      .btn {
+        width:100%;
+        min-height:52px;
+        padding:14px 18px;
+        font-size:.76rem;
+      }
+      .hero-facts,
+      .problem-note,
+      .fit-box,
+      .price-panel,
+      .program-box {
+        padding:22px;
+      }
+      .practice-step {
+        grid-template-columns:1fr;
+        padding:22px;
+      }
+      .visual,
+      .visual img {
+        min-height:210px;
+      }
+      .fit-grid {
+        grid-template-columns:1fr;
+      }
+      .week-strip {
+        grid-template-columns:repeat(6, 1fr);
+      }
+      .photo-stack {
+        grid-template-columns:1fr;
+      }
+      .photo-stack img,
+      .photo-stack img:nth-child(2) {
+        min-height:auto;
+        aspect-ratio:4 / 3;
+      }
+      .final-cta {
+        padding:78px 0;
+      }
+    }
+
+    @media (prefers-reduced-motion:reduce) {
+      html {
+        scroll-behavior:auto;
+      }
+      *,
+      *::before,
+      *::after {
+        animation-duration:.01ms !important;
+        animation-iteration-count:1 !important;
+        scroll-behavior:auto !important;
+        transition-duration:.01ms !important;
+      }
+      .reveal {
+        opacity:1;
+        transform:none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav class="nav" aria-label="Nawigacja główna">
+    <a class="logo" href="./index.html">Studio <span>Las</span></a>
+    <ul class="nav-links">
+      <li><a href="#wspolpraca">Współpraca</a></li>
+      <li><a href="#pierwsza-wizyta">Pierwsza wizyta</a></li>
+      <li><a href="#program">Program</a></li>
+      <li><a href="#miejsce">Miejsce</a></li>
+      <li><a href="#faq">FAQ</a></li>
+      <li><a href="./blog.html">Blog</a></li>
+      <li><a class="nav-cta" href="./ankieta-kontakt.html#ankieta">Zacznij od ankiety</a></li>
+    </ul>
+    <button class="hamburger" id="hamburger" type="button" aria-label="Otwórz menu" aria-expanded="false" aria-controls="mobileMenu">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#wspolpraca">Współpraca</a>
+    <a href="#pierwsza-wizyta">Pierwsza wizyta</a>
+    <a href="#program">Program</a>
+    <a href="#miejsce">Miejsce</a>
+    <a href="#faq">FAQ</a>
+    <a href="./blog.html">Blog</a>
+    <a href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+  </div>
+
+  <main>
+    <section class="hero" aria-label="Studio Las">
+      <div class="hero-bg" aria-hidden="true">
+        <img src="./images/studio-latem.webp" alt="" />
+      </div>
+      <div class="container hero-inner">
+        <div class="hero-copy reveal">
+          <p class="eyebrow">Prywatna praca 1:1 pod Warszawą</p>
+          <h1>Odzyskaj zaufanie do ciała bez chaosu siłowni</h1>
+          <p class="hero-lead">
+            Jeśli ciało zaczęło Cię ograniczać, najpierw trzeba zrozumieć dlaczego. W Studio Las zaczynamy od rozpoznania sytuacji ruchowej, a dopiero potem spokojnie budujemy trening 1:1: bez przypadkowych ćwiczeń, presji i udowadniania formy.
+          </p>
+          <div class="hero-actions">
+            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+            <a class="btn btn-outline" href="#wspolpraca">Zobacz, jak wygląda współpraca</a>
+          </div>
+        </div>
+        <ul class="hero-facts reveal" aria-label="Najważniejsze informacje">
+          <li><strong>Pierwsza Wizyta Diagnostyczna</strong>Ocena funkcjonalna, testy ruchowe i krótka rekomendacja dalszego kroku.</li>
+          <li><strong>Program 12 tygodni</strong>Spokojne prowadzenie 1:1, jedna sesja tygodniowo i prosty plan między spotkaniami.</li>
+          <li><strong>Prace Duże, gmina Tarczyn</strong>Prywatność, widok na las i brak atmosfery zwykłej siłowni.</li>
+        </ul>
+      </div>
+    </section>
+
+    <section class="section" id="czym-jest">
+      <div class="container problem-grid">
+        <div class="problem-note reveal">
+          <p>Studio Las nie jest miejscem, gdzie przychodzisz dostać zestaw ćwiczeń.</p>
+        </div>
+        <div class="reveal">
+          <p class="eyebrow">Czym jest Studio Las</p>
+          <h2>Najpierw rozumiemy sytuację. Dopiero potem trenujemy.</h2>
+          <p class="section-lead">
+            To prywatna praca z człowiekiem, nie sprzedaż planu z listą ćwiczeń. Najpierw sprawdzamy, dlaczego ciało przestało działać spokojnie: co ogranicza ruch, co wymaga ostrożności i jaki zakres pracy jest bezpieczny.
+          </p>
+          <ul class="problem-list section-lead">
+            <li>metoda przed ćwiczeniami,</li>
+            <li>zrozumienie przed intensywnością,</li>
+            <li>prowadzenie trenera przed narzędziami,</li>
+            <li>jasność i bezpieczeństwo przed wynikiem na pokaz.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section cream" id="problem">
+      <div class="container problem-grid">
+        <div class="problem-note reveal">
+          <p>To nie musi być brak motywacji. Czasem ciało po prostu przestało dawać poczucie bezpieczeństwa.</p>
+        </div>
+        <div class="reveal">
+          <p class="eyebrow">Rozpoznanie</p>
+          <h2>Jeśli to brzmi znajomo, zaczniemy od uporządkowania sytuacji.</h2>
+          <ul class="problem-list section-lead">
+            <li>Boisz się, że jedno źle dobrane ćwiczenie znowu cofnie Cię o kilka tygodni.</li>
+            <li>Nie wiesz, czy ćwiczyć mimo bólu, czy odpuścić i czekać.</li>
+            <li>Masz wrażenie, że ciało wymaga coraz więcej ostrożności w zwykłych sprawach.</li>
+            <li>Chcesz wrócić do ruchu, ale nie chcesz trafić w hałas, presję i przypadkowe ćwiczenia.</li>
+            <li>Nie potrzebujesz presji, tylko spokojnego prowadzenia i jasnego kierunku.</li>
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="wspolpraca">
+      <div class="container practice-layout">
+        <div class="practice-intro reveal">
+          <p class="eyebrow">Jak wygląda współpraca w praktyce</p>
+          <h2>Krótka ankieta, pierwsza wizyta, 12 tygodni pracy i jasne podsumowanie.</h2>
+          <p class="section-lead">
+            Nie kupujesz przypadkowych treningów. Przechodzisz przez prostą sekwencję: krótka ankieta, Pierwsza Wizyta Diagnostyczna za 300 zł, ewentualna 12-tygodniowa praca za 3600 zł oraz podsumowanie, które porządkuje dalszy kierunek.
+          </p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+          </div>
+        </div>
+        <div class="practice-steps">
+          <article class="practice-step reveal">
+            <div>
+              <span class="step-kicker">Krok 1</span>
+              <h3>Krótka ankieta</h3>
+              <p>Odpowiadasz na kilka pytań o zdrowie, ból, codzienną aktywność i cel. Dzięki temu rozmowa nie zaczyna się od zgadywania.</p>
+            </div>
+            <div class="visual" aria-hidden="true">
+              <div class="phone-mock">
+                <strong>Ankieta diagnostyczna</strong>
+                <div class="phone-line"></div>
+                <div class="phone-line"></div>
+                <div class="phone-line"></div>
+                <div class="phone-button"></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="practice-step reveal">
+            <div>
+              <span class="step-kicker">Krok 2</span>
+              <h3>Pierwsza Wizyta Diagnostyczna - 300 zł</h3>
+              <p>Podczas spotkania poznajemy Twój punkt startowy: rozmowa, analiza składu ciała, proste testy ruchowe i ocena tego, co dziś najbardziej ogranicza Twoją sprawność.</p>
+              <p class="credit-note">Jeżeli w ciągu 7 dni zdecydujesz się kontynuować pracę, koszt pierwszej wizyty zostanie odliczony od ceny programu.</p>
+            </div>
+            <div class="visual">
+              <img src="./images/studio-interior.webp" alt="Kameralne wnętrze Studio Las" loading="lazy" />
+            </div>
+          </article>
+
+          <article class="practice-step reveal">
+            <div>
+              <span class="step-kicker">Krok 3</span>
+              <h3>Podsumowanie po pierwszej wizycie</h3>
+              <p>Otrzymujesz krótkie podsumowanie: co dziś najbardziej ogranicza Twoją sprawność, od czego zacząć i czy 12-tygodniowa praca ma sens.</p>
+            </div>
+            <div class="visual" aria-hidden="true">
+              <div class="pdf-mock">
+                <div class="pdf-title">Podsumowanie po wizycie</div>
+                <div class="pdf-rule"></div>
+                <div class="pdf-line"></div>
+                <div class="pdf-line"></div>
+                <div class="pdf-line short"></div>
+                <div class="pdf-rule"></div>
+                <div class="pdf-line"></div>
+                <div class="pdf-line short"></div>
+              </div>
+            </div>
+          </article>
+
+          <div class="continuation reveal">
+            <h3>Jeśli dalsza praca ma sens, zaczynamy Program 12 tygodni - 3600 zł.</h3>
+            <p class="section-lead">
+              Jedna sesja tygodniowo w Studio Las, prosty plan między spotkaniami, spokojna progresja i regularna ocena postępów.
+            </p>
+            <div class="week-strip" aria-label="12 tygodni programu">
+              <span>1</span><span>2</span><span>3</span><span>4</span><span>5</span><span>6</span>
+              <span>7</span><span>8</span><span>9</span><span>10</span><span>11</span><span>12</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="section mist" id="dla-kogo">
+      <div class="container">
+        <div class="section-head reveal">
+          <div>
+          <p class="eyebrow">Dla kogo / dla kogo nie</p>
+          <h2>Dobry filtr oszczędza czas i nerwy.</h2>
+          </div>
+          <p class="section-lead">
+            Studio Las najlepiej działa wtedy, kiedy potrzebujesz spokojnego prowadzenia 1:1 i jesteś gotowy na minimum kilka tygodni pracy.
+          </p>
+        </div>
+        <div class="fit-grid">
+          <article class="fit-box reveal">
+            <h3>Dla Ciebie, jeśli:</h3>
+            <ul class="check-list">
+              <li>masz 40+ i ból lub spadek sprawności zaczął ograniczać codzienne życie,</li>
+              <li>jesteś po kontuzji albo dłuższej przerwie,</li>
+              <li>nie lubisz zwykłej siłowni,</li>
+              <li>chcesz spokojnego prowadzenia 1:1,</li>
+              <li>jesteś gotowy na minimum kilka tygodni pracy.</li>
+            </ul>
+          </article>
+          <article class="fit-box not reveal">
+            <h3>Nie dla Ciebie, jeśli:</h3>
+            <ul class="check-list">
+              <li>szukasz taniego karnetu,</li>
+              <li>chcesz szybkiej metamorfozy na lato,</li>
+              <li>oczekujesz wycisku zamiast procesu,</li>
+              <li>interesuje Cię tylko pojedynczy trening bez dalszej pracy,</li>
+              <li>nie chcesz brać żadnej odpowiedzialności między spotkaniami.</li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="pierwsza-wizyta">
+      <div class="container sales-block">
+        <aside class="price-panel reveal">
+          <p class="eyebrow">Pierwszy krok</p>
+          <h2>Pierwsza Wizyta Diagnostyczna</h2>
+          <div class="price">300 zł <small>Ocena funkcjonalna, rozpoznanie sytuacji ruchowej i rekomendacja dalszego kroku.</small></div>
+          <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+        </aside>
+        <div class="sales-copy reveal">
+          <p>
+            Jeżeli od dłuższego czasu dokucza Ci ból, czujesz się mniej sprawny niż kiedyś albo nie wiesz, od czego bezpiecznie zacząć, pierwsza wizyta pozwoli uporządkować sytuację.
+          </p>
+          <p>
+            To spokojne, indywidualne spotkanie, podczas którego oceniamy aktualny punkt wyjścia i szukamy najważniejszych ograniczeń w codziennym funkcjonowaniu. Celem wizyty jest zrozumienie, gdzie jesteś dzisiaj i jakie działania mają największy sens na tym etapie.
+          </p>
+          <h3>Co wynosisz po pierwszej wizycie?</h3>
+          <ul class="check-list">
+            <li>wiesz, co dziś najbardziej ogranicza Twoją sprawność,</li>
+            <li>rozumiesz, które ruchy są bezpieczne na start,</li>
+            <li>widzisz, które obszary wymagają ostrożności,</li>
+            <li>masz kierunek pracy na najbliższe 2-3 tygodnie,</li>
+            <li>wiesz, czy 12-tygodniowa praca w Studio Las ma sens,</li>
+            <li>jeśli sytuacja tego wymaga, dostajesz jasną rekomendację konsultacji z lekarzem lub fizjoterapeutą,</li>
+            <li>otrzymujesz krótkie podsumowanie PDF z rekomendacją dalszego kroku.</li>
+          </ul>
+          <p>Pierwsza wizyta nie jest diagnozą medyczną ani obietnicą usunięcia bólu. To ocena funkcjonalna, rozpoznanie sytuacji ruchowej i decyzja, jaki zakres pracy będzie bezpieczny.</p>
+          <p class="credit-note">Jeżeli w ciągu 7 dni zdecydujesz się kontynuować pracę, koszt pierwszej wizyty zostanie odliczony od ceny programu.</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section dark" id="program">
+      <div class="container sales-block">
+        <div class="sales-copy reveal">
+          <p class="eyebrow">Program 12 tygodni</p>
+          <h2>12 tygodni spokojnej pracy nad sprawnością</h2>
+          <p class="section-lead">
+            Jeżeli po pierwszej wizycie uznamy, że dalsza współpraca ma sens, zaczynamy 12 tygodni pracy 1:1: jedna sesja tygodniowo w Studio Las, prosty plan między spotkaniami i regularna ocena postępów.
+          </p>
+          <ul class="check-list">
+            <li>mniej bólu w codziennych czynnościach,</li>
+            <li>większa pewność przy schylaniu, wstawaniu i chodzeniu,</li>
+            <li>odbudowa podstawowej siły i kontroli ruchu,</li>
+            <li>spokojne tempo bez presji i bez chaosu siłowni,</li>
+            <li>końcowe podsumowanie postępów.</li>
+          </ul>
+          <p>Po zakończeniu programu wspólnie decydujemy, czy potrzebujesz dalszej pracy, lżejszej kontynuacji albo okresowego check-upu.</p>
+        </div>
+        <aside class="program-box reveal">
+          <p class="eyebrow">Cena programu</p>
+          <div class="price">3600 zł</div>
+          <p class="section-lead">12 tygodni prowadzenia, nie zakup przypadkowych treningów.</p>
+          <div class="cta-row">
+            <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Zacznij od krótkiej ankiety</a>
+          </div>
+        </aside>
+      </div>
+    </section>
+
+    <section class="section" id="miejsce">
+      <div class="container place-grid">
+        <div class="reveal">
+          <p class="eyebrow">Miejsce</p>
+          <h2>Spokojne studio 1:1 w lesie pod Warszawą</h2>
+          <p class="section-lead">
+            Studio Las jest w Pracach Dużych, w gminie Tarczyn. Kameralne warunki pomagają osobom, które nie czują się dobrze w zwykłej siłowni: bez tłumu, bez oceniania, bez otwartej sali i bez przypadkowych bodźców.
+          </p>
+          <ul class="check-list">
+            <li>Prace Duże, gmina Tarczyn,</li>
+            <li>prywatność i praca tylko 1:1,</li>
+            <li>brak tłumu i brak oceniania,</li>
+            <li>widok na las i spokojne warunki,</li>
+            <li>kameralna przestrzeń dla osób, które potrzebują poczucia bezpieczeństwa.</li>
+          </ul>
+        </div>
+        <div class="photo-stack reveal">
+          <img src="./images/studio-latem.webp" alt="Studio Las w lesie w Pracach Dużych" loading="lazy" />
+          <img src="./images/studio-interior.webp" alt="Wnętrze studia do spokojnej pracy 1:1" loading="lazy" />
+        </div>
+      </div>
+    </section>
+
+    <section class="section cream" id="damian">
+      <div class="container about-grid">
+        <div class="portrait reveal">
+          <img src="./images/damian-about.webp" alt="Damian Krawiec, trener medyczny Studio Las" loading="lazy" />
+        </div>
+        <div class="reveal">
+          <p class="eyebrow">O Damianie</p>
+          <h2>Spokojne prowadzenie procesu, nie losowanie ćwiczeń.</h2>
+          <p class="section-lead">
+            Jestem trenerem medycznym po AWF i studiach podyplomowych z fizjoterapii w sporcie. Prowadzę osoby, które chcą wrócić do ruchu po bólu, kontuzji, przerwie albo utracie zaufania do ciała. Najważniejsze jest dla mnie tempo, w którym ciało odzyskuje bezpieczeństwo, a nie efektowny trening na pokaz.
+          </p>
+          <ul class="check-list">
+            <li>lata doświadczenia w treningu medycznym, terapii ruchem i pracy 1:1,</li>
+            <li>prowadzenie osób po bólu, kontuzjach, dłuższych przerwach i spadku sprawności,</li>
+            <li>praca 1:1 bez presji i porównywania,</li>
+            <li>uporządkowany proces od oceny funkcjonalnej do podsumowania postępów,</li>
+            <li>jasne granice: jeśli potrzebujesz najpierw lekarza lub fizjoterapeuty, usłyszysz to wprost,</li>
+            <li>brak presji, popisu i treningu pod ego.</li>
+          </ul>
+          <p class="about-note">
+            Najważniejsze pytanie nie brzmi: ile wyciśniesz? Brzmi: czy po kilku tygodniach zwykłe ruchy są prostsze, spokojniejsze i bardziej przewidywalne.
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <section class="section" id="faq">
+      <div class="container faq-grid">
+        <div class="reveal">
+          <p class="eyebrow">FAQ</p>
+          <h2>Najczęstsze obawy przed pierwszą wizytą</h2>
+          <p class="section-lead">
+            Pierwszy krok ma dać więcej jasności, nie dokładać presji. Tu są odpowiedzi na pytania, które najczęściej pojawiają się przed kontaktem.
+          </p>
+        </div>
+        <div class="faq-list reveal">
+          <details>
+            <summary>Czy pierwsza wizyta jest treningiem?</summary>
+            <p>Nie. To spotkanie diagnostyczne: rozmowa, pomiar Tanita, proste testy ruchowe i omówienie sensownych dalszych kroków.</p>
+          </details>
+          <details>
+            <summary>Czy muszę być w formie?</summary>
+            <p>Nie. Studio Las jest właśnie dla osób, które często nie czują się gotowe na zwykłą siłownię albo intensywny trening.</p>
+          </details>
+          <details>
+            <summary>Czy mogę przyjść, jeśli boli mnie kręgosłup?</summary>
+            <p>Tak, o ile nie masz ostrych objawów wymagających pilnej konsultacji lekarskiej. Jeśli Twoja sytuacja wymaga najpierw lekarza lub fizjoterapeuty, powiem to wprost.</p>
+          </details>
+          <details>
+            <summary>Czy to zastępuje fizjoterapię lub lekarza?</summary>
+            <p>Nie. Trening medyczny nie zastępuje diagnostyki lekarskiej ani fizjoterapii. Może być kolejnym etapem pracy nad sprawnością, gdy sytuacja jest bezpieczna do ruchu.</p>
+          </details>
+          <details>
+            <summary>Co jeśli po pierwszej wizycie nie zdecyduję się na program?</summary>
+            <p>Nic złego się nie dzieje. Otrzymujesz podsumowanie i rekomendacje. Decyzja o dalszej pracy nie musi zapaść na miejscu.</p>
+          </details>
+          <details>
+            <summary>Czy 300 zł odlicza się od programu?</summary>
+            <p>Tak. Jeżeli w ciągu 7 dni zdecydujesz się kontynuować pracę, koszt pierwszej wizyty zostanie odliczony od ceny programu.</p>
+          </details>
+          <details>
+            <summary>Ile trwa program?</summary>
+            <p>Podstawowy proces trwa 12 tygodni: jedna sesja 1:1 tygodniowo, prosty plan między spotkaniami i regularna ocena postępów.</p>
+          </details>
+          <details>
+            <summary>Czy muszę ćwiczyć samodzielnie między spotkaniami?</summary>
+            <p>Tak, ale nie chodzi o drugi etat treningowy. Zwykle są to proste zadania, które mają wspierać efekt pracy 1:1.</p>
+          </details>
+        </div>
+      </div>
+    </section>
+
+    <section class="final-cta" id="ankieta">
+      <div class="container reveal">
+        <p class="eyebrow">Pierwszy krok</p>
+        <h2>Nie musisz od razu wiedzieć, jaki trening jest dla Ciebie najlepszy.</h2>
+        <p class="section-lead">Od tego jest pierwsza wizyta.</p>
+        <div class="cta-row">
+          <a class="btn btn-primary" href="./ankieta-kontakt.html#ankieta">Sprawdź, czy pierwsza wizyta ma sens</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 Studio Las · Damian Krawiec</div>
+      <div>
+        <a href="./index.html">Start</a> ·
+        <a href="./ankieta-kontakt.html#ankieta">Ankieta</a> ·
+        <a href="./blog.html">Blog</a> ·
+        <a href="./metoda-i-pakiety.html">Metoda</a>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById("hamburger");
+    const mobileMenu = document.getElementById("mobileMenu");
+
+    if (hamburger && mobileMenu) {
+      hamburger.addEventListener("click", () => {
+        const isOpen = mobileMenu.classList.toggle("open");
+        hamburger.setAttribute("aria-expanded", String(isOpen));
+        hamburger.setAttribute("aria-label", isOpen ? "Zamknij menu" : "Otwórz menu");
+      });
+
+      mobileMenu.querySelectorAll("a").forEach(link => {
+        link.addEventListener("click", () => {
+          mobileMenu.classList.remove("open");
+          hamburger.setAttribute("aria-expanded", "false");
+          hamburger.setAttribute("aria-label", "Otwórz menu");
+        });
+      });
+    }
+
+    const revealItems = document.querySelectorAll(".reveal");
+    if ("IntersectionObserver" in window) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add("visible");
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold:.12 });
+
+      revealItems.forEach(item => observer.observe(item));
+    } else {
+      revealItems.forEach(item => item.classList.add("visible"));
+    }
+  </script>
+</body>
+</html>

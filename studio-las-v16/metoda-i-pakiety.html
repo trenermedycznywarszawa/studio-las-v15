@@ -1,0 +1,2251 @@
+<!DOCTYPE html>
+<html lang="pl">
+<!-- Studio Las public website v16 -->
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <title>Metoda i pakiety | Studio Las</title>
+  <meta name="description" content="Jak wygląda praca w Studio Las: krótka ankieta, Pierwsza Wizyta Diagnostyczna 300 zł, Program 12 tygodni i raport, który pomaga zdecydować, co dalej." />
+
+  <meta property="og:title" content="Metoda i pakiety | Studio Las" />
+  <meta property="og:description" content="Pierwsza Wizyta Diagnostyczna, Program 12 tygodni i raport końcowy. Spokojna praca 1:1 bez przypadkowych ćwiczeń." />
+  <meta property="og:image" content="./images/studio-latem.webp" />
+  <meta property="og:type" content="website" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;0,600;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+
+  <style>
+    :root {
+      --forest:#1C2B24;
+      --anthracite:#2D2D2D;
+      --cedar:#B8935A;
+      --cedar-light:#D4AC78;
+      --offwhite:#F7F4EF;
+      --white:#FFFFFF;
+      --grey-soft:#E8E4DC;
+      --grey-text:#6B6560;
+      --font-display:'Cormorant Garamond', Georgia, serif;
+      --font-body:'DM Sans', system-ui, sans-serif;
+      --max-w:1120px;
+      --transition:.3s ease;
+    }
+
+    *, *::before, *::after { box-sizing:border-box; margin:0; padding:0; }
+    html { scroll-behavior:smooth; font-size:16px; scroll-padding-top:86px; }
+    body {
+      font-family:var(--font-body);
+      font-weight:300;
+      color:var(--anthracite);
+      background:var(--offwhite);
+      line-height:1.7;
+      -webkit-font-smoothing:antialiased;
+      text-rendering:optimizeLegibility;
+    }
+
+    img { max-width:100%; display:block; }
+    a { color:inherit; text-decoration:none; }
+    button { font:inherit; }
+
+    a:focus-visible,
+    button:focus-visible {
+      outline:2px solid var(--cedar-light);
+      outline-offset:4px;
+    }
+
+    .container {
+      width:100%;
+      max-width:var(--max-w);
+      margin:0 auto;
+      padding:0 24px;
+    }
+
+    .reveal {
+      opacity:0;
+      transform:translateY(28px);
+      transition:opacity .7s ease, transform .7s ease;
+    }
+
+    .reveal.visible { opacity:1; transform:none; }
+
+    #navbar {
+      position:fixed;
+      top:0;
+      left:0;
+      right:0;
+      z-index:100;
+      padding:0 24px;
+      height:68px;
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      background:var(--forest);
+      box-shadow:0 2px 24px rgba(0,0,0,.15);
+    }
+
+    .nav-logo {
+      font-family:var(--font-display);
+      font-size:1.35rem;
+      font-weight:500;
+      letter-spacing:.08em;
+      color:var(--white);
+    }
+
+    .nav-logo span { color:var(--cedar); }
+
+    .nav-links {
+      display:flex;
+      align-items:center;
+      gap:32px;
+      list-style:none;
+    }
+
+    .nav-links a {
+      font-size:.8rem;
+      font-weight:400;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.8);
+      transition:color var(--transition);
+    }
+
+    .nav-links a:hover,
+    .nav-links a.active { color:var(--cedar-light); }
+
+    .nav-cta {
+      color:var(--white) !important;
+      border:1px solid var(--cedar);
+      padding:9px 20px;
+      font-size:.75rem !important;
+      transition:background var(--transition), border-color var(--transition) !important;
+    }
+
+    .nav-cta:hover { background:var(--cedar) !important; }
+
+    .nav-hamburger {
+      display:none;
+      flex-direction:column;
+      gap:5px;
+      cursor:pointer;
+      background:none;
+      border:0;
+      padding:8px;
+    }
+
+    .nav-hamburger span {
+      display:block;
+      width:24px;
+      height:2px;
+      background:var(--white);
+    }
+
+    .nav-mobile {
+      display:none;
+      position:fixed;
+      top:68px;
+      left:0;
+      right:0;
+      background:var(--forest);
+      padding:24px;
+      z-index:99;
+      flex-direction:column;
+      gap:20px;
+      border-bottom:1px solid rgba(255,255,255,.08);
+    }
+
+    .nav-mobile.open { display:flex; }
+
+    .nav-mobile a {
+      color:rgba(255,255,255,.85);
+      font-size:1rem;
+      padding:8px 0;
+      border-bottom:1px solid rgba(255,255,255,.1);
+    }
+
+    .nav-mobile .btn-primary {
+      margin-top:8px;
+      text-align:center;
+      border-bottom:0;
+    }
+
+    .btn-primary {
+      display:inline-block;
+      background:var(--cedar);
+      color:var(--white);
+      font-family:var(--font-body);
+      font-size:.8rem;
+      font-weight:500;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      padding:16px 36px;
+      border:0;
+      cursor:pointer;
+      transition:background var(--transition), transform var(--transition);
+    }
+
+    .btn-primary:hover {
+      background:var(--cedar-light);
+      transform:translateY(-1px);
+    }
+
+    .btn-outline {
+      display:inline-block;
+      background:transparent;
+      color:var(--cedar);
+      font-family:var(--font-body);
+      font-size:.8rem;
+      font-weight:500;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      padding:15px 36px;
+      border:1px solid var(--cedar);
+      cursor:pointer;
+      transition:all var(--transition);
+    }
+
+    .btn-outline:hover {
+      background:var(--cedar);
+      color:var(--white);
+    }
+
+    #page-hero {
+      background:var(--forest);
+      padding:140px 0 80px;
+      position:relative;
+      overflow:hidden;
+    }
+
+    #page-hero::before {
+      content:'';
+      position:absolute;
+      top:0;
+      right:0;
+      width:45%;
+      height:100%;
+      background-image:url('./images/studio-latem.webp');
+      background-size:cover;
+      background-position:center;
+      opacity:.12;
+      mask-image:linear-gradient(to left, rgba(0,0,0,.6), transparent);
+      -webkit-mask-image:linear-gradient(to left, rgba(0,0,0,.6), transparent);
+    }
+
+    #page-hero .container {
+      position:relative;
+      z-index:1;
+    }
+
+    .breadcrumb {
+      display:flex;
+      align-items:center;
+      gap:8px;
+      margin-bottom:36px;
+      font-size:.75rem;
+      color:rgba(255,255,255,.4);
+    }
+
+    .breadcrumb a {
+      color:rgba(255,255,255,.4);
+      transition:color var(--transition);
+    }
+
+    .breadcrumb a:hover { color:var(--cedar-light); }
+    .breadcrumb-sep { color:rgba(255,255,255,.2); }
+
+    .page-hero-label {
+      font-size:.68rem;
+      font-weight:500;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--cedar-light);
+      margin-bottom:20px;
+      display:flex;
+      align-items:center;
+      gap:12px;
+    }
+
+    .page-hero-label::before {
+      content:'';
+      display:inline-block;
+      width:24px;
+      height:1px;
+      background:var(--cedar);
+    }
+
+    .page-hero-title {
+      font-family:var(--font-display);
+      font-size:clamp(2.4rem, 5vw, 4rem);
+      font-weight:300;
+      line-height:1.1;
+      color:var(--white);
+      margin-bottom:24px;
+      max-width:700px;
+    }
+
+    .page-hero-title em {
+      font-style:italic;
+      color:var(--cedar-light);
+    }
+
+    .page-hero-sub {
+      font-size:1rem;
+      font-weight:300;
+      color:rgba(255,255,255,.65);
+      max-width:520px;
+      line-height:1.8;
+      margin-bottom:40px;
+    }
+
+    .page-nav {
+      display:flex;
+      gap:0;
+      border-top:1px solid rgba(255,255,255,.1);
+      margin-top:40px;
+      flex-wrap:wrap;
+    }
+
+    .page-nav a {
+      font-size:.72rem;
+      font-weight:400;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      color:rgba(255,255,255,.5);
+      padding:16px 24px;
+      border-right:1px solid rgba(255,255,255,.08);
+      transition:color var(--transition), background var(--transition);
+      position:relative;
+    }
+
+    .page-nav a::after {
+      content:'';
+      position:absolute;
+      bottom:0;
+      left:0;
+      right:0;
+      height:2px;
+      background:var(--cedar);
+      transform:scaleX(0);
+      transition:transform var(--transition);
+    }
+
+    .page-nav a:hover {
+      color:var(--white);
+    }
+
+    .page-nav a:hover::after {
+      transform:scaleX(1);
+    }
+
+    .section { padding:100px 0; }
+    .section-dark { background:var(--forest); color:var(--white); }
+    .section-warm { background:var(--offwhite); }
+    .section-white { background:var(--white); }
+
+    .section-label {
+      font-size:.68rem;
+      font-weight:500;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--cedar);
+      margin-bottom:16px;
+      display:block;
+    }
+
+    .section-dark .section-label { color:var(--cedar-light); }
+
+    .section-title {
+      font-family:var(--font-display);
+      font-size:clamp(2rem, 4vw, 3rem);
+      font-weight:300;
+      line-height:1.2;
+      margin-bottom:20px;
+    }
+
+    .section-dark .section-title { color:var(--white); }
+
+    .section-lead {
+      font-size:1rem;
+      font-weight:300;
+      color:var(--grey-text);
+      line-height:1.85;
+    }
+
+    .section-dark .section-lead { color:rgba(255,255,255,.65); }
+
+    #system-4-krokow { background:var(--white); }
+    .big-steps { margin-top:80px; }
+
+    .big-step {
+      display:grid;
+      grid-template-columns:80px 1fr;
+      gap:0 48px;
+      position:relative;
+    }
+
+    .big-step + .big-step {
+      border-top:1px solid var(--grey-soft);
+    }
+
+    .big-step-left {
+      display:flex;
+      flex-direction:column;
+      align-items:center;
+      padding:48px 0;
+    }
+
+    .big-step-number {
+      width:64px;
+      height:64px;
+      border-radius:50%;
+      background:var(--offwhite);
+      border:1px solid var(--grey-soft);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-family:var(--font-display);
+      font-size:1.5rem;
+      font-weight:300;
+      color:var(--cedar);
+      flex-shrink:0;
+      transition:all var(--transition);
+      position:relative;
+      z-index:1;
+    }
+
+    .big-step:hover .big-step-number {
+      background:var(--cedar);
+      border-color:var(--cedar);
+      color:var(--white);
+    }
+
+    .big-step-line {
+      flex:1;
+      width:1px;
+      background:var(--grey-soft);
+      margin-top:12px;
+    }
+
+    .big-step:last-child .big-step-line { display:none; }
+    .big-step-right { padding:48px 0; }
+
+    .big-step-tag {
+      font-size:.65rem;
+      font-weight:500;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--cedar);
+      margin-bottom:12px;
+    }
+
+    .big-step-title {
+      font-family:var(--font-display);
+      font-size:clamp(1.4rem, 2.5vw, 2rem);
+      font-weight:400;
+      color:var(--anthracite);
+      margin-bottom:20px;
+      line-height:1.2;
+    }
+
+    .big-step-body {
+      font-size:.95rem;
+      font-weight:300;
+      color:var(--grey-text);
+      line-height:1.85;
+      max-width:620px;
+      margin-bottom:24px;
+    }
+
+    .big-step-details {
+      display:grid;
+      grid-template-columns:repeat(2, 1fr);
+      gap:12px;
+      margin-bottom:28px;
+    }
+
+    .step-detail {
+      background:var(--offwhite);
+      padding:16px 20px;
+      border-left:2px solid var(--cedar);
+    }
+
+    .step-detail-label {
+      font-size:.65rem;
+      font-weight:500;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+      color:var(--grey-text);
+      margin-bottom:4px;
+    }
+
+    .step-detail-value {
+      font-size:.88rem;
+      font-weight:400;
+      color:var(--anthracite);
+    }
+
+    .big-step-effect {
+      display:inline-flex;
+      align-items:center;
+      gap:10px;
+      font-size:.85rem;
+      font-weight:500;
+      color:var(--anthracite);
+      background:var(--offwhite);
+      border:1px solid var(--grey-soft);
+      padding:12px 20px;
+    }
+
+    .big-step-effect::before {
+      content:'→';
+      color:var(--cedar);
+      font-size:1rem;
+    }
+
+    #trzy-filary { background:var(--offwhite); }
+
+    .pillars-intro {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:80px;
+      align-items:start;
+      margin-bottom:72px;
+    }
+
+    .pillars-grid {
+      display:grid;
+      grid-template-columns:repeat(3, 1fr);
+      gap:2px;
+    }
+
+    .pillar {
+      background:var(--white);
+      padding:40px 32px;
+      position:relative;
+      overflow:hidden;
+      transition:transform var(--transition);
+    }
+
+    .pillar:hover { transform:translateY(-4px); }
+
+    .pillar::before {
+      content:'';
+      position:absolute;
+      top:0;
+      left:0;
+      right:0;
+      height:3px;
+      background:var(--cedar);
+      transform:scaleX(0);
+      transform-origin:left;
+      transition:transform .4s ease;
+    }
+
+    .pillar:hover::before { transform:scaleX(1); }
+
+    .pillar-icon {
+      width:48px;
+      height:48px;
+      background:var(--offwhite);
+      border:1px solid var(--grey-soft);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      margin-bottom:24px;
+      font-size:1.4rem;
+    }
+
+    .pillar-name {
+      font-size:.65rem;
+      font-weight:500;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--cedar);
+      margin-bottom:10px;
+    }
+
+    .pillar-title {
+      font-family:var(--font-display);
+      font-size:1.35rem;
+      font-weight:500;
+      color:var(--anthracite);
+      margin-bottom:14px;
+      line-height:1.3;
+    }
+
+    .pillar-body {
+      font-size:.88rem;
+      font-weight:300;
+      color:var(--grey-text);
+      line-height:1.75;
+    }
+
+    #raport { background:var(--forest); }
+
+    .raport-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:80px;
+      align-items:start;
+      margin-top:56px;
+    }
+
+    .raport-areas {
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+    }
+
+    .raport-area {
+      background:rgba(255,255,255,.05);
+      border:1px solid rgba(255,255,255,.08);
+      padding:24px 28px;
+      display:flex;
+      gap:20px;
+      align-items:flex-start;
+      transition:background var(--transition);
+      cursor:default;
+    }
+
+    .raport-area:hover { background:rgba(255,255,255,.09); }
+
+    .raport-area-num {
+      font-family:var(--font-display);
+      font-size:1.8rem;
+      font-weight:300;
+      color:var(--cedar);
+      flex-shrink:0;
+      line-height:1;
+      min-width:40px;
+    }
+
+    .raport-area-title {
+      font-size:.85rem;
+      font-weight:500;
+      color:var(--white);
+      margin-bottom:6px;
+      letter-spacing:.02em;
+    }
+
+    .raport-area-body {
+      font-size:.82rem;
+      font-weight:300;
+      color:rgba(255,255,255,.55);
+      line-height:1.65;
+    }
+
+    .raport-value-box {
+      background:rgba(184,147,90,.1);
+      border:1px solid rgba(184,147,90,.25);
+      padding:40px 36px;
+    }
+
+    .raport-value-title {
+      font-family:var(--font-display);
+      font-size:1.5rem;
+      font-weight:400;
+      color:var(--white);
+      margin-bottom:20px;
+      line-height:1.3;
+    }
+
+    .raport-value-body {
+      font-size:.9rem;
+      font-weight:300;
+      color:rgba(255,255,255,.7);
+      line-height:1.8;
+      margin-bottom:28px;
+    }
+
+    .raport-includes {
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .raport-includes li {
+      font-size:.82rem;
+      font-weight:300;
+      color:rgba(255,255,255,.65);
+      padding-left:18px;
+      position:relative;
+      line-height:1.55;
+    }
+
+    .raport-includes li::before {
+      content:'';
+      position:absolute;
+      left:0;
+      top:10px;
+      width:6px;
+      height:1px;
+      background:var(--cedar-light);
+    }
+
+    #pakiety { background:var(--offwhite); }
+
+    .pakiety-header {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:60px;
+      align-items:end;
+      margin-bottom:64px;
+    }
+
+    .diagnostics-card {
+      background:var(--white);
+      border:1px solid var(--grey-soft);
+      padding:48px;
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:48px;
+      margin-bottom:2px;
+      position:relative;
+    }
+
+    .diagnostics-card::before {
+      content:'Każdy zaczyna tutaj';
+      position:absolute;
+      top:-1px;
+      left:48px;
+      background:var(--anthracite);
+      color:var(--white);
+      font-size:.65rem;
+      font-weight:500;
+      letter-spacing:.15em;
+      text-transform:uppercase;
+      padding:6px 14px;
+    }
+
+    .diag-label {
+      font-size:.65rem;
+      font-weight:500;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--cedar);
+      margin-bottom:10px;
+    }
+
+    .diag-name {
+      font-family:var(--font-display);
+      font-size:2.2rem;
+      font-weight:400;
+      color:var(--anthracite);
+      margin-bottom:8px;
+    }
+
+    .diag-price {
+      font-size:2.8rem;
+      font-weight:300;
+      color:var(--anthracite);
+      margin-bottom:6px;
+    }
+
+    .diag-price-note {
+      font-size:.82rem;
+      color:var(--grey-text);
+      margin-bottom:28px;
+      font-style:italic;
+    }
+
+    .diag-cta {
+      display:inline-block;
+      background:var(--anthracite);
+      color:var(--white);
+      font-size:.75rem;
+      font-weight:500;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      padding:14px 28px;
+      transition:background var(--transition);
+    }
+
+    .diag-cta:hover { background:var(--cedar); }
+
+    .diag-right-title {
+      font-size:.75rem;
+      font-weight:500;
+      letter-spacing:.1em;
+      text-transform:uppercase;
+      color:var(--grey-text);
+      margin-bottom:16px;
+    }
+
+    .diag-features {
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+
+    .diag-features li {
+      font-size:.88rem;
+      font-weight:300;
+      color:var(--anthracite);
+      padding-left:20px;
+      position:relative;
+      line-height:1.55;
+    }
+
+    .diag-features li::before {
+      content:'';
+      position:absolute;
+      left:0;
+      top:10px;
+      width:8px;
+      height:1px;
+      background:var(--cedar);
+    }
+
+    .packages-grid {
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:2px;
+      margin-bottom:28px;
+    }
+
+    .package-card {
+      background:var(--white);
+      padding:48px 40px;
+      display:flex;
+      flex-direction:column;
+      transition:transform var(--transition);
+      position:relative;
+    }
+
+    .package-card:hover { transform:translateY(-4px); }
+    .package-card.featured { background:var(--forest); }
+
+    .pkg-label {
+      font-size:.65rem;
+      font-weight:500;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--cedar);
+      margin-bottom:10px;
+    }
+
+    .package-card.featured .pkg-label { color:var(--cedar-light); }
+
+    .pkg-name {
+      font-family:var(--font-display);
+      font-size:2rem;
+      font-weight:400;
+      color:var(--anthracite);
+      margin-bottom:8px;
+    }
+
+    .package-card.featured .pkg-name { color:var(--white); }
+
+    .pkg-price {
+      font-size:2.8rem;
+      font-weight:300;
+      color:var(--anthracite);
+      margin-bottom:6px;
+    }
+
+    .package-card.featured .pkg-price { color:var(--white); }
+
+    .pkg-price-note {
+      font-size:.82rem;
+      color:var(--grey-text);
+      margin-bottom:32px;
+    }
+
+    .package-card.featured .pkg-price-note { color:rgba(255,255,255,.5); }
+
+    .pkg-divider {
+      width:40px;
+      height:1px;
+      background:var(--grey-soft);
+      margin-bottom:28px;
+    }
+
+    .package-card.featured .pkg-divider { background:rgba(255,255,255,.15); }
+
+    .pkg-for {
+      font-size:.78rem;
+      font-weight:500;
+      letter-spacing:.08em;
+      color:var(--anthracite);
+      margin-bottom:16px;
+      text-transform:uppercase;
+    }
+
+    .package-card.featured .pkg-for { color:rgba(255,255,255,.7); }
+
+    .pkg-features {
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      margin-bottom:36px;
+      flex:1;
+    }
+
+    .pkg-features li {
+      font-size:.88rem;
+      font-weight:300;
+      color:var(--grey-text);
+      padding-left:20px;
+      position:relative;
+      line-height:1.6;
+    }
+
+    .package-card.featured .pkg-features li { color:rgba(255,255,255,.75); }
+
+    .pkg-features li::before {
+      content:'';
+      position:absolute;
+      left:0;
+      top:10px;
+      width:8px;
+      height:1px;
+      background:var(--cedar);
+    }
+
+    .package-card.featured .pkg-features li::before { background:var(--cedar-light); }
+
+    .pkg-highlight {
+      background:rgba(184,147,90,.08);
+      border-left:2px solid var(--cedar);
+      padding:10px 14px;
+      font-size:.8rem;
+      font-weight:400;
+      color:var(--cedar);
+      margin-bottom:28px;
+      font-style:italic;
+    }
+
+    .package-card.featured .pkg-highlight {
+      background:rgba(184,147,90,.15);
+      color:var(--cedar-light);
+    }
+
+    .pkg-cta {
+      display:block;
+      text-align:center;
+      font-size:.75rem;
+      font-weight:500;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      padding:16px 24px;
+      border:1px solid var(--cedar);
+      color:var(--cedar);
+      transition:all var(--transition);
+    }
+
+    .pkg-cta:hover {
+      background:var(--cedar);
+      color:var(--white);
+    }
+
+    .package-card.featured .pkg-cta {
+      background:var(--cedar);
+      border-color:var(--cedar);
+      color:var(--white);
+    }
+
+    .package-card.featured .pkg-cta:hover {
+      background:var(--cedar-light);
+      border-color:var(--cedar-light);
+    }
+
+    .single-session {
+      background:var(--grey-soft);
+      padding:32px 40px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:24px;
+      flex-wrap:wrap;
+    }
+
+    .single-session-label {
+      font-size:.65rem;
+      font-weight:500;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--grey-text);
+      margin-bottom:6px;
+    }
+
+    .single-session-title {
+      font-family:var(--font-display);
+      font-size:1.3rem;
+      font-weight:500;
+      color:var(--anthracite);
+      margin-bottom:4px;
+    }
+
+    .single-session-desc {
+      font-size:.82rem;
+      font-weight:300;
+      color:var(--grey-text);
+    }
+
+    .single-session-price {
+      font-family:var(--font-display);
+      font-size:2rem;
+      font-weight:300;
+      color:var(--anthracite);
+      flex-shrink:0;
+    }
+
+    .single-session-note {
+      font-size:.8rem;
+      color:var(--grey-text);
+      max-width:320px;
+      font-style:italic;
+    }
+
+    .weekly-framing {
+      background:var(--anthracite);
+      padding:36px 48px;
+      margin-top:40px;
+      display:flex;
+      align-items:center;
+      gap:40px;
+      flex-wrap:wrap;
+    }
+
+    .weekly-framing-text {
+      font-family:var(--font-display);
+      font-size:1.3rem;
+      font-weight:300;
+      color:var(--white);
+      line-height:1.5;
+      flex:1;
+    }
+
+    .weekly-framing-text strong {
+      color:var(--cedar-light);
+      font-weight:500;
+    }
+
+    .weekly-framing-note {
+      font-size:.82rem;
+      font-weight:300;
+      color:rgba(255,255,255,.5);
+      max-width:280px;
+      line-height:1.7;
+      font-style:italic;
+    }
+
+    #faq { background:var(--white); }
+
+    .faq-grid {
+      display:grid;
+      grid-template-columns:1fr 1.4fr;
+      gap:80px;
+      margin-top:56px;
+    }
+
+    .faq-sticky {
+      position:sticky;
+      top:100px;
+    }
+
+    .faq-lead {
+      font-size:.95rem;
+      font-weight:300;
+      color:var(--grey-text);
+      line-height:1.85;
+      margin-bottom:36px;
+    }
+
+    .faq-list {
+      display:flex;
+      flex-direction:column;
+    }
+
+    .faq-item { border-bottom:1px solid var(--grey-soft); }
+
+    .faq-question {
+      width:100%;
+      background:none;
+      border:0;
+      padding:24px 0;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:20px;
+      cursor:pointer;
+      text-align:left;
+      font-family:var(--font-body);
+      font-size:.95rem;
+      font-weight:400;
+      color:var(--anthracite);
+      transition:color var(--transition);
+    }
+
+    .faq-question:hover,
+    .faq-question.open { color:var(--cedar); }
+
+    .faq-icon {
+      width:28px;
+      height:28px;
+      border:1px solid var(--grey-soft);
+      border-radius:50%;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      flex-shrink:0;
+      font-size:1rem;
+      color:var(--cedar);
+      transition:transform var(--transition), background var(--transition);
+    }
+
+    .faq-question.open .faq-icon {
+      transform:rotate(45deg);
+      background:var(--cedar);
+      border-color:var(--cedar);
+      color:var(--white);
+    }
+
+    .faq-answer {
+      max-height:0;
+      overflow:hidden;
+      transition:max-height .4s ease;
+    }
+
+    .faq-answer.open { max-height:600px; }
+
+    .faq-answer-inner {
+      padding-bottom:24px;
+      font-size:.9rem;
+      font-weight:300;
+      color:var(--grey-text);
+      line-height:1.85;
+    }
+
+    .faq-answer-inner p + p { margin-top:12px; }
+
+    .faq-answer-inner strong {
+      font-weight:500;
+      color:var(--anthracite);
+    }
+
+    #final-cta {
+      background:var(--anthracite);
+      padding:100px 0;
+      text-align:center;
+    }
+
+    .final-cta-eyebrow {
+      font-size:.68rem;
+      font-weight:500;
+      letter-spacing:.22em;
+      text-transform:uppercase;
+      color:var(--cedar-light);
+      margin-bottom:20px;
+    }
+
+    .final-cta-title {
+      font-family:var(--font-display);
+      font-size:clamp(2rem, 4vw, 3.2rem);
+      font-weight:300;
+      color:var(--white);
+      line-height:1.2;
+      margin-bottom:20px;
+    }
+
+    .final-cta-title em {
+      font-style:italic;
+      color:var(--cedar-light);
+    }
+
+    .final-cta-sub {
+      font-size:.95rem;
+      font-weight:300;
+      color:rgba(255,255,255,.6);
+      max-width:460px;
+      margin:0 auto 48px;
+      line-height:1.75;
+    }
+
+    .final-cta-actions {
+      display:flex;
+      gap:16px;
+      justify-content:center;
+      flex-wrap:wrap;
+    }
+
+    .final-cta-actions .btn-outline {
+      border-color:rgba(255,255,255,.3);
+      color:rgba(255,255,255,.7);
+    }
+
+    .final-cta-actions .btn-outline:hover {
+      background:rgba(255,255,255,.08);
+      color:var(--white);
+    }
+
+    footer {
+      background:var(--forest);
+      padding:60px 0 36px;
+    }
+
+    .footer-grid {
+      display:grid;
+      grid-template-columns:1.4fr 1fr 1fr;
+      gap:48px;
+      margin-bottom:48px;
+    }
+
+    .footer-logo {
+      font-family:var(--font-display);
+      font-size:1.3rem;
+      font-weight:500;
+      color:var(--white);
+      letter-spacing:.08em;
+      margin-bottom:16px;
+    }
+
+    .footer-logo span { color:var(--cedar); }
+
+    .footer-tagline {
+      font-size:.82rem;
+      font-weight:300;
+      color:rgba(255,255,255,.5);
+      line-height:1.7;
+      max-width:280px;
+    }
+
+    .footer-col-title {
+      font-size:.68rem;
+      font-weight:500;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+      color:var(--cedar-light);
+      margin-bottom:20px;
+    }
+
+    .footer-links {
+      list-style:none;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+
+    .footer-links a,
+    .footer-contact-item,
+    .footer-contact-item a {
+      font-size:.85rem;
+      font-weight:300;
+      color:rgba(255,255,255,.6);
+      transition:color var(--transition);
+    }
+
+    .footer-links a:hover,
+    .footer-contact-item a:hover {
+      color:var(--cedar-light);
+    }
+
+    .footer-contact-item {
+      margin-bottom:10px;
+      line-height:1.6;
+    }
+
+    .footer-bottom {
+      border-top:1px solid rgba(255,255,255,.08);
+      padding-top:28px;
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      flex-wrap:wrap;
+      gap:16px;
+    }
+
+    .footer-copy {
+      font-size:.75rem;
+      color:rgba(255,255,255,.3);
+    }
+
+    .footer-legal {
+      display:flex;
+      gap:20px;
+    }
+
+    .footer-legal a {
+      font-size:.75rem;
+      color:rgba(255,255,255,.3);
+      transition:color var(--transition);
+    }
+
+    .footer-legal a:hover { color:rgba(255,255,255,.6); }
+
+    @media (prefers-reduced-motion: reduce) {
+      html { scroll-behavior:auto; }
+      .reveal,
+      .btn-primary,
+      .btn-outline,
+      .pillar,
+      .package-card {
+        transition:none;
+      }
+    }
+
+    @media (max-width:900px) {
+      .nav-links { display:none; }
+      .nav-hamburger { display:flex; }
+      .section { padding:72px 0; }
+
+      .pillars-intro,
+      .raport-grid,
+      .pakiety-header,
+      .faq-grid {
+        grid-template-columns:1fr;
+        gap:40px;
+      }
+
+      .pillars-grid,
+      .packages-grid {
+        grid-template-columns:1fr;
+      }
+
+      .big-step {
+        grid-template-columns:56px 1fr;
+        gap:0 28px;
+      }
+
+      .big-step-number {
+        width:52px;
+        height:52px;
+        font-size:1.2rem;
+      }
+
+      .big-step-details {
+        grid-template-columns:1fr;
+      }
+
+      .diagnostics-card {
+        grid-template-columns:1fr;
+        gap:32px;
+        padding:36px 28px;
+      }
+
+      .package-card {
+        padding:36px 28px;
+      }
+
+      .faq-sticky { position:static; }
+
+      .weekly-framing,
+      .single-session {
+        padding:28px;
+      }
+
+      .footer-grid {
+        grid-template-columns:1fr 1fr;
+        gap:32px;
+      }
+
+      .page-nav { display:none; }
+    }
+
+    @media (max-width:600px) {
+      #navbar {
+        height:64px;
+        padding:0 18px;
+      }
+
+      .nav-mobile {
+        top:64px;
+        max-height:calc(100vh - 64px);
+        overflow-y:auto;
+      }
+
+      .nav-logo { font-size:1.25rem; }
+
+      #page-hero {
+        padding:112px 0 68px;
+      }
+
+      #page-hero::before {
+        width:100%;
+        opacity:.08;
+      }
+
+      .big-step { grid-template-columns:1fr; }
+
+      .big-step-left {
+        flex-direction:row;
+        align-items:center;
+        padding:28px 0 0;
+      }
+
+      .big-step-line { display:none; }
+
+      .big-step-right {
+        padding-top:12px;
+      }
+
+      .weekly-framing {
+        flex-direction:column;
+        gap:16px;
+      }
+
+      .final-cta-actions .btn-primary,
+      .final-cta-actions .btn-outline,
+      .btn-primary,
+      .btn-outline,
+      .diag-cta,
+      .pkg-cta {
+        width:100%;
+        text-align:center;
+      }
+
+      .footer-grid {
+        grid-template-columns:1fr;
+      }
+
+      .footer-bottom {
+        flex-direction:column;
+        align-items:flex-start;
+      }
+    }
+
+    @media (max-width:1024px) {
+      .container {
+        padding-left:clamp(24px, 5vw, 44px);
+        padding-right:clamp(24px, 5vw, 44px);
+      }
+
+      .section {
+        padding:clamp(88px, 12vw, 124px) 0;
+      }
+
+      #page-hero {
+        padding:clamp(118px, 16vw, 150px) 0 clamp(78px, 10vw, 104px);
+      }
+
+      .page-hero-title,
+      .section-title,
+      .final-cta-title {
+        line-height:1.08;
+        letter-spacing:0;
+        text-wrap:balance;
+      }
+
+      .page-hero-title {
+        max-width:12ch;
+        margin-bottom:28px;
+        font-size:clamp(2.35rem, 7.8vw, 4rem);
+      }
+
+      .page-hero-sub,
+      .section-lead,
+      .faq-lead,
+      .final-cta-sub {
+        max-width:34rem;
+        font-size:1rem;
+        line-height:1.86;
+      }
+
+      .btn-primary,
+      .btn-outline,
+      .diag-cta,
+      .pkg-cta {
+        min-height:58px;
+        padding:18px 26px;
+        line-height:1.25;
+      }
+
+      .big-steps {
+        margin-top:72px;
+      }
+
+      .big-step {
+        gap:0 34px;
+      }
+
+      .big-step-right {
+        padding:52px 0;
+      }
+
+      .big-step-title {
+        font-size:clamp(1.58rem, 4.2vw, 2.15rem);
+        line-height:1.16;
+        text-wrap:balance;
+      }
+
+      .big-step-body {
+        max-width:36rem;
+        font-size:.98rem;
+        line-height:1.82;
+      }
+
+      .big-step-details {
+        gap:16px;
+        margin-top:30px;
+      }
+
+      .step-detail {
+        padding:20px;
+      }
+
+      .diagnostics-card,
+      .package-card,
+      .weekly-framing,
+      .single-session,
+      .raport-value-box,
+      .pillar {
+        padding:34px 30px;
+      }
+
+      .pillars-grid,
+      .packages-grid,
+      .faq-grid {
+        gap:22px;
+      }
+
+      .faq-grid {
+        align-items:start;
+      }
+
+      .faq-list {
+        gap:12px;
+      }
+
+      .faq-item {
+        border:1px solid var(--grey-soft);
+        background:var(--white);
+      }
+
+      .faq-question {
+        align-items:flex-start;
+        padding:24px 22px;
+        line-height:1.35;
+      }
+
+      .faq-answer-inner {
+        padding:0 22px 24px;
+        font-size:.95rem;
+        line-height:1.82;
+      }
+    }
+
+    @media (max-width:600px) {
+      #page-hero {
+        padding:112px 0 82px;
+      }
+
+      .page-hero-title {
+        max-width:11ch;
+        font-size:2.38rem;
+      }
+
+      .section {
+        padding:92px 0;
+      }
+
+      .section-title {
+        max-width:12ch;
+        font-size:2.22rem;
+      }
+
+      .big-step {
+        gap:0;
+      }
+
+      .big-step-left {
+        padding:34px 0 0;
+      }
+
+      .big-step-right {
+        padding:20px 0 38px;
+      }
+
+      .diagnostics-card,
+      .package-card,
+      .weekly-framing,
+      .single-session,
+      .raport-value-box,
+      .pillar {
+        padding:32px 28px;
+      }
+
+      .faq-question {
+        padding:24px 20px;
+      }
+
+      .faq-answer-inner {
+        padding:0 20px 24px;
+      }
+
+      .final-cta-actions {
+        gap:14px;
+      }
+    }
+
+    @media (max-width:640px) {
+      #faq .faq-item:nth-child(n+5) {
+        display:none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <nav id="navbar" role="navigation" aria-label="Nawigacja główna">
+    <a href="./index.html" class="nav-logo">Studio <span>Las</span></a>
+
+    <ul class="nav-links">
+      <li><a href="./index.html">Strona główna</a></li>
+      <li><a href="./metoda-i-pakiety.html" class="active">Metoda i pakiety</a></li>
+      <li><a href="./blog.html">Blog</a></li>
+      <li><a href="./ankieta-kontakt.html#ankieta" class="nav-cta">Ankieta / Kontakt</a></li>
+    </ul>
+
+    <button class="nav-hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" id="hamburger" type="button">
+      <span></span><span></span><span></span>
+    </button>
+  </nav>
+
+  <div class="nav-mobile" id="navMobile">
+    <a href="./index.html">Strona główna</a>
+    <a href="./metoda-i-pakiety.html">Metoda i pakiety</a>
+    <a href="./blog.html">Blog</a>
+    <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Wypełnij ankietę</a>
+  </div>
+
+  <main>
+    <section id="page-hero">
+      <div class="container">
+        <nav class="breadcrumb" aria-label="Breadcrumb">
+          <a href="./index.html">Strona główna</a>
+          <span class="breadcrumb-sep">›</span>
+          <span>Metoda i pakiety</span>
+        </nav>
+
+        <p class="page-hero-label">Metoda Studio Las</p>
+        <h1 class="page-hero-title">
+          Metoda Studio Las –<br>
+          od rozpoznania do <em>decyzji, co dalej</em>
+        </h1>
+        <p class="page-hero-sub">
+          Pierwsza Wizyta Diagnostyczna jest punktem wejścia. Program 12 tygodni jest głównym procesem pracy 1:1. Raport na końcu pomaga spokojnie zdecydować, czy idziemy dalej, czy wracasz do samodzielności.
+        </p>
+
+        <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Zacznij od krótkiej ankiety</a>
+
+        <nav class="page-nav" aria-label="Sekcje strony">
+          <a href="#system-4-krokow">System 4 Kroków</a>
+          <a href="#trzy-filary">3 obszary pracy</a>
+          <a href="#raport">Raport końcowy</a>
+          <a href="#pakiety">Pakiety i cennik</a>
+          <a href="#faq">FAQ</a>
+        </nav>
+      </div>
+    </section>
+
+    <section id="system-4-krokow" class="section section-white">
+      <div class="container">
+        <div class="reveal">
+          <span class="section-label">Jak to działa</span>
+          <h2 class="section-title">System 4 Kroków</h2>
+          <p class="section-lead" style="max-width:600px;">
+            To nie jest zestaw ćwiczeń do odhaczenia. Najpierw ustalamy punkt startowy, potem pracujemy przez 12 tygodni w bezpiecznym zakresie, a na końcu zbieramy obserwacje i podejmujemy decyzję, co dalej.
+          </p>
+        </div>
+
+        <div class="big-steps">
+          <div class="big-step reveal">
+            <div class="big-step-left">
+              <div class="big-step-number">01</div>
+              <div class="big-step-line"></div>
+            </div>
+            <div class="big-step-right">
+              <div class="big-step-tag">Krok 1 · Tydzień 0</div>
+              <h3 class="big-step-title">Ankieta, rozmowa i punkt startowy</h3>
+              <p class="big-step-body">
+                Zaczynamy od wypełnienia krótkiej ankiety online. Na jej podstawie dzwonię, żeby spokojnie omówić sytuację, nazwać główny problem i sprawdzić, czy diagnostyka w Studio Las ma sens.
+              </p>
+              <p class="big-step-body">
+                Ten krok daje nam punkt startowy: historię bólu, ograniczeń, celu i codziennych warunków, w których ten proces ma się wydarzyć.
+              </p>
+
+              <div class="big-step-details">
+                <div class="step-detail">
+                  <div class="step-detail-label">Czas trwania</div>
+                  <div class="step-detail-value">5–10 minut ankiety + krótka rozmowa</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Co ustalamy</div>
+                  <div class="step-detail-value">problem, cel, ryzyka i sens kolejnego kroku</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Koszt</div>
+                  <div class="step-detail-value">0 zł</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Co dostajesz</div>
+                  <div class="step-detail-value">uczciwą informację, czy warto umawiać diagnostykę</div>
+                </div>
+              </div>
+
+              <div class="big-step-effect">Wiesz, czy zaczynamy i z jakiego punktu naprawdę startujesz.</div>
+            </div>
+          </div>
+
+          <div class="big-step reveal">
+            <div class="big-step-left">
+              <div class="big-step-number">02</div>
+              <div class="big-step-line"></div>
+            </div>
+            <div class="big-step-right">
+              <div class="big-step-tag">Krok 2 · Wizyta diagnostyczna</div>
+              <h3 class="big-step-title">Diagnostyka i plan pierwszego etapu</h3>
+              <p class="big-step-body">
+                W studio robimy analizę składu ciała na Tanita RD-545, wywiad, proste testy ruchowe oraz ocenę tego, jak ciało reaguje na podstawowe zadania. Nie po to, żeby nazwać Cię „sprawnym” albo „niesprawnym”, tylko żeby ustalić pierwszy bezpieczny etap pracy.
+              </p>
+              <p class="big-step-body">
+                Po wizycie masz konkretny plan pierwszego etapu: cel na najbliższe tygodnie, główne ograniczenia, tempo progresji i decyzję, czy Program 12 tygodni (FUNDAMENT) jest właściwą ścieżką.
+              </p>
+
+              <div class="big-step-details">
+                <div class="step-detail">
+                  <div class="step-detail-label">Czas trwania</div>
+                  <div class="step-detail-value">75–90 minut</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Co wykonujemy</div>
+                  <div class="step-detail-value">Tanita RD-545, testy funkcjonalne, wywiad, obserwacja reakcji ciała</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Koszt</div>
+                  <div class="step-detail-value">300 zł, odliczane od Programu 12 tygodni (FUNDAMENT), jeśli zaczynamy w ciągu 7 dni</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Co dostajesz</div>
+                  <div class="step-detail-value">plan pierwszego etapu na 12 tygodni</div>
+                </div>
+              </div>
+
+              <div class="big-step-effect">Masz rozpoznanie sytuacji ruchowej i plan pierwszego etapu, a nie trening z szablonu.</div>
+            </div>
+          </div>
+
+          <div class="big-step reveal">
+            <div class="big-step-left">
+              <div class="big-step-number">03</div>
+              <div class="big-step-line"></div>
+            </div>
+            <div class="big-step-right">
+              <div class="big-step-tag">Krok 3 · Tygodnie 1–12</div>
+              <h3 class="big-step-title">Trening 1:1 + plan domowy</h3>
+              <p class="big-step-body">
+                Zaczynamy pracę 1:1 – spokojnie, bez presji i bez „orania się”. Najpierw porządkujemy podstawowe wzorce ruchowe i przeciążenia, które podtrzymują problem. Dopiero potem dokładamy stabilizację, siłę i większą swobodę ruchu.
+              </p>
+              <p class="big-step-body">
+                Standard współpracy to 1 sesja 1:1 w Studio Las tygodniowo oraz prosty plan domowy oparty na 2–4 ćwiczeniach. Nawyki, sen, regeneracja i codzienna aktywność są częścią tego kroku, bo mają utrzymać efekt między spotkaniami.
+              </p>
+
+              <div class="big-step-details">
+                <div class="step-detail">
+                  <div class="step-detail-label">Częstotliwość</div>
+                  <div class="step-detail-value">1× w tygodniu w studio + plan domowy</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Długość sesji</div>
+                  <div class="step-detail-value">ok. 75 minut</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Plan domowy</div>
+                  <div class="step-detail-value">2–4 ćwiczenia po sesji</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Korekta</div>
+                  <div class="step-detail-value">mini-audyt i aktualizacja planu po drodze</div>
+                </div>
+              </div>
+
+              <div class="big-step-effect">Ciało zaczyna ruszać się z mniejszym bólem, a Ty wiesz, co robić między sesjami.</div>
+            </div>
+          </div>
+
+          <div class="big-step reveal">
+            <div class="big-step-left">
+              <div class="big-step-number">04</div>
+            </div>
+            <div class="big-step-right">
+              <div class="big-step-tag">Krok 4 · Tydzień 12</div>
+              <h3 class="big-step-title">Raport efektów i decyzja, co dalej</h3>
+              <p class="big-step-body">
+                Po zakończeniu 12 tygodni robimy pełne podsumowanie. Dostajesz raport końcowy – konkretny dokument zebrany w jednym miejscu, który pokazuje, co się zmieniło: liczby z Tanity, wyniki testów funkcjonalnych, ocena nawyków i subiektywne odczucie bólu.
+              </p>
+              <p class="big-step-body">
+                Na tej podstawie wspólnie podejmujemy spokojną decyzję, co dalej: kontynuacja (ROZWÓJ), lżejsza forma pracy albo samodzielność z planem.
+              </p>
+
+              <div class="big-step-details">
+                <div class="step-detail">
+                  <div class="step-detail-label">Co dostajesz</div>
+                  <div class="step-detail-value">raport końcowy z rekomendacją</div>
+                </div>
+                <div class="step-detail">
+                  <div class="step-detail-label">Decyzja</div>
+                  <div class="step-detail-value">kontynuacja (ROZWÓJ) / samodzielność / przeglądy</div>
+                </div>
+              </div>
+
+              <div class="big-step-effect">Masz obraz tego, co się zmieniło – i jasną rekomendację kolejnego kroku.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="trzy-filary" class="section section-warm">
+      <div class="container">
+        <div class="pillars-intro">
+          <div class="reveal">
+            <span class="section-label">Filozofia pracy</span>
+            <h2 class="section-title">3 obszary, które wspierają proces –<br>dlaczego sam trening to za mało</h2>
+          </div>
+          <div class="reveal">
+            <p class="section-lead">
+              Większość treningów przynosi efekty przez kilka tygodni, a potem wszystko wraca do punktu wyjścia. Dzieje się tak dlatego, że trening to tylko jedna z dźwigni, które decydują o tym, jak funkcjonuje Twoje ciało.
+            </p>
+          </div>
+        </div>
+
+        <div class="pillars-grid">
+          <div class="pillar reveal">
+            <div class="pillar-icon">◎</div>
+            <div class="pillar-name">Filar 1</div>
+            <h3 class="pillar-title">Ruszaj się bezpiecznie</h3>
+            <p class="pillar-body">
+              Ruch traktowany jak precyzyjne narzędzie – nie „katowanie się”, tylko świadoma praca nad tym, co naprawdę wymaga uwagi. Najpierw rozpoznanie sytuacji, potem porządkowanie wzorców, stabilizacja i dopiero progresja siłowa.
+            </p>
+          </div>
+
+          <div class="pillar reveal">
+            <div class="pillar-icon">⌁</div>
+            <div class="pillar-name">Filar 2</div>
+            <h3 class="pillar-title">Jedz spokojnie</h3>
+            <p class="pillar-body">
+              Odejście od restrykcyjnych diet na rzecz stabilnych, powtarzalnych nawyków dopasowanych do realnego życia. Nie jadłospis na 1400 kcal, tylko 2–3 realne kroki.
+            </p>
+          </div>
+
+          <div class="pillar reveal">
+            <div class="pillar-icon">◑</div>
+            <div class="pillar-name">Filar 3</div>
+            <h3 class="pillar-title">Żyj w rytmie lasu</h3>
+            <p class="pillar-body">
+              Sen, regeneracja i mikrorutyny dostosowane do Twojego rytmu pracy i życia. Las za oknem, cisza i brak tłumu pomagają układowi nerwowemu zejść z wysokich obrotów.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="raport" class="section section-dark">
+      <div class="container">
+        <div class="reveal">
+          <span class="section-label">Raport końcowy</span>
+          <h2 class="section-title">Raport i decyzja, co dalej</h2>
+          <p class="section-lead" style="max-width:560px;">
+            Po 12 tygodniach zbieramy obserwacje, wyniki testów i Twoje odczucia w jednym miejscu. Raport nie obiecuje cudów. Ma pokazać, co się zmieniło, co nadal wymaga ostrożności i jaki krok będzie najrozsądniejszy.
+          </p>
+        </div>
+
+        <div class="raport-grid">
+          <div class="raport-areas reveal">
+            <div class="raport-area">
+              <div class="raport-area-num">I</div>
+              <div>
+                <div class="raport-area-title">Analiza biometryczna</div>
+                <div class="raport-area-body">Zestawienie zmian: masa mięśniowa, tkanka tłuszczowa, nawodnienie, tłuszcz wisceralny, wiek metaboliczny.</div>
+              </div>
+            </div>
+
+            <div class="raport-area">
+              <div class="raport-area-num">II</div>
+              <div>
+                <div class="raport-area-title">Audyt funkcjonalny</div>
+                <div class="raport-area-body">Postępy w pracy nad wzorcami ruchowymi, progresja siłowa, stabilizacja, zakres ruchu i kontrola ciała.</div>
+              </div>
+            </div>
+
+            <div class="raport-area">
+              <div class="raport-area-num">III</div>
+              <div>
+                <div class="raport-area-title">Nawyki i styl życia</div>
+                <div class="raport-area-body">Sen, regeneracja, odżywianie, stres i codzienna aktywność – sprawdzane bez ściemy.</div>
+              </div>
+            </div>
+
+            <div class="raport-area">
+              <div class="raport-area-num">IV</div>
+              <div>
+                <div class="raport-area-title">Rekomendacje</div>
+                <div class="raport-area-body">Jasna decyzja: kolejny etap, lżejsza forma pracy albo samodzielność z planem.</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="raport-value-box reveal">
+            <h3 class="raport-value-title">Dlaczego raport, a nie tylko „miłe podsumowanie”?</h3>
+            <p class="raport-value-body">
+              Klient nie powinien płacić tylko za sam fakt trenowania. Powinien dostać konkretny obraz zmiany: dane, wnioski i rekomendację.
+            </p>
+            <ul class="raport-includes">
+              <li>Estetyczny dokument PDF</li>
+              <li>Konkretne liczby, nie same odczucia</li>
+              <li>Uczciwa informacja, co działa, a co blokuje progres</li>
+              <li>Jasny plan kolejnego kroku</li>
+              <li>Wliczony w cenę Programu 12 tygodni (FUNDAMENT)</li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="pakiety" class="section section-warm">
+      <div class="container">
+        <div class="pakiety-header">
+          <div class="reveal">
+            <span class="section-label">Cennik</span>
+            <h2 class="section-title">Pierwsza wizyta i program 12 tygodni</h2>
+          </div>
+          <div class="reveal">
+            <p class="section-lead">
+              Najprostsza kolejność jest taka: krótka ankieta, Pierwsza Wizyta Diagnostyczna, a potem Program 12 tygodni, jeśli dalsza praca ma sens. FUNDAMENT i ROZWÓJ są nazwami etapów, nie osobnymi obietnicami szybkiego efektu.
+            </p>
+          </div>
+        </div>
+
+        <div class="diagnostics-card reveal">
+          <div>
+            <div class="diag-label">Krok 1 – obowiązkowy start</div>
+            <div class="diag-name">Pierwsza Wizyta Diagnostyczna</div>
+            <div class="diag-price">300 zł</div>
+            <div class="diag-price-note">75–90 minut · kwota odliczana od Programu 12 tygodni (FUNDAMENT), jeśli zaczynamy w ciągu 7 dni</div>
+            <a href="./ankieta-kontakt.html#ankieta" class="diag-cta">Zacznij od krótkiej ankiety</a>
+          </div>
+          <div>
+            <div class="diag-right-title">Co obejmuje pierwsza wizyta</div>
+            <ul class="diag-features">
+              <li>Rozmowa zdrowotno-treningowa i rozpoznanie sytuacji ruchowej</li>
+              <li>Pomiar składu ciała na analizatorze Tanita RD-545</li>
+              <li>Proste testy funkcjonalne</li>
+              <li>Ocena reakcji ciała na proste zadania ruchowe</li>
+              <li>Rekomendacja: od czego zacząć i czy 12 tygodni pracy ma sens</li>
+            </ul>
+          </div>
+        </div>
+
+        <div class="packages-grid">
+          <div class="package-card featured reveal">
+            <div class="pkg-label">Program 12 tygodni · etap 1 dla nowych</div>
+            <div class="pkg-name">Fundament</div>
+            <div class="pkg-price">3600 zł</div>
+            <div class="pkg-price-note">12 tygodni · 12 sesji 1:1</div>
+            <div class="pkg-divider"></div>
+            <div class="pkg-for">Dla kogo:</div>
+            <p style="font-size:.85rem;font-weight:300;color:rgba(255,255,255,.65);margin-bottom:20px;line-height:1.6;">
+              Dla nowej osoby, która wraca do ruchu po bólu, kontuzji, przerwie albo utracie zaufania do ciała. Najpierw spokojny fundament, potem decyzja, co dalej.
+            </p>
+            <ul class="pkg-features">
+              <li>12 tygodni współpracy</li>
+              <li>12 sesji 1:1 w Studio Las</li>
+              <li>1 prosty trening samodzielny tygodniowo</li>
+              <li>2 pomiary Tanita RD-545</li>
+              <li>Raport końcowy</li>
+              <li>Pierwsza Wizyta Diagnostyczna 300 zł odliczana od programu</li>
+            </ul>
+            <div class="pkg-highlight">ok. 300 zł / tydzień za spokojny proces odzyskiwania sprawności</div>
+            <a href="./ankieta-kontakt.html#ankieta" class="pkg-cta">Zacznij od krótkiej ankiety</a>
+          </div>
+
+          <div class="package-card reveal">
+            <div class="pkg-label">Etap 2 · po Fundamencie</div>
+            <div class="pkg-name">Rozwój</div>
+            <div class="pkg-price">3 000 zł</div>
+            <div class="pkg-price-note">12 tygodni · wyłącznie po Fundamencie</div>
+            <div class="pkg-divider"></div>
+            <div class="pkg-for">Dla kogo:</div>
+            <p style="font-size:.85rem;font-weight:300;color:var(--grey-text);margin-bottom:20px;line-height:1.6;">
+              Wyłącznie dla osób po Fundamencie. Dalszy rozwój siły, sprawności i utrwalenie nawyków.
+            </p>
+            <ul class="pkg-features">
+              <li>12 sesji 1:1</li>
+              <li>Plan domowy dopasowany do aktualnego celu</li>
+              <li>Pomiar Tanita na zakończeniu</li>
+              <li>Praca nad siłą funkcjonalną i wydolnością</li>
+              <li>Utrwalenie efektów z Fundamentu</li>
+            </ul>
+            <div class="pkg-highlight">ROZWÓJ jest kontynuacją po Fundamencie, nie punktem wejścia</div>
+            <a href="./ankieta-kontakt.html#ankieta" class="pkg-cta">Zacznij od krótkiej ankiety</a>
+          </div>
+        </div>
+
+        <div class="single-session reveal">
+          <div>
+            <div class="single-session-label">Wyjątek – nie standard</div>
+            <div class="single-session-title">Pojedyncza sesja</div>
+            <div class="single-session-desc">Wyłącznie dla osób po Fundamencie lub Rozwoju</div>
+          </div>
+          <div class="single-session-price">350 zł</div>
+          <div class="single-session-note">
+            Jednorazowy przegląd techniczny, korekta planu lub przygotowanie do konkretnego wydarzenia po zakończeniu procesu.
+          </div>
+        </div>
+
+        <div class="weekly-framing reveal">
+          <div class="weekly-framing-text">
+            Program 12 tygodni (FUNDAMENT) kosztuje <strong>3600 zł</strong>. Jeśli po nim potrzebna jest kontynuacja, etap ROZWÓJ omawiamy osobno.
+          </div>
+          <div class="weekly-framing-note">
+            Pytanie nie brzmi tylko „ile kosztuje trening”, ale czy spokojny proces, jasna rekomendacja i większa samodzielność są właściwym kierunkiem na tym etapie.
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="faq" class="section section-white">
+      <div class="container">
+        <div class="faq-grid">
+          <div class="faq-sticky reveal">
+            <span class="section-label">Często zadawane pytania</span>
+            <h2 class="section-title">Masz pytania<br>przed decyzją?</h2>
+            <p class="faq-lead">
+              Poniżej zebrałem odpowiedzi na pytania, które słyszę najczęściej. Jeśli nie znajdziesz tu swojego – wypełnij ankietę.
+            </p>
+            <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Wypełnij ankietę</a>
+          </div>
+
+          <div class="faq-list reveal">
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                Czy mogę zacząć bez wcześniejszego doświadczenia treningowego?
+                <div class="faq-icon">+</div>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  <p>Tak. Brak doświadczenia to nie przeszkoda. W wielu przypadkach wręcz ułatwia pracę, bo nie trzeba oduczać złych nawyków ruchowych.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                Czy mogę trenować, jeśli mam aktywny ból lub jestem po operacji?
+                <div class="faq-icon">+</div>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  <p>To zależy od rodzaju bólu i operacji. Przy aktywnym stanie zapalnym lub bezpośrednio po zabiegu decyzję podejmuje lekarz, nie trener.</p>
+                  <p><strong>Ważne:</strong> po poważnych zabiegach standardowo wymagam pisemnego dopuszczenia od lekarza prowadzącego.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                Czy mogę zapłacić w ratach?
+                <div class="faq-icon">+</div>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  <p>Nie mam formalnego systemu ratalnego. W wyjątkowych sytuacjach możemy ustalić rozłożenie płatności za FUNDAMENT na dwie części.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                Co jeśli muszę odwołać trening?
+                <div class="faq-icon">+</div>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  <p>Trening odwołany minimum 24 godziny wcześniej może zostać przełożony bez utraty sesji. Odwołanie później oznacza, że sesja jest uznana za wykorzystaną.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                Czy prowadzisz treningi online?
+                <div class="faq-icon">+</div>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  <p>Obecnie nie. Studio Las to świadomie zaprojektowane doświadczenie stacjonarne: kameralne studio, diagnostyka i praca 1:1.</p>
+                </div>
+              </div>
+            </div>
+
+            <div class="faq-item">
+              <button class="faq-question" type="button">
+                Co mam zabrać na pierwszą wizytę?
+                <div class="faq-icon">+</div>
+              </button>
+              <div class="faq-answer">
+                <div class="faq-answer-inner">
+                  <p>Wygodny strój sportowy. Wodę i ręcznik masz na miejscu. Jeśli masz dokumentację medyczną lub wyniki badań, warto je zabrać.</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <section id="final-cta">
+    <div class="container reveal">
+      <p class="final-cta-eyebrow">Gotowy na pierwszy krok?</p>
+      <h2 class="final-cta-title">
+        Ankieta, rozmowa,<br>
+        diagnostyka –<br>
+        i <em>wiesz, od czego zacząć.</em>
+      </h2>
+      <p class="final-cta-sub">
+        Wypełnij krótką ankietę. Oddzwaniam w ciągu 24 godzin w dni robocze. Bez zobowiązań i bez presji decyzji na miejscu.
+      </p>
+      <div class="final-cta-actions">
+        <a href="./ankieta-kontakt.html#ankieta" class="btn-primary">Zacznij od krótkiej ankiety →</a>
+        <a href="./index.html" class="btn-outline">← Wróć na stronę główną</a>
+      </div>
+    </div>
+  </section>
+
+  <footer>
+    <div class="container">
+      <div class="footer-grid">
+        <div>
+          <div class="footer-logo">Studio <span>Las</span></div>
+          <p class="footer-tagline">
+            Nie dla każdego. Dla osób, które traktują zdrowie jako inwestycję, nie wydatek.
+          </p>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Na tej stronie</div>
+          <ul class="footer-links">
+            <li><a href="#system-4-krokow">System 4 Kroków</a></li>
+            <li><a href="#trzy-filary">3 obszary pracy</a></li>
+            <li><a href="#raport">Raport końcowy</a></li>
+            <li><a href="#pakiety">Pakiety i cennik</a></li>
+            <li><a href="#faq">FAQ</a></li>
+          </ul>
+        </div>
+
+        <div>
+          <div class="footer-col-title">Kontakt</div>
+          <p class="footer-contact-item">ul. Pracka 1J, 05-504 Prace Duże</p>
+          <p class="footer-contact-item"><a href="tel:+48503975998">503 975 998</a></p>
+          <p class="footer-contact-item"><a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></p>
+          <p class="footer-contact-item" style="margin-top:16px;font-size:.78rem;opacity:.7;">
+            Pon–Pt: 16:00–22:00 · Sob–Nd: po umówieniu
+          </p>
+        </div>
+      </div>
+
+      <div class="footer-bottom">
+        <p class="footer-copy">© 2026 Studio Las · Damian Krawiec. Wszelkie prawa zastrzeżone.</p>
+        <div class="footer-legal">
+          <a href="./ankieta-kontakt.html#kontakt-lokalizacja">Kontakt</a>
+          <a href="./ankieta-kontakt.html#ankieta">Ankieta</a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    const hamburger = document.getElementById('hamburger');
+    const navMobile = document.getElementById('navMobile');
+
+    if (hamburger && navMobile) {
+      hamburger.addEventListener('click', () => {
+        const isOpen = navMobile.classList.toggle('open');
+        hamburger.setAttribute('aria-expanded', String(isOpen));
+        hamburger.setAttribute('aria-label', isOpen ? 'Zamknij menu' : 'Otwórz menu');
+      });
+
+      navMobile.querySelectorAll('a').forEach(link => {
+        link.addEventListener('click', () => {
+          navMobile.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.setAttribute('aria-label', 'Otwórz menu');
+        });
+      });
+
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          navMobile.classList.remove('open');
+          hamburger.setAttribute('aria-expanded', 'false');
+          hamburger.setAttribute('aria-label', 'Otwórz menu');
+        }
+      });
+    }
+
+    if ('IntersectionObserver' in window) {
+      const observer = new IntersectionObserver(entries => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('visible');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, {
+        threshold: 0.1,
+        rootMargin: '0px 0px -40px 0px'
+      });
+
+      document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+    } else {
+      document.querySelectorAll('.reveal').forEach(el => el.classList.add('visible'));
+    }
+
+    document.querySelectorAll('.faq-question').forEach(button => {
+      button.addEventListener('click', () => {
+        const answer = button.nextElementSibling;
+        const isOpen = button.classList.contains('open');
+
+        document.querySelectorAll('.faq-question').forEach(item => {
+          item.classList.remove('open');
+          item.setAttribute('aria-expanded', 'false');
+          if (item.nextElementSibling) {
+            item.nextElementSibling.classList.remove('open');
+          }
+        });
+
+        if (!isOpen) {
+          button.classList.add('open');
+          button.setAttribute('aria-expanded', 'true');
+          answer.classList.add('open');
+        }
+      });
+
+      button.setAttribute('aria-expanded', 'false');
+    });
+
+    const sections = document.querySelectorAll('section[id]');
+    const pageNavLinks = document.querySelectorAll('.page-nav a');
+
+    window.addEventListener('scroll', () => {
+      let current = '';
+
+      sections.forEach(section => {
+        if (window.scrollY >= section.offsetTop - 120) {
+          current = section.id;
+        }
+      });
+
+      pageNavLinks.forEach(link => {
+        link.style.color = link.getAttribute('href') === '#' + current
+          ? 'var(--cedar-light)'
+          : 'rgba(255,255,255,0.5)';
+      });
+    }, { passive:true });
+  </script>
+</body>
+</html>

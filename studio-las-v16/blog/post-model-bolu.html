@@ -1,0 +1,535 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Twój ból nie jest tylko w ciele. Biopsychospołeczny model bólu w praktyce | Blog Studio Las</title>
+  <meta name="description" content="Dlaczego MRI nie wyjaśnia Twojego bólu. Czym jest biopsychospołeczny model bólu, czym jest sensytyzacja ośrodkowa i jak historia Marka (47 lat) pokazuje, że zmiana jest możliwa." />
+      <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v16/blog/post-model-bolu.html" />
+  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v16/blog/post-model-bolu.html" />
+  <meta property="og:locale" content="pl_PL" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garant:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
+  <style>
+:root{
+  --forest:#1C2B24;--anthracite:#2D2D2D;--cedar:#B8935A;--cedar-light:#D4AC78;
+  --offwhite:#F7F4EF;--white:#FFFFFF;--grey-soft:#E8E4DC;--grey-text:#6B6560;
+  --font-display:'Cormorant Garant',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+  --max-w:1120px;--content-w:720px;--t:.3s ease;
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{scroll-behavior:smooth;font-size:16px}
+body{font-family:var(--font-body);font-weight:300;color:var(--anthracite);background:var(--offwhite);line-height:1.7;-webkit-font-smoothing:antialiased}
+img{max-width:100%;display:block}a{color:inherit;text-decoration:none}
+.container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px}
+.content-wrap{width:100%;max-width:var(--content-w);margin:0 auto;padding:0 24px}
+
+/* NAV */
+#navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;background:var(--forest);box-shadow:0 2px 24px rgba(0,0,0,.15)}
+.nav-logo{font-family:var(--font-display);font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white)}
+.nav-logo span{color:var(--cedar)}
+.nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none}
+.nav-links a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t)}
+.nav-links a:hover{color:var(--cedar-light)}
+
+.client-panel-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.78);transition:color var(--t),text-shadow var(--t),transform var(--t),border-color var(--t)}
+.client-panel-link:hover,.client-panel-link:focus-visible{color:var(--cedar-light);text-shadow:0 0 18px rgba(141,173,120,.28);transform:translateY(-1px)}
+.client-panel-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.92;transition:opacity var(--t),transform var(--t)}
+.client-panel-link:hover .client-panel-icon,.client-panel-link:focus-visible .client-panel-icon{opacity:1;transform:translateY(-1px)}
+.nav-mobile .client-panel-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.86)}
+.nav-cta{color:var(--white)!important;border:1px solid var(--cedar);padding:9px 20px;font-size:.75rem!important;transition:background var(--t)!important}
+.nav-cta:hover{background:var(--cedar)!important}
+.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
+.nav-hamburger span{display:block;width:24px;height:2px;background:var(--white)}
+.nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;background:var(--forest);padding:24px;z-index:99;flex-direction:column;gap:20px}
+.nav-mobile.open{display:flex}
+.nav-mobile a{color:rgba(255,255,255,.85);font-size:1rem;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.nav-mobile .btn-primary{margin-top:8px;text-align:center}
+
+/* BUTTONS */
+.btn-primary{display:inline-block;background:var(--cedar);color:var(--white);font-family:var(--font-body);font-size:.8rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:16px 36px;border:none;cursor:pointer;transition:background var(--t),transform var(--t)}
+.btn-primary:hover{background:var(--cedar-light);transform:translateY(-1px)}
+
+/* POST HERO */
+#post-hero{background:var(--forest);padding:140px 0 64px;position:relative;overflow:hidden}
+.post-hero-bg{position:absolute;inset:0;background-image:url('./images/blog/post-hero.jpg');background-size:cover;background-position:center;opacity:.12}
+.post-hero-inner{position:relative;z-index:1}
+.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:32px;font-size:.75rem;color:rgba(255,255,255,.4);flex-wrap:wrap}
+.breadcrumb a{color:rgba(255,255,255,.4);transition:color var(--t)}
+.breadcrumb a:hover{color:var(--cedar-light)}
+.post-tags{display:flex;gap:8px;margin-bottom:20px;flex-wrap:wrap}
+.post-tag{font-size:.62rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--cedar-light);background:rgba(184,147,90,.1);border:1px solid rgba(184,147,90,.25);padding:4px 12px}
+.post-h1{font-family:var(--font-display);font-size:clamp(2rem,4.5vw,3.2rem);font-weight:300;line-height:1.15;color:var(--white);margin-bottom:20px;max-width:760px}
+.post-h1 em{font-style:italic;color:var(--cedar-light)}
+.post-meta{display:flex;align-items:center;gap:20px;flex-wrap:wrap}
+.post-meta-item{font-size:.78rem;font-weight:300;color:rgba(255,255,255,.5);display:flex;align-items:center;gap:6px}
+.post-meta-sep{color:rgba(255,255,255,.15)}
+
+/* READING PROGRESS */
+#reading-progress{position:fixed;top:68px;left:0;right:0;height:2px;background:rgba(184,147,90,.15);z-index:99}
+#reading-bar{height:100%;width:0%;background:var(--cedar);transition:width .1s}
+
+/* ARTICLE LAYOUT */
+.article-wrap{display:grid;grid-template-columns:1fr 260px;gap:64px;padding:64px 0 96px;align-items:start}
+
+/* ARTICLE TYPOGRAPHY */
+.article-body h2{font-family:var(--font-display);font-size:clamp(1.6rem,2.5vw,2.1rem);font-weight:400;color:var(--anthracite);line-height:1.25;margin:48px 0 16px}
+.article-body h3{font-family:var(--font-display);font-size:1.3rem;font-weight:500;color:var(--anthracite);line-height:1.3;margin:32px 0 12px}
+.article-body p{font-size:.97rem;font-weight:300;color:var(--anthracite);line-height:1.9;margin-bottom:20px}
+.article-body strong{font-weight:500;color:var(--anthracite)}
+.article-body em{font-style:italic}
+.article-body ul,.article-body ol{margin:8px 0 20px 20px}
+.article-body li{font-size:.95rem;font-weight:300;color:var(--anthracite);line-height:1.75;margin-bottom:6px;padding-left:4px}
+.article-body blockquote{border-left:3px solid var(--cedar);background:var(--offwhite);padding:20px 24px;margin:32px 0;font-family:var(--font-display);font-size:1.1rem;font-weight:300;font-style:italic;color:var(--anthracite);line-height:1.65}
+.article-body blockquote cite{display:block;margin-top:10px;font-size:.78rem;font-weight:400;font-style:normal;color:var(--grey-text);letter-spacing:.05em}
+.article-body .highlight-box{background:var(--white);border:1px solid var(--grey-soft);border-left:3px solid var(--cedar);padding:20px 24px;margin:28px 0}
+.article-body .highlight-box p{margin-bottom:0;font-size:.9rem}
+.article-body .result-box{background:var(--forest);color:var(--white);padding:24px 28px;margin:32px 0}
+.article-body .result-box .result-label{font-size:.65rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:10px;display:block}
+.article-body .result-box p{color:rgba(255,255,255,.85);margin-bottom:0}
+.article-body .results-list{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:24px 0 32px}
+.article-body .result-item{background:var(--offwhite);padding:16px 20px;border-left:2px solid var(--cedar)}
+.article-body .result-item .r-label{font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--grey-text);margin-bottom:4px;display:block}
+.article-body .result-item .r-val{font-family:var(--font-display);font-size:1.2rem;font-weight:400;color:var(--anthracite)}
+.article-body .phase-header{display:flex;align-items:center;gap:16px;background:var(--forest);padding:16px 20px;margin:36px 0 16px}
+.article-body .phase-num{font-family:var(--font-display);font-size:1.6rem;font-weight:300;color:var(--cedar-light);min-width:32px}
+.article-body .phase-title{font-family:var(--font-display);font-size:1.1rem;font-weight:400;color:var(--white);line-height:1.3}
+.article-body hr{border:none;border-top:1px solid var(--grey-soft);margin:40px 0}
+.article-body .sources{border-top:1px solid var(--grey-soft);padding-top:32px;margin-top:48px}
+.article-body .sources h4{font-size:.72rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--grey-text);margin-bottom:16px}
+.article-body .sources ol{margin-left:20px}
+.article-body .sources li{font-size:.78rem;color:var(--grey-text);line-height:1.65;margin-bottom:6px}
+
+/* SIDEBAR */
+.article-sidebar{position:sticky;top:100px}
+.sidebar-cta{background:var(--forest);padding:32px 28px;margin-bottom:2px}
+.sidebar-cta-label{font-size:.62rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:12px;display:block}
+.sidebar-cta-title{font-family:var(--font-display);font-size:1.2rem;font-weight:400;color:var(--white);line-height:1.3;margin-bottom:14px}
+.sidebar-cta-body{font-size:.82rem;font-weight:300;color:rgba(255,255,255,.65);line-height:1.7;margin-bottom:24px}
+.sidebar-btn{display:block;text-align:center;background:var(--cedar);color:var(--white);font-family:var(--font-body);font-size:.72rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;padding:14px 20px;transition:background var(--t)}
+.sidebar-btn:hover{background:var(--cedar-light)}
+.sidebar-toc{background:var(--white);border:1px solid var(--grey-soft);padding:24px 24px;margin-top:2px}
+.toc-label{font-size:.62rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--grey-text);margin-bottom:16px;display:block}
+.toc-list{list-style:none;display:flex;flex-direction:column;gap:8px}
+.toc-list li a{font-size:.82rem;font-weight:300;color:var(--grey-text);line-height:1.5;transition:color var(--t);display:block;padding-left:12px;border-left:1px solid var(--grey-soft)}
+.toc-list li a:hover{color:var(--cedar);border-left-color:var(--cedar)}
+
+/* POST CTA BLOCK */
+.post-cta-block{background:var(--anthracite);padding:40px 36px;margin:48px 0;text-align:center}
+.pcta-label{font-size:.65rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:12px;display:block}
+.pcta-title{font-family:var(--font-display);font-size:1.6rem;font-weight:300;color:var(--white);line-height:1.3;margin-bottom:12px}
+.pcta-body{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);line-height:1.75;margin-bottom:24px}
+
+/* RELATED POSTS */
+#related{background:var(--offwhite);padding:64px 0 80px;border-top:1px solid var(--grey-soft)}
+.section-label{font-size:.68rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--grey-text)}
+.related-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:2px;margin-top:40px}
+.related-card{background:var(--white);padding:28px 24px;display:flex;flex-direction:column;transition:transform var(--t)}
+.related-card:hover{transform:translateY(-3px)}
+.related-tag{font-size:.62rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--cedar);margin-bottom:10px;display:block}
+.related-title{font-family:var(--font-display);font-size:1.1rem;font-weight:400;color:var(--anthracite);line-height:1.3;margin-bottom:10px;flex:1;transition:color var(--t)}
+.related-card:hover .related-title{color:var(--cedar)}
+.related-meta{font-size:.72rem;color:var(--grey-text);margin-top:auto;padding-top:14px;border-top:1px solid var(--grey-soft)}
+
+/* FOOTER */
+footer{background:var(--forest);padding:60px 0 36px}
+.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:48px;margin-bottom:48px}
+.footer-logo{font-family:var(--font-display);font-size:1.3rem;font-weight:500;color:var(--white);letter-spacing:.08em;margin-bottom:16px}
+.footer-logo span{color:var(--cedar)}
+.footer-tagline{font-size:.82rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.7;max-width:280px}
+.footer-col-title{font-size:.68rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px}
+.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
+.footer-links a{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);transition:color var(--t)}
+.footer-links a:hover{color:var(--cedar-light)}
+.footer-ci{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);margin-bottom:10px;line-height:1.6}
+.footer-ci a{color:rgba(255,255,255,.6);transition:color var(--t)}
+.footer-ci a:hover{color:var(--cedar-light)}
+.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
+.footer-copy{font-size:.75rem;color:rgba(255,255,255,.3)}
+.footer-legal{display:flex;gap:20px}
+.footer-legal a{font-size:.75rem;color:rgba(255,255,255,.3);transition:color var(--t)}
+.footer-legal a:hover{color:rgba(255,255,255,.6)}
+
+/* RESPONSIVE */
+@media(max-width:960px){
+  .nav-links{display:none}.nav-hamburger{display:flex}
+  .article-wrap{grid-template-columns:1fr}
+  .article-sidebar{display:none}
+  .related-grid{grid-template-columns:1fr 1fr}
+  .article-body .results-list{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
+}
+@media(max-width:600px){
+  .related-grid{grid-template-columns:1fr}
+  .footer-grid{grid-template-columns:1fr}
+  .footer-bottom{flex-direction:column;align-items:flex-start}
+}
+
+/* Unified global navigation */
+.site-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(23,37,30,.94);box-shadow:0 2px 24px rgba(0,0,0,.15);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
+.site-logo{font-family:var(--font-display,var(--display,Georgia,serif));font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white,#fff)}
+.site-logo span{color:var(--cedar-light,var(--cedar,#b8935a))}
+.site-nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none;margin:0;padding:0}
+.site-nav-links a,.site-nav-mobile a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t,var(--transition,.25s ease)),background var(--t,var(--transition,.25s ease)),border-color var(--t,var(--transition,.25s ease)),transform var(--t,var(--transition,.25s ease))}
+.site-nav-links a:hover,.site-nav-links a.active,.site-nav-mobile a:hover,.site-nav-mobile a.active{color:var(--cedar-light,#d5b982)}
+.site-nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border:1px solid var(--cedar,#b8935a);background:transparent;color:rgba(255,255,255,.86)!important;line-height:1;white-space:nowrap}
+.site-nav-cta:hover,.site-nav-cta.active{background:rgba(184,147,90,.12);color:var(--cedar-light,#d5b982)!important;border-color:var(--cedar-light,#d5b982)}
+.site-client-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.68)!important;white-space:nowrap}
+.site-client-link:hover,.site-client-link:focus-visible{color:var(--cedar-light,#d5b982)!important;transform:translateY(-1px)}
+.site-client-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
+.site-nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:0;padding:8px}
+.site-nav-toggle span{display:block;width:24px;height:2px;background:var(--white,#fff)}
+.site-nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;flex-direction:column;gap:16px;padding:24px;background:var(--forest,#17251e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
+.site-nav-mobile.open{display:flex}
+.site-nav-mobile a{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+.site-nav-mobile .site-nav-cta{margin-top:4px;padding:14px 18px;border-bottom:1px solid var(--cedar,#b8935a)}
+.site-nav-mobile .site-client-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.72)!important}
+@media(max-width:980px){.site-nav-links{display:none}.site-nav-toggle{display:flex}}
+@media(max-width:640px){.site-nav{height:64px;padding:0 18px}.site-nav-mobile{top:64px;max-height:calc(100vh - 64px);overflow-y:auto}.site-logo{font-size:1.25rem}}
+</style>
+  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v16/images/damian-about.webp" />
+</head>
+<body>
+
+<nav class="site-nav" aria-label="Nawigacja główna">
+  <a class="site-logo" href="../index.html">Studio <span>Las</span></a>
+  <ul class="site-nav-links">
+    <li><a href="../index.html">Strona główna</a></li>
+    <li><a href="../metoda-i-pakiety.html">Metoda i pakiety</a></li>
+    <li><a href="../blog.html" class="active">Blog</a></li>
+    <li><a href="../ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a></li>
+    </ul>
+  <button class="site-nav-toggle" id="hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" type="button">
+    <span></span><span></span><span></span>
+  </button>
+</nav>
+<div class="site-nav-mobile nav-mobile" id="navMobile">
+  <a href="../index.html">Strona główna</a>
+  <a href="../metoda-i-pakiety.html">Metoda i pakiety</a>
+  <a href="../blog.html" class="active">Blog</a>
+  <a href="../ankieta-kontakt.html#ankieta" class="site-nav-cta">ANKIETA / KONTAKT</a>
+  </div>
+
+<!-- READING PROGRESS -->
+<div id="reading-progress"><div id="reading-bar"></div></div>
+
+<!-- POST HERO -->
+<section id="post-hero">
+  <div class="post-hero-bg"></div>
+  <div class="container post-hero-inner">
+    <nav class="breadcrumb">
+      <a href="../index.html">Strona główna</a>
+      <span>›</span>
+      <a href="../blog.html">Blog</a>
+      <span>›</span>
+      <span>Biopsychospołeczny model bólu</span>
+    </nav>
+    <div class="post-tags">
+      <span class="post-tag">Trening medyczny</span>
+      <span class="post-tag">Ból i kontuzje</span>
+      <span class="post-tag">Edukacja</span>
+    </div>
+    <h1 class="post-h1">Twój ból nie jest tylko w ciele.<br><em>Czym jest biopsychospołeczny model bólu</em><br>i dlaczego zmienia wszystko</h1>
+    <div class="post-meta">
+      <span class="post-meta-item">Damian Krawiec</span>
+      <span class="post-meta-sep">·</span>
+      <span class="post-meta-item">24 Kwietnia 2026</span>
+      <span class="post-meta-sep">·</span>
+      <span class="post-meta-item">14 min czytania</span>
+    </div>
+  </div>
+</section>
+
+<!-- ARTICLE -->
+<div class="container">
+  <div class="article-wrap">
+
+    <!-- MAIN CONTENT -->
+    <article class="article-body">
+
+      <p>Marek miał 47 lat i dwa lata za sobą. Dwa lata, w których odwiedził czterech specjalistów, zrobił dwa MRI, przeszedł serię zastrzyków, dwie rundy fizjoterapii i trzy próby powrotu do biegania. Każda z tych prób kończyła się tak samo — po kilku tygodniach ból wracał. Nie zawsze w tym samym miejscu, nie zawsze przy tym samym obciążeniu. Ale wracał.</p>
+
+      <p>Kiedy pojawił się u mnie, powiedział coś, co słyszę od wielu klientów: <strong>„Chyba już nie ma sensu szukać przyczyny. Mam po prostu słabe plecy."</strong></p>
+
+      <p>Nie miał słabych pleców. Miał nierozwiązany problem — tyle że problem był trójwymiarowy, a wszyscy do tej pory patrzyli tylko w jednym kierunku.</p>
+
+      <h2 id="biomechanika-to-nie-wszystko">Biomechanika to za mało</h2>
+
+      <p>W tradycyjnym podejściu do bólu przez dekady obowiązywał prosty model: jest struktura, struktura jest uszkodzona, naprawiamy strukturę, ból znika. Rentgen, MRI, diagnoza, leczenie. Elegancki schemat. Problem w tym, że rzeczywistość okazała się dużo mniej elegancka.</p>
+
+      <p>Badania populacyjne przeprowadzane od lat 90. konsekwentnie pokazują coś niepokojącego: znaczna część ludzi bez żadnych dolegliwości bólowych ma w MRI wyraźne „patologie" — przepukliny, zwyrodnienia, degeneracje krążków, zwężenia kanału kręgowego. Już badanie opublikowane w <em>New England Journal of Medicine</em> w 1994 roku wykazało, że u 64% bezobjawowych dorosłych powyżej 40. roku życia widoczne były zmiany zwyrodnieniowe w kręgosłupie lędźwiowym. Metaanaliza Brinjikji i wsp. z 2015 roku — opublikowana w <em>American Journal of Neuroradiology</em> — potwierdziła, że degeneracja krążka widoczna na obrazowaniu dotyczy 37% bezobjawowych dwudziestolatków, a po 50. roku życia odsetek ten przekracza 80%.</p>
+
+      <p>Co z tego wynika? Zmiana widoczna na obrazie nie jest równoznaczna z bólem. I odwrotnie — możesz mieć silny, przewlekły ból bez żadnej „obiektywnej" nieprawidłowości w badaniu. To nie jest filozofia ani spekulacja. To jest epidemiologia bólu.</p>
+
+      <p>I właśnie to jest punkt wyjścia do zrozumienia biopsychospołecznego modelu bólu — jednej z najważniejszych zmian w myśleniu o ciele, jaka dokonała się w medycynie w ciągu ostatnich pięćdziesięciu lat.</p>
+
+      <h2 id="trzy-wymiary">Trzy wymiary, których nie widać na rentgenie</h2>
+
+      <p>Biopsychospołeczny model bólu (<em>biopsychosocial model of pain</em>) wprowadził w 1977 roku psychiatra George Engel jako alternatywę dla biomedycznego redukcjonizmu. W bólu układu mięśniowo-szkieletowego spopularyzowali go m.in. Gordon Waddell i Stuart McGill, a dziś stanowi on standard nauczania w zaawansowanych programach fizjoterapii i medycyny sportowej na całym świecie.</p>
+
+      <p>Model mówi wprost: ból to nie tylko sygnał uszkodzenia tkanki. Ból to zjawisko wielowymiarowe, kształtowane przez trzy wzajemnie przenikające się obszary.</p>
+
+      <p><strong>Wymiar biologiczny</strong> — to wszystko, co widzimy w badaniach: stan tkanek, stan stawów, napięcie mięśniowe, jakość wzorców ruchowych, stan zapalny, obciążenia mechaniczne. Przepuklina L5-S1, zwężenie kanału kręgowego, osłabione mięśnie stabilizujące — to ten wymiar. Jest realny i ważny. Ale to tylko jedna trzecia obrazu.</p>
+
+      <p><strong>Wymiar psychologiczny</strong> — przekonania na temat bólu i ciała, lęk przed ruchem (kinezjofobia), tendencja do katastrofizowania, styl radzenia sobie ze stresem, poziom czujności wobec sygnałów z ciała. Ktoś, kto jest głęboko przekonany, że „każdy ruch może mi coś urwać", będzie inaczej przetwarzał ten sam sygnał bólowy niż ktoś, kto ten sygnał rozumie i nie boi się go. To nie jest kwestia siły woli — to jest neurofizjologia.</p>
+
+      <p><strong>Wymiar społeczny</strong> — środowisko pracy, relacje, sytuacja życiowa, presja finansowa, historia medyczna, doświadczenia z systemem ochrony zdrowia, komunikaty, które słyszał od lekarzy i specjalistów przez lata. „Masz 47 lat i zwyrodnienia — z tym się już nie cofa." To zdanie słyszę w relacjach moich klientów regularnie. Takie komunikaty zostawiają ślad — i to dosłownie, na poziomie zmian w przetwarzaniu sygnałów przez układ nerwowy.</p>
+
+      <blockquote>
+        „Ból jest zawsze prawdziwy. Ale nie zawsze oznacza uszkodzenie."
+        <cite>Lorimer Moseley, <em>Explain Pain</em></cite>
+      </blockquote>
+
+      <h2 id="sensytyzacja">Jak ból staje się przewlekły — i dlaczego to nie jest słabość</h2>
+
+      <p>Żeby zrozumieć, dlaczego Marek bolał pomimo dwóch lat leczenia, muszę wyjaśnić jedno pojęcie, które zmienia sposób myślenia o przewlekłym bólu: <strong>sensytyzacja ośrodkowa</strong>.</p>
+
+      <p>Układ nerwowy nie jest pasywnym przewodnikiem impulsów. Jest plastyczny — uczy się. I może nauczyć się bólu.</p>
+
+      <p>Kiedy ból trwa wystarczająco długo — granica to zazwyczaj 3 miesiące, choć nie jest to sztywna linia — neurony w rdzeniu kręgowym i mózgu zaczynają reagować inaczej. Próg pobudzenia obniża się. System alarmowy staje się nadwrażliwy. To, co wcześniej nie wywoływało bólu — lekki dotyk, normalna pozycja siedząca, zwykłe schylenie się po długopis — nagle go wywołuje. Nie dlatego, że tkanka jest bardziej uszkodzona, ale dlatego, że układ nerwowy nauczył się „obserwować" tę część ciała ze szczególną intensywnością.</p>
+
+      <p>W terminologii klinicznej opisuje się to jako przesunięcie od bólu <strong>nocyceptywnego</strong> (bezpośrednia odpowiedź na rzeczywiste uszkodzenie tkanki) do bólu <strong>nociplastycznego</strong> — zjawiska wynikającego z plastyczności układu nerwowego, bez bieżącego uszkodzenia tkanki jako jego źródła. To trzecia kategoria bólu obok nocyceptywnego i neuropatycznego, wprowadzona przez Międzynarodowe Stowarzyszenie Badania Bólu (IASP) do oficjalnej nomenklatury w 2017 roku.</p>
+
+      <div class="highlight-box">
+        <p><strong>Ważne:</strong> Sensytyzacja ośrodkowa to nie jest ból „w głowie" ani „wymyślony". To jest zmiana w fizjologii układu nerwowego — realna, mierzalna, i — co najważniejsze — odwracalna. Tyle że wymaga innego podejścia niż naprawa uszkodzonej tkanki.</p>
+      </div>
+
+      <p>Marek miał za sobą dwa lata, w których każdy specjalista skupiał się wyłącznie na „naprawieniu" wymiaru biologicznego. Nikt nie pracował z tym, co w tym czasie działo się z jego układem nerwowym, z jego przekonaniami o ciele i z jego poziomem lęku przed ruchem. Ból tymczasem uczył się być bólem coraz skuteczniej.</p>
+
+      <div class="phase-header">
+        <span class="phase-num">01</span>
+        <span class="phase-title">Faza diagnostyczna — co naprawdę powoduje ból Marka</span>
+      </div>
+
+      <p>Kiedy Marek pojawił się na pierwszym spotkaniu, pierwsze 90 minut nie było treningiem. Było rozmową i obserwacją — fundamentem, bez którego żaden plan treningowy nie ma sensu.</p>
+
+      <h3>Analiza składu ciała (Tanita RD-545)</h3>
+
+      <p>Profesjonalny analizator Tanita RD-545 dał mi punkt wyjścia:</p>
+
+      <div class="results-list">
+        <div class="result-item"><span class="r-label">Masa ciała</span><span class="r-val">89 kg</span></div>
+        <div class="result-item"><span class="r-label">Tkanka tłuszczowa</span><span class="r-val">26% (norma 18–24%)</span></div>
+        <div class="result-item"><span class="r-label">Masa mięśniowa</span><span class="r-val">Niedobór w kończynach dolnych</span></div>
+        <div class="result-item"><span class="r-label">Nawodnienie</span><span class="r-val">Poniżej optymalnego</span></div>
+      </div>
+
+      <p>Nadwaga przy jednoczesnym niedoborze masy mięśniowej — szczególnie w obrębie kończyn dolnych — to klasyczny obraz człowieka, który przez dwa lata bólu przestał się ruszać. Ciało się dostosowało do bezruchu. I to dostosowanie samo w sobie stawało się źródłem problemu.</p>
+
+      <h3>Analiza wzorców ruchowych i wywiad psychologiczny</h3>
+
+      <p>Poprosiłem Marka o kilka globalnych wzorców ruchowych. Przysiad: kolana niestabilne, oddech wstrzymany przy zejściu w dół, wyraźne napięcie w obręczy barkowej — ciało w trybie obronnym. Zawias biodrowy: ograniczony zakres, ale nie z powodu sztywności struktur, lecz z powodu lęku przed pozycją. Próba podniesienia kettlebla z podłogi skończyła się automatycznym zatrzymaniem w połowie ruchu.</p>
+
+      <p>Marek powiedział: „Tu zawsze zaczyna mnie boleć." Kettlebell leżał na podłodze. Nie był jeszcze podniesiony. Ból zaczął się przy samej <em>antycypacji</em> ruchu. To jest sensytyzacja ośrodkowa w działaniu — w czystej, klinicznej postaci.</p>
+
+      <p>W wywiadzie zapytałem nie tylko o to, gdzie boli i jak długo. Zapytałem, kiedy boli bardziej. Odpowiedź była jednoznaczna: <strong>„Po dużym projekcie w pracy jest zawsze gorzej. W wakacje niemal nie boli."</strong> To nie jest przypadek. To jest wymiar społeczno-psychologiczny wychodzący wprost z historii człowieka.</p>
+
+      <div class="result-box">
+        <span class="result-label">Diagnoza wyjściowa</span>
+        <p>Trzy aktywne wymiary problemu: (1) biologiczny — osłabione mięśnie stabilizujące tułów, nadwaga, ograniczone wzorce ruchowe; (2) psychologiczny — wyraźna kinezjofobia, katastrofizowanie, antycypacja bólu przy ruchu; (3) społeczny — chroniczny stres zawodowy jako amplifikator progów bólowych. Praca wyłącznie z wymiarem biologicznym nie przyniosłaby trwałego efektu.</p>
+      </div>
+
+      <div class="phase-header">
+        <span class="phase-num">02</span>
+        <span class="phase-title">Praca z lękiem przez ruch — tygodnie 1–6</span>
+      </div>
+
+      <p>Pierwsze sześć tygodni nie przypominało klasycznego treningu. Była to praca, którą Stuart McGill nazwałby <em>rehabilitacją poprzez kontrolowaną ekspozycję</em> — stopniowym oswajaniem układu nerwowego z ruchem w warunkach eliminujących zagrożenie.</p>
+
+      <p>Każda sesja (2 razy w tygodniu, 60 minut) zaczynała się od krótkiego omówienia minionego tygodnia — nie dlatego, że prowadzę psychoterapię, ale dlatego, że dane z dni między sesjami są równie ważne jak dane z samej sesji. Kiedy Marek mówił, że „w tym tygodniu było ciężko w pracy", cały plan tego dnia wyglądał inaczej.</p>
+
+      <p>Ćwiczenia: mostek biodrowy z kontrolą miednicy, ćwiczenia oddechowe z aktywacją przepony, <em>dead bug</em> z progresywnym wydłużaniem dźwigni, praca na poziomie podłogi z TRX jako asystą. Zakres ruchu — celowo mniejszy niż maksymalny. Tempo — wolne, z pełną świadomością każdej fazy. Marek uczył się obserwować, co się dzieje w ciele, zamiast automatycznie interpretować każdy sygnał jako zagrożenie.</p>
+
+      <p>Równolegle — edukacja. Wyjaśniałem mechanizm sensytyzacji ośrodkowej w prostym języku. Dlaczego ból po 40 minutach siedzenia nie oznacza nowego uszkodzenia. Dlaczego objawy mogą fluktuować niezależnie od stanu tkanek. Dlaczego stres zawodowy realnie obniża progi bólowe — bo kortyzol i adrenalina wydzielane w stanach chronicznego stresu uwrażliwiają receptory bólowe na poziomie obwodowym.</p>
+
+      <blockquote>
+        „Edukacja o bólu nie jest zamiast leczenia. Ona jest częścią leczenia."
+        <cite>David Butler & Lorimer Moseley, <em>Explain Pain Supercharged</em></cite>
+      </blockquote>
+
+      <div class="result-box">
+        <span class="result-label">Efekt po 6 tygodniach</span>
+        <p>Ból na skali VAS: z 7/10 do 3/10. Marek po raz pierwszy od ponad roku przeszedł 5 km spaceru bez zatrzymywania się. Tanita RD-545: −2 kg (z 89 do 87 kg). Ważniejsze: zaczął rozróżniać ból jako informację od bólu jako zagrożenia — a to fundamentalna zmiana w sposobie, w jaki układ nerwowy przetwarza sygnały.</p>
+      </div>
+
+      <div class="phase-header">
+        <span class="phase-num">03</span>
+        <span class="phase-title">Budowanie siły funkcjonalnej — tygodnie 7–14</span>
+      </div>
+
+      <p>W tygodniu 7. Marek powiedział coś, czego słucham z uwagą: <strong>„Chyba przestałem się bać schylać."</strong> To był sygnał do zmiany biegów.</p>
+
+      <p>Wprowadziliśmy sztangę. Najpierw martwy ciąg rumuński z obciążeniem 20 kg, po dwóch tygodniach — back squat, wyciskanie nad głowę z kettleblem 16 kg. Trzy sesje w tygodniu: dwie w studio, jedna samodzielna w domu z zestawem 3 ćwiczeń, które Marek znał na pamięć i wykonywał bez instrukcji.</p>
+
+      <div class="highlight-box">
+        <p><strong>Dlaczego back squat, a nie maszyna do przysiadów?</strong> Back squat angażuje jednocześnie mięśnie stabilizujące tułów, pośladki, uda, obręcz barkową i propriocepcję — poczucie ciała w przestrzeni. Maszyna izoluje mięśnie i „robi pracę" za stabilizatory, które w przypadku Marka były sednem problemu. Trening na maszynach sprawia, że Twój core śpi. A właśnie aktywacja core była tym, czego potrzebowałem.</p>
+      </div>
+
+      <p>Obciążenia rosły, ale nie szybciej, niż pozwalała na to pełna kontrola techniki i aktualna kondycja układu nerwowego. Kiedy Marek miał za sobą ciężki tydzień w pracy — sesja była spokojniejsza: mobilizacja, lekka praca z kettleblem, praca oddechowa. To nie był brak konsekwencji. To było respektowanie fizjologii: układ nerwowy zmęczonego człowieka ma niższy próg bólowy i wyższe ryzyko przeciążenia — i jest to fakt kliniczny, nie wymówka.</p>
+
+      <div class="result-box">
+        <span class="result-label">Efekt po 14 tygodniach</span>
+        <p>Ból 1/10, głównie po bardzo długich godzinach przy biurku bez przerwy na ruch. Marek zrzucił 5 kg (z 89 do 84 kg), tkanka tłuszczowa z 26% do 22%, masa mięśniowa +1,8 kg. Wrócił do biegania — 4 km trzy razy w tygodniu, bez lęku. Tanita pokazała wyraźny wzrost masy mięśniowej w kończynach dolnych. Ale najważniejsza zmiana była inna: Marek po raz pierwszy od dwóch lat powiedział, że rozumie swój ból.</p>
+      </div>
+
+      <h2 id="zasady">Trzy zasady, które zabieram z tej historii</h2>
+
+      <p><strong>Zasada 1: Diagnoza musi obejmować wszystkie trzy wymiary.</strong> Jeśli specjalista patrzy wyłącznie na obraz MRI — to jest punkt wyjścia, nie diagnoza. Stan tkanek to jedna trzecia obrazu. Pytanie o przekonania na temat bólu, o poziom lęku przed ruchem, o środowisko pracy i sytuację życiową — to nie jest „miękka psychologia". To jest standard oparty na dowodach naukowych, wbudowany w wytyczne takich organizacji jak European Spine Society czy National Institute for Health and Care Excellence (NICE).</p>
+
+      <p><strong>Zasada 2: Edukacja o bólu jest częścią leczenia — nie wstępem do niego.</strong> Nie wystarczy powiedzieć pacjentowi „bądź aktywny". Trzeba mu wyjaśnić, dlaczego ból fluktuuje, czym jest sensytyzacja, dlaczego stres pojawia się w plecach i dlaczego ruch — mimo bólu, kontrolowany i stopniowany — jest bezpieczny. Metaanaliza Louw i wsp. opublikowana w <em>Spine</em> (2011) wykazała, że sama edukacja neuronaukowa bólu, bez żadnych innych interwencji, znamiennie obniża poziom bólu i poprawia funkcjonowanie u osób z przewlekłymi dolegliwościami kręgosłupa.</p>
+
+      <p><strong>Zasada 3: Tempo progresji musi uwzględniać układ nerwowy, nie tylko mięśnie.</strong> Mięśnie adaptują się do obciążenia w tygodniach. Ścięgna i więzadła — w miesiącach. Układ nerwowy adaptuje się wolniej i jest wrażliwy na zmienne niewidoczne w arkuszu treningowym: jakość snu, poziom stresu, kontekst społeczny, nastrój. Plan treningowy, który ignoruje te zmienne, jest planem napisanym dla idealizowanego człowieka, nie dla konkretnej osoby w konkretnym momencie jej życia.</p>
+
+      <!-- INLINE CTA -->
+      <div class="post-cta-block">
+        <span class="pcta-label">Pierwszy krok</span>
+        <h3 class="pcta-title">Rozpoznajesz siebie w tej historii?</h3>
+        <p class="pcta-body">Nie zaczynaj od przypadkowego treningu. Wypełnij krótką ankietę — sprawdzę, czy proces Studio Las jest dla Ciebie dobrym miejscem na start.</p>
+        <a href="../ankieta-kontakt.html#ankieta" class="btn-primary">Wypełnij ankietę diagnostyczną</a>
+      </div>
+
+      <h2 id="dla-kogo">Dla kogo to ma znaczenie</h2>
+
+      <p>Historia Marka nie jest wyjątkowa. Jest typowa — i właśnie dlatego warto ją opowiedzieć. Większość osób, które trafiają do mnie po kilku latach krążenia po gabinetach, ma nierozwiązany problem dokładnie tego samego rodzaju: przez lata ktoś adresował wyłącznie wymiar biologiczny, bo jest najłatwiej mierzalny i najprościej opisywalny w dokumentacji medycznej.</p>
+
+      <p>Dwa pozostałe wymiary nie są niemierzalne. Są tylko wymagające — bo potrzebują czasu, uważnej rozmowy i inaczej zaprojektowanego procesu niż seria 10 wizyt z krótkim wywiadem i ćwiczeniami do wykonania w domu.</p>
+
+      <p>Biopsychospołeczny model bólu to nie jest nowa moda w fizjoterapii. To jest zmiana paradygmatu, która dokonała się 50 lat temu w nauce — i która w praktyce gabinetowej dociera bardzo powoli. Jeśli masz za sobą lata wizyt, badań i fizjoterapii, która działała tylko przez chwilę — jest bardzo prawdopodobne, że dotąd pracowałeś tylko z jedną trzecią problemu.</p>
+
+      <p>Jeśli chcesz wiedzieć, jak wygląda praca ze wszystkimi trzema wymiarami w praktyce — zacznij od ankiety diagnostycznej na <a href="https://www.studioslas.pl" target="_blank" rel="noopener noreferrer" style="color:var(--cedar);text-decoration:underline;text-underline-offset:3px">www.studioslas.pl</a>. Krótka rozmowa, żadnych zobowiązań. Powiem Ci wprost, czy i w czym mogę pomóc.</p>
+
+      <div class="sources">
+        <h4>Źródła i literatura</h4>
+        <ol>
+          <li>Engel, G.L. „The need for a new medical model: a challenge for biomedicine." <em>Science</em>, 196(4286), 1977.</li>
+          <li>Brinjikji, W. et al. „Systematic literature review of imaging features of spinal degeneration in asymptomatic populations." <em>AJNR American Journal of Neuroradiology</em>, 36(4), 2015.</li>
+          <li>Moseley, G.L. & Butler, D.S. <em>Explain Pain Supercharged.</em> Noigroup Publications, 2017.</li>
+          <li>Louw, A. et al. „The effect of neuroscience education on pain, disability, anxiety, and stress in chronic musculoskeletal pain." <em>Archives of Physical Medicine and Rehabilitation</em>, 92(12), 2011.</li>
+          <li>McGill, S. <em>Ultimate Back Fitness and Performance.</em> Backfitpro Inc., 6th ed., 2017.</li>
+          <li>Waddell, G. <em>The Back Pain Revolution.</em> Churchill Livingstone, 2nd ed., 2004.</li>
+        </ol>
+      </div>
+
+    </article><!-- /article-body -->
+
+    <!-- SIDEBAR -->
+    <aside class="article-sidebar">
+      <div class="sidebar-cta">
+        <span class="sidebar-cta-label">Masz podobny problem?</span>
+        <h3 class="sidebar-cta-title">Wypełnij ankietę diagnostyczną</h3>
+        <p class="sidebar-cta-body">Oddzwonię w ciągu 24 godzin. Krótka rozmowa — sprawdzamy razem, czy mogę Ci pomóc.</p>
+        <a href="../ankieta-kontakt.html#ankieta" class="sidebar-btn">Wypełnij ankietę →</a>
+      </div>
+      <nav class="sidebar-toc">
+        <span class="toc-label">Spis treści</span>
+        <ul class="toc-list">
+          <li><a href="#biomechanika-to-nie-wszystko">Biomechanika to za mało</a></li>
+          <li><a href="#trzy-wymiary">Trzy wymiary bólu</a></li>
+          <li><a href="#sensytyzacja">Jak ból staje się przewlekły</a></li>
+          <li><a href="#post-hero">Faza 1: Diagnostyka</a></li>
+          <li><a href="#post-hero">Faza 2: Praca z lękiem</a></li>
+          <li><a href="#post-hero">Faza 3: Siła funkcjonalna</a></li>
+          <li><a href="#zasady">Trzy zasady</a></li>
+          <li><a href="#dla-kogo">Dla kogo to ma znaczenie</a></li>
+        </ul>
+      </nav>
+    </aside>
+
+  </div><!-- /article-wrap -->
+</div><!-- /container -->
+
+<!-- RELATED POSTS -->
+<section id="related">
+  <div class="container">
+    <span class="section-label">Czytaj dalej</span>
+    <div class="related-grid">
+      <a href="./post-od-bolu-do-ruchu-tomasz.html" class="related-card">
+        <span class="related-tag">Case study</span>
+        <h4 class="related-title">Od bólu do ruchu: Jak Tomasz (42 lata) wrócił do biegania po 3 latach przerwy</h4>
+        <span class="related-meta">15 Listopada 2025 · 12 min</span>
+      </a>
+      <a href="./post-dlaczego-nie-ma-20-maszyn.html" class="related-card">
+        <span class="related-tag">Filozofia</span>
+        <h4 class="related-title">Dlaczego w Studio Las nie ma 20 maszyn treningowych (i czemu to przewaga, nie brak)</h4>
+        <span class="related-meta">8 Listopada 2025 · 10 min</span>
+      </a>
+      <a href="./post-diagnostyka-funkcjonalna.html" class="related-card">
+        <span class="related-tag">Trening medyczny</span>
+        <h4 class="related-title">Diagnostyka funkcjonalna bez spiny. Dlaczego czasem wystarczy dobrze poprowadzić ruch</h4>
+        <span class="related-meta">11 Października 2025 · 8 min</span>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="container">
+    <div class="footer-grid">
+      <div>
+        <div class="footer-logo">Studio <span>Las</span></div>
+        <p class="footer-tagline">Nie dla każdego. Dla osób, które traktują zdrowie jako inwestycję, nie wydatek.</p>
+      </div>
+      <div>
+        <div class="footer-col-title">Nawigacja</div>
+        <ul class="footer-links">
+          <li><a href="../index.html">Strona główna</a></li>
+          <li><a href="../metoda-i-pakiety.html">Metoda i pakiety</a></li>
+          <li><a href="../dla-kogo.html">Dla kogo</a></li>
+          <li><a href="../blog.html">Blog</a></li>
+          <li><a href="../ankieta-kontakt.html#ankieta">Kontakt</a></li>
+        </ul>
+      </div>
+      <div>
+        <div class="footer-col-title">Kontakt</div>
+        <p class="footer-ci">ul. Pracka 1J, 05-504 Prace Duże</p>
+        <p class="footer-ci"><a href="tel:+48503975998">503 975 998</a></p>
+        <p class="footer-ci"><a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></p>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p class="footer-copy">© 2026 Studio Las · Damian Krawiec. Wszelkie prawa zastrzeżone.</p>
+      <div class="footer-legal"><span>Polityka prywatności</span><span>Regulamin</span></div>
+    </div>
+  </div>
+</footer>
+
+<script>
+// Hamburger
+document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navMobile').classList.toggle('open'));
+document.querySelectorAll('#navMobile a').forEach(l=>l.addEventListener('click',()=>document.getElementById('navMobile').classList.remove('open')));
+
+// Reading progress
+const bar=document.getElementById('reading-bar');
+window.addEventListener('scroll',()=>{
+  const doc=document.documentElement;
+  const scrolled=doc.scrollTop/(doc.scrollHeight-doc.clientHeight)*100;
+  bar.style.width=Math.min(100,scrolled)+'%';
+},{passive:true});
+</script>
+<script>
+(function initSiteNavigation(){
+  const toggle=document.getElementById('hamburger');
+  const menu=document.getElementById('navMobile');
+  if(!toggle||!menu)return;
+  const setOpen=(open)=>{
+    menu.classList.toggle('open',open);
+    toggle.setAttribute('aria-expanded',open?'true':'false');
+    toggle.setAttribute('aria-label',open?'Zamknij menu':'Otwórz menu');
+  };
+  toggle.addEventListener('click',(event)=>{
+    event.preventDefault();
+    event.stopImmediatePropagation();
+    setOpen(!menu.classList.contains('open'));
+  },true);
+  menu.querySelectorAll('a').forEach(link=>{
+    link.addEventListener('click',()=>setOpen(false));
+  });
+  document.addEventListener('keydown',(event)=>{
+    if(event.key==='Escape')setOpen(false);
+  });
+})();
+</script>
+</body>
+</html>
