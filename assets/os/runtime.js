@@ -1,5 +1,6 @@
 const AUTH_SESSION_KEY = "studio-las-auth-session";
-const INVITATION_PENDING_KEY = "studio-las-invitation-pending";
+const PASSWORD_SETUP_CONTEXT_KEY = "studio-las-password-setup-context";
+const PASSWORD_SETUP_CONTEXTS = new Set(["invite", "recovery"]);
 
 export class RuntimeConfigurationError extends Error {
   constructor(message) {
@@ -78,7 +79,7 @@ export function loadAuthSession() {
 export function saveAuthSession(session) {
   if (!session) {
     sessionStorage.removeItem(AUTH_SESSION_KEY);
-    sessionStorage.removeItem(INVITATION_PENDING_KEY);
+    sessionStorage.removeItem(PASSWORD_SETUP_CONTEXT_KEY);
     return;
   }
 
@@ -94,19 +95,27 @@ export function saveAuthSession(session) {
 
 export function clearAuthSession() {
   sessionStorage.removeItem(AUTH_SESSION_KEY);
-  sessionStorage.removeItem(INVITATION_PENDING_KEY);
+  sessionStorage.removeItem(PASSWORD_SETUP_CONTEXT_KEY);
 }
 
-export function markInvitationPending() {
-  sessionStorage.setItem(INVITATION_PENDING_KEY, "1");
+export function markPasswordSetupPending(context) {
+  if (!PASSWORD_SETUP_CONTEXTS.has(context)) {
+    throw new RuntimeConfigurationError("Nieobsługiwany kontekst ustawiania hasła.");
+  }
+  sessionStorage.setItem(PASSWORD_SETUP_CONTEXT_KEY, context);
 }
 
-export function clearInvitationPending() {
-  sessionStorage.removeItem(INVITATION_PENDING_KEY);
+export function clearPasswordSetupPending() {
+  sessionStorage.removeItem(PASSWORD_SETUP_CONTEXT_KEY);
 }
 
-export function isInvitationPending() {
-  return sessionStorage.getItem(INVITATION_PENDING_KEY) === "1";
+export function getPasswordSetupContext() {
+  const context = sessionStorage.getItem(PASSWORD_SETUP_CONTEXT_KEY);
+  if (!PASSWORD_SETUP_CONTEXTS.has(context)) {
+    sessionStorage.removeItem(PASSWORD_SETUP_CONTEXT_KEY);
+    return null;
+  }
+  return context;
 }
 
 export function clearAuthArtifactsFromUrl() {
@@ -169,6 +178,7 @@ export function userSafeError(error) {
   if (status === 401) return "Sesja wygasła albo link jest nieprawidłowy. Zaloguj się ponownie.";
   if (status === 403) return "Nie masz dostępu do tych danych.";
   if (status === 409) return "Taki zapis już istnieje albo narusza regułę danych.";
+  if (status === 429) return "Wysłano zbyt wiele prób. Odczekaj i spróbuj ponownie później.";
   if (status >= 500) return "Usługa danych jest chwilowo niedostępna. Zapis nie został wykonany.";
 
   return "Operacja nie powiodła się. Dane nie zostały zapisane lokalnie.";
