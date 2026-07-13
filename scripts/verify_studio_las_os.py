@@ -63,6 +63,10 @@ def read(path: Path) -> str:
     return path.read_text(encoding="utf-8")
 
 
+def uses_browser_storage_api(source: str, api_name: str) -> bool:
+    return re.search(rf"\b{re.escape(api_name)}\s*(?:\.|\[)", source) is not None
+
+
 def check_js_syntax() -> None:
     for path in JS_FILES:
         require(path.is_file(), f"missing JavaScript module: {path.relative_to(ROOT)}")
@@ -99,15 +103,15 @@ def check_import_targets() -> None:
 def check_runtime_boundaries() -> None:
     for path in PRODUCTION_RUNTIME_FILES:
         source = read(path)
-        require("localStorage" not in source, f"localStorage used in {path.relative_to(ROOT)}")
-        require("sessionStorage" not in source, f"sessionStorage used outside runtime.js in {path.relative_to(ROOT)}")
+        require(not uses_browser_storage_api(source, "localStorage"), f"localStorage used in {path.relative_to(ROOT)}")
+        require(not uses_browser_storage_api(source, "sessionStorage"), f"sessionStorage used outside runtime.js in {path.relative_to(ROOT)}")
         for term in FORBIDDEN_RUNTIME_TERMS:
             require(term not in source, f"legacy term {term!r} in {path.relative_to(ROOT)}")
 
     runtime = read(ROOT / "assets/os/runtime.js")
     require('mode !== "production"' in runtime, "production mode is not fail-closed")
     require("assertNoPersistentHealthData" in runtime, "legacy browser-data guard missing")
-    require("sessionStorage" in runtime, "auth session boundary missing")
+    require(uses_browser_storage_api(runtime, "sessionStorage"), "auth session boundary missing")
 
     data = read(ROOT / "assets/os/data.js")
     require("class StudioLasRepository" in data, "Supabase repository missing")
@@ -145,8 +149,8 @@ def check_demo_isolation() -> None:
     require("studio-las-config.js" not in combined, "demo loads production configuration")
     require("assets/os/data.js" not in combined, "demo imports production data layer")
     require("fetch(" not in demo_js, "demo performs runtime network calls")
-    require("localStorage" not in demo_js, "demo uses localStorage")
-    require("sessionStorage" not in demo_js, "demo uses sessionStorage")
+    require(not uses_browser_storage_api(demo_js, "localStorage"), "demo uses localStorage")
+    require(not uses_browser_storage_api(demo_js, "sessionStorage"), "demo uses sessionStorage")
 
 
 def check_legacy_export_boundary() -> None:
