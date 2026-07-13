@@ -130,6 +130,29 @@ def check_edge_function() -> None:
     require(leaked_identifier_property is None, "technical account identifier returned to browser")
 
 
+def check_function_config() -> None:
+    source = read("supabase/config.toml")
+    compact = re.sub(r"\s+", "", source.lower())
+    require("[functions.client-access]" in source, "client-access function config missing")
+    require("verify_jwt=true" in compact, "client-access JWT verification is not pinned on")
+    require("verify_jwt=false" not in compact, "client-access JWT verification is disabled")
+
+
+def check_admin_tool() -> None:
+    html = read("tools/client-access-admin.html").lower()
+    script = read("tools/client-access-admin.js").lower()
+
+    require("content-security-policy" in html, "client access admin has no CSP")
+    require("studio-las-config.js" in html, "client access admin does not load production config")
+    require('type="module"' in html, "client access admin is not loaded as an ES module")
+    require("client-access-admin.js" in html, "client access admin module missing from HTML")
+    require("functions/v1/client-access" in script, "client access admin does not call the Edge Function")
+    require("authorization" in script and "bearer" in script, "client access admin does not send the user JWT")
+    require("localstorage" not in script, "client access admin writes to localStorage")
+    require("service_role" not in script, "client access admin contains a service-role marker")
+    require("inviteuserbyemail" not in script, "client access admin calls Auth admin API directly")
+
+
 def check_browser_boundary() -> None:
     browser_files = [
         "assets/os/runtime.js",
@@ -151,6 +174,8 @@ def main() -> int:
     check_access_migration()
     check_storage_migration()
     check_edge_function()
+    check_function_config()
+    check_admin_tool()
     check_browser_boundary()
     print("Studio Las OS access lifecycle static checks completed")
     return 0
