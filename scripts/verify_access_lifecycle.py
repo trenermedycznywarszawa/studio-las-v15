@@ -65,6 +65,27 @@ def check_access_migration() -> None:
     )
 
 
+def check_reassignment_guard() -> None:
+    source = read("supabase/migrations/015_reject_client_account_reassignment.sql").lower()
+    required = [
+        "account already linked to another active client; revoke first",
+        "client already linked to another active account; revoke first",
+        "cu.user_id = v_profile.id",
+        "cu.client_id <> p_client_id",
+        "cu.client_id = p_client_id",
+        "cu.user_id <> v_profile.id",
+        "grant execute on function public.admin_link_client_account",
+        "to service_role",
+    ]
+    for fragment in required:
+        require(fragment in source, f"account reassignment guard missing: {fragment}")
+
+    require(
+        "set status = 'revoked'" not in source,
+        "account link function still silently revokes a different active relationship",
+    )
+
+
 def check_storage_migration() -> None:
     source = read("supabase/migrations/014_private_client_documents.sql").lower()
     required = [
@@ -172,6 +193,7 @@ def check_browser_boundary() -> None:
 
 def main() -> int:
     check_access_migration()
+    check_reassignment_guard()
     check_storage_migration()
     check_edge_function()
     check_function_config()
