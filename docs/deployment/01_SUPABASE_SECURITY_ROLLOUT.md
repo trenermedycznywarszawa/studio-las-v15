@@ -4,45 +4,71 @@
 
 This is the mandatory deployment gate for PR #9.
 
-The repository contains the security design and tests. It does not prove that the
-same policies are active in the linked Supabase project. Real client health or
-process data must not be entered until every gate below passes in the target
-project.
+The repository and free staging project contain the security design and test evidence. They do not prove that the same controls are active in the production-sensitive target. Real client health or process data must not be entered until every target, MFA, and privacy gate below passes.
 
-Project ref currently used by the public runtime:
+Production-sensitive target currently used by the public runtime:
 
 `ufcumhbnuyernuwepcij`
 
-Do not put database passwords, access tokens, secret keys, exported health data,
-or service-role credentials in GitHub, chat, screenshots, shell history, or test
-fixtures.
+Free fictional-data staging:
+
+`ulauyoqjoetjqktegeuq`
+
+Never place database passwords, access tokens, secret keys, exported health data, service-role credentials, or real client records in GitHub, chat, screenshots, shell history, or fixtures.
+
+## Current status
+
+Completed on the free staging project:
+
+- complete migration chain `001–020`,
+- forced-RLS and cross-tenant tests,
+- client RPC and revocation tests,
+- account-conflict tests,
+- metadata audit tests,
+- private Storage metadata and policy tests,
+- internal-helper exposure reduction,
+- Supabase security and performance advisor review.
+
+Not completed:
+
+- non-destructive production-target drift report,
+- verified target backup,
+- reviewed target migration delta,
+- staging and target Edge Function deployment,
+- real invitation and recovery email tests,
+- final Auth configuration,
+- mandatory trainer TOTP MFA with `aal2` enforcement,
+- privacy/RODO approval.
+
+The production-sensitive target was not modified during the staging rehearsal.
 
 ## Required operator access
 
-The operator needs locally configured access to:
+The operator needs locally protected access to:
 
 - branch `agent/security-architecture-hardening`,
-- Supabase CLI,
-- the target Supabase project,
-- a disposable or staging Supabase project,
-- the project database password or an equivalent authenticated CLI session.
+- Supabase CLI and Docker,
+- the free staging project,
+- the production-sensitive target,
+- a password manager or protected environment variables for credentials.
 
-Use a password manager or protected environment variables. Never commit `.env`
-files containing credentials.
+Never commit `.env` files containing credentials.
 
 ## Non-negotiable order
 
-1. Validate locally and in CI.
-2. Rehearse the complete migration on a disposable project.
-3. Run database metadata and role tests.
-4. Deploy and test the Edge Function in staging.
-5. Verify the complete invitation, recovery, and password-setup flows.
-6. Verify private Storage policies.
-7. Verify trainer attribution for service-role access operations.
-8. Back up the target project.
-9. Apply the same changes to the target project.
-10. Repeat all tests against the target configuration.
-11. Only then mark PR #9 ready for review and release.
+1. Validate repository checks locally and in CI.
+2. Rehearse the complete migration chain in a disposable database.
+3. Run every metadata, role, audit, Storage, and regression test.
+4. Produce a read-only target schema and migration-history inventory.
+5. Generate and review a non-destructive target drift report.
+6. Create and verify a restorable target backup.
+7. Configure and test Auth and the Edge Function in staging.
+8. Verify invitation, recovery, and password setup with fictional accounts.
+9. Implement and verify trainer MFA with database/API `aal2` enforcement.
+10. Complete the privacy/RODO gate.
+11. Apply only the reviewed delta to the target.
+12. Repeat every test against the target configuration.
+13. Only then mark PR #9 ready for review and release.
 
 Do not merge first and “fix production afterwards.”
 
@@ -56,242 +82,259 @@ python scripts/verify_access_lifecycle.py
 npx -y deno check supabase/functions/client-access/index.ts
 ```
 
-All commands must finish successfully.
+All commands and GitHub Actions checks must finish successfully.
 
-## 2. Link the CLI safely
+## 2. Canonical migration order
 
-```powershell
-supabase login
-supabase link --project-ref ufcumhbnuyernuwepcij
-supabase projects list
-supabase migration list --linked
-```
-
-If migration history does not match the repository, stop. Do not use `db reset`,
-`migration repair`, or a forced push until the mismatch is explained and recorded.
-
-## 3. Dry-run the database change
-
-```powershell
-supabase db push --linked --include-all --dry-run
-```
-
-Expected new migrations:
-
-- `012_security_hardening.sql`
-- `013_access_lifecycle_and_audit.sql`
-- `014_private_client_documents.sql`
-- `015_reject_client_account_reassignment.sql`
-- `016_attribute_service_operations_to_trainer.sql`
-
-Review the plan. Any unexpected destructive operation is a blocker. Migration
-`012` intentionally removes the obsolete local access-credential table and old
-client-safe views. It must not delete client process records.
-
-Migration `015` is a fail-closed access safeguard. It prevents an existing account
-from being silently moved to another client and prevents a client record from
-having its existing active account silently replaced. Reassignment requires an
-explicit revoke first.
-
-Migration `016` keeps service-role Auth administration attributable. Link and
-revoke changes made by the Edge Function must be recorded in the metadata audit
-under the verified owner trainer, not as an unidentified service operation.
-
-## 4. Disposable-project rehearsal
-
-Create or select a disposable project containing no real client data. Apply the
-full migration chain in repository order.
-
-Run the fake seed and tests:
+The security rollout is not limited to `012–016`. The current forward-only chain is:
 
 ```text
-supabase/dev/seed_test_data.sql
+012_security_hardening.sql
+013_access_lifecycle_and_audit.sql
+014_private_client_documents.sql
+015_reject_client_account_reassignment.sql
+016_attribute_service_operations_to_trainer.sql
+017_owner_assignment_role_helper.sql
+018_fix_checkin_rpc_conflict.sql
+019_minimize_exposed_rpc_helpers.sql
+020_performance_safety_indexes.sql
+```
+
+Purpose of the staging-discovered forward fixes:
+
+- `017` restores valid owner assignment and revocation writes under forced RLS through a narrow private role predicate.
+- `018` fixes the check-in RPC output-column conflict without changing its public signature.
+- `019` removes internal privileged helpers from the exposed API schema and pins trigger `search_path`.
+- `020` adds covering foreign-key indexes and optimizes profile RLS identity evaluation without weakening isolation.
+
+Do not squash these into `012`, rewrite applied history, or omit them from a target delta.
+
+## 3. Disposable-project rehearsal
+
+For a new empty database:
+
+1. Apply migrations `001–011`.
+2. Run `supabase/dev/seed_test_data.sql`.
+3. Apply migrations `012–020` in filename order.
+4. Run:
+
+```text
 supabase/tests/012_security_hardening_audit.sql
 supabase/tests/012_security_role_tests.sql
 supabase/tests/013_access_lifecycle_and_audit.sql
 supabase/tests/014_private_client_documents.sql
 supabase/tests/015_reject_client_account_reassignment.sql
 supabase/tests/016_attribute_service_operations_to_trainer.sql
+supabase/tests/017_owner_assignment_role_helper.sql
+supabase/tests/018_checkin_rpc_conflict.sql
+supabase/tests/019_private_helper_boundary.sql
+supabase/tests/020_performance_safety_indexes.sql
 ```
 
-Every script must finish with its explicit completion message. A script that was
-not executed is not a passed script.
+Every script must finish with its explicit completion message. A script that was not executed is not a passed script.
 
-Capture only non-sensitive output: migration names, completion messages,
-timestamps, and pass/fail status. Never attach passwords, tokens, real emails,
-raw rows, or health information to the PR.
+Capture only migration names, completion messages, timestamps, advisor summaries, and pass/fail status. Never attach passwords, tokens, real emails, row content, or health information.
 
-## 5. Edge Function configuration
+### Staging history note
 
-The function is authenticated twice:
+The connected execution tool split canonical migration `013` into two smaller staging submissions because its safety layer rejected the combined request. The repository's canonical history remains one file: `013_access_lifecycle_and_audit.sql`.
+
+Do not reproduce the staging-only split in production migration history.
+
+## 4. Target inventory and drift report
+
+The production-sensitive target currently has Studio Las tables but no visible `supabase_migrations.schema_migrations` relation. Therefore:
+
+- do not run `db reset`,
+- do not run `migration repair`,
+- do not fabricate migration records,
+- do not issue a blind `db push --include-all`,
+- do not assume the target equals migrations `001–011` merely because table names match.
+
+First capture a read-only inventory:
+
+- table and column definitions,
+- constraints and indexes,
+- functions and signatures,
+- grants,
+- RLS enable/force state,
+- policies,
+- Storage buckets and policies,
+- Auth configuration relevant to the portal,
+- non-sensitive row counts,
+- current functions or views that will be removed.
+
+Compare that inventory with a clean database built from `001–020`. Produce a reviewed, non-destructive delta. The delta must preserve existing process data and explain every destructive statement.
+
+Migration `012` intentionally removes the obsolete `client_access_credentials` table and historical client projection views. Confirm that no active runtime still depends on them before target execution.
+
+## 5. Target backup gate
+
+Before applying any target delta:
+
+- create a database backup or verify a restorable platform backup,
+- prove restoration in a disposable environment where feasible,
+- export and inventory historical browser data through the local-only tool,
+- record non-sensitive table counts,
+- record the current target schema fingerprint,
+- confirm the retired browser runtime is not being used for new writes.
+
+A backup that has not been tested or platform-confirmed is not a passed gate.
+
+## 6. Edge Function configuration
+
+The `client-access` function is authenticated twice:
 
 - platform JWT verification is pinned on in `supabase/config.toml`,
-- `withSupabase({ auth: "user" })` validates and supplies the signed-in user
-  context inside the function.
+- `withSupabase({ auth: "user" })` validates the signed-in user inside the function.
 
-Set only these custom function secrets:
+Set exact custom secrets separately for staging and target:
 
 ```powershell
 supabase secrets set `
   STUDIO_LAS_ALLOWED_ORIGINS="https://trenermedycznywarszawa.github.io" `
   STUDIO_LAS_CLIENT_REDIRECT_URL="https://trenermedycznywarszawa.github.io/studio-las-v15/studio-las-os.html" `
-  --project-ref ufcumhbnuyernuwepcij
+  --project-ref <PROJECT_REF>
 ```
-
-Do not pass service-role values or database passwords as repository variables.
-Supabase supplies the privileged server context to the Edge Function.
 
 Deploy without disabling JWT verification:
 
 ```powershell
-supabase functions deploy client-access --project-ref ufcumhbnuyernuwepcij
+supabase functions deploy client-access --project-ref <PROJECT_REF>
 ```
 
-Never use `--no-verify-jwt`.
+Never use `--no-verify-jwt`. Never send a service-role value to browser code or repository variables.
 
-## 6. Edge Function role tests
+## 7. Edge Function role matrix
 
-Use two trainers and fictional clients in staging.
+Use two trainers and fictional clients.
 
 Required scenarios:
 
 1. Owner trainer reads access status for their client.
-2. Owner trainer sends an invitation to the email stored on that client record.
-3. A different email is rejected.
-4. Assistant or unrelated trainer cannot invite, inspect, or revoke access.
-5. Client cannot invoke owner-only actions.
-6. Anonymous request is rejected.
-7. Invitation creates or links exactly one client profile and one active
-   `client_users` relationship.
-8. Revocation immediately makes `client_portal_snapshot()` and
-   `save_client_checkin()` inaccessible to the revoked account.
-9. A second active account cannot be attached to the same client.
-10. One account cannot be active for two clients.
-11. Attempting either conflict does not revoke or transfer the existing link.
-12. Re-linking the same account/client pair is idempotent.
-13. Conflict checks occur before any invitation email is sent.
-14. A trainer Auth account cannot be linked as a client account.
+2. Owner trainer invites only the email stored on that client record.
+3. A different email is rejected before an email is sent.
+4. Assistant or unrelated trainer cannot invite, inspect, or revoke.
+5. Client and anonymous callers are rejected.
+6. Invitation creates exactly one client profile and one active relationship.
+7. Revocation immediately blocks portal and check-in RPC access.
+8. A second active account cannot be attached to the same client.
+9. One account cannot be active for two clients.
+10. Conflict attempts do not revoke or transfer the existing relationship.
+11. Re-linking the same pair is idempotent.
+12. A trainer Auth account cannot be linked as a client.
+13. Link and revoke audit rows are attributed to the verified owner trainer.
 
 Do not use a real client to prove these scenarios.
 
-## 7. Invitation, recovery, and password-setup tests
+## 8. Auth configuration and password flows
 
-Supabase documents password recovery as a two-step process: send the reset email,
-then update the password after the callback creates an authenticated recovery
-session. Test the actual callback delivered by the configured project; do not
-assume its format.
+Before email testing, apply the separate Auth configuration gate in `02_SUPABASE_AUTH_CONFIGURATION_GATE.md`.
 
-Required scenarios:
+Required controls include:
 
-1. Invitation and recovery messages redirect only to the configured Studio Las OS
-   production URL.
-2. The runtime accepts only `invite` and `recovery` password callbacks. Signup,
-   magic-link, malformed, expired, or incomplete callbacks are rejected.
-3. Access and refresh tokens are removed from the browser address bar immediately
-   after they are consumed.
-4. Password setup appears before any client data is loaded.
-5. Password length below 12 characters is rejected.
-6. Mismatched password confirmation is rejected.
-7. Refreshing before completion returns to the same password gate and does not
-   open the client portal.
-8. Closing or cancelling signs the client out and clears the pending context.
-9. After successful password update, the pending gate is cleared and the normal
-   authenticated RLS/RPC path opens.
-10. Passwords and tokens never appear in application logs, Edge Function logs,
-    GitHub Actions output, URL parameters, Storage metadata, or audit rows.
-11. Recovery-request UI always shows a neutral response and does not reveal
-    whether an email has an account.
-12. Invalid recovery email syntax is rejected locally; excessive requests are
-    handled without weakening authentication or exposing account existence.
-13. If the delivered Supabase callback uses an authorization code rather than
-    hash session tokens, record the mismatch and stop. Do not manually copy tokens
-    or disable PKCE/JWT controls; implement and review the required exchange flow.
-14. Expired and already-used links fail without exposing technical tokens or
-    account identifiers.
+- exact production Site URL and redirect allowlist,
+- public and anonymous signup disabled,
+- manual identity linking disabled,
+- unused providers disabled,
+- server password minimum of at least 12 characters,
+- leaked-password protection enabled when the project plan supports it,
+- custom SMTP and verified SPF/DKIM/DMARC,
+- reviewed rate limits and abuse protection,
+- no health or process information in Auth emails.
 
-## 8. Private document Storage tests
+Required invitation and recovery tests:
 
-Confirm that:
+1. Actual delivered links redirect only to the configured Studio Las OS URL.
+2. Runtime accepts only `invite` and `recovery` password contexts.
+3. Tokens are removed from the address bar immediately after consumption.
+4. Password setup appears before client data loads.
+5. Short or mismatched passwords are rejected.
+6. Reload cannot bypass pending password setup.
+7. Cancel signs out and clears the pending context.
+8. Successful setup opens only the normal RLS/RPC path.
+9. Neutral recovery response does not reveal account existence.
+10. Expired and reused links fail without exposing identifiers or tokens.
+11. If the delivered callback uses an authorization code rather than the supported hash-session format, stop and implement a reviewed exchange flow. Do not weaken PKCE or JWT checks.
+
+## 9. Private document Storage matrix
+
+Confirm in both staging and target:
 
 - bucket `studio-las-client-documents` is private,
 - only `application/pdf` is accepted,
 - object size is limited to 10 MB,
-- object path starts with the related client UUID,
-- trainer A cannot read or write trainer B client objects,
-- a client cannot upload, update, or delete objects,
-- a client can read only an object whose `client_documents` row is explicitly
-  `audience = client`, `status = published`, and has `published_at` set,
+- object path begins with the related client UUID,
+- trainer A cannot read or write trainer B objects,
+- clients cannot upload, update, or delete,
+- client reads require matching published `client_documents` metadata,
 - draft, trainer-only, archived, or soft-deleted documents are inaccessible.
 
-No document upload UI should be enabled until these checks pass in the target
-project.
+No document upload UI may be enabled before the target matrix passes.
 
-## 9. Audit log verification
+## 10. Audit verification
 
 Verify that `security_audit_events`:
 
 - has RLS enabled and forced,
-- cannot be directly selected or modified by normal authenticated users,
-- records inserts and updates to protected process tables,
-- records actor, time, table, row identifier, related client identifier, action,
-  and changed column names,
-- attributes Edge Function link/revoke changes to the verified owner trainer,
-- rejects a client profile or unrelated profile as the service-operation actor,
-- does not contain health values, notes, report text, contact data, passwords,
-  tokens, or raw payloads.
+- deliberately has no browser policy,
+- cannot be selected or modified by normal authenticated users,
+- records actor, time, table, row, related client, action, and changed column names,
+- attributes server account operations to the verified owner trainer,
+- does not contain health values, notes, reports, contact data, passwords, tokens, or raw payloads.
 
-The audit log is an incident-investigation tool, not a second copy of the client
-record.
+The audit is an investigation log, not a second client record.
 
-## 10. Target backup and deployment
+## 11. Advisor review
 
-Before applying migrations to the target project:
+Run Supabase security and performance advisors after target migration.
 
-- create a database backup or verify a restorable platform backup,
-- export and inventory historical browser data through the dedicated local tool,
-- record current table counts without exposing row content,
-- record current migration history,
-- confirm there is no active use of the retired runtime.
+Acceptable documented staging findings:
 
-Run the dry-run again, then apply:
+- the audit table has forced RLS and intentionally no policies,
+- the three intentionally exposed and separately tested privileged RPCs are:
+  - `client_portal_snapshot()`
+  - `save_client_checkin(...)`
+  - `trainer_client_access_status(uuid)`
+- unused-index information on fresh staging is not evidence for index removal.
 
-```powershell
-supabase db push --linked --include-all
-```
+Not acceptable as unresolved target findings:
 
-Repeat every database, Edge Function, password, Storage, conflict, attribution,
-and role test from this document against the target project.
+- anonymous table or RPC access,
+- internal privileged helpers exposed as browser RPCs,
+- mutable function `search_path`,
+- uncovered foreign keys added by this schema,
+- per-row Auth evaluation in profile policies,
+- leaked-password protection disabled when available and approved for the target plan.
 
-## 11. Release evidence
+## 12. Target execution and evidence
 
-PR #9 may be marked ready only when it contains a deployment comment with:
+Apply only the reviewed target delta after the backup, Auth, MFA, and privacy gates are ready. Repeat every database, Edge Function, password, Storage, conflict, attribution, advisor, and role test.
+
+PR #9 may be marked ready only when its deployment evidence contains:
 
 - target project ref,
-- applied migration list `012–016`,
-- database test completion messages,
-- Edge Function deployment timestamp or version,
-- role and reassignment matrix pass/fail,
-- invitation and recovery callback format plus password-setup matrix pass/fail,
-- service-operation trainer-attribution result,
-- private Storage result,
+- reviewed target drift report,
 - backup confirmation,
-- confirmation that no real health data was used in testing.
+- applied migration/delta list through `020`,
+- database test completion messages,
+- Edge Function deployment version or timestamp,
+- role and reassignment matrix,
+- invitation and recovery callback matrix,
+- service-operation trainer attribution result,
+- private Storage result,
+- Auth and leaked-password setting result,
+- trainer MFA `aal2` result,
+- confirmation that only fictional data was used for testing.
 
-The comment must not contain secrets, tokens, passwords, or client data.
+Evidence must not contain secrets, tokens, passwords, or client data.
 
 ## Rollback rule
 
-A failed migration, access, password, attribution, or Storage test is a stop
-condition.
+Any failed migration, access, password, attribution, MFA, advisor, or Storage test is a stop condition.
 
-Do not reopen anonymous access, restore local codes, disable JWT verification,
-add a browser service-role key, grant broad table access, or bypass RLS. Restore
-from the verified backup or prepare a reviewed forward-fix migration on a separate
-branch.
+Do not reopen anonymous access, restore local codes, disable JWT verification, add a browser service-role key, grant broad table access, or bypass RLS. Restore from the verified backup or prepare a reviewed forward-fix migration.
 
 ## Out of scope of technical rollout
 
-Passing this rollout does not by itself establish legal compliance with RODO or
-other health-data obligations. A separate legal/privacy review must confirm legal
-basis, information duties, processor agreements, retention periods, data-subject
-rights, incident procedures, and actual production data flows.
+Passing this rollout does not establish legal compliance with RODO or other health-data obligations. A qualified privacy/legal review must confirm legal bases, Article 9 conditions, information duties, processor agreements, retention, data-subject rights, incident procedures, and actual production data flows.
