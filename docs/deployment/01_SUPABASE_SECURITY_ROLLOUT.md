@@ -21,8 +21,8 @@ fixtures.
 
 The operator needs locally configured access to:
 
-- the repository branch `agent/security-architecture-hardening`,
-- the Supabase CLI,
+- branch `agent/security-architecture-hardening`,
+- Supabase CLI,
 - the target Supabase project,
 - a disposable or staging Supabase project,
 - the project database password or an equivalent authenticated CLI session.
@@ -58,27 +58,17 @@ All commands must finish successfully.
 
 ## 2. Link the CLI safely
 
-Authenticate interactively or through a protected local secret:
-
 ```powershell
 supabase login
 supabase link --project-ref ufcumhbnuyernuwepcij
-```
-
-Confirm the linked project before any write:
-
-```powershell
 supabase projects list
 supabase migration list --linked
 ```
 
-If the migration history does not match the repository, stop. Do not use
-`db reset`, `migration repair`, or a forced push until the mismatch has been
-explained and documented.
+If migration history does not match the repository, stop. Do not use `db reset`,
+`migration repair`, or a forced push until the mismatch is explained and recorded.
 
 ## 3. Dry-run the database change
-
-Run:
 
 ```powershell
 supabase db push --linked --include-all --dry-run
@@ -89,17 +79,23 @@ Expected new migrations:
 - `012_security_hardening.sql`
 - `013_access_lifecycle_and_audit.sql`
 - `014_private_client_documents.sql`
+- `015_reject_client_account_reassignment.sql`
 
-Review the generated plan. Any unexpected destructive operation is a blocker.
-Migration `012` intentionally removes the obsolete local access-credential table
-and old client-safe views. It must not delete client process records.
+Review the plan. Any unexpected destructive operation is a blocker. Migration
+`012` intentionally removes the obsolete local access-credential table and old
+client-safe views. It must not delete client process records.
+
+Migration `015` is a fail-closed access safeguard. It prevents an existing account
+from being silently moved to another client and prevents a client record from
+having its existing active account silently replaced. Reassignment requires an
+explicit revoke first.
 
 ## 4. Disposable-project rehearsal
 
-Create or select a disposable Supabase project containing no real client data.
-Apply the full migration chain in repository order.
+Create or select a disposable project containing no real client data. Apply the
+full migration chain in repository order.
 
-Then run, in Supabase SQL Editor or another privileged test connection:
+Run the fake seed and tests:
 
 ```text
 supabase/dev/seed_test_data.sql
@@ -107,21 +103,22 @@ supabase/tests/012_security_hardening_audit.sql
 supabase/tests/012_security_role_tests.sql
 supabase/tests/013_access_lifecycle_and_audit.sql
 supabase/tests/014_private_client_documents.sql
+supabase/tests/015_reject_client_account_reassignment.sql
 ```
 
 Every script must finish with its explicit completion message. A script that was
 not executed is not a passed script.
 
-Capture only non-sensitive output: migration names, test completion messages,
-timestamps, and pass/fail status. Never attach seeded passwords, tokens, real
-emails, raw rows, or health information to the PR.
+Capture only non-sensitive output: migration names, completion messages,
+timestamps, and pass/fail status. Never attach passwords, tokens, real emails,
+raw rows, or health information to the PR.
 
 ## 5. Edge Function configuration
 
-The function is intentionally authenticated twice:
+The function is authenticated twice:
 
-- platform JWT verification remains enabled in `supabase/config.toml`,
-- `withSupabase({ auth: "user" })` validates and supplies the authenticated user
+- platform JWT verification is pinned on in `supabase/config.toml`,
+- `withSupabase({ auth: "user" })` validates and supplies the signed-in user
   context inside the function.
 
 Set only these custom function secrets:
@@ -133,9 +130,8 @@ supabase secrets set `
   --project-ref ufcumhbnuyernuwepcij
 ```
 
-Do not pass `SUPABASE_SECRET_KEY`, service-role values, or database passwords as
-custom repository variables. Supabase provides its server context to the Edge
-Function.
+Do not pass service-role values or database passwords as repository variables.
+Supabase supplies the privileged server context to the Edge Function.
 
 Deploy without disabling JWT verification:
 
@@ -143,11 +139,11 @@ Deploy without disabling JWT verification:
 supabase functions deploy client-access --project-ref ufcumhbnuyernuwepcij
 ```
 
-Never deploy this function with `--no-verify-jwt`.
+Never use `--no-verify-jwt`.
 
 ## 6. Edge Function role tests
 
-Use two trainers and at least two fictional clients in staging.
+Use two trainers and fictional clients in staging.
 
 Required scenarios:
 
@@ -163,12 +159,14 @@ Required scenarios:
    `save_client_checkin()` inaccessible to the revoked account.
 9. A second active account cannot be attached to the same client.
 10. One account cannot be active for two clients.
+11. Attempting either conflict does not revoke or transfer the existing link.
+12. Re-linking the same account/client pair is idempotent.
 
 Do not use a real client to prove these scenarios.
 
 ## 7. Private document Storage tests
 
-Confirm in the Supabase dashboard or SQL tests that:
+Confirm that:
 
 - bucket `studio-las-client-documents` is private,
 - only `application/pdf` is accepted,
@@ -188,7 +186,7 @@ project.
 Verify that `security_audit_events`:
 
 - has RLS enabled and forced,
-- cannot be selected, inserted, updated, or deleted by normal authenticated users,
+- cannot be directly selected or modified by normal authenticated users,
 - records inserts and updates to protected process tables,
 - records actor, time, table, row identifier, related client identifier, action,
   and changed column names,
@@ -197,38 +195,37 @@ Verify that `security_audit_events`:
 The audit log is an incident-investigation tool, not a second copy of the client
 record.
 
-## 9. Target-project backup and deployment
+## 9. Target backup and deployment
 
 Before applying migrations to the target project:
 
 - create a database backup or verify a restorable platform backup,
-- export and inventory any historical browser data through the dedicated local
-  export tool,
+- export and inventory historical browser data through the dedicated local tool,
 - record current table counts without exposing row content,
 - record current migration history,
-- confirm there is no active public use of the retired runtime.
+- confirm there is no active use of the retired runtime.
 
-Then run the dry-run again and apply:
+Run the dry-run again, then apply:
 
 ```powershell
 supabase db push --linked --include-all
 ```
 
-Repeat every database, Edge Function, Storage, and role test from this document
-against the target project.
+Repeat every database, Edge Function, Storage, conflict, and role test from this
+document against the target project.
 
-## 10. Release decision
+## 10. Release evidence
 
-PR #9 may be marked ready only when the PR contains a deployment comment with:
+PR #9 may be marked ready only when it contains a deployment comment with:
 
 - target project ref,
-- applied migration list,
+- applied migration list `012–015`,
 - database test completion messages,
-- Edge Function deployment version or timestamp,
-- role-test matrix with pass/fail,
-- private Storage test result,
+- Edge Function deployment timestamp or version,
+- role and reassignment matrix pass/fail,
+- private Storage result,
 - backup confirmation,
-- explicit confirmation that no real health data was used in testing.
+- confirmation that no real health data was used in testing.
 
 The comment must not contain secrets or client data.
 
@@ -236,14 +233,14 @@ The comment must not contain secrets or client data.
 
 A failed migration or access test is a stop condition.
 
-Do not improvise a production fix by reopening anonymous access, restoring local
-codes, disabling JWT verification, adding a browser service-role key, granting
-broad table access, or bypassing RLS. Restore from the verified backup or prepare
-a reviewed forward-fix migration on a separate branch.
+Do not reopen anonymous access, restore local codes, disable JWT verification,
+add a browser service-role key, grant broad table access, or bypass RLS. Restore
+from the verified backup or prepare a reviewed forward-fix migration on a separate
+branch.
 
 ## Out of scope of technical rollout
 
 Passing this rollout does not by itself establish legal compliance with RODO or
-other health-data obligations. A separate legal/privacy review must confirm the
-legal basis, information duties, processor agreements, retention periods, data
-subject rights, incident procedures, and actual production data flows.
+other health-data obligations. A separate legal/privacy review must confirm legal
+basis, information duties, processor agreements, retention periods, data-subject
+rights, incident procedures, and actual production data flows.
