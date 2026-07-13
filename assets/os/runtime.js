@@ -1,4 +1,5 @@
 const AUTH_SESSION_KEY = "studio-las-auth-session";
+const INVITATION_PENDING_KEY = "studio-las-invitation-pending";
 
 export class RuntimeConfigurationError extends Error {
   constructor(message) {
@@ -77,6 +78,7 @@ export function loadAuthSession() {
 export function saveAuthSession(session) {
   if (!session) {
     sessionStorage.removeItem(AUTH_SESSION_KEY);
+    sessionStorage.removeItem(INVITATION_PENDING_KEY);
     return;
   }
 
@@ -92,6 +94,19 @@ export function saveAuthSession(session) {
 
 export function clearAuthSession() {
   sessionStorage.removeItem(AUTH_SESSION_KEY);
+  sessionStorage.removeItem(INVITATION_PENDING_KEY);
+}
+
+export function markInvitationPending() {
+  sessionStorage.setItem(INVITATION_PENDING_KEY, "1");
+}
+
+export function clearInvitationPending() {
+  sessionStorage.removeItem(INVITATION_PENDING_KEY);
+}
+
+export function isInvitationPending() {
+  return sessionStorage.getItem(INVITATION_PENDING_KEY) === "1";
 }
 
 export function clearAuthArtifactsFromUrl() {
@@ -104,7 +119,10 @@ export function clearAuthArtifactsFromUrl() {
     "expires_at",
     "token_type",
     "type",
-    "code"
+    "code",
+    "error",
+    "error_code",
+    "error_description"
   ];
 
   const hashParams = new URLSearchParams(window.location.hash.replace(/^#/, ""));
@@ -147,7 +165,8 @@ export function userSafeError(error) {
   if (error instanceof RuntimeConfigurationError) return error.message;
 
   const status = Number(error?.status || 0);
-  if (status === 401) return "Sesja wygasła. Zaloguj się ponownie.";
+  if (status === 400) return "Dane formularza nie spełniają wymagań. Sprawdź pola i spróbuj ponownie.";
+  if (status === 401) return "Sesja wygasła albo link jest nieprawidłowy. Zaloguj się ponownie.";
   if (status === 403) return "Nie masz dostępu do tych danych.";
   if (status === 409) return "Taki zapis już istnieje albo narusza regułę danych.";
   if (status >= 500) return "Usługa danych jest chwilowo niedostępna. Zapis nie został wykonany.";
