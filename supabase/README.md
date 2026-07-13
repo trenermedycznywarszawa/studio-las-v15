@@ -14,6 +14,7 @@ Supabase is the only production source of truth. Browser storage is not a produc
 - Clients do not query sensitive base process tables.
 - The client portal reads only the explicit `client_portal_snapshot()` RPC projection.
 - Client check-ins use only the validated `save_client_checkin()` RPC.
+- Internal authorization helpers live in the non-exposed `private` schema.
 - Anonymous roles have no access to Studio Las tables or client RPCs.
 - Regular authenticated roles have no hard-delete policies.
 - The browser never receives a service-role key.
@@ -35,29 +36,64 @@ Apply migrations in filename order:
 11. `migrations/010_clients_update_rls_owner_helper.sql`
 12. `migrations/011_paper_first_client_checkins.sql`
 13. `migrations/012_security_hardening.sql`
+14. `migrations/013_access_lifecycle_and_audit.sql`
+15. `migrations/014_private_client_documents.sql`
+16. `migrations/015_reject_client_account_reassignment.sql`
+17. `migrations/016_attribute_service_operations_to_trainer.sql`
+18. `migrations/017_owner_assignment_role_helper.sql`
+19. `migrations/018_fix_checkin_rpc_conflict.sql`
+20. `migrations/019_minimize_exposed_rpc_helpers.sql`
+21. `migrations/020_performance_safety_indexes.sql`
 
-Migrations `006–010` document historical repairs to the client write path. Migration `012` replaces their final runtime contract with one canonical, auditable authorization model. Do not rewrite already-applied migration history.
+Migrations `006–010` document historical repairs to the client write path. Migration `012` replaces their final runtime contract with one canonical authorization model. Migrations `017–020` are forward fixes discovered by executing the complete model against a clean cloud staging project. Do not rewrite already-applied migration history.
+
+## What the staging-discovered fixes protect
+
+- `017` keeps owner-only assignment and revocation writes functional under `FORCE ROW LEVEL SECURITY` without exposing another user's profile row.
+- `018` fixes the PL/pgSQL output-column conflict in `save_client_checkin()` while preserving the public RPC signature and one-check-in-per-item-per-day rule.
+- `019` moves privileged authorization helpers out of the exposed API schema and leaves non-executable compatibility wrappers for stored function bodies.
+- `020` adds covering foreign-key indexes and evaluates `auth.uid()` once per statement in profile policies without changing isolation.
 
 ## Test-environment sequence
 
-Use a disposable Supabase project or local test database.
+Use a disposable Supabase project or local test database containing no real client data.
 
 1. Apply migrations `001–011`.
-2. Run `dev/seed_test_data.sql`.
-3. Apply `migrations/012_security_hardening.sql`.
-4. Run `tests/012_security_hardening_audit.sql`.
-5. Run `tests/012_security_role_tests.sql`.
+2. Run `dev/seed_test_data.sql` while the historical fixture schema still exists.
+3. Apply migrations `012–020` in filename order.
+4. Run:
 
-The role tests simulate:
+```text
+tests/012_security_hardening_audit.sql
+tests/012_security_role_tests.sql
+tests/013_access_lifecycle_and_audit.sql
+tests/014_private_client_documents.sql
+tests/015_reject_client_account_reassignment.sql
+tests/016_attribute_service_operations_to_trainer.sql
+tests/017_owner_assignment_role_helper.sql
+tests/018_checkin_rpc_conflict.sql
+tests/019_private_helper_boundary.sql
+tests/020_performance_safety_indexes.sql
+```
+
+Every file must finish with its explicit completion message. A file that was not run is not a passed test.
+
+The tests cover:
 
 - Trainer A and Trainer B tenant isolation,
 - protected client ownership columns,
-- owner-only account relationship changes,
+- owner-only account relationship changes under forced RLS,
 - Client A and Client B RPC isolation,
 - no client access to base health/process tables,
 - no direct client insert into `guidance_events`,
 - immediate access loss after relationship revocation,
-- no anonymous RPC access.
+- no anonymous RPC access,
+- metadata-only audit and service-operation trainer attribution,
+- private PDF-only Storage boundaries,
+- account reassignment conflicts,
+- valid and duplicate check-in behavior,
+- non-exposed privileged helpers,
+- profile RLS planner optimization and covering indexes.
 
 `tests/rls_access_tests.sql` is a deprecated compatibility marker. The former suite validated the removed access-code table and removed projection views and must not be used for the current architecture.
 
@@ -65,14 +101,15 @@ The role tests simulate:
 
 Do not enter real client health/process data until:
 
-- migration `012` has successfully run in the target project,
-- both current test files complete without exception,
-- role scenarios are repeated with the actual target project's role/configuration settings,
+- migrations `012–020` have successfully run in the target project,
+- every current SQL test completes without exception,
+- role scenarios are repeated with the actual target project's role and configuration settings,
 - the production browser has been inspected for unintended local persistence,
-- Storage policies have been reviewed before any document upload feature is enabled,
+- the Edge Function, Auth redirects, invitation, recovery, password setup, and private Storage flows pass in staging and target,
+- mandatory trainer MFA with `aal2` enforcement is active,
 - a separate RODO/legal review covers legal basis, notices, retention, processors, export/deletion, and incident response.
 
-A committed migration is not proof that the live database has been migrated.
+A committed migration or a passing staging test is not proof that the live target has been migrated.
 
 ## Client-safe RPC boundary
 
@@ -93,6 +130,14 @@ A committed migration is not proof that the live database has been migrated.
 - limits free-text notes,
 - enforces one active check-in per plan item per day,
 - prevents direct arbitrary JSON writes by clients.
+
+The three intentionally exposed privileged RPCs are:
+
+- `client_portal_snapshot()` — authenticated client projection,
+- `save_client_checkin(...)` — authenticated, validated client write,
+- `trainer_client_access_status(uuid)` — owner-trainer access status.
+
+All other authorization helpers are internal and must not be added to PostgREST exposed schemas.
 
 ## Legacy browser-data migration
 
@@ -129,8 +174,7 @@ The current modular frontend stores document metadata only. It does not upload d
 
 Before enabling uploads:
 
-- create a private Storage bucket,
-- define owner-scoped Storage RLS policies,
+- verify the private bucket and owner-scoped Storage policies in the target,
 - verify signed URL lifetimes,
 - prohibit public buckets,
 - test cross-client object paths,
