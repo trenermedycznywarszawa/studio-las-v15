@@ -18,6 +18,7 @@ JS_FILES = [
     ROOT / "assets/os/runtime.js",
     ROOT / "assets/os/data.js",
     ROOT / "assets/os/decision-support.js",
+    ROOT / "assets/os/invitation-auth.js",
     ROOT / "assets/os/app.js",
     ROOT / "assets/os/ui/common.js",
     ROOT / "assets/os/ui/forms.js",
@@ -30,6 +31,7 @@ JS_FILES = [
 PRODUCTION_RUNTIME_FILES = [
     ROOT / "assets/os/data.js",
     ROOT / "assets/os/decision-support.js",
+    ROOT / "assets/os/invitation-auth.js",
     ROOT / "assets/os/app.js",
     ROOT / "assets/os/ui/common.js",
     ROOT / "assets/os/ui/forms.js",
@@ -122,6 +124,36 @@ def check_runtime_boundaries() -> None:
     require("service_role" not in data.lower(), "service-role reference found in browser data layer")
 
 
+def check_invitation_flow() -> None:
+    invitation = read(ROOT / "assets/os/invitation-auth.js")
+    app = read(ROOT / "assets/os/app.js")
+
+    required = [
+        'new set(["invite"])',
+        "access_token",
+        "refresh_token",
+        "saveauthsession",
+        "history.replacestate",
+        'auth.request("/auth/v1/user"',
+        'method: "put"',
+        "body: { password: value }",
+        "renderinvitationpasswordsetup",
+    ]
+    lower = invitation.lower()
+    for fragment in required:
+        require(fragment in lower, f"invitation flow missing: {fragment}")
+
+    require("localstorage" not in lower, "invitation flow persists credentials in localStorage")
+    require("service_role" not in lower, "invitation flow contains service-role marker")
+    require("consumeInvitationSession(state.auth)" in app, "application does not consume invitation session")
+    require("showInvitationSetup" in app, "application has no invitation password setup state")
+
+    consume_position = app.find("consumeInvitationSession(state.auth)")
+    cleanup_position = app.find("clearAuthArtifactsFromUrl()")
+    require(consume_position >= 0, "invitation session consumption missing")
+    require(cleanup_position > consume_position, "auth URL artifacts are cleared before invitation tokens are consumed")
+
+
 def check_entrypoints() -> None:
     production = read(ROOT / "studio-las-os.html")
     config_position = production.find("studio-las-config.js")
@@ -170,10 +202,11 @@ def check_legacy_export_boundary() -> None:
 def check_modularity() -> None:
     limits = {
         "assets/os/data.js": 850,
-        "assets/os/app.js": 350,
+        "assets/os/app.js": 380,
         "assets/os/decision-support.js": 220,
+        "assets/os/invitation-auth.js": 180,
         "assets/os/runtime.js": 240,
-        "assets/os/ui/common.js": 240,
+        "assets/os/ui/common.js": 250,
         "assets/os/ui/forms.js": 320,
         "assets/os/ui/trainer.js": 300,
         "assets/os/ui/client.js": 180,
@@ -221,6 +254,7 @@ def main() -> int:
     check_js_syntax()
     check_import_targets()
     check_runtime_boundaries()
+    check_invitation_flow()
     check_entrypoints()
     check_demo_isolation()
     check_legacy_export_boundary()
