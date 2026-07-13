@@ -91,7 +91,6 @@ create unique index if not exists client_users_one_active_user_per_client_idx
 -- Remove obsolete access-code authentication
 -- ---------------------------------------------------------------------------
 
-revoke all on table public.client_access_credentials from public, anon, authenticated;
 drop table if exists public.client_access_credentials cascade;
 
 -- ---------------------------------------------------------------------------
@@ -206,10 +205,6 @@ as $$
   );
 $$;
 
--- Remove the experimental claim-reading helper. auth.uid() is the single
--- identity source and is easier to audit than manually parsing request claims.
-drop function if exists public.is_current_trainer_profile(uuid);
-
 revoke all on function public.current_profile_id() from public, anon;
 revoke all on function public.is_trainer() from public, anon;
 revoke all on function public.is_client() from public, anon;
@@ -245,14 +240,13 @@ grant update(display_name, email) on public.profiles to authenticated;
 
 -- Client identity ownership cannot be changed through a browser PATCH. INSERT
 -- is protected by RLS; UPDATE is deliberately column-scoped and excludes id,
--- owner_trainer_id, legacy_id, created_at, and updated_at.
+-- owner_trainer_id, legacy_id, package, created_at, and updated_at.
 grant select, insert on public.clients to authenticated;
 grant update(
   name,
   contact,
   email,
   phone,
-  package,
   engagement_type,
   stage,
   stage_raw,
@@ -340,6 +334,11 @@ drop policy if exists clients_insert_trainer on public.clients;
 drop policy if exists clients_update_trainer on public.clients;
 drop policy if exists clients_select_client on public.clients;
 
+-- The experimental helper is still referenced by migrations 007-010 policies.
+-- Drop those policies first, then remove the helper without CASCADE so an
+-- unexpected dependency stops the migration rather than being removed silently.
+drop function if exists public.is_current_trainer_profile(uuid);
+
 create policy clients_select_trainer on public.clients
   for select to authenticated
   using (
@@ -353,6 +352,7 @@ create policy clients_insert_trainer on public.clients
   with check (
     public.is_trainer()
     and owner_trainer_id = public.current_profile_id()
+    and package is null
     and deleted_at is null
   );
 
@@ -377,6 +377,8 @@ create policy clients_update_trainer on public.clients
 drop policy if exists client_trainers_select_trainer on public.client_trainers;
 drop policy if exists client_trainers_insert_trainer on public.client_trainers;
 drop policy if exists client_trainers_update_trainer on public.client_trainers;
+drop policy if exists client_trainers_insert_owner on public.client_trainers;
+drop policy if exists client_trainers_update_owner on public.client_trainers;
 
 create policy client_trainers_select_trainer on public.client_trainers
   for select to authenticated
@@ -420,6 +422,8 @@ create policy client_trainers_update_owner on public.client_trainers
 drop policy if exists client_users_select_related on public.client_users;
 drop policy if exists client_users_insert_trainer on public.client_users;
 drop policy if exists client_users_update_trainer on public.client_users;
+drop policy if exists client_users_insert_owner on public.client_users;
+drop policy if exists client_users_update_owner on public.client_users;
 
 create policy client_users_select_related on public.client_users
   for select to authenticated
