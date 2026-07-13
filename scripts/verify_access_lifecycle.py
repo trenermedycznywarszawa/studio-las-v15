@@ -127,6 +127,9 @@ def check_edge_function() -> None:
         "studio_las_allowed_origins",
         "email_must_match_client_record",
         "client_redirect_not_configured",
+        "account_already_linked_revoke_first",
+        "client_already_linked_revoke_first",
+        "trainer_account_cannot_be_linked_as_client",
         '"cache-control": "no-store"',
     ]
     for fragment in required_plain:
@@ -149,6 +152,13 @@ def check_edge_function() -> None:
         source,
     )
     require(leaked_identifier_property is None, "technical account identifier returned to browser")
+
+    invite_position = lower.find("inviteuserbyemail")
+    account_conflict_position = lower.find("account_already_linked_revoke_first")
+    client_conflict_position = lower.find("client_already_linked_revoke_first")
+    require(invite_position >= 0, "invitation API call missing")
+    require(0 <= account_conflict_position < invite_position, "account conflict is checked after invitation email is sent")
+    require(0 <= client_conflict_position < invite_position, "client conflict is checked after invitation email is sent")
 
 
 def check_function_config() -> None:
@@ -179,6 +189,7 @@ def check_browser_boundary() -> None:
         "assets/os/runtime.js",
         "assets/os/data.js",
         "assets/os/app.js",
+        "assets/os/invitation-auth.js",
         "assets/os/ui/common.js",
         "assets/os/ui/forms.js",
         "assets/os/ui/trainer.js",
