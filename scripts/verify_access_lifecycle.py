@@ -189,7 +189,7 @@ def check_browser_boundary() -> None:
         "assets/os/runtime.js",
         "assets/os/data.js",
         "assets/os/app.js",
-        "assets/os/invitation-auth.js",
+        "assets/os/password-auth.js",
         "assets/os/ui/common.js",
         "assets/os/ui/forms.js",
         "assets/os/ui/trainer.js",
