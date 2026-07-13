@@ -36,11 +36,12 @@ files containing credentials.
 2. Rehearse the complete migration on a disposable project.
 3. Run database metadata and role tests.
 4. Deploy and test the Edge Function in staging.
-5. Verify private Storage policies.
-6. Back up the target project.
-7. Apply the same changes to the target project.
-8. Repeat all tests against the target configuration.
-9. Only then mark PR #9 ready for review and release.
+5. Verify the complete invitation and password-setup flow.
+6. Verify private Storage policies.
+7. Back up the target project.
+8. Apply the same changes to the target project.
+9. Repeat all tests against the target configuration.
+10. Only then mark PR #9 ready for review and release.
 
 Do not merge first and “fix production afterwards.”
 
@@ -164,7 +165,38 @@ Required scenarios:
 
 Do not use a real client to prove these scenarios.
 
-## 7. Private document Storage tests
+## 7. Invitation and password-setup tests
+
+The invitation is incomplete until the client sets a private password through the
+production callback page. Test the actual link delivered by the configured
+Supabase project; do not assume its callback format.
+
+Required scenarios:
+
+1. The invitation redirects only to the configured Studio Las OS production URL.
+2. The runtime accepts only an `invite` authentication callback. Recovery,
+   signup, magic-link, malformed, expired, or incomplete callbacks are rejected.
+3. Access and refresh tokens are removed from the browser address bar immediately
+   after they are consumed.
+4. The client is shown a password-setup screen before any client data is loaded.
+5. Password length below 12 characters is rejected.
+6. Mismatched password confirmation is rejected.
+7. Refreshing the page before completing password setup returns to the same setup
+   gate and does not open the client portal.
+8. Closing or cancelling activation signs the client out and clears the pending
+   activation state.
+9. After successful password update, the pending gate is cleared and the client
+   portal loads through the normal authenticated RLS/RPC path.
+10. The chosen password never appears in application logs, Edge Function logs,
+    GitHub Actions output, URL parameters, Storage metadata, or audit rows.
+11. If the delivered Supabase invitation uses an authorization-code callback
+    rather than hash session tokens, record the mismatch and stop. Do not bypass
+    it by manually copying tokens; implement and review the required exchange flow
+    before release.
+12. Expired and already-used invitation links fail without exposing technical
+    tokens or account identifiers.
+
+## 8. Private document Storage tests
 
 Confirm that:
 
@@ -181,7 +213,7 @@ Confirm that:
 No document upload UI should be enabled until these checks pass in the target
 project.
 
-## 8. Audit log verification
+## 9. Audit log verification
 
 Verify that `security_audit_events`:
 
@@ -190,12 +222,13 @@ Verify that `security_audit_events`:
 - records inserts and updates to protected process tables,
 - records actor, time, table, row identifier, related client identifier, action,
   and changed column names,
-- does not contain health values, notes, report text, contact data, or raw payloads.
+- does not contain health values, notes, report text, contact data, passwords,
+  tokens, or raw payloads.
 
 The audit log is an incident-investigation tool, not a second copy of the client
 record.
 
-## 9. Target backup and deployment
+## 10. Target backup and deployment
 
 Before applying migrations to the target project:
 
@@ -211,10 +244,10 @@ Run the dry-run again, then apply:
 supabase db push --linked --include-all
 ```
 
-Repeat every database, Edge Function, Storage, conflict, and role test from this
-document against the target project.
+Repeat every database, Edge Function, invitation, Storage, conflict, and role test
+from this document against the target project.
 
-## 10. Release evidence
+## 11. Release evidence
 
 PR #9 may be marked ready only when it contains a deployment comment with:
 
@@ -223,15 +256,16 @@ PR #9 may be marked ready only when it contains a deployment comment with:
 - database test completion messages,
 - Edge Function deployment timestamp or version,
 - role and reassignment matrix pass/fail,
+- invitation callback format and password-setup matrix pass/fail,
 - private Storage result,
 - backup confirmation,
 - confirmation that no real health data was used in testing.
 
-The comment must not contain secrets or client data.
+The comment must not contain secrets, tokens, passwords, or client data.
 
 ## Rollback rule
 
-A failed migration or access test is a stop condition.
+A failed migration, access, invitation, or Storage test is a stop condition.
 
 Do not reopen anonymous access, restore local codes, disable JWT verification,
 add a browser service-role key, grant broad table access, or bypass RLS. Restore
