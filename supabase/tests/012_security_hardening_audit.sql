@@ -37,6 +37,8 @@ $$;
 do $$
 declare
   row record;
+  expected_count integer;
+  actual_count integer;
   sensitive_tables text[] := array[
     'profiles',
     'clients',
@@ -62,6 +64,20 @@ declare
     'legacy_import_records'
   ];
 begin
+  expected_count := cardinality(sensitive_tables);
+
+  select count(*)
+  into actual_count
+  from pg_class c
+  join pg_namespace n on n.oid = c.relnamespace
+  where n.nspname = 'public'
+    and c.relname = any(sensitive_tables)
+    and c.relkind = 'r';
+
+  if actual_count <> expected_count then
+    raise exception 'FAIL: expected % sensitive tables, found %', expected_count, actual_count;
+  end if;
+
   for row in
     select c.relname, c.relrowsecurity, c.relforcerowsecurity
     from pg_class c
@@ -98,33 +114,29 @@ begin
 end;
 $$;
 
--- 5. Client portal functions must exist and be SECURITY DEFINER with fixed search_path.
+-- 5. Client portal functions must exist, be SECURITY DEFINER, and pin search_path.
 do $$
 declare
-  function_name text;
   function_oid oid;
-  function_def text;
+  function_name text;
   function_config text[];
-  required_functions text[] := array[
-    'client_portal_snapshot',
-    'save_client_checkin'
+  is_security_definer boolean;
+  required_oids oid[] := array[
+    to_regprocedure('public.client_portal_snapshot()'),
+    to_regprocedure('public.save_client_checkin(uuid,boolean,smallint,smallint,text)')
   ];
 begin
-  foreach function_name in array required_functions loop
-    select p.oid, pg_get_functiondef(p.oid), p.proconfig
-    into function_oid, function_def, function_config
+  if required_oids[1] is null or required_oids[2] is null then
+    raise exception 'FAIL: required client RPC signature missing';
+  end if;
+
+  foreach function_oid in array required_oids loop
+    select p.proname, p.proconfig, p.prosecdef
+    into function_name, function_config, is_security_definer
     from pg_proc p
-    join pg_namespace n on n.oid = p.pronamespace
-    where n.nspname = 'public'
-      and p.proname = function_name
-    order by p.oid desc
-    limit 1;
+    where p.oid = function_oid;
 
-    if function_oid is null then
-      raise exception 'FAIL: public.% function missing', function_name;
-    end if;
-
-    if position('SECURITY DEFINER' in upper(function_def)) = 0 then
+    if not is_security_definer then
       raise exception 'FAIL: public.% is not SECURITY DEFINER', function_name;
     end if;
 
@@ -136,6 +148,10 @@ begin
       raise exception 'FAIL: public.% has no fixed search_path', function_name;
     end if;
   end loop;
+
+  if to_regprocedure('public.save_client_checkin(uuid,uuid,boolean,smallint,smallint,text)') is not null then
+    raise exception 'FAIL: obsolete client_id-accepting check-in RPC still exists';
+  end if;
 end;
 $$;
 
@@ -165,7 +181,7 @@ begin
 end;
 $$;
 
--- 7. One active client mapping per authenticated client account.
+-- 7. Active identity mapping is one-to-one.
 do $$
 begin
   if not exists (
@@ -175,7 +191,17 @@ begin
       and tablename = 'client_users'
       and indexname = 'client_users_one_active_client_per_user_idx'
   ) then
-    raise exception 'FAIL: active client-user uniqueness index missing';
+    raise exception 'FAIL: active user-to-client uniqueness index missing';
+  end if;
+
+  if not exists (
+    select 1
+    from pg_indexes
+    where schemaname = 'public'
+      and tablename = 'client_users'
+      and indexname = 'client_users_one_active_user_per_client_idx'
+  ) then
+    raise exception 'FAIL: active client-to-user uniqueness index missing';
   end if;
 end;
 $$;
@@ -192,6 +218,81 @@ begin
       and is_nullable = 'NO'
   ) then
     raise exception 'FAIL: clients.engagement_type missing or nullable';
+  end if;
+end;
+$$;
+
+-- 9. Browser clients must not be able to change ownership columns.
+do $$
+begin
+  if exists (
+    select 1
+    from information_schema.column_privileges
+    where table_schema = 'public'
+      and table_name = 'clients'
+      and grantee = 'authenticated'
+      and privilege_type = 'UPDATE'
+      and column_name in ('id', 'owner_trainer_id', 'legacy_id', 'created_at', 'updated_at')
+  ) then
+    raise exception 'FAIL: authenticated role can update protected client identity columns';
+  end if;
+end;
+$$;
+
+-- 10. Account and trainer assignments must be owner-only for writes.
+do $$
+declare
+  missing_count integer;
+  unsafe_count integer;
+begin
+  select count(*)
+  into missing_count
+  from (values
+    ('client_trainers', 'client_trainers_insert_owner'),
+    ('client_trainers', 'client_trainers_update_owner'),
+    ('client_users', 'client_users_insert_owner'),
+    ('client_users', 'client_users_update_owner')
+  ) required(tablename, policyname)
+  where not exists (
+    select 1
+    from pg_policies p
+    where p.schemaname = 'public'
+      and p.tablename = required.tablename
+      and p.policyname = required.policyname
+  );
+
+  if missing_count <> 0 then
+    raise exception 'FAIL: owner-only assignment policy missing';
+  end if;
+
+  select count(*)
+  into unsafe_count
+  from pg_policies
+  where schemaname = 'public'
+    and policyname in (
+      'client_trainers_insert_trainer',
+      'client_trainers_update_trainer',
+      'client_users_insert_trainer',
+      'client_users_update_trainer'
+    );
+
+  if unsafe_count <> 0 then
+    raise exception 'FAIL: broad trainer assignment policy still exists';
+  end if;
+end;
+$$;
+
+-- 11. Canonical helpers must exist; experimental claim parsing must be gone.
+do $$
+begin
+  if to_regprocedure('public.trainer_owns_client(uuid)') is null
+     or to_regprocedure('public.trainer_can_access_client(uuid)') is null
+     or to_regprocedure('public.client_can_access_client(uuid)') is null then
+    raise exception 'FAIL: canonical access helper missing';
+  end if;
+
+  if to_regprocedure('public.is_current_trainer_profile(uuid)') is not null then
+    raise exception 'FAIL: experimental JWT-claim helper still exists';
   end if;
 end;
 $$;
