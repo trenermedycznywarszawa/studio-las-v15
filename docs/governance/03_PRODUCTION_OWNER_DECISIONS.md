@@ -29,11 +29,20 @@ Studio Las OS is considered complete only when:
 
 ## Supabase
 
-- Canonical project ref: `ufcumhbnuyernuwepcij`.
+- Canonical production-sensitive project ref: `ufcumhbnuyernuwepcij`.
 - The owner has administrator access.
-- The project contains real data and must therefore be treated as production-sensitive even though its current name is `studio-las-os9-test`.
-- A separate staging environment has not yet been confirmed.
+- The production-sensitive project contains real data and must not be used for destructive rehearsal even though its current name is `studio-las-os9-test`.
+- Paid Supabase branching was explicitly rejected by the owner.
+- Free staging project created on 2026-07-13: `ulauyoqjoetjqktegeuq` (`studio-las-os-staging`, region `eu-west-1`).
+- Migration rehearsals and first-time security validation must run on local Supabase and/or the free staging project before the production-sensitive target.
 - Historical browser data may be migrated, but only through an explicit reviewed migration process.
+
+## Cost constraint
+
+- The project must remain within the Supabase Free plan unless the owner explicitly approves a future paid change.
+- Do not create paid database branches, paid add-ons or paid infrastructure without explicit owner approval.
+- Use local Supabase CLI + Docker for repeatable zero-cost development and migration tests.
+- Use the free staging project only for cloud-specific Auth, Storage, Edge Function and redirect validation.
 
 ## Hosting, domain and email
 
@@ -82,8 +91,8 @@ No AI-generated text alone may close these decisions.
 
 ## Current production blockers
 
-1. Create and validate a separate staging environment.
-2. Rehearse migrations and security tests outside the real-data project.
+1. Initialize and validate the free staging project.
+2. Rehearse migrations and security tests locally and on staging.
 3. Complete the target Supabase rollout and backup evidence.
 4. Implement mandatory trainer MFA with AAL2 enforcement.
 5. Choose final hosting URL/domain.
