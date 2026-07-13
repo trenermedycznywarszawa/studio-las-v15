@@ -5,7 +5,8 @@
 -- 2. remove the legacy local access-code model,
 -- 3. replace layered client-access patches with one auditable contract,
 -- 4. expose client data only through narrow authenticated RPC functions,
--- 5. preserve trainer ownership and soft-delete semantics.
+-- 5. preserve trainer ownership and soft-delete semantics,
+-- 6. prevent assistant trainers from changing identity/account assignments.
 --
 -- This migration is additive with respect to health/process data. It does not
 -- delete client records. It does remove the obsolete client access credential
@@ -50,10 +51,40 @@ comment on column public.clients.package is
 comment on column public.clients.engagement_type is
   'Canonical cooperation type: diagnostic_visit, twelve_week_process, continuation.';
 
--- One authenticated client account must map to at most one active Studio Las
--- client record. Revoked historical links are still allowed.
+-- Stop with an explicit message instead of silently choosing one relationship
+-- when historical data contains ambiguous active client-account mappings.
+do $$
+begin
+  if exists (
+    select 1
+    from public.client_users
+    where status = 'active'
+    group by user_id
+    having count(*) > 1
+  ) then
+    raise exception 'Security hardening blocked: one auth profile is linked to multiple active clients';
+  end if;
+
+  if exists (
+    select 1
+    from public.client_users
+    where status = 'active'
+    group by client_id
+    having count(*) > 1
+  ) then
+    raise exception 'Security hardening blocked: one client record is linked to multiple active auth profiles';
+  end if;
+end;
+$$;
+
+-- One active application account per client and one active client per account.
+-- Revoked historical links remain available for audit/history.
 create unique index if not exists client_users_one_active_client_per_user_idx
   on public.client_users(user_id)
+  where status = 'active';
+
+create unique index if not exists client_users_one_active_user_per_client_idx
+  on public.client_users(client_id)
   where status = 'active';
 
 -- ---------------------------------------------------------------------------
@@ -113,6 +144,23 @@ as $$
   );
 $$;
 
+create or replace function public.trainer_owns_client(p_client_id uuid)
+returns boolean
+language sql
+stable
+security definer
+set search_path = pg_catalog, public
+as $$
+  select exists (
+    select 1
+    from public.clients c
+    where public.is_trainer()
+      and c.id = p_client_id
+      and c.owner_trainer_id = public.current_profile_id()
+      and c.deleted_at is null
+  );
+$$;
+
 create or replace function public.trainer_can_access_client(p_client_id uuid)
 returns boolean
 language sql
@@ -165,12 +213,14 @@ drop function if exists public.is_current_trainer_profile(uuid);
 revoke all on function public.current_profile_id() from public, anon;
 revoke all on function public.is_trainer() from public, anon;
 revoke all on function public.is_client() from public, anon;
+revoke all on function public.trainer_owns_client(uuid) from public, anon;
 revoke all on function public.trainer_can_access_client(uuid) from public, anon;
 revoke all on function public.client_can_access_client(uuid) from public, anon;
 
 grant execute on function public.current_profile_id() to authenticated;
 grant execute on function public.is_trainer() to authenticated;
 grant execute on function public.is_client() to authenticated;
+grant execute on function public.trainer_owns_client(uuid) to authenticated;
 grant execute on function public.trainer_can_access_client(uuid) to authenticated;
 grant execute on function public.client_can_access_client(uuid) to authenticated;
 
@@ -185,20 +235,43 @@ revoke all on all sequences in schema public from anon;
 revoke all on all functions in schema public from anon;
 grant usage on schema public to authenticated;
 
--- Profiles stay self-readable. Role and auth_user_id are not updateable because
--- the table grant remains column-scoped.
-revoke all on public.profiles from authenticated;
-grant select on public.profiles to authenticated;
-grant update(display_name, email) on public.profiles to authenticated;
-
--- Authenticated users receive table privileges, while RLS decides whether the
--- current profile is a trainer or client. Clients receive no base-table SELECT
--- policies for health/process tables; their portal uses RPC projections below.
+-- Reset authenticated privileges, then grant only what the current runtime uses.
 revoke all on all tables in schema public from authenticated;
+
+-- Profiles stay self-readable. Role and auth_user_id are not updateable because
+-- the grant remains column-scoped.
 grant select on public.profiles to authenticated;
 grant update(display_name, email) on public.profiles to authenticated;
 
-grant select, insert, update on public.clients to authenticated;
+-- Client identity ownership cannot be changed through a browser PATCH. INSERT
+-- is protected by RLS; UPDATE is deliberately column-scoped and excludes id,
+-- owner_trainer_id, legacy_id, created_at, and updated_at.
+grant select, insert on public.clients to authenticated;
+grant update(
+  name,
+  contact,
+  email,
+  phone,
+  package,
+  engagement_type,
+  stage,
+  stage_raw,
+  start_date,
+  next_session_date,
+  next_review_date,
+  goal,
+  motivation,
+  fears,
+  health_status,
+  contraindications,
+  red_flags_text,
+  communication_profile,
+  next_milestone,
+  working_hypothesis,
+  status,
+  deleted_at
+) on public.clients to authenticated;
+
 grant select, insert, update on public.client_trainers to authenticated;
 grant select, insert, update on public.client_users to authenticated;
 grant select, insert, update on public.client_intakes to authenticated;
@@ -262,11 +335,10 @@ $$;
 -- Canonical client record policies
 -- ---------------------------------------------------------------------------
 
--- Remove every historical variant of the client policies before defining the
--- current contract.
 drop policy if exists clients_select_trainer on public.clients;
 drop policy if exists clients_insert_trainer on public.clients;
 drop policy if exists clients_update_trainer on public.clients;
+drop policy if exists clients_select_client on public.clients;
 
 create policy clients_select_trainer on public.clients
   for select to authenticated
@@ -296,12 +368,110 @@ create policy clients_update_trainer on public.clients
     and public.trainer_can_access_client(id)
   );
 
--- Clients must not query the base clients table. The portal projection below is
--- the only client-readable surface.
-drop policy if exists clients_select_client on public.clients;
+-- ---------------------------------------------------------------------------
+-- Owner-only identity and account-assignment policies
+-- ---------------------------------------------------------------------------
 
--- Direct client writes to guidance_events are removed. The RPC below validates
--- all fields and prevents clients from writing arbitrary JSON payloads.
+-- An assistant trainer may read the assignment needed to work with an assigned
+-- client, but only the owner trainer may add or change trainer assignments.
+drop policy if exists client_trainers_select_trainer on public.client_trainers;
+drop policy if exists client_trainers_insert_trainer on public.client_trainers;
+drop policy if exists client_trainers_update_trainer on public.client_trainers;
+
+create policy client_trainers_select_trainer on public.client_trainers
+  for select to authenticated
+  using (
+    public.is_trainer()
+    and public.trainer_can_access_client(client_id)
+  );
+
+create policy client_trainers_insert_owner on public.client_trainers
+  for insert to authenticated
+  with check (
+    public.is_trainer()
+    and public.trainer_owns_client(client_id)
+    and exists (
+      select 1
+      from public.profiles p
+      where p.id = trainer_id
+        and p.role = 'trainer'
+    )
+  );
+
+create policy client_trainers_update_owner on public.client_trainers
+  for update to authenticated
+  using (
+    public.is_trainer()
+    and public.trainer_owns_client(client_id)
+  )
+  with check (
+    public.is_trainer()
+    and public.trainer_owns_client(client_id)
+    and exists (
+      select 1
+      from public.profiles p
+      where p.id = trainer_id
+        and p.role = 'trainer'
+    )
+  );
+
+-- A client may read only their own active link. Only the owner trainer may
+-- create, revoke, or change a client-account relationship.
+drop policy if exists client_users_select_related on public.client_users;
+drop policy if exists client_users_insert_trainer on public.client_users;
+drop policy if exists client_users_update_trainer on public.client_users;
+
+create policy client_users_select_related on public.client_users
+  for select to authenticated
+  using (
+    (
+      public.is_trainer()
+      and public.trainer_can_access_client(client_id)
+    )
+    or (
+      public.is_client()
+      and user_id = public.current_profile_id()
+      and status = 'active'
+    )
+  );
+
+create policy client_users_insert_owner on public.client_users
+  for insert to authenticated
+  with check (
+    public.is_trainer()
+    and public.trainer_owns_client(client_id)
+    and exists (
+      select 1
+      from public.profiles p
+      where p.id = user_id
+        and p.role = 'client'
+    )
+  );
+
+create policy client_users_update_owner on public.client_users
+  for update to authenticated
+  using (
+    public.is_trainer()
+    and public.trainer_owns_client(client_id)
+  )
+  with check (
+    public.is_trainer()
+    and public.trainer_owns_client(client_id)
+    and exists (
+      select 1
+      from public.profiles p
+      where p.id = user_id
+        and p.role = 'client'
+    )
+  );
+
+-- ---------------------------------------------------------------------------
+-- Remove direct client access to process tables
+-- ---------------------------------------------------------------------------
+
+-- Direct client writes to guidance_events are removed. The RPC below derives
+-- the client identity from Auth, validates every field, and prevents arbitrary
+-- JSON payloads.
 drop policy if exists guidance_events_client_select on public.guidance_events;
 drop policy if exists guidance_events_client_insert on public.guidance_events;
 drop policy if exists guidance_events_client_update on public.guidance_events;
@@ -357,7 +527,6 @@ begin
 
   select jsonb_build_object(
     'client', jsonb_build_object(
-      'id', c.id,
       'firstName', split_part(trim(c.name), ' ', 1),
       'engagementType', c.engagement_type,
       'stage', c.stage,
@@ -375,7 +544,6 @@ begin
     ),
     'homePlan', coalesce((
       select jsonb_build_object(
-        'id', hp.id,
         'title', hp.title,
         'focus', hp.focus,
         'frequency', hp.frequency,
@@ -413,7 +581,6 @@ begin
     ), 'null'::jsonb),
     'reports', coalesce((
       select jsonb_agg(jsonb_build_object(
-        'id', r.id,
         'type', r.type,
         'title', r.title,
         'content', r.content,
@@ -432,7 +599,6 @@ begin
         select
           bm.measured_at as measured_on,
           jsonb_build_object(
-            'id', bm.id,
             'type', 'body',
             'date', bm.measured_at,
             'source', bm.source,
@@ -455,7 +621,6 @@ begin
         select
           tlo.observed_at as measured_on,
           jsonb_build_object(
-            'id', tlo.id,
             'type', 'training_load',
             'date', tlo.observed_at,
             'source', tlo.source,
@@ -505,28 +670,44 @@ grant execute on function public.client_portal_snapshot() to authenticated;
 -- Validated client check-in RPC
 -- ---------------------------------------------------------------------------
 
+-- Remove an earlier draft signature if this migration was tested before its
+-- final form. The final contract never accepts client_id from the browser.
+drop function if exists public.save_client_checkin(uuid, uuid, boolean, smallint, smallint, text);
+
 create or replace function public.save_client_checkin(
-  p_client_id uuid,
   p_home_plan_item_id uuid,
   p_protocol_done boolean,
   p_energy_score smallint,
   p_symptom_score smallint,
   p_note text default null
 )
-returns table(id uuid, event_date date, created_at timestamptz)
+returns table(event_date date, created_at timestamptz)
 language plpgsql
 security definer
 set search_path = pg_catalog, public
 as $$
 declare
   v_profile_id uuid;
+  v_client_id uuid;
   v_note text;
 begin
   if auth.uid() is null or not public.is_client() then
     raise exception 'client authentication required' using errcode = '42501';
   end if;
 
-  if not public.client_can_access_client(p_client_id) then
+  v_profile_id := public.current_profile_id();
+
+  select cu.client_id
+  into v_client_id
+  from public.client_users cu
+  join public.clients c on c.id = cu.client_id
+  where cu.user_id = v_profile_id
+    and cu.status = 'active'
+    and c.status = 'active'
+    and c.deleted_at is null
+  limit 1;
+
+  if v_client_id is null or not public.client_can_access_client(v_client_id) then
     raise exception 'client access denied' using errcode = '42501';
   end if;
 
@@ -539,18 +720,17 @@ begin
   end if;
 
   v_note := nullif(left(trim(coalesce(p_note, '')), 500), '');
-  v_profile_id := public.current_profile_id();
 
   if not exists (
     select 1
     from public.home_plan_items hpi
     join public.home_plans hp on hp.id = hpi.home_plan_id
     where hpi.id = p_home_plan_item_id
-      and hpi.client_id = p_client_id
+      and hpi.client_id = v_client_id
       and hpi.status = 'active'
       and hpi.published_at is not null
       and hpi.deleted_at is null
-      and hp.client_id = p_client_id
+      and hp.client_id = v_client_id
       and hp.status = 'active'
       and hp.published_at is not null
       and hp.deleted_at is null
@@ -568,7 +748,7 @@ begin
     payload,
     created_by
   ) values (
-    p_client_id,
+    v_client_id,
     p_home_plan_item_id,
     current_date,
     'client_checkin',
@@ -584,7 +764,7 @@ begin
   on conflict (client_id, home_plan_item_id, kind, event_date)
     where kind = 'client_checkin' and deleted_at is null
   do nothing
-  returning guidance_events.id, guidance_events.event_date, guidance_events.created_at;
+  returning guidance_events.event_date, guidance_events.created_at;
 
   if not found then
     raise exception 'check-in already recorded for this item today' using errcode = '23505';
@@ -592,8 +772,8 @@ begin
 end;
 $$;
 
-revoke all on function public.save_client_checkin(uuid, uuid, boolean, smallint, smallint, text) from public, anon;
-grant execute on function public.save_client_checkin(uuid, uuid, boolean, smallint, smallint, text) to authenticated;
+revoke all on function public.save_client_checkin(uuid, boolean, smallint, smallint, text) from public, anon;
+grant execute on function public.save_client_checkin(uuid, boolean, smallint, smallint, text) to authenticated;
 
 -- Production clients use Supabase Auth accounts. Provisioning and revocation are
 -- administrative actions and must never be implemented with a service-role key
