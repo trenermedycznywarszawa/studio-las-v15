@@ -10,6 +10,11 @@ import {
 } from "./data.js";
 import { collectAttentionSignals } from "./decision-support.js";
 import {
+  consumeInvitationSession,
+  renderInvitationPasswordSetup,
+  updateInvitationPassword
+} from "./invitation-auth.js";
+import {
   renderFatal,
   renderLoading,
   renderLogin
@@ -77,6 +82,22 @@ function showLogin(message = "") {
         await loadAuthenticatedRuntime();
       } catch (error) {
         showLogin(userSafeError(error));
+      }
+    }
+  });
+}
+
+function showInvitationSetup(message = "") {
+  renderInvitationPasswordSetup(root, {
+    message,
+    onCancel: () => logout().catch(handleRuntimeError),
+    onSubmit: async password => {
+      try {
+        renderLoading(root, "Zapisywanie nowego hasła…");
+        await updateInvitationPassword(state.auth, password);
+        await loadAuthenticatedRuntime();
+      } catch (error) {
+        showInvitationSetup(userSafeError(error));
       }
     }
   });
@@ -216,12 +237,20 @@ function handleRuntimeError(error) {
 
 async function initialize() {
   try {
-    clearAuthArtifactsFromUrl();
     state.config = getProductionRuntimeConfig();
     assertNoPersistentHealthData();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
 
+    const invitation = consumeInvitationSession(state.auth);
+    if (invitation) {
+      renderLoading(root, "Weryfikowanie zaproszenia…");
+      await state.auth.getUser();
+      showInvitationSetup();
+      return;
+    }
+
+    clearAuthArtifactsFromUrl();
     renderLoading(root);
     const restored = await state.auth.restore();
     if (!restored) {
