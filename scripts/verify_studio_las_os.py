@@ -24,6 +24,7 @@ JS_FILES = [
     ROOT / "assets/os/ui/trainer.js",
     ROOT / "assets/os/ui/client.js",
     ROOT / "demo/studio-las-os-demo.js",
+    ROOT / "tools/export-legacy-browser-data.js",
 ]
 
 PRODUCTION_RUNTIME_FILES = [
@@ -65,9 +66,11 @@ def read(path: Path) -> str:
 def check_js_syntax() -> None:
     for path in JS_FILES:
         require(path.is_file(), f"missing JavaScript module: {path.relative_to(ROOT)}")
+        source = read(path)
         result = subprocess.run(
-            ["node", "--check", str(path)],
+            ["node", "--input-type=module", "--check"],
             cwd=ROOT,
+            input=source,
             capture_output=True,
             text=True,
             check=False,
@@ -146,6 +149,16 @@ def check_demo_isolation() -> None:
     require("sessionStorage" not in demo_js, "demo uses sessionStorage")
 
 
+def check_legacy_export_boundary() -> None:
+    exporter = read(ROOT / "tools/export-legacy-browser-data.js")
+    require("localStorage.getItem" in exporter, "legacy export tool does not read recognized browser data")
+    require("fetch(" not in exporter, "legacy export tool performs a network request")
+    require("XMLHttpRequest" not in exporter, "legacy export tool performs an XMLHttpRequest")
+    require("localStorage.removeItem" not in exporter, "legacy export tool deletes data")
+    require("localStorage.clear" not in exporter, "legacy export tool clears browser data")
+    require("crypto.subtle.digest" in exporter, "legacy export checksum missing")
+
+
 def check_modularity() -> None:
     limits = {
         "assets/os/data.js": 850,
@@ -189,6 +202,11 @@ def check_security_migration_contract() -> None:
     require("authenticated role can update protected client identity columns" in audit, "column privilege audit missing")
     require("owner-only assignment policy" in audit, "owner-only policy audit missing")
 
+    role_tests = read(ROOT / "supabase/tests/012_security_role_tests.sql")
+    require("trainer A must not see client B" in role_tests, "trainer cross-tenant scenario missing")
+    require("revoked client relationship retained portal access" in role_tests, "revocation scenario missing")
+    require("anon executed client_portal_snapshot" in role_tests, "anonymous RPC scenario missing")
+
 
 def main() -> int:
     check_js_syntax()
@@ -196,6 +214,7 @@ def main() -> int:
     check_runtime_boundaries()
     check_entrypoints()
     check_demo_isolation()
+    check_legacy_export_boundary()
     check_modularity()
     check_security_migration_contract()
     print("Studio Las OS static security checks completed")
