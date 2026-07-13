@@ -1,5 +1,6 @@
 (function () {
   window.STUDIO_LAS_CONFIG = Object.freeze({
+    mode: "production",
     supabase: Object.freeze({
       projectRef: "ufcumhbnuyernuwepcij",
       url: "https://ufcumhbnuyernuwepcij.supabase.co",
