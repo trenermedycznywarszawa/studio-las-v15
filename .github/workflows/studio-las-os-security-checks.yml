@@ -9,6 +9,8 @@ on:
       - "assets/os/**"
       - "demo/**"
       - "tools/export-legacy-browser-data.*"
+      - "tools/client-access-admin.*"
+      - "supabase/config.toml"
       - "supabase/functions/**"
       - "supabase/migrations/**"
       - "supabase/tests/**"
@@ -49,6 +51,9 @@ jobs:
 
       - name: Parse ES modules
         run: python3 -c "import scripts.verify_studio_las_os as v; v.check_js_syntax()"
+
+      - name: Parse client access admin module
+        run: node --input-type=module --check < tools/client-access-admin.js
 
       - name: Verify module imports
         run: python3 -c "import scripts.verify_studio_las_os as v; v.check_import_targets()"
