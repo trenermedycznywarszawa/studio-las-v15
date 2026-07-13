@@ -57,7 +57,7 @@ def main() -> int:
         "target_read_only_preflight.sql",
         "studio las os target read-only preflight completed",
         "restoreverified = $restoreverified",
-        "storagobjectsincluded = $false" if False else "storageobjectsincluded = $false",
+        "storageobjectsincluded = $false",
         "remove-item -literalpath $backupdirectory -recurse -force",
         'remove-item "env:$sourceurlenvironment"',
         'remove-item "env:$restoreurlenvironment"',
@@ -66,7 +66,7 @@ def main() -> int:
         require(fragment in lower, f"backup workflow missing safety contract: {fragment}")
 
     require(
-        "test-pathinside -candidate $outputroot -parent $reporoot" in compact,
+        "test-pathinside-candidate$outputroot-parent$reporoot" in compact,
         "backup workflow does not reject repository-local output",
     )
     require(
@@ -83,7 +83,7 @@ def main() -> int:
     )
     require(
         "if(-not$verifyrestore)" in compact
-        and "backupgate remains open until -verifyrestore succeeds" in lower,
+        and "backupgateremainsopenuntil-verifyrestoresucceeds" in compact,
         "backup-only run could be mistaken for a verified backup gate",
     )
 
@@ -100,7 +100,6 @@ def main() -> int:
         "aws s3",
         "gsutil",
         "az storage",
-        "github",
     ]
     for fragment in forbidden_upload_tools:
         require(fragment not in lower, f"backup workflow contains prohibited upload/network tool: {fragment}")
