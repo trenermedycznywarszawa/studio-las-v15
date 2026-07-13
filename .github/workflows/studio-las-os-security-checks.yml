@@ -9,9 +9,11 @@ on:
       - "assets/os/**"
       - "demo/**"
       - "tools/export-legacy-browser-data.*"
+      - "supabase/functions/**"
       - "supabase/migrations/**"
       - "supabase/tests/**"
       - "scripts/verify_studio_las_os.py"
+      - "scripts/verify_access_lifecycle.py"
       - ".github/workflows/studio-las-os-security-checks.yml"
   workflow_dispatch:
 
@@ -26,7 +28,7 @@ jobs:
   static-security-contract:
     name: Static security contract
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 8
 
     steps:
       - name: Check out repository
@@ -34,10 +36,16 @@ jobs:
         with:
           persist-credentials: false
 
+      - name: Set up Deno
+        uses: denoland/setup-deno@v2
+        with:
+          deno-version: v2.x
+
       - name: Show runtimes
         run: |
           node --version
           python3 --version
+          deno --version
 
       - name: Parse ES modules
         run: python3 -c "import scripts.verify_studio_las_os as v; v.check_js_syntax()"
@@ -62,6 +70,12 @@ jobs:
 
       - name: Verify security migration contract
         run: python3 -c "import scripts.verify_studio_las_os as v; v.check_security_migration_contract()"
+
+      - name: Verify access lifecycle, audit, and Storage boundaries
+        run: python3 scripts/verify_access_lifecycle.py
+
+      - name: Type-check authenticated client access Edge Function
+        run: deno check supabase/functions/client-access/index.ts
 
       - name: Verify complete static contract
         run: python3 scripts/verify_studio_las_os.py
