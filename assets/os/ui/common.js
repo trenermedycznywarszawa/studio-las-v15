@@ -25,7 +25,8 @@ export function field(label, name, type = "text", options = {}) {
   const shared = {
     name,
     required: options.required,
-    disabled: options.disabled
+    disabled: options.disabled,
+    autocomplete: options.autocomplete
   };
 
   if (type === "textarea") {
@@ -33,6 +34,7 @@ export function field(label, name, type = "text", options = {}) {
       ...shared,
       rows: options.rows || 3,
       placeholder: options.placeholder || "",
+      minlength: options.minlength,
       maxlength: options.maxlength
     });
   } else if (type === "select") {
@@ -49,6 +51,7 @@ export function field(label, name, type = "text", options = {}) {
       min: options.min,
       max: options.max,
       step: options.step,
+      minlength: options.minlength,
       maxlength: options.maxlength,
       placeholder: options.placeholder || ""
     });
@@ -177,8 +180,8 @@ export function renderLogin(root, { onSubmit, message = "" }) {
     create("h1", { text: "Bezpieczne logowanie" }),
     create("p", { className: "muted", text: "Konto trenera lub klienta w Supabase Auth. Lokalne kody dostępu nie są obsługiwane." }),
     message ? statusBox(message, "error") : null,
-    field("Email", "email", "email", { required: true, maxlength: 254 }),
-    field("Hasło", "password", "password", { required: true, maxlength: 1024 })
+    field("Email", "email", "email", { required: true, maxlength: 254, autocomplete: "email" }),
+    field("Hasło", "password", "password", { required: true, maxlength: 1024, autocomplete: "current-password" })
   ], "Zaloguj", onSubmit, "login-card");
 
   root.append(create("main", { className: "center-screen" }, [form]));
