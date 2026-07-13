@@ -86,7 +86,7 @@
     </p>
     <div class="warning">
       <strong>Ważne przed uruchomieniem produkcji:</strong>
-      jeśli w tej przeglądarce istnieją wcześniejsze lokalne dane Studio Las OS, należy je najpierw bezpiecznie wyeksportować i zweryfikować w procesie migracji. Nowy runtime odmówi pracy, dopóki stare klucze danych pozostają w localStorage.
+      jeśli w tej przeglądarce istnieją wcześniejsze lokalne dane Studio Las OS, najpierw pobierz kontrolowany backup i zweryfikuj go w procesie migracji. Nowy runtime odmówi pracy, dopóki stare klucze danych pozostają w localStorage.
     </div>
     <ul>
       <li>Produkcja korzysta wyłącznie z Supabase i kont Supabase Auth.</li>
@@ -94,6 +94,7 @@
       <li>Nie ma automatycznego przekierowania, aby nie ukrywać wymaganego etapu migracji i audytu.</li>
     </ul>
     <div class="actions">
+      <a href="./tools/export-legacy-browser-data.html">Pobierz backup starszych danych</a>
       <a class="primary" href="./studio-las-os.html">Przejdź do Studio Las OS</a>
       <a href="./demo/studio-las-os-demo.html">Otwórz izolowane demo</a>
     </div>
