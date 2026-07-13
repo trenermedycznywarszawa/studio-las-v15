@@ -1,8 +1,8 @@
 import {
   assertNoPersistentHealthData,
   clearAuthArtifactsFromUrl,
+  getPasswordSetupContext,
   getProductionRuntimeConfig,
-  isInvitationPending,
   userSafeError
 } from "./runtime.js";
 import {
@@ -11,10 +11,12 @@ import {
 } from "./data.js";
 import { collectAttentionSignals } from "./decision-support.js";
 import {
-  consumeInvitationSession,
-  renderInvitationPasswordSetup,
-  updateInvitationPassword
-} from "./invitation-auth.js";
+  consumePasswordCallback,
+  renderPasswordSetup,
+  renderRecoveryRequest,
+  requestPasswordRecovery,
+  updatePassword
+} from "./password-auth.js";
 import {
   renderFatal,
   renderLoading,
@@ -76,6 +78,7 @@ async function logout() {
 function showLogin(message = "") {
   renderLogin(root, {
     message,
+    onRecover: () => showRecoveryRequest(),
     onSubmit: async ({ email, password }) => {
       try {
         renderLoading(root, "Weryfikowanie konta…");
@@ -88,17 +91,36 @@ function showLogin(message = "") {
   });
 }
 
-function showInvitationSetup(message = "") {
-  renderInvitationPasswordSetup(root, {
+function showRecoveryRequest({ sent = false, message = "" } = {}) {
+  renderRecoveryRequest(root, {
+    sent,
+    message,
+    onCancel: () => showLogin(),
+    onSubmit: async email => {
+      try {
+        renderLoading(root, "Wysyłanie bezpiecznego linku…");
+        const redirectTo = `${window.location.origin}${window.location.pathname}`;
+        await requestPasswordRecovery(state.auth, email, redirectTo);
+        showRecoveryRequest({ sent: true });
+      } catch (error) {
+        showRecoveryRequest({ message: userSafeError(error) });
+      }
+    }
+  });
+}
+
+function showPasswordSetup(context, message = "") {
+  renderPasswordSetup(root, {
+    context,
     message,
     onCancel: () => logout().catch(handleRuntimeError),
     onSubmit: async password => {
       try {
         renderLoading(root, "Zapisywanie nowego hasła…");
-        await updateInvitationPassword(state.auth, password);
+        await updatePassword(state.auth, password);
         await loadAuthenticatedRuntime();
       } catch (error) {
-        showInvitationSetup(userSafeError(error));
+        showPasswordSetup(context, userSafeError(error));
       }
     }
   });
@@ -242,17 +264,17 @@ async function initialize() {
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
 
-    // Invitation tokens are consumed and removed from the address bar before any
-    // other gate can stop the application. The pending marker survives reloads
-    // only in this browser tab and prevents access until a password is set.
-    const invitation = consumeInvitationSession(state.auth);
+    // Password callbacks are consumed and removed from the address bar before any
+    // other gate can stop the application. The context survives reloads only in
+    // this tab and prevents access until the password has been updated.
+    const callback = consumePasswordCallback(state.auth);
 
     assertNoPersistentHealthData();
 
-    if (invitation) {
-      renderLoading(root, "Weryfikowanie zaproszenia…");
+    if (callback) {
+      renderLoading(root, "Weryfikowanie bezpiecznego linku…");
       await state.auth.getUser();
-      showInvitationSetup();
+      showPasswordSetup(callback.type);
       return;
     }
 
@@ -264,9 +286,10 @@ async function initialize() {
       return;
     }
 
-    if (isInvitationPending()) {
+    const pendingContext = getPasswordSetupContext();
+    if (pendingContext) {
       await state.auth.getUser();
-      showInvitationSetup();
+      showPasswordSetup(pendingContext);
       return;
     }
 
