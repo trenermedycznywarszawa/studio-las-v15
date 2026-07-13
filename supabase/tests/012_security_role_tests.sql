@@ -169,7 +169,7 @@ begin
   end if;
 
   select count(*) into actual
-  from public.save_client_checkin(item_id, true, 6, 2, 'transactional RLS test');
+  from public.save_client_checkin(item_id, true, 6::smallint, 2::smallint, 'transactional RLS test');
   if actual <> 1 then
     raise exception 'ASSERTION FAILED: client A valid check-in was not recorded, got %', actual;
   end if;
@@ -179,8 +179,8 @@ begin
     perform public.save_client_checkin(
       '99999999-9999-4999-8999-999999999999'::uuid,
       true,
-      6,
-      2,
+      6::smallint,
+      2::smallint,
       'wrong item'
     );
   exception when others then
