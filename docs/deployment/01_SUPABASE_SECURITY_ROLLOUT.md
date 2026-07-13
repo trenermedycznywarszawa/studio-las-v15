@@ -36,12 +36,13 @@ files containing credentials.
 2. Rehearse the complete migration on a disposable project.
 3. Run database metadata and role tests.
 4. Deploy and test the Edge Function in staging.
-5. Verify the complete invitation and password-setup flow.
+5. Verify the complete invitation, recovery, and password-setup flows.
 6. Verify private Storage policies.
-7. Back up the target project.
-8. Apply the same changes to the target project.
-9. Repeat all tests against the target configuration.
-10. Only then mark PR #9 ready for review and release.
+7. Verify trainer attribution for service-role access operations.
+8. Back up the target project.
+9. Apply the same changes to the target project.
+10. Repeat all tests against the target configuration.
+11. Only then mark PR #9 ready for review and release.
 
 Do not merge first and “fix production afterwards.”
 
@@ -81,6 +82,7 @@ Expected new migrations:
 - `013_access_lifecycle_and_audit.sql`
 - `014_private_client_documents.sql`
 - `015_reject_client_account_reassignment.sql`
+- `016_attribute_service_operations_to_trainer.sql`
 
 Review the plan. Any unexpected destructive operation is a blocker. Migration
 `012` intentionally removes the obsolete local access-credential table and old
@@ -90,6 +92,10 @@ Migration `015` is a fail-closed access safeguard. It prevents an existing accou
 from being silently moved to another client and prevents a client record from
 having its existing active account silently replaced. Reassignment requires an
 explicit revoke first.
+
+Migration `016` keeps service-role Auth administration attributable. Link and
+revoke changes made by the Edge Function must be recorded in the metadata audit
+under the verified owner trainer, not as an unidentified service operation.
 
 ## 4. Disposable-project rehearsal
 
@@ -105,6 +111,7 @@ supabase/tests/012_security_role_tests.sql
 supabase/tests/013_access_lifecycle_and_audit.sql
 supabase/tests/014_private_client_documents.sql
 supabase/tests/015_reject_client_account_reassignment.sql
+supabase/tests/016_attribute_service_operations_to_trainer.sql
 ```
 
 Every script must finish with its explicit completion message. A script that was
@@ -162,39 +169,45 @@ Required scenarios:
 10. One account cannot be active for two clients.
 11. Attempting either conflict does not revoke or transfer the existing link.
 12. Re-linking the same account/client pair is idempotent.
+13. Conflict checks occur before any invitation email is sent.
+14. A trainer Auth account cannot be linked as a client account.
 
 Do not use a real client to prove these scenarios.
 
-## 7. Invitation and password-setup tests
+## 7. Invitation, recovery, and password-setup tests
 
-The invitation is incomplete until the client sets a private password through the
-production callback page. Test the actual link delivered by the configured
-Supabase project; do not assume its callback format.
+Supabase documents password recovery as a two-step process: send the reset email,
+then update the password after the callback creates an authenticated recovery
+session. Test the actual callback delivered by the configured project; do not
+assume its format.
 
 Required scenarios:
 
-1. The invitation redirects only to the configured Studio Las OS production URL.
-2. The runtime accepts only an `invite` authentication callback. Recovery,
-   signup, magic-link, malformed, expired, or incomplete callbacks are rejected.
+1. Invitation and recovery messages redirect only to the configured Studio Las OS
+   production URL.
+2. The runtime accepts only `invite` and `recovery` password callbacks. Signup,
+   magic-link, malformed, expired, or incomplete callbacks are rejected.
 3. Access and refresh tokens are removed from the browser address bar immediately
    after they are consumed.
-4. The client is shown a password-setup screen before any client data is loaded.
+4. Password setup appears before any client data is loaded.
 5. Password length below 12 characters is rejected.
 6. Mismatched password confirmation is rejected.
-7. Refreshing the page before completing password setup returns to the same setup
-   gate and does not open the client portal.
-8. Closing or cancelling activation signs the client out and clears the pending
-   activation state.
-9. After successful password update, the pending gate is cleared and the client
-   portal loads through the normal authenticated RLS/RPC path.
-10. The chosen password never appears in application logs, Edge Function logs,
+7. Refreshing before completion returns to the same password gate and does not
+   open the client portal.
+8. Closing or cancelling signs the client out and clears the pending context.
+9. After successful password update, the pending gate is cleared and the normal
+   authenticated RLS/RPC path opens.
+10. Passwords and tokens never appear in application logs, Edge Function logs,
     GitHub Actions output, URL parameters, Storage metadata, or audit rows.
-11. If the delivered Supabase invitation uses an authorization-code callback
-    rather than hash session tokens, record the mismatch and stop. Do not bypass
-    it by manually copying tokens; implement and review the required exchange flow
-    before release.
-12. Expired and already-used invitation links fail without exposing technical
-    tokens or account identifiers.
+11. Recovery-request UI always shows a neutral response and does not reveal
+    whether an email has an account.
+12. Invalid recovery email syntax is rejected locally; excessive requests are
+    handled without weakening authentication or exposing account existence.
+13. If the delivered Supabase callback uses an authorization code rather than
+    hash session tokens, record the mismatch and stop. Do not manually copy tokens
+    or disable PKCE/JWT controls; implement and review the required exchange flow.
+14. Expired and already-used links fail without exposing technical tokens or
+    account identifiers.
 
 ## 8. Private document Storage tests
 
@@ -222,6 +235,8 @@ Verify that `security_audit_events`:
 - records inserts and updates to protected process tables,
 - records actor, time, table, row identifier, related client identifier, action,
   and changed column names,
+- attributes Edge Function link/revoke changes to the verified owner trainer,
+- rejects a client profile or unrelated profile as the service-operation actor,
 - does not contain health values, notes, report text, contact data, passwords,
   tokens, or raw payloads.
 
@@ -244,19 +259,20 @@ Run the dry-run again, then apply:
 supabase db push --linked --include-all
 ```
 
-Repeat every database, Edge Function, invitation, Storage, conflict, and role test
-from this document against the target project.
+Repeat every database, Edge Function, password, Storage, conflict, attribution,
+and role test from this document against the target project.
 
 ## 11. Release evidence
 
 PR #9 may be marked ready only when it contains a deployment comment with:
 
 - target project ref,
-- applied migration list `012–015`,
+- applied migration list `012–016`,
 - database test completion messages,
 - Edge Function deployment timestamp or version,
 - role and reassignment matrix pass/fail,
-- invitation callback format and password-setup matrix pass/fail,
+- invitation and recovery callback format plus password-setup matrix pass/fail,
+- service-operation trainer-attribution result,
 - private Storage result,
 - backup confirmation,
 - confirmation that no real health data was used in testing.
@@ -265,7 +281,8 @@ The comment must not contain secrets, tokens, passwords, or client data.
 
 ## Rollback rule
 
-A failed migration, access, invitation, or Storage test is a stop condition.
+A failed migration, access, password, attribution, or Storage test is a stop
+condition.
 
 Do not reopen anonymous access, restore local codes, disable JWT verification,
 add a browser service-role key, grant broad table access, or bypass RLS. Restore
