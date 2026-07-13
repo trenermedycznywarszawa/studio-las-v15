@@ -5,6 +5,28 @@ const EMAIL_PATTERN = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const MAX_USER_PAGES = 20;
 const USERS_PER_PAGE = 200;
 
+type ActorProfile = {
+  id: string;
+  role: "trainer" | "client";
+};
+
+type ClientRecord = {
+  id: string;
+  email: string | null;
+  status: string;
+  deleted_at: string | null;
+  owner_trainer_id: string;
+};
+
+type AuthUser = {
+  id: string;
+  email?: string | null;
+};
+
+type LinkResult = {
+  link_status?: string;
+};
+
 function response(body: Record<string, unknown>, status = 200) {
   return Response.json(body, {
     status,
@@ -26,11 +48,12 @@ function allowedOrigin(req: Request) {
     .filter(Boolean);
 
   const origin = req.headers.get("origin");
-  if (!origin || configured.length === 0) return true;
+  if (!origin) return true;
+  if (configured.length === 0) return false;
   return configured.includes(origin);
 }
 
-async function findAuthUserByEmail(supabaseAdmin: any, email: string) {
+async function findAuthUserByEmail(supabaseAdmin: any, email: string): Promise<AuthUser | null> {
   for (let page = 1; page <= MAX_USER_PAGES; page += 1) {
     const { data, error } = await supabaseAdmin.auth.admin.listUsers({
       page,
@@ -38,8 +61,8 @@ async function findAuthUserByEmail(supabaseAdmin: any, email: string) {
     });
 
     if (error) throw error;
-    const users = Array.isArray(data?.users) ? data.users : [];
-    const match = users.find((user: any) => normalizeEmail(user.email) === email);
+    const users = Array.isArray(data?.users) ? data.users as AuthUser[] : [];
+    const match = users.find(user => normalizeEmail(user.email) === email);
     if (match) return match;
     if (users.length < USERS_PER_PAGE) break;
   }
@@ -61,29 +84,33 @@ export default {
       const action = String(body?.action || "");
       const clientId = String(body?.clientId || "");
       const actorAuthUserId = String(ctx.userClaims?.id || ctx.jwtClaims?.sub || "");
+      const admin = ctx.supabaseAdmin as any;
+      const scoped = ctx.supabase as any;
 
       if (!UUID_PATTERN.test(clientId) || !UUID_PATTERN.test(actorAuthUserId)) {
         return response({ error: "invalid_request" }, 400);
       }
 
-      const { data: actorProfile, error: profileError } = await ctx.supabaseAdmin
+      const { data: actorData, error: profileError } = await admin
         .from("profiles")
         .select("id,role")
         .eq("auth_user_id", actorAuthUserId)
         .maybeSingle();
+      const actorProfile = actorData as ActorProfile | null;
 
       if (profileError) throw profileError;
       if (!actorProfile || actorProfile.role !== "trainer") {
         return response({ error: "trainer_required" }, 403);
       }
 
-      const { data: client, error: clientError } = await ctx.supabaseAdmin
+      const { data: clientData, error: clientError } = await admin
         .from("clients")
         .select("id,email,status,deleted_at,owner_trainer_id")
         .eq("id", clientId)
         .eq("owner_trainer_id", actorProfile.id)
         .is("deleted_at", null)
         .maybeSingle();
+      const client = clientData as ClientRecord | null;
 
       if (clientError) throw clientError;
       if (!client) {
@@ -91,7 +118,7 @@ export default {
       }
 
       if (action === "status") {
-        const { data, error } = await ctx.supabase.rpc("trainer_client_access_status", {
+        const { data, error } = await scoped.rpc("trainer_client_access_status", {
           p_client_id: clientId
         });
         if (error) throw error;
@@ -99,7 +126,7 @@ export default {
       }
 
       if (action === "revoke") {
-        const { data, error } = await ctx.supabaseAdmin.rpc("admin_revoke_client_account", {
+        const { data, error } = await admin.rpc("admin_revoke_client_account", {
           p_client_id: clientId,
           p_owner_trainer_id: actorProfile.id
         });
@@ -134,17 +161,20 @@ export default {
         return response({ error: "email_must_match_client_record" }, 409);
       }
 
-      let authUser = await findAuthUserByEmail(ctx.supabaseAdmin, requestedEmail);
+      let authUser = await findAuthUserByEmail(admin, requestedEmail);
       let invitationSent = false;
 
       if (!authUser) {
         const redirectTo = String(Deno.env.get("STUDIO_LAS_CLIENT_REDIRECT_URL") || "").trim();
-        const options = redirectTo ? { redirectTo } : undefined;
-        const { data: inviteData, error: inviteError } = await ctx.supabaseAdmin.auth.admin
-          .inviteUserByEmail(requestedEmail, options);
+        if (!redirectTo) {
+          return response({ error: "client_redirect_not_configured" }, 503);
+        }
+
+        const { data: inviteData, error: inviteError } = await admin.auth.admin
+          .inviteUserByEmail(requestedEmail, { redirectTo });
 
         if (inviteError) throw inviteError;
-        authUser = inviteData?.user || null;
+        authUser = (inviteData?.user || null) as AuthUser | null;
         invitationSent = true;
       }
 
@@ -152,7 +182,7 @@ export default {
         throw new Error("Auth user was not created or resolved");
       }
 
-      const { data: linkRows, error: linkError } = await ctx.supabaseAdmin.rpc(
+      const { data: linkRows, error: linkError } = await admin.rpc(
         "admin_link_client_account",
         {
           p_client_id: clientId,
@@ -163,7 +193,7 @@ export default {
       );
 
       if (linkError) throw linkError;
-      const link = Array.isArray(linkRows) ? linkRows[0] : linkRows;
+      const link = (Array.isArray(linkRows) ? linkRows[0] : linkRows) as LinkResult | null;
 
       return response({
         access: {
