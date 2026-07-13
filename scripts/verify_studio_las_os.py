@@ -18,7 +18,7 @@ JS_FILES = [
     ROOT / "assets/os/runtime.js",
     ROOT / "assets/os/data.js",
     ROOT / "assets/os/decision-support.js",
-    ROOT / "assets/os/invitation-auth.js",
+    ROOT / "assets/os/password-auth.js",
     ROOT / "assets/os/app.js",
     ROOT / "assets/os/ui/common.js",
     ROOT / "assets/os/ui/forms.js",
@@ -31,7 +31,7 @@ JS_FILES = [
 PRODUCTION_RUNTIME_FILES = [
     ROOT / "assets/os/data.js",
     ROOT / "assets/os/decision-support.js",
-    ROOT / "assets/os/invitation-auth.js",
+    ROOT / "assets/os/password-auth.js",
     ROOT / "assets/os/app.js",
     ROOT / "assets/os/ui/common.js",
     ROOT / "assets/os/ui/forms.js",
@@ -116,10 +116,10 @@ def check_runtime_boundaries() -> None:
     require('mode !== "production"' in runtime, "production mode is not fail-closed")
     require("assertNoPersistentHealthData" in runtime, "legacy browser-data guard missing")
     require(uses_browser_storage_api(runtime, "sessionStorage"), "auth session boundary missing")
-    require("INVITATION_PENDING_KEY" in runtime, "pending invitation state key missing")
-    require("markInvitationPending" in runtime, "pending invitation marker missing")
-    require("clearInvitationPending" in runtime, "pending invitation clear operation missing")
-    require("isInvitationPending" in runtime, "pending invitation query missing")
+    require("PASSWORD_SETUP_CONTEXT_KEY" in runtime, "password setup context key missing")
+    require("markPasswordSetupPending" in runtime, "password setup marker missing")
+    require("clearPasswordSetupPending" in runtime, "password setup clear operation missing")
+    require("getPasswordSetupContext" in runtime, "password setup context query missing")
 
     data = read(ROOT / "assets/os/data.js")
     require("class StudioLasRepository" in data, "Supabase repository missing")
@@ -128,44 +128,51 @@ def check_runtime_boundaries() -> None:
     require("service_role" not in data.lower(), "service-role reference found in browser data layer")
 
 
-def check_invitation_flow() -> None:
-    invitation = read(ROOT / "assets/os/invitation-auth.js")
+def check_password_flows() -> None:
+    password_auth = read(ROOT / "assets/os/password-auth.js")
     app = read(ROOT / "assets/os/app.js")
-    lower = invitation.lower()
+    common = read(ROOT / "assets/os/ui/common.js")
+    lower = password_auth.lower()
 
     required = [
-        'new set(["invite"])',
+        'new set(["invite", "recovery"])',
         "access_token",
         "refresh_token",
         "saveauthsession",
-        "markinvitationpending",
-        "clearinvitationpending",
+        "markpasswordsetuppending",
+        "clearpasswordsetuppending",
         "history.replacestate",
         'auth.request("/auth/v1/user"',
         'method: "put"',
         "body: { password: value }",
-        "renderinvitationpasswordsetup",
+        "renderpasswordsetup",
+        "renderrecoveryrequest",
+        "/auth/v1/recover?redirect_to=",
+        "unsafe recovery redirect",
+        "ze względów bezpieczeństwa komunikat nie potwierdzi, czy konto istnieje",
     ]
     for fragment in required:
-        require(fragment in lower, f"invitation flow missing: {fragment}")
+        require(fragment in lower, f"password flow missing: {fragment}")
 
-    require("localstorage" not in lower, "invitation flow persists credentials in localStorage")
-    require("service_role" not in lower, "invitation flow contains service-role marker")
-    require("consumeInvitationSession(state.auth)" in app, "application does not consume invitation session")
-    require("showInvitationSetup" in app, "application has no invitation password setup state")
-    require("isInvitationPending()" in app, "pending invitation can be bypassed after reload")
+    require("localstorage" not in lower, "password flow persists credentials in localStorage")
+    require("service_role" not in lower, "password flow contains service-role marker")
+    require("consumePasswordCallback(state.auth)" in app, "application does not consume password callback")
+    require("showPasswordSetup" in app, "application has no password setup state")
+    require("showRecoveryRequest" in app, "application has no recovery request state")
+    require("getPasswordSetupContext()" in app, "pending password setup can be bypassed after reload")
+    require("onRecover" in common, "login UI has no recovery entry")
 
-    consume_position = app.find("consumeInvitationSession(state.auth)")
+    consume_position = app.find("consumePasswordCallback(state.auth)")
     storage_guard_position = app.find("assertNoPersistentHealthData()")
     cleanup_position = app.find("clearAuthArtifactsFromUrl()")
     restore_position = app.find("state.auth.restore()")
-    pending_check_position = app.find("isInvitationPending()")
+    pending_check_position = app.find("getPasswordSetupContext()")
 
-    require(consume_position >= 0, "invitation session consumption missing")
-    require(storage_guard_position > consume_position, "local data gate can leave invitation tokens in the URL")
-    require(cleanup_position > consume_position, "auth URL artifacts are cleared before invitation tokens are consumed")
+    require(consume_position >= 0, "password callback consumption missing")
+    require(storage_guard_position > consume_position, "local data gate can leave password tokens in the URL")
+    require(cleanup_position > consume_position, "auth URL artifacts are cleared before password tokens are consumed")
     require(restore_position > cleanup_position, "stored session is restored before URL cleanup")
-    require(pending_check_position > restore_position, "pending invitation is not enforced after session restore")
+    require(pending_check_position > restore_position, "pending password setup is not enforced after session restore")
 
 
 def check_entrypoints() -> None:
@@ -216,11 +223,11 @@ def check_legacy_export_boundary() -> None:
 def check_modularity() -> None:
     limits = {
         "assets/os/data.js": 850,
-        "assets/os/app.js": 390,
+        "assets/os/app.js": 420,
         "assets/os/decision-support.js": 220,
-        "assets/os/invitation-auth.js": 180,
-        "assets/os/runtime.js": 260,
-        "assets/os/ui/common.js": 250,
+        "assets/os/password-auth.js": 260,
+        "assets/os/runtime.js": 280,
+        "assets/os/ui/common.js": 260,
         "assets/os/ui/forms.js": 320,
         "assets/os/ui/trainer.js": 300,
         "assets/os/ui/client.js": 180,
@@ -268,7 +275,7 @@ def main() -> int:
     check_js_syntax()
     check_import_targets()
     check_runtime_boundaries()
-    check_invitation_flow()
+    check_password_flows()
     check_entrypoints()
     check_demo_isolation()
     check_legacy_export_boundary()
