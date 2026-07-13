@@ -112,6 +112,93 @@ def check_service_audit_attribution() -> None:
     require("client profile accepted as owner trainer audit context" in tests, "invalid actor context test missing")
 
 
+def check_staging_discovered_fixes() -> None:
+    role_helper = read("supabase/migrations/017_owner_assignment_role_helper.sql").lower()
+    for fragment in [
+        "create schema if not exists private",
+        "private.profile_has_role",
+        "security definer",
+        "client_trainers_insert_owner",
+        "client_trainers_update_owner",
+        "client_users_insert_owner",
+        "client_users_update_owner",
+        "revoke all on function private.profile_has_role(uuid, text) from public, anon, authenticated",
+    ]:
+        require(fragment in role_helper, f"forced-RLS assignment fix missing: {fragment}")
+    require(
+        "returns no profile attributes" in role_helper,
+        "assignment role helper is not documented as a narrow predicate",
+    )
+
+    role_helper_tests = read("supabase/tests/017_owner_assignment_role_helper.sql").lower()
+    require("owner trainer could not revoke own client link" in role_helper_tests, "owner revoke regression test missing")
+    require("foreign trainer changed client link" in role_helper_tests, "foreign trainer regression test missing")
+    require("anon can execute role helper" in role_helper_tests, "role helper privilege test missing")
+
+    checkin_fix = read("supabase/migrations/018_fix_checkin_rpc_conflict.sql").lower()
+    for fragment in [
+        "create or replace function public.save_client_checkin(",
+        "returns table(event_date date, created_at timestamptz)",
+        "exception when unique_violation",
+        "check-in already recorded for this item today",
+        "grant execute on function public.save_client_checkin",
+    ]:
+        require(fragment in checkin_fix, f"check-in RPC conflict fix missing: {fragment}")
+    require(
+        "on conflict (client_id, home_plan_item_id, kind, event_date)" not in checkin_fix,
+        "ambiguous check-in ON CONFLICT target returned",
+    )
+
+    checkin_tests = read("supabase/tests/018_checkin_rpc_conflict.sql").lower()
+    require("first check-in was not recorded" in checkin_tests, "first check-in regression test missing")
+    require("duplicate check-in did not fail" in checkin_tests, "duplicate check-in regression test missing")
+    require("6::smallint" in checkin_tests and "2::smallint" in checkin_tests, "check-in test does not use exact RPC types")
+
+    private_helpers = read("supabase/migrations/019_minimize_exposed_rpc_helpers.sql").lower()
+    for fragment in [
+        "alter function public.current_profile_id() set schema private",
+        "alter function public.is_trainer() set schema private",
+        "alter function public.is_client() set schema private",
+        "alter function public.trainer_owns_client(uuid) set schema private",
+        "alter function public.trainer_can_access_client(uuid) set schema private",
+        "alter function public.client_can_access_client(uuid) set schema private",
+        "alter function public.storage_object_client_id(text) set schema private",
+        "alter function public.client_can_read_document_object(text, text) set schema private",
+        "security invoker",
+        "revoke all on function public.current_profile_id() from public, anon, authenticated",
+        "alter function public.set_updated_at() set search_path = pg_catalog, public",
+        "must not be added to postgrest exposed schemas",
+    ]:
+        require(fragment in private_helpers, f"private helper boundary missing: {fragment}")
+
+    private_helper_tests = read("supabase/tests/019_private_helper_boundary.sql").lower()
+    require("internal security definer helper remains public" in private_helper_tests, "public definer regression test missing")
+    require("stored policies did not follow helpers into private schema" in private_helper_tests, "policy dependency regression test missing")
+    require("authenticated caller executed public helper wrapper" in private_helper_tests, "public wrapper execute test missing")
+
+    performance = read("supabase/migrations/020_performance_safety_indexes.sql").lower()
+    require("(select auth.uid())" in performance, "profile RLS initplan optimization missing")
+    required_indexes = [
+        "body_measurements_document_id_idx",
+        "guidance_events_created_by_idx",
+        "guidance_events_item_client_fk_idx",
+        "home_plan_items_exercise_id_idx",
+        "home_plan_items_plan_client_fk_idx",
+        "legacy_import_records_client_id_idx",
+        "post_session_observations_session_id_idx",
+        "reports_created_by_idx",
+        "training_load_observations_session_id_idx",
+    ]
+    for index_name in required_indexes:
+        require(index_name in performance, f"performance safety index missing: {index_name}")
+    require("drop index" not in performance, "fresh-staging unused-index statistics caused an index deletion")
+
+    performance_tests = read("supabase/tests/020_performance_safety_indexes.sql").lower()
+    require("required fk indexes are missing" in performance_tests, "covering-index regression test missing")
+    require("profile rls still evaluates auth.uid() per row" in performance_tests, "profile RLS planner test missing")
+    require("optimized profile rls changed isolation" in performance_tests, "profile isolation regression test missing")
+
+
 def check_storage_migration() -> None:
     source = read("supabase/migrations/014_private_client_documents.sql").lower()
     required = [
@@ -232,6 +319,7 @@ def main() -> int:
     check_access_migration()
     check_reassignment_guard()
     check_service_audit_attribution()
+    check_staging_discovered_fixes()
     check_storage_migration()
     check_edge_function()
     check_function_config()
