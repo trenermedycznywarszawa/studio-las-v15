@@ -23,6 +23,16 @@ type AuthUser = {
   email?: string | null;
 };
 
+type ClientProfile = {
+  id: string;
+  role: "trainer" | "client";
+};
+
+type ActiveLink = {
+  client_id: string;
+  user_id: string;
+};
+
 type LinkResult = {
   link_status?: string;
 };
@@ -161,9 +171,63 @@ export default {
         return response({ error: "email_must_match_client_record" }, 409);
       }
 
-      let authUser = await findAuthUserByEmail(admin, requestedEmail);
-      let invitationSent = false;
+      const { data: targetLinkRows, error: targetLinkError } = await admin
+        .from("client_users")
+        .select("client_id,user_id")
+        .eq("client_id", clientId)
+        .eq("status", "active")
+        .limit(1);
+      if (targetLinkError) throw targetLinkError;
+      const targetLink = (Array.isArray(targetLinkRows) ? targetLinkRows[0] : null) as ActiveLink | null;
 
+      let authUser = await findAuthUserByEmail(admin, requestedEmail);
+      let clientProfile: ClientProfile | null = null;
+
+      if (authUser) {
+        const { data: clientProfileData, error: clientProfileError } = await admin
+          .from("profiles")
+          .select("id,role")
+          .eq("auth_user_id", authUser.id)
+          .maybeSingle();
+        if (clientProfileError) throw clientProfileError;
+        clientProfile = clientProfileData as ClientProfile | null;
+
+        if (clientProfile?.role === "trainer") {
+          return response({ error: "trainer_account_cannot_be_linked_as_client" }, 409);
+        }
+
+        if (clientProfile) {
+          const { data: accountLinkRows, error: accountLinkError } = await admin
+            .from("client_users")
+            .select("client_id,user_id")
+            .eq("user_id", clientProfile.id)
+            .eq("status", "active")
+            .limit(1);
+          if (accountLinkError) throw accountLinkError;
+          const accountLink = (Array.isArray(accountLinkRows) ? accountLinkRows[0] : null) as ActiveLink | null;
+
+          if (accountLink && accountLink.client_id !== clientId) {
+            return response({ error: "account_already_linked_revoke_first" }, 409);
+          }
+        }
+      }
+
+      if (targetLink && (!clientProfile || targetLink.user_id !== clientProfile.id)) {
+        return response({ error: "client_already_linked_revoke_first" }, 409);
+      }
+
+      if (targetLink && clientProfile && targetLink.user_id === clientProfile.id) {
+        return response({
+          access: {
+            status: "active",
+            email: requestedEmail,
+            invitationSent: false,
+            existingAuthAccount: true
+          }
+        });
+      }
+
+      let invitationSent = false;
       if (!authUser) {
         const redirectTo = String(Deno.env.get("STUDIO_LAS_CLIENT_REDIRECT_URL") || "").trim();
         if (!redirectTo) {
