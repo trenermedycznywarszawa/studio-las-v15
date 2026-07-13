@@ -22,23 +22,35 @@ export function create(tag, options = {}, children = []) {
 
 export function field(label, name, type = "text", options = {}) {
   let input;
+  const shared = {
+    name,
+    required: options.required,
+    disabled: options.disabled
+  };
+
   if (type === "textarea") {
-    input = create("textarea", { name, rows: options.rows || 3, placeholder: options.placeholder || "" });
+    input = create("textarea", {
+      ...shared,
+      rows: options.rows || 3,
+      placeholder: options.placeholder || "",
+      maxlength: options.maxlength
+    });
   } else if (type === "select") {
-    input = create("select", { name });
+    input = create("select", shared);
     (options.options || []).forEach(option => input.append(create("option", {
       value: option.value,
-      text: option.label
+      text: option.label,
+      disabled: option.disabled
     })));
   } else {
     input = create("input", {
-      name,
+      ...shared,
       type,
       min: options.min,
       max: options.max,
       step: options.step,
-      placeholder: options.placeholder || "",
-      required: options.required
+      maxlength: options.maxlength,
+      placeholder: options.placeholder || ""
     });
   }
 
@@ -46,8 +58,13 @@ export function field(label, name, type = "text", options = {}) {
   return create("label", { className: "field" }, [create("span", { text: label }), input]);
 }
 
-export function checkbox(label, name, checked = false) {
-  const input = create("input", { type: "checkbox", name });
+export function checkbox(label, name, checked = false, options = {}) {
+  const input = create("input", {
+    type: "checkbox",
+    name,
+    disabled: options.disabled,
+    required: options.required
+  });
   input.checked = checked;
   return create("label", { className: "check-field" }, [input, create("span", { text: label })]);
 }
@@ -65,7 +82,8 @@ export function button(label, options = {}) {
     className: options.className || "button",
     type: options.type || "button",
     text: label,
-    onclick: options.onclick
+    onclick: options.onclick,
+    disabled: options.disabled
   });
 }
 
@@ -101,21 +119,33 @@ export function detailsForm(summary, form) {
   ]);
 }
 
-export function submitForm(fields, label, onSubmit, className = "form-grid") {
+export function submitForm(fields, label, onSubmit, className = "form-grid", options = {}) {
   const form = create("form", { className }, [
     ...fields,
-    create("div", { className: "form-actions" }, [button(label, { className: "button primary", type: "submit" })])
+    create("div", { className: "form-actions" }, [
+      button(label, {
+        className: "button primary",
+        type: "submit",
+        disabled: options.disabled
+      })
+    ])
   ]);
+
+  if (options.disabledReason) {
+    form.prepend(statusBox(options.disabledReason, "error"));
+  }
 
   form.addEventListener("submit", async event => {
     event.preventDefault();
+    if (!form.reportValidity()) return;
+
     const submit = form.querySelector('button[type="submit"]');
     submit.disabled = true;
     try {
       await onSubmit(formValues(form));
       form.reset();
     } finally {
-      submit.disabled = false;
+      submit.disabled = Boolean(options.disabled);
     }
   });
   return form;
@@ -147,8 +177,8 @@ export function renderLogin(root, { onSubmit, message = "" }) {
     create("h1", { text: "Bezpieczne logowanie" }),
     create("p", { className: "muted", text: "Konto trenera lub klienta w Supabase Auth. Lokalne kody dostępu nie są obsługiwane." }),
     message ? statusBox(message, "error") : null,
-    field("Email", "email", "email", { required: true }),
-    field("Hasło", "password", "password", { required: true })
+    field("Email", "email", "email", { required: true, maxlength: 254 }),
+    field("Hasło", "password", "password", { required: true, maxlength: 1024 })
   ], "Zaloguj", onSubmit, "login-card");
 
   root.append(create("main", { className: "center-screen" }, [form]));
