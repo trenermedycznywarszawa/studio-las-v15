@@ -86,6 +86,32 @@ def check_reassignment_guard() -> None:
     )
 
 
+def check_service_audit_attribution() -> None:
+    source = read("supabase/migrations/016_attribute_service_operations_to_trainer.sql").lower()
+    required = [
+        "studio_las.audit_actor_profile_id",
+        "current_setting('studio_las.audit_actor_profile_id', true)",
+        "set_config(",
+        "p_owner_trainer_id::text",
+        "v_actor_auth_user_id uuid := auth.uid()",
+        "owner_profile.role = 'trainer'",
+        "admin_link_client_account",
+        "admin_revoke_client_account",
+    ]
+    for fragment in required:
+        require(fragment in source, f"service audit attribution missing: {fragment}")
+
+    require(
+        "raw_payload" not in source and "report_content" not in source,
+        "service audit attribution migration copies sensitive payloads",
+    )
+
+    tests = read("supabase/tests/016_attribute_service_operations_to_trainer.sql").lower()
+    require("service-role revocation was not attributed to owner trainer a" in tests, "revoke attribution test missing")
+    require("service-role link was not attributed to owner trainer a" in tests, "link attribution test missing")
+    require("client profile accepted as owner trainer audit context" in tests, "invalid actor context test missing")
+
+
 def check_storage_migration() -> None:
     source = read("supabase/migrations/014_private_client_documents.sql").lower()
     required = [
@@ -205,6 +231,7 @@ def check_browser_boundary() -> None:
 def main() -> int:
     check_access_migration()
     check_reassignment_guard()
+    check_service_audit_attribution()
     check_storage_migration()
     check_edge_function()
     check_function_config()
