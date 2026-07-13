@@ -18,29 +18,36 @@ Never place database passwords, access tokens, secret keys, exported health data
 
 ## Current status
 
-Completed on the free staging project:
+Completed:
 
-- complete migration chain `001–020`,
+- complete migration chain `001–020` on free fictional-data staging,
 - forced-RLS and cross-tenant tests,
 - client RPC and revocation tests,
 - account-conflict tests,
 - metadata audit tests,
 - private Storage metadata and policy tests,
 - internal-helper exposure reduction,
-- Supabase security and performance advisor review.
+- Supabase security and performance advisor review,
+- staging `client-access` Edge Function version 1 deployed `ACTIVE` with `verify_jwt=true`,
+- read-only production-target catalog inventory,
+- non-destructive schema drift report,
+- migration-blocking aggregate preflight with no client row output.
 
 Not completed:
 
-- non-destructive production-target drift report,
-- verified target backup,
-- reviewed target migration delta,
-- staging and target Edge Function deployment,
+- verified target backup and restoration evidence,
+- final target execution plan approval and maintenance window,
+- confirmation that the active public runtime no longer depends on legacy access codes or views,
+- exact staging and target Edge Function origin/redirect secrets,
+- real trainer-JWT invocation of the deployed staging function,
 - real invitation and recovery email tests,
 - final Auth configuration,
+- reviewed and executed target migration delta,
+- post-delta target database, Storage, advisor, and role tests,
 - mandatory trainer TOTP MFA with `aal2` enforcement,
 - privacy/RODO approval.
 
-The production-sensitive target was not modified during the staging rehearsal.
+The production-sensitive target has remained read-only and unchanged throughout this work.
 
 ## Required operator access
 
@@ -62,13 +69,16 @@ Never commit `.env` files containing credentials.
 4. Produce a read-only target schema and migration-history inventory.
 5. Generate and review a non-destructive target drift report.
 6. Create and verify a restorable target backup.
-7. Configure and test Auth and the Edge Function in staging.
-8. Verify invitation, recovery, and password setup with fictional accounts.
-9. Implement and verify trainer MFA with database/API `aal2` enforcement.
-10. Complete the privacy/RODO gate.
-11. Apply only the reviewed delta to the target.
-12. Repeat every test against the target configuration.
-13. Only then mark PR #9 ready for review and release.
+7. Confirm the active runtime no longer depends on legacy database objects.
+8. Configure and test Auth and the Edge Function in staging.
+9. Verify invitation, recovery, and password setup with fictional accounts.
+10. Implement and verify trainer MFA with database/API `aal2` enforcement.
+11. Complete the privacy/RODO gate.
+12. Apply only the reviewed delta to the target.
+13. Repeat every test against the target configuration.
+14. Only then mark PR #9 ready for review and release.
+
+Steps 1–5 are complete. Step 6 is the current target rollout blocker.
 
 Do not merge first and “fix production afterwards.”
 
@@ -79,6 +89,7 @@ From the repository root:
 ```powershell
 python scripts/verify_studio_las_os.py
 python scripts/verify_access_lifecycle.py
+python scripts/verify_target_preflight_read_only.py
 npx -y deno check supabase/functions/client-access/index.ts
 ```
 
@@ -143,30 +154,46 @@ Do not reproduce the staging-only split in production migration history.
 
 ## 4. Target inventory and drift report
 
-The production-sensitive target currently has Studio Las tables but no visible `supabase_migrations.schema_migrations` relation. Therefore:
+The read-only target comparison is complete.
+
+Canonical evidence:
+
+- `docs/deployment/05_PRODUCTION_TARGET_SCHEMA_DRIFT.md`
+- `supabase/tests/target_read_only_preflight.sql`
+
+The committed preflight is statically checked by:
+
+`scripts/verify_target_preflight_read_only.py`
+
+The comparison found:
+
+- the target has no visible `supabase_migrations.schema_migrations` relation,
+- `22` tables are shared between the target and clean staging,
+- `21` shared tables have identical column fingerprints,
+- `clients` differs by the expected `engagement_type` forward change,
+- existing shared indexes match,
+- the only shared constraint changes are the expected engagement constraint and canonical Tanita muscle-mass range,
+- no current measurement blocks the canonical constraint,
+- no active account-link duplication blocks migration `012`,
+- no duplicate active client check-in group blocks the canonical unique index,
+- the obsolete access-code table is non-empty,
+- the five old client views remain,
+- the target has no Storage bucket,
+- no additional database view/function dependency on the legacy objects was found.
+
+The comparison supports a forward delta based on `012–020`; it does not authorize execution.
+
+Because migration history is missing:
 
 - do not run `db reset`,
 - do not run `migration repair`,
 - do not fabricate migration records,
 - do not issue a blind `db push --include-all`,
-- do not assume the target equals migrations `001–011` merely because table names match.
-
-First capture a read-only inventory:
-
-- table and column definitions,
-- constraints and indexes,
-- functions and signatures,
-- grants,
-- RLS enable/force state,
-- policies,
-- Storage buckets and policies,
-- Auth configuration relevant to the portal,
-- non-sensitive row counts,
-- current functions or views that will be removed.
-
-Compare that inventory with a clean database built from `001–020`. Produce a reviewed, non-destructive delta. The delta must preserve existing process data and explain every destructive statement.
+- do not assume historical execution merely because object names match.
 
 Migration `012` intentionally removes the obsolete `client_access_credentials` table and historical client projection views. Confirm that no active runtime still depends on them before target execution.
+
+The default `engagement_type` mapping branch is exercised by existing aggregate data and must be accepted as a business-semantic decision before target execution. Exact production counts are not committed to the public repository.
 
 ## 5. Target backup gate
 
@@ -181,12 +208,24 @@ Before applying any target delta:
 
 A backup that has not been tested or platform-confirmed is not a passed gate.
 
+No production mutation may occur before this section passes.
+
 ## 6. Edge Function configuration
 
 The `client-access` function is authenticated twice:
 
 - platform JWT verification is pinned on in `supabase/config.toml`,
 - `withSupabase({ auth: "user" })` validates the signed-in user inside the function.
+
+The reviewed bundle has been deployed to free staging as version 1 with `verify_jwt=true`. Deployment metadata is recorded in:
+
+`docs/deployment/04_STAGING_EDGE_FUNCTION_EVIDENCE.md`
+
+The following remain unconfigured/unproven:
+
+- exact custom staging origin and redirect secrets,
+- invocation with a real trainer JWT,
+- live invitation and recovery callbacks.
 
 Set exact custom secrets separately for staging and target:
 
@@ -309,13 +348,14 @@ Not acceptable as unresolved target findings:
 
 ## 12. Target execution and evidence
 
-Apply only the reviewed target delta after the backup, Auth, MFA, and privacy gates are ready. Repeat every database, Edge Function, password, Storage, conflict, attribution, advisor, and role test.
+Apply only the reviewed target delta after the backup, runtime-cutover, Auth, MFA, and privacy gates are ready. Repeat every database, Edge Function, password, Storage, conflict, attribution, advisor, and role test.
 
 PR #9 may be marked ready only when its deployment evidence contains:
 
 - target project ref,
 - reviewed target drift report,
 - backup confirmation,
+- runtime legacy-dependency cutoff confirmation,
 - applied migration/delta list through `020`,
 - database test completion messages,
 - Edge Function deployment version or timestamp,
