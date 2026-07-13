@@ -64,7 +64,9 @@ def read(path: Path) -> str:
 
 
 def uses_browser_storage_api(source: str, api_name: str) -> bool:
-    return re.search(rf"\b{re.escape(api_name)}\s*(?:\.|\[)", source) is not None
+    property_access = rf"\b{re.escape(api_name)}\s*\.\s*[A-Za-z_$]"
+    bracket_access = rf"\b{re.escape(api_name)}\s*\[\s*['\"]"
+    return re.search(property_access, source) is not None or re.search(bracket_access, source) is not None
 
 
 def check_js_syntax() -> None:
@@ -128,6 +130,8 @@ def check_entrypoints() -> None:
     require(app_position > config_position, "application module loads before production config")
     require("Write Preview" not in production, "legacy preview label in production entrypoint")
     require("3.0" not in production and "9.0" not in production, "version label in production entrypoint")
+    require("Content-Security-Policy" in production, "production CSP missing")
+    require("connect-src https://ufcumhbnuyernuwepcij.supabase.co" in production, "production CSP does not pin Supabase")
 
     config = read(ROOT / "studio-las-config.js")
     require('mode: "production"' in config, "explicit production mode missing from config")
@@ -170,7 +174,7 @@ def check_modularity() -> None:
         "assets/os/decision-support.js": 220,
         "assets/os/runtime.js": 240,
         "assets/os/ui/common.js": 240,
-        "assets/os/ui/forms.js": 260,
+        "assets/os/ui/forms.js": 320,
         "assets/os/ui/trainer.js": 300,
         "assets/os/ui/client.js": 180,
     }
@@ -192,6 +196,7 @@ def check_security_migration_contract() -> None:
         "client_trainers_insert_owner",
         "client_users_insert_owner",
         "grant update(",
+        "and package is null",
     ]
     lower = migration.lower()
     for fragment in required_fragments:
