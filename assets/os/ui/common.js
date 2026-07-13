@@ -173,7 +173,7 @@ export function renderLoading(root, message = "Ładowanie bezpiecznego środowis
   ]));
 }
 
-export function renderLogin(root, { onSubmit, message = "" }) {
+export function renderLogin(root, { onSubmit, onRecover, message = "" }) {
   clear(root);
   const form = submitForm([
     create("p", { className: "eyebrow", text: "Studio Las OS · produkcja" }),
@@ -183,6 +183,12 @@ export function renderLogin(root, { onSubmit, message = "" }) {
     field("Email", "email", "email", { required: true, maxlength: 254, autocomplete: "email" }),
     field("Hasło", "password", "password", { required: true, maxlength: 1024, autocomplete: "current-password" })
   ], "Zaloguj", onSubmit, "login-card");
+
+  if (typeof onRecover === "function") {
+    form.append(create("div", { className: "form-actions" }, [
+      button("Nie pamiętam hasła", { onclick: onRecover })
+    ]));
+  }
 
   root.append(create("main", { className: "center-screen" }, [form]));
 }
