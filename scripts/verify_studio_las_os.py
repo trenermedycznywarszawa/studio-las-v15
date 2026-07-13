@@ -116,6 +116,10 @@ def check_runtime_boundaries() -> None:
     require('mode !== "production"' in runtime, "production mode is not fail-closed")
     require("assertNoPersistentHealthData" in runtime, "legacy browser-data guard missing")
     require(uses_browser_storage_api(runtime, "sessionStorage"), "auth session boundary missing")
+    require("INVITATION_PENDING_KEY" in runtime, "pending invitation state key missing")
+    require("markInvitationPending" in runtime, "pending invitation marker missing")
+    require("clearInvitationPending" in runtime, "pending invitation clear operation missing")
+    require("isInvitationPending" in runtime, "pending invitation query missing")
 
     data = read(ROOT / "assets/os/data.js")
     require("class StudioLasRepository" in data, "Supabase repository missing")
@@ -127,19 +131,21 @@ def check_runtime_boundaries() -> None:
 def check_invitation_flow() -> None:
     invitation = read(ROOT / "assets/os/invitation-auth.js")
     app = read(ROOT / "assets/os/app.js")
+    lower = invitation.lower()
 
     required = [
         'new set(["invite"])',
         "access_token",
         "refresh_token",
         "saveauthsession",
+        "markinvitationpending",
+        "clearinvitationpending",
         "history.replacestate",
         'auth.request("/auth/v1/user"',
         'method: "put"',
         "body: { password: value }",
         "renderinvitationpasswordsetup",
     ]
-    lower = invitation.lower()
     for fragment in required:
         require(fragment in lower, f"invitation flow missing: {fragment}")
 
@@ -147,11 +153,19 @@ def check_invitation_flow() -> None:
     require("service_role" not in lower, "invitation flow contains service-role marker")
     require("consumeInvitationSession(state.auth)" in app, "application does not consume invitation session")
     require("showInvitationSetup" in app, "application has no invitation password setup state")
+    require("isInvitationPending()" in app, "pending invitation can be bypassed after reload")
 
     consume_position = app.find("consumeInvitationSession(state.auth)")
+    storage_guard_position = app.find("assertNoPersistentHealthData()")
     cleanup_position = app.find("clearAuthArtifactsFromUrl()")
+    restore_position = app.find("state.auth.restore()")
+    pending_check_position = app.find("isInvitationPending()")
+
     require(consume_position >= 0, "invitation session consumption missing")
+    require(storage_guard_position > consume_position, "local data gate can leave invitation tokens in the URL")
     require(cleanup_position > consume_position, "auth URL artifacts are cleared before invitation tokens are consumed")
+    require(restore_position > cleanup_position, "stored session is restored before URL cleanup")
+    require(pending_check_position > restore_position, "pending invitation is not enforced after session restore")
 
 
 def check_entrypoints() -> None:
@@ -202,10 +216,10 @@ def check_legacy_export_boundary() -> None:
 def check_modularity() -> None:
     limits = {
         "assets/os/data.js": 850,
-        "assets/os/app.js": 380,
+        "assets/os/app.js": 390,
         "assets/os/decision-support.js": 220,
         "assets/os/invitation-auth.js": 180,
-        "assets/os/runtime.js": 240,
+        "assets/os/runtime.js": 260,
         "assets/os/ui/common.js": 250,
         "assets/os/ui/forms.js": 320,
         "assets/os/ui/trainer.js": 300,
