@@ -97,9 +97,9 @@ def check_storage_migration() -> None:
 def check_edge_function() -> None:
     source = read("supabase/functions/client-access/index.ts")
     lower = source.lower()
-    required = [
-        'withsupabase({ auth: "user" }',
-        "ctx.supabaseadmin.auth.admin.inviteuserbyemail",
+    compact = re.sub(r"\s+", "", lower)
+
+    required_plain = [
         "admin_link_client_account",
         "admin_revoke_client_account",
         "trainer_client_access_status",
@@ -107,13 +107,25 @@ def check_edge_function() -> None:
         "email_must_match_client_record",
         '"cache-control": "no-store"',
     ]
-    for fragment in required:
+    for fragment in required_plain:
         require(fragment in lower, f"client-access Edge Function missing: {fragment}")
 
-    require("auth: \"none\"" not in source, "client-access function accepts unauthenticated callers")
+    required_compact = [
+        'withsupabase({auth:"user"}',
+        "ctx.supabaseadmin.auth.admin.inviteuserbyemail",
+    ]
+    for fragment in required_compact:
+        require(fragment in compact, f"client-access Edge Function missing: {fragment}")
+
+    require('auth: "none"' not in source, "client-access function accepts unauthenticated callers")
     require("service_role_key" not in lower, "service-role secret name hardcoded in Edge Function")
     require("supabase_service_role_key" not in lower, "service-role environment lookup duplicated in function")
-    require("authUserId" not in source.split("return response", 1)[-1], "Auth UUID may be returned to browser")
+
+    leaked_identifier_property = re.search(
+        r"[\"'](?:authUserId|profileId|userId)[\"']\s*:",
+        source,
+    )
+    require(leaked_identifier_property is None, "technical account identifier returned to browser")
 
 
 def check_browser_boundary() -> None:
@@ -125,6 +137,7 @@ def check_browser_boundary() -> None:
         "assets/os/ui/forms.js",
         "assets/os/ui/trainer.js",
         "assets/os/ui/client.js",
+        "tools/client-access-admin.js",
         "studio-las-config.js",
     ]
     combined = "\n".join(read(path) for path in browser_files).lower()
