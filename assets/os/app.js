@@ -2,6 +2,7 @@ import {
   assertNoPersistentHealthData,
   clearAuthArtifactsFromUrl,
   getProductionRuntimeConfig,
+  isInvitationPending,
   userSafeError
 } from "./runtime.js";
 import {
@@ -238,11 +239,16 @@ function handleRuntimeError(error) {
 async function initialize() {
   try {
     state.config = getProductionRuntimeConfig();
-    assertNoPersistentHealthData();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
 
+    // Invitation tokens are consumed and removed from the address bar before any
+    // other gate can stop the application. The pending marker survives reloads
+    // only in this browser tab and prevents access until a password is set.
     const invitation = consumeInvitationSession(state.auth);
+
+    assertNoPersistentHealthData();
+
     if (invitation) {
       renderLoading(root, "Weryfikowanie zaproszenia…");
       await state.auth.getUser();
@@ -257,6 +263,13 @@ async function initialize() {
       showLogin();
       return;
     }
+
+    if (isInvitationPending()) {
+      await state.auth.getUser();
+      showInvitationSetup();
+      return;
+    }
+
     await loadAuthenticatedRuntime();
   } catch (error) {
     if (error?.name === "RuntimeConfigurationError") {
