@@ -8,6 +8,7 @@ on:
       - "studio-las-config.js"
       - "assets/os/**"
       - "demo/**"
+      - "tools/export-legacy-browser-data.*"
       - "supabase/migrations/**"
       - "supabase/tests/**"
       - "scripts/verify_studio_las_os.py"
@@ -39,4 +40,6 @@ jobs:
           python3 --version
 
       - name: Verify Studio Las OS boundaries
-        run: python3 scripts/verify_studio_las_os.py
+        run: |
+          python3 scripts/verify_studio_las_os.py
+          node --check tools/export-legacy-browser-data.js
