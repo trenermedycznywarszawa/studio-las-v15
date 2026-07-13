@@ -1,4 +1,8 @@
-import { saveAuthSession } from "./runtime.js";
+import {
+  clearInvitationPending,
+  markInvitationPending,
+  saveAuthSession
+} from "./runtime.js";
 import {
   button,
   clear,
@@ -48,6 +52,7 @@ export function consumeInvitationSession(auth) {
 
   auth.session = session;
   saveAuthSession(session);
+  markInvitationPending();
   clearCallbackUrl();
   return { type, session };
 }
@@ -60,10 +65,12 @@ export async function updateInvitationPassword(auth, password) {
     throw error;
   }
 
-  return auth.request("/auth/v1/user", {
+  const result = await auth.request("/auth/v1/user", {
     method: "PUT",
     body: { password: value }
   });
+  clearInvitationPending();
+  return result;
 }
 
 export function renderInvitationPasswordSetup(root, { onSubmit, onCancel, message = "" }) {
