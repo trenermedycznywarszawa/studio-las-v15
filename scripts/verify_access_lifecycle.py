@@ -105,6 +105,7 @@ def check_edge_function() -> None:
         "trainer_client_access_status",
         "studio_las_allowed_origins",
         "email_must_match_client_record",
+        "client_redirect_not_configured",
         '"cache-control": "no-store"',
     ]
     for fragment in required_plain:
@@ -112,7 +113,8 @@ def check_edge_function() -> None:
 
     required_compact = [
         'withsupabase({auth:"user"}',
-        "ctx.supabaseadmin.auth.admin.inviteuserbyemail",
+        "admin.auth.admin.inviteuserbyemail",
+        "if(configured.length===0)returnfalse",
     ]
     for fragment in required_compact:
         require(fragment in compact, f"client-access Edge Function missing: {fragment}")
