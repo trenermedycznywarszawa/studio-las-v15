@@ -155,6 +155,7 @@ export function renderTrainer(root, model) {
     create("div", { className: "top-actions" }, [
       create("span", { className: "role-badge", text: model.profile.display_name || model.profile.email || "Trener" }),
       button("Dostęp klientów", { onclick: () => window.location.assign("./tools/client-access-admin.html") }),
+      button("MFA", { onclick: model.onManageMfa }),
       button("Odśwież", { onclick: model.onReload }),
       button("Wyloguj", { className: "button danger", onclick: model.onLogout })
     ])

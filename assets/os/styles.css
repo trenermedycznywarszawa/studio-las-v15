@@ -317,3 +317,56 @@ input:focus, select:focus, textarea:focus {
   .summary-item.wide { grid-column: auto; }
   .center-screen { padding: 14px; }
 }
+
+.mfa-card {
+  width: min(560px, 100%);
+  display: grid;
+  gap: 16px;
+  padding: 26px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+}
+.mfa-card h1,
+.mfa-card p { margin: 0; }
+.mfa-code-form {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: end;
+  gap: 10px;
+}
+.mfa-code-form .button { min-height: 42px; }
+.mfa-qr {
+  width: min(260px, 100%);
+  margin: 0 auto;
+  padding: 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: white;
+}
+.mfa-secret {
+  display: grid;
+  gap: 7px;
+  padding: 12px;
+  border-radius: 10px;
+  background: var(--panel-2);
+}
+.mfa-secret span { color: var(--muted); font-size: 12px; font-weight: 850; }
+.mfa-secret code { overflow-wrap: anywhere; font-size: 14px; }
+.mfa-steps { margin: 0; padding-left: 22px; color: var(--muted); }
+.mfa-steps li + li { margin-top: 6px; }
+.mfa-factor-list { display: grid; gap: 10px; }
+.mfa-factor {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+}
+.mfa-factor p { margin-top: 5px; }
+@media (max-width: 560px) {
+  .mfa-code-form { grid-template-columns: 1fr; }
+}

@@ -94,8 +94,13 @@ export default {
       const action = String(body?.action || "");
       const clientId = String(body?.clientId || "");
       const actorAuthUserId = String(ctx.userClaims?.id || ctx.jwtClaims?.sub || "");
+      const actorAal = String(ctx.jwtClaims?.aal || "");
       const admin = ctx.supabaseAdmin as any;
       const scoped = ctx.supabase as any;
+
+      if (actorAal !== "aal2") {
+        return response({ error: "mfa_aal2_required" }, 403);
+      }
 
       if (!UUID_PATTERN.test(clientId) || !UUID_PATTERN.test(actorAuthUserId)) {
         return response({ error: "invalid_request" }, 400);

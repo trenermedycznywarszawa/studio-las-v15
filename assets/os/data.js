@@ -4,6 +4,30 @@ import {
   saveAuthSession
 } from "./runtime.js";
 
+const MFA_FACTOR_ID_PATTERN = /^[0-9a-f-]{20,64}$/i;
+
+function decodeJwtClaims(token) {
+  try {
+    const encoded = String(token || "").split(".")[1] || "";
+    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/").padEnd(
+      Math.ceil(encoded.length / 4) * 4,
+      "="
+    );
+    const bytes = Uint8Array.from(atob(base64), character => character.charCodeAt(0));
+    return JSON.parse(new TextDecoder().decode(bytes));
+  } catch {
+    return {};
+  }
+}
+
+function assertMfaFactorId(value) {
+  const factorId = String(value || "");
+  if (!MFA_FACTOR_ID_PATTERN.test(factorId)) {
+    throw new SupabaseHttpError("Invalid MFA factor", 400);
+  }
+  return factorId;
+}
+
 export class SupabaseHttpError extends Error {
   constructor(message, status = 0, details = null) {
     super(message);
@@ -66,6 +90,7 @@ export class SupabaseAuth {
     this.config = config;
     this.session = null;
     this.refreshPromise = null;
+    this.persistSession = true;
   }
 
   async request(path, options = {}, allowRefresh = true) {
@@ -110,11 +135,11 @@ export class SupabaseAuth {
       access_token: payload.access_token,
       refresh_token: payload.refresh_token,
       token_type: payload.token_type || "bearer",
-      expires_at: Math.floor(Date.now() / 1000) + expiresIn
+      expires_at: Number(payload?.expires_at) || Math.floor(Date.now() / 1000) + expiresIn
     };
   }
 
-  async signInWithPassword(email, password) {
+  async signInWithPassword(email, password, { persist = true } = {}) {
     const payload = await this.request(
       "/auth/v1/token?grant_type=password",
       {
@@ -128,7 +153,9 @@ export class SupabaseAuth {
     );
 
     this.session = this.normalizeSession(payload);
-    saveAuthSession(this.session);
+    this.persistSession = Boolean(persist);
+    if (this.persistSession) saveAuthSession(this.session);
+    else clearAuthSession();
     return this.session;
   }
 
@@ -137,6 +164,7 @@ export class SupabaseAuth {
     if (!stored) return null;
 
     this.session = stored;
+    this.persistSession = true;
     const now = Math.floor(Date.now() / 1000);
     if (stored.expires_at <= now + 60) {
       await this.refresh();
@@ -168,7 +196,7 @@ export class SupabaseAuth {
         false
       );
       this.session = this.normalizeSession(payload);
-      saveAuthSession(this.session);
+      if (this.persistSession) saveAuthSession(this.session);
       return this.session;
     })();
 
@@ -184,6 +212,95 @@ export class SupabaseAuth {
       throw new SupabaseHttpError("Not authenticated", 401);
     }
     return this.request("/auth/v1/user", { method: "GET" });
+  }
+
+  getAuthenticatorAssuranceLevel() {
+    return String(decodeJwtClaims(this.session?.access_token)?.aal || "aal1");
+  }
+
+  persistCurrentSession() {
+    if (!this.session?.access_token || !this.session?.refresh_token) {
+      throw new SupabaseHttpError("Not authenticated", 401);
+    }
+    this.persistSession = true;
+    saveAuthSession(this.session);
+  }
+
+  suspendSessionPersistence() {
+    this.persistSession = false;
+    clearAuthSession();
+  }
+
+  async listTotpFactors() {
+    const user = await this.getUser();
+    return (Array.isArray(user?.factors) ? user.factors : [])
+      .filter(factor => factor?.factor_type === "totp")
+      .map(factor => ({
+        id: String(factor.id || ""),
+        status: String(factor.status || ""),
+        friendlyName: String(factor.friendly_name || "Aplikacja uwierzytelniaj\u0105ca"),
+        createdAt: String(factor.created_at || "")
+      }))
+      .filter(factor => MFA_FACTOR_ID_PATTERN.test(factor.id));
+  }
+
+  async enrollTotp(friendlyName = "Studio Las \u00b7 trener") {
+    const payload = await this.request("/auth/v1/factors", {
+      method: "POST",
+      body: {
+        factor_type: "totp",
+        friendly_name: String(friendlyName).slice(0, 64),
+        issuer: "Studio Las"
+      }
+    });
+    assertMfaFactorId(payload?.id);
+    return payload;
+  }
+
+  async challengeTotp(factorId) {
+    const safeFactorId = assertMfaFactorId(factorId);
+    const payload = await this.request(`/auth/v1/factors/${encodeURIComponent(safeFactorId)}/challenge`, {
+      method: "POST",
+      body: { factorId: safeFactorId }
+    });
+    if (!payload?.id) throw new SupabaseHttpError("MFA challenge was not created", 502);
+    return { id: String(payload.id) };
+  }
+
+  async verifyTotp(factorId, challengeId, code) {
+    const safeFactorId = assertMfaFactorId(factorId);
+    const safeChallengeId = String(challengeId || "");
+    const safeCode = String(code || "").trim();
+    if (!MFA_FACTOR_ID_PATTERN.test(safeChallengeId) || !/^\d{6}$/.test(safeCode)) {
+      throw new SupabaseHttpError("Invalid MFA verification", 400);
+    }
+
+    const payload = await this.request(
+      `/auth/v1/factors/${encodeURIComponent(safeFactorId)}/verify`,
+      {
+        method: "POST",
+        body: { challenge_id: safeChallengeId, code: safeCode }
+      }
+    );
+    const sessionPayload = payload?.session || payload;
+    const nextSession = this.normalizeSession(sessionPayload);
+    if (String(decodeJwtClaims(nextSession.access_token)?.aal || "") !== "aal2") {
+      throw new SupabaseHttpError("MFA did not produce an AAL2 session", 403);
+    }
+
+    // The trainer's password-only AAL1 session stays memory-only. The existing
+    // sessionStorage boundary receives a session only after successful TOTP.
+    this.session = nextSession;
+    this.persistSession = true;
+    saveAuthSession(this.session);
+    return this.session;
+  }
+
+  async unenrollTotp(factorId) {
+    const safeFactorId = assertMfaFactorId(factorId);
+    await this.request(`/auth/v1/factors/${encodeURIComponent(safeFactorId)}`, {
+      method: "DELETE"
+    });
   }
 
   async getProfile() {
@@ -210,6 +327,7 @@ export class SupabaseAuth {
       }
     } finally {
       this.session = null;
+      this.persistSession = true;
       clearAuthSession();
     }
   }

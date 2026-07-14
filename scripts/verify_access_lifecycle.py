@@ -244,6 +244,8 @@ def check_edge_function() -> None:
         "client_already_linked_revoke_first",
         "trainer_account_cannot_be_linked_as_client",
         '"cache-control": "no-store"',
+        "mfa_aal2_required",
+        'actoraal !== "aal2"',
     ]
     for fragment in required_plain:
         require(fragment in lower, f"client-access Edge Function missing: {fragment}")
@@ -272,6 +274,10 @@ def check_edge_function() -> None:
     require(invite_position >= 0, "invitation API call missing")
     require(0 <= account_conflict_position < invite_position, "account conflict is checked after invitation email is sent")
     require(0 <= client_conflict_position < invite_position, "client conflict is checked after invitation email is sent")
+    aal_gate_position = lower.find('actoraal !== "aal2"')
+    first_admin_query = lower.find('.from("profiles")')
+    require(aal_gate_position >= 0, "client-access AAL2 gate missing")
+    require(0 <= aal_gate_position < first_admin_query, "client-access checks AAL2 after admin query")
 
 
 def check_function_config() -> None:
@@ -295,15 +301,20 @@ def check_admin_tool() -> None:
     require("localstorage" not in script, "client access admin writes to localStorage")
     require("service_role" not in script, "client access admin contains a service-role marker")
     require("inviteuserbyemail" not in script, "client access admin calls Auth admin API directly")
+    require("trainermfacontroller" in script, "client access admin has no trainer MFA controller")
+    require("{ persist: false }" in script, "client access admin persists password-only session")
+    require("enforcetrainermfa" in script, "client access admin does not enforce trainer MFA")
 
 
 def check_browser_boundary() -> None:
     browser_files = [
         "assets/os/runtime.js",
         "assets/os/data.js",
+        "assets/os/trainer-mfa.js",
         "assets/os/app.js",
         "assets/os/password-auth.js",
         "assets/os/ui/common.js",
+        "assets/os/ui/trainer-mfa.js",
         "assets/os/ui/forms.js",
         "assets/os/ui/trainer.js",
         "assets/os/ui/client.js",

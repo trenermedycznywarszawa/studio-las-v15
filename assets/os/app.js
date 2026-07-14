@@ -24,12 +24,16 @@ import {
 } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
 import { renderClient } from "./ui/client.js";
+import { TrainerMfaController } from "./trainer-mfa.js";
+import { renderTrainerMfa } from "./ui/trainer-mfa.js";
 
 const root = document.getElementById("app");
 const state = {
   config: null,
   auth: null,
   repository: null,
+  mfa: null,
+  mfaView: null,
   profile: null,
   clients: [],
   activeClientId: "",
@@ -65,6 +69,7 @@ async function withWrite(label, operation) {
 }
 
 async function logout() {
+  state.mfa?.clear();
   renderLoading(root, "Wylogowywanie…");
   await state.auth.logout();
   state.profile = null;
@@ -72,6 +77,7 @@ async function logout() {
   state.activeClientId = "";
   state.workspace = null;
   state.snapshot = null;
+  state.mfaView = null;
   showLogin();
 }
 
@@ -82,7 +88,7 @@ function showLogin(message = "") {
     onSubmit: async ({ email, password }) => {
       try {
         renderLoading(root, "Weryfikowanie konta…");
-        await state.auth.signInWithPassword(email, password);
+        await state.auth.signInWithPassword(email, password, { persist: false });
         await loadAuthenticatedRuntime();
       } catch (error) {
         showLogin(userSafeError(error));
@@ -131,16 +137,93 @@ async function loadAuthenticatedRuntime() {
   state.profile = await state.auth.getProfile();
 
   if (state.profile.role === "trainer") {
-    await loadTrainer();
+    if (state.auth.getAuthenticatorAssuranceLevel() !== "aal2") {
+      state.auth.suspendSessionPersistence();
+    }
+    await enforceTrainerMfa();
     return;
   }
 
   if (state.profile.role === "client") {
     await loadClientPortal();
+    state.auth.persistCurrentSession();
     return;
   }
 
   throw new Error("Unsupported profile role");
+}
+
+function renderMfaView(view, message = "") {
+  state.mfaView = view;
+  renderTrainerMfa(root, {
+    view,
+    message,
+    onStartEnrollment: () => advanceMfa(
+      () => state.mfa.beginEnrollment(),
+      "Przygotowywanie konfiguracji TOTP\u2026"
+    ),
+    onVerify: code => advanceMfa(
+      () => state.mfa.verify(code),
+      "Weryfikowanie kodu TOTP\u2026"
+    ),
+    onRetry: () => advanceMfa(
+      () => state.mfa.prepare(),
+      "Tworzenie nowego wyzwania\u2026"
+    ),
+    onLogout: () => logout().catch(handleRuntimeError),
+    onRemoveFactor: index => removeMfaFactor(index),
+    onBack: () => loadTrainer(state.activeClientId).catch(handleRuntimeError)
+  });
+}
+
+async function advanceMfa(operation, loadingMessage) {
+  try {
+    renderLoading(root, loadingMessage);
+    const next = await operation();
+    if (next.status === "verified") {
+      state.mfaView = null;
+      await loadTrainer(state.activeClientId);
+      return;
+    }
+    renderMfaView(next);
+  } catch (error) {
+    const fallback = state.mfaView || { status: "enrollment_required" };
+    renderMfaView(fallback, userSafeError(error));
+  }
+}
+
+async function enforceTrainerMfa() {
+  await advanceMfa(
+    () => state.mfa.prepare(),
+    "Sprawdzanie drugiego sk\u0142adnika\u2026"
+  );
+}
+
+async function showMfaManagement() {
+  try {
+    renderLoading(root, "\u0141adowanie ustawie\u0144 MFA\u2026");
+    renderMfaView(await state.mfa.management());
+  } catch (error) {
+    handleRuntimeError(error);
+  }
+}
+
+async function removeMfaFactor(index) {
+  if (!window.confirm("Usun\u0105\u0107 ten sk\u0142adnik TOTP? Sesja zostanie zako\u0144czona.")) return;
+  try {
+    renderLoading(root, "Usuwanie sk\u0142adnika i ko\u0144czenie sesji\u2026");
+    await state.mfa.removeFactor(index);
+    state.profile = null;
+    state.clients = [];
+    state.activeClientId = "";
+    state.workspace = null;
+    state.snapshot = null;
+    state.mfaView = null;
+    showLogin("Sk\u0142adnik TOTP usuni\u0119to. Zaloguj si\u0119 ponownie.");
+  } catch (error) {
+    const fallback = state.mfaView || { status: "management", factors: [] };
+    renderMfaView(fallback, userSafeError(error));
+  }
 }
 
 async function loadTrainer(preferredClientId = state.activeClientId) {
@@ -196,6 +279,7 @@ function renderTrainerState() {
     onSelectClient: clientId => selectClient(clientId).catch(handleRuntimeError),
     onReload: () => loadTrainer(state.activeClientId).catch(handleRuntimeError),
     onLogout: () => logout().catch(handleRuntimeError),
+    onManageMfa: () => showMfaManagement(),
     onCreateClient: async values => {
       const client = await withWrite("Dodawanie klienta", () =>
         state.repository.createClient(state.profile.id, values)
@@ -255,7 +339,12 @@ async function loadClientPortal() {
 function handleRuntimeError(error) {
   const message = userSafeError(error);
   announce(message, "error");
-  if (Number(error?.status || 0) === 401) showLogin(message);
+  const status = Number(error?.status || 0);
+  if (status === 401) showLogin(message);
+  else if (status === 403 && state.profile?.role === "trainer"
+    && state.auth.getAuthenticatorAssuranceLevel() !== "aal2") {
+    enforceTrainerMfa().catch(() => showLogin(message));
+  }
 }
 
 async function initialize() {
@@ -263,6 +352,7 @@ async function initialize() {
     state.config = getProductionRuntimeConfig();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
+    state.mfa = new TrainerMfaController(state.auth);
 
     // Password callbacks are consumed and removed from the address bar before any
     // other gate can stop the application. The context survives reloads only in

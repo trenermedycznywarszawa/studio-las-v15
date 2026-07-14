@@ -17,12 +17,16 @@ import {
   renderLogin,
   statusBox
 } from "../assets/os/ui/common.js";
+import { TrainerMfaController } from "../assets/os/trainer-mfa.js";
+import { renderTrainerMfa } from "../assets/os/ui/trainer-mfa.js";
 
 const root = document.getElementById("access-admin");
 const state = {
   config: null,
   auth: null,
   repository: null,
+  mfa: null,
+  mfaView: null,
   profile: null,
   clients: [],
   activeClientId: "",
@@ -88,12 +92,14 @@ async function revokeClient() {
 }
 
 async function logout() {
+  state.mfa?.clear();
   renderLoading(root, "Wylogowywanie…");
   await state.auth.logout();
   state.profile = null;
   state.clients = [];
   state.activeClientId = "";
   state.access = null;
+  state.mfaView = null;
   showLogin();
 }
 
@@ -187,7 +193,7 @@ function showLogin(message = "") {
     onSubmit: async ({ email, password }) => {
       try {
         renderLoading(root, "Weryfikowanie konta trenera…");
-        await state.auth.signInWithPassword(email, password);
+        await state.auth.signInWithPassword(email, password, { persist: false });
         await loadAuthenticatedTool();
       } catch (error) {
         showLogin(userSafeError(error));
@@ -203,16 +209,96 @@ async function loadAuthenticatedTool() {
     throw new Error("Narzędzie jest dostępne wyłącznie dla trenera.");
   }
 
+  if (state.auth.getAuthenticatorAssuranceLevel() !== "aal2") {
+    state.auth.suspendSessionPersistence();
+  }
+  await enforceTrainerMfa();
+}
+
+async function loadAdmin() {
+  renderLoading(root, "\u0141adowanie administracji dost\u0119pu\u2026");
   state.clients = await state.repository.listClients();
   state.activeClientId = "";
   state.access = null;
   renderAdmin();
 }
 
+function renderMfaView(view, message = "") {
+  state.mfaView = view;
+  renderTrainerMfa(root, {
+    view,
+    message,
+    onStartEnrollment: () => advanceMfa(
+      () => state.mfa.beginEnrollment(),
+      "Przygotowywanie konfiguracji TOTP\u2026"
+    ),
+    onVerify: code => advanceMfa(
+      () => state.mfa.verify(code),
+      "Weryfikowanie kodu TOTP\u2026"
+    ),
+    onRetry: () => advanceMfa(
+      () => state.mfa.prepare(),
+      "Tworzenie nowego wyzwania\u2026"
+    ),
+    onLogout: () => logout().catch(handleError),
+    onRemoveFactor: index => removeMfaFactor(index),
+    onBack: () => loadAdmin().catch(handleError)
+  });
+}
+
+async function advanceMfa(operation, loadingMessage) {
+  try {
+    renderLoading(root, loadingMessage);
+    const next = await operation();
+    if (next.status === "verified") {
+      state.mfaView = null;
+      await loadAdmin();
+      return;
+    }
+    renderMfaView(next);
+  } catch (error) {
+    renderMfaView(
+      state.mfaView || { status: "enrollment_required" },
+      userSafeError(error)
+    );
+  }
+}
+
+async function enforceTrainerMfa() {
+  await advanceMfa(
+    () => state.mfa.prepare(),
+    "Sprawdzanie drugiego sk\u0142adnika\u2026"
+  );
+}
+
+async function removeMfaFactor(index) {
+  if (!window.confirm("Usun\u0105\u0107 ten sk\u0142adnik TOTP? Sesja zostanie zako\u0144czona.")) return;
+  try {
+    renderLoading(root, "Usuwanie sk\u0142adnika i ko\u0144czenie sesji\u2026");
+    await state.mfa.removeFactor(index);
+    state.profile = null;
+    state.clients = [];
+    state.activeClientId = "";
+    state.access = null;
+    state.mfaView = null;
+    showLogin("Sk\u0142adnik TOTP usuni\u0119to. Zaloguj si\u0119 ponownie.");
+  } catch (error) {
+    renderMfaView(
+      state.mfaView || { status: "management", factors: [] },
+      userSafeError(error)
+    );
+  }
+}
+
 function handleError(error) {
   const message = userSafeError(error);
   if (Number(error?.status || 0) === 401) {
     showLogin(message);
+    return;
+  }
+  if (Number(error?.status || 0) === 403 && state.profile?.role === "trainer"
+    && state.auth.getAuthenticatorAssuranceLevel() !== "aal2") {
+    enforceTrainerMfa().catch(() => showLogin(message));
     return;
   }
   renderAdmin(message, "error");
@@ -224,6 +310,7 @@ async function initialize() {
     assertNoPersistentHealthData();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
+    state.mfa = new TrainerMfaController(state.auth);
 
     const restored = await state.auth.restore();
     if (!restored) {
