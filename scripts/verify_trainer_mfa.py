@@ -121,7 +121,31 @@ def check_browser_flow() -> None:
     require("challengeId" not in ui, "technical MFA challenge identifier is rendered by the UI module")
     require('status: "factor_cleanup_required"' in controller, "multiple-factor fail-closed state missing")
     require("async removeFactor(index)" in controller, "MFA factor management is missing")
-    require("await this.auth.logout()" in controller, "factor removal does not end the AAL2 session")
+    begin_enrollment = controller[
+        controller.find("async beginEnrollment()"):controller.find("async verify(code)")
+    ]
+    verify_flow = controller[
+        controller.find("async verify(code)"):controller.find("async management()")
+    ]
+    remove_flow = controller[controller.find("async removeFactor(index)"):]
+    for flow, mutation, label in [
+        (begin_enrollment, "unenrollTotp", "unenrollment during enrollment"),
+        (begin_enrollment, "enrollTotp", "enrollment"),
+        (verify_flow, "verifyTotp", "verification"),
+        (remove_flow, "unenrollTotp", "factor removal"),
+    ]:
+        mutation_position = flow.find(mutation)
+        refresh_position = flow.find("listTotpFactors", mutation_position)
+        prepare_position = flow.find("return this.prepare()", mutation_position)
+        require(
+            mutation_position >= 0 and (refresh_position > mutation_position or prepare_position > mutation_position),
+            f"{label} does not refresh factors after the mutation",
+        )
+
+    load_trainer = app[app.find("async function loadTrainer"):app.find("async function selectClient")]
+    factor_gate = load_trainer.find("state.mfa.prepare()")
+    protected_read = load_trainer.find("state.repository.listClients()")
+    require(0 <= factor_gate < protected_read, "trainer panel reads data before refreshing the MFA gate")
     require("qrCode" in ui and "one-time-code" in ui, "TOTP enrollment/challenge UI is incomplete")
 
     safe_session = runtime[runtime.find("const safeSession"):runtime.find(
@@ -155,6 +179,13 @@ def check_server_and_tests() -> None:
     require("AAL1 refresh bypassed the persistence gate" in browser_test, "refresh-during-challenge test missing")
     require("factor_cleanup_required" in browser_test, "multiple-factor browser test missing")
     require("enrollment_required" in browser_test, "enrollment browser test missing")
+    for fragment in [
+        "list:0",
+        "list:1",
+        "list:2",
+        "assertRefetchedAfter",
+    ]:
+        require(fragment in browser_test, f"factor-count/refetch browser test missing: {fragment}")
 
 
 def main() -> int:

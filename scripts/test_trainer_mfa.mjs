@@ -93,6 +93,7 @@ class FakeAuth {
     this.verifyCalls = [];
     this.unenrolled = [];
     this.loggedOut = false;
+    this.events = [];
   }
 
   getAuthenticatorAssuranceLevel() {
@@ -100,6 +101,7 @@ class FakeAuth {
   }
 
   async listTotpFactors() {
+    this.events.push(`list:${this.factors.filter(factor => factor.status === "verified").length}`);
     return this.factors.map(factor => ({ ...factor }));
   }
 
@@ -110,12 +112,14 @@ class FakeAuth {
 
   async verifyTotp(factorId, challengeId, code) {
     this.verifyCalls.push({ factorId, challengeId, code });
+    this.events.push("verify");
     this.aal = "aal2";
     const factor = this.factors.find(item => item.id === factorId);
     if (factor) factor.status = "verified";
   }
 
   async enrollTotp() {
+    this.events.push("enroll");
     this.factors.push({
       id: FACTOR_A,
       status: "unverified",
@@ -133,15 +137,55 @@ class FakeAuth {
 
   async unenrollTotp(factorId) {
     this.unenrolled.push(factorId);
+    this.events.push(`unenroll:${factorId}`);
     this.factors = this.factors.filter(factor => factor.id !== factorId);
   }
 
   async logout() {
+    this.events.push("logout");
     this.loggedOut = true;
     this.aal = "aal1";
   }
 }
 
+function assertRefetchedAfter(events, operation) {
+  const index = events.findIndex(event => event.startsWith(operation));
+  assert.notEqual(index, -1, `${operation} was not recorded`);
+  assert.match(
+    events[index + 1] || "",
+    /^list:/,
+    `${operation} was not followed by a fresh factor list`
+  );
+}
+
+function verifiedFactor(id, friendlyName) {
+  return { id, status: "verified", friendlyName, createdAt: "" };
+}
+
+async function testFactorCountGate() {
+  const zero = new FakeAuth({ aal: "aal2", factors: [] });
+  assert.equal((await new TrainerMfaController(zero).prepare()).status, "enrollment_required");
+  assert.deepEqual(zero.events, ["list:0"]);
+
+  const one = new FakeAuth({
+    aal: "aal2",
+    factors: [verifiedFactor(FACTOR_A, "Jedyny")]
+  });
+  assert.equal((await new TrainerMfaController(one).prepare()).status, "verified");
+  assert.deepEqual(one.events, ["list:1"]);
+
+  const two = new FakeAuth({
+    aal: "aal2",
+    factors: [
+      verifiedFactor(FACTOR_A, "Pierwszy"),
+      verifiedFactor(FACTOR_B, "Drugi")
+    ]
+  });
+  const blocked = await new TrainerMfaController(two).prepare();
+  assert.equal(blocked.status, "factor_cleanup_required");
+  assert.equal(blocked.factors.length, 2);
+  assert.deepEqual(two.events, ["list:2"]);
+}
 async function testControllerFlows() {
   const existing = new FakeAuth({
     factors: [{ id: FACTOR_A, status: "verified", friendlyName: "Telefon", createdAt: "" }]
@@ -161,6 +205,7 @@ async function testControllerFlows() {
     code: "123456"
   });
 
+  assertRefetchedAfter(existing.events, "verify");
   const missing = new FakeAuth({
     factors: [{ id: FACTOR_B, status: "unverified", friendlyName: "Stary", createdAt: "" }]
   });
@@ -170,7 +215,10 @@ async function testControllerFlows() {
   assert.equal(enrollment.status, "enrollment");
   assert.equal(enrollment.qrCode.startsWith("data:image/svg+xml"), true);
   assert.deepEqual(missing.unenrolled, [FACTOR_B]);
+  assertRefetchedAfter(missing.events, "unenroll");
+  assertRefetchedAfter(missing.events, "enroll");
   assert.equal((await enrollmentController.verify("654321")).status, "verified");
+  assertRefetchedAfter(missing.events, "verify");
 
   const multiple = new FakeAuth({
     aal: "aal2",
@@ -181,11 +229,14 @@ async function testControllerFlows() {
   });
   const cleanupController = new TrainerMfaController(multiple);
   assert.equal((await cleanupController.prepare()).status, "factor_cleanup_required");
-  await cleanupController.removeFactor(1);
+  const cleaned = await cleanupController.removeFactor(1);
+  assert.equal(cleaned.status, "verified");
   assert.deepEqual(multiple.unenrolled, [FACTOR_B]);
-  assert.equal(multiple.loggedOut, true);
+  assert.equal(multiple.loggedOut, false);
+  assertRefetchedAfter(multiple.events, "unenroll");
 }
 
 await testSessionPersistenceBoundary();
+await testFactorCountGate();
 await testControllerFlows();
 console.log("Studio Las trainer MFA browser tests completed");

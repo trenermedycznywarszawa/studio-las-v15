@@ -84,7 +84,7 @@ export function renderTrainerMfa(root, {
     create("h1", { text: "Weryfikacja dwuetapowa" }),
     create("p", {
       className: "muted",
-      text: "Dane trenera pozostaj\u0105 zablokowane, dop\u00f3ki bie\u017c\u0105ca sesja nie osi\u0105gnie poziomu AAL2."
+      text: "Dane trenera pozostaj\u0105 zablokowane, dop\u00f3ki konto nie ma dok\u0142adnie jednego zweryfikowanego TOTP, a bie\u017c\u0105ca sesja nie osi\u0105gnie poziomu AAL2."
     }),
     message ? statusBox(message, "error") : null
   ];

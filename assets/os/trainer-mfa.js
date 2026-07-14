@@ -72,9 +72,11 @@ export class TrainerMfaController {
     // live only in this controller and are never rendered or persisted.
     for (const factor of factors) {
       await this.auth.unenrollTotp(factor.id);
+      await this.auth.listTotpFactors();
     }
 
     const enrollment = await this.auth.enrollTotp();
+    await this.auth.listTotpFactors();
     this.context = {
       mode: "enrollment",
       factorId: String(enrollment.id),
@@ -129,7 +131,6 @@ export class TrainerMfaController {
 
     await this.auth.unenrollTotp(factor.id);
     this.clear();
-    // A stale AAL2 JWT must not survive factor removal.
-    await this.auth.logout();
+    return this.prepare();
   }
 }

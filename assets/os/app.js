@@ -209,17 +209,16 @@ async function showMfaManagement() {
 }
 
 async function removeMfaFactor(index) {
-  if (!window.confirm("Usun\u0105\u0107 ten sk\u0142adnik TOTP? Sesja zostanie zako\u0144czona.")) return;
+  if (!window.confirm("Usun\u0105\u0107 ten sk\u0142adnik TOTP?")) return;
   try {
-    renderLoading(root, "Usuwanie sk\u0142adnika i ko\u0144czenie sesji\u2026");
-    await state.mfa.removeFactor(index);
-    state.profile = null;
-    state.clients = [];
-    state.activeClientId = "";
-    state.workspace = null;
-    state.snapshot = null;
-    state.mfaView = null;
-    showLogin("Sk\u0142adnik TOTP usuni\u0119to. Zaloguj si\u0119 ponownie.");
+    renderLoading(root, "Usuwanie sk\u0142adnika TOTP\u2026");
+    const next = await state.mfa.removeFactor(index);
+    if (next.status === "verified") {
+      state.mfaView = null;
+      await loadTrainer(state.activeClientId);
+      return;
+    }
+    renderMfaView(next);
   } catch (error) {
     const fallback = state.mfaView || { status: "management", factors: [] };
     renderMfaView(fallback, userSafeError(error));
@@ -228,6 +227,12 @@ async function removeMfaFactor(index) {
 
 async function loadTrainer(preferredClientId = state.activeClientId) {
   renderLoading(root, "Ładowanie panelu trenera…");
+  const mfaView = await state.mfa.prepare();
+  if (mfaView.status !== "verified") {
+    renderMfaView(mfaView);
+    return;
+  }
+  state.mfaView = null;
   state.clients = await state.repository.listClients();
   state.activeClientId = preferredClientId && state.clients.some(client => client.id === preferredClientId)
     ? preferredClientId
