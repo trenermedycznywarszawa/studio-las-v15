@@ -129,7 +129,7 @@ class FakeAuth {
     return {
       id: FACTOR_A,
       totp: {
-        qr_code: "<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>",
+        qr_code: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>",
         secret: "TEST-SECRET-NOT-REAL"
       }
     };
@@ -213,7 +213,8 @@ async function testControllerFlows() {
   assert.equal((await enrollmentController.prepare()).status, "enrollment_required");
   const enrollment = await enrollmentController.beginEnrollment();
   assert.equal(enrollment.status, "enrollment");
-  assert.equal(enrollment.qrCode.startsWith("data:image/svg+xml"), true);
+  assert.equal(enrollment.qrCode.startsWith("data:image/svg+xml;charset=utf-8,"), true);
+  assert.equal(decodeURIComponent(enrollment.qrCode.split(",", 2)[1]).startsWith("<?xml"), true);
   assert.deepEqual(missing.unenrolled, [FACTOR_B]);
   assertRefetchedAfter(missing.events, "unenroll");
   assertRefetchedAfter(missing.events, "enroll");
