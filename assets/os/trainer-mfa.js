@@ -3,7 +3,7 @@ import { SupabaseHttpError } from "./data.js";
 function qrDataUrl(value) {
   const source = String(value || "").trim();
   if (source.startsWith("data:image/svg+xml")) return source;
-  if (/^(?:<\?xml[^>]*\?>\s*)?<svg(?:\s|>)/i.test(source)) {
+  if (/^(?:<\?xml[^>]*\?>\s*)?(?:<!--[\s\S]*?-->\s*)*<svg(?:\s|>)/i.test(source)) {
     return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(source)}`;
   }
   throw new SupabaseHttpError("MFA enrollment QR code is missing", 502);

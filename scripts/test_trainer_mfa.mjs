@@ -86,7 +86,12 @@ async function testSessionPersistenceBoundary() {
 }
 
 class FakeAuth {
-  constructor({ aal = "aal1", factors = [] } = {}) {
+  constructor({
+    aal = "aal1",
+    factors = [],
+    enrollmentQr = "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>",
+    enrollmentSecret = "TEST-SECRET-NOT-REAL"
+  } = {}) {
     this.aal = aal;
     this.factors = factors.map(factor => ({ ...factor }));
     this.challengeCalls = 0;
@@ -94,6 +99,8 @@ class FakeAuth {
     this.unenrolled = [];
     this.loggedOut = false;
     this.events = [];
+    this.enrollmentQr = enrollmentQr;
+    this.enrollmentSecret = enrollmentSecret;
   }
 
   getAuthenticatorAssuranceLevel() {
@@ -129,8 +136,8 @@ class FakeAuth {
     return {
       id: FACTOR_A,
       totp: {
-        qr_code: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>",
-        secret: "TEST-SECRET-NOT-REAL"
+        qr_code: this.enrollmentQr,
+        secret: this.enrollmentSecret
       }
     };
   }
@@ -237,7 +244,34 @@ async function testControllerFlows() {
   assertRefetchedAfter(multiple.events, "unenroll");
 }
 
+async function testXmlCommentPrefixedEnrollmentQr() {
+  const beginEnrollmentWithQr = enrollmentQr => new TrainerMfaController(new FakeAuth({
+    enrollmentQr,
+    enrollmentSecret: ""
+  })).beginEnrollment();
+
+  const enrollment = await beginEnrollmentWithQr(
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<!-- test-only comment -->\n<svg xmlns=\"http://www.w3.org/2000/svg\"></svg>"
+  );
+  assert.equal(enrollment.status, "enrollment");
+  assert.equal(enrollment.secret, "");
+  assert.match(
+    decodeURIComponent(enrollment.qrCode.split(",", 2)[1]),
+    /^<\?xml[^>]*\?>\s*<!--[\s\S]*?-->\s*<svg(?:\s|>)/i
+  );
+
+  await assert.rejects(
+    () => beginEnrollmentWithQr("unexpected text<svg></svg>"),
+    /MFA enrollment QR code is missing/
+  );
+  await assert.rejects(
+    () => beginEnrollmentWithQr("<?xml version=\"1.0\"?><!DOCTYPE svg><svg></svg>"),
+    /MFA enrollment QR code is missing/
+  );
+}
+
 await testSessionPersistenceBoundary();
 await testFactorCountGate();
 await testControllerFlows();
+await testXmlCommentPrefixedEnrollmentQr();
 console.log("Studio Las trainer MFA browser tests completed");
