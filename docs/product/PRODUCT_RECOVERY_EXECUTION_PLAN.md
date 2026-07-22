@@ -1,7 +1,7 @@
 # Studio Las OS — Product Recovery Execution Plan
 
 **Status dokumentu:** ACTIVE  
-**Wersja:** 1.1  
+**Wersja:** 1.2  
 **Data utworzenia:** 2026-07-22  
 **Aktualny etap:** PR-01 — read-only Trainer Session Brief  
 **Następny PR implementacyjny:** PR-01 — read-only Trainer Session Brief
@@ -139,15 +139,15 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 
 **Cel:** przed sesją pokazać trenerowi tylko informacje mogące zmienić jego decyzję.
 
-- [ ] Zakres i hierarchia informacji zatwierdzone.
-- [ ] Read-only brief zaimplementowany z istniejących danych Supabase.
-- [ ] Każdy fakt ma źródło i datę.
-- [ ] Brak automatycznej rekomendacji, nowego zapisu i migracji.
-- [ ] Empty states są czytelne i nie sugerują nieistniejących danych.
-- [ ] Widok działa bez poziomego przewijania przy szerokości 360 px.
-- [ ] Testy repozytorium przechodzą.
+- [x] Zakres i hierarchia informacji zatwierdzone.
+- [x] Read-only brief zaimplementowany z istniejących danych Supabase.
+- [x] Każdy fakt ma źródło i datę.
+- [x] Brak automatycznej rekomendacji, nowego zapisu i migracji.
+- [x] Empty states są czytelne i nie sugerują nieistniejących danych.
+- [ ] Widok działa bez poziomego przewijania przy szerokości 360 px — oczekuje na test Damiana.
+- [x] Testy repozytorium i GitHub Actions #91 przechodzą.
 - [ ] Damian wykonuje test zadaniowy przed rzeczywistą lub symulowaną sesją.
-- [ ] PR scalony do kanonicznej bazy.
+- [ ] PR #17 scalony do kanonicznej bazy.
 
 **Kryterium wyniku:** Damian w mniej niż 60 sekund potrafi odpowiedzieć: co jest ważne, co wydarzyło się ostatnio i co wymaga jego decyzji — bez przeszukiwania oddzielnych ekranów.
 
@@ -287,7 +287,7 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 | SEC-01 | DONE | Bezpieczeństwo CLOSED / PASS, 25/25 | `446c522ca5c61a9ad01808e7a03ea1ae9138527c` |
 | AUD-01 | DONE | Audyt odzyskania produktu wykonany i scalony | PR #14, merge `6a105b48d00fbf848d8181b5e7bc0e83e31b3085` |
 | GOV-01 | DONE | Kanoniczna linia `product-recovery` ustanowiona bez naruszenia `main` i bramki RODO | `product-recovery@f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`; `main@e371c76`; Draft PR #9; issue #12 |
-| PR-01 | NOT STARTED | Trainer Session Brief | — |
+| PR-01 | IN REVIEW | Read-only Trainer Session Brief zaimplementowany; oczekuje na test 360 px i test zadaniowy Damiana | Draft PR #17; `0392e785a1d33405134f3cd30f24250ef52981ac`; GitHub Actions #91 PASS |
 | PR-02 | NOT STARTED | Canonical Session Closure | — |
 | PR-03 | NOT STARTED | Paper Guidance and Signal Review | — |
 | PR-04 | NOT STARTED | Diagnostic Entry and Selective Intake | — |
@@ -322,8 +322,8 @@ Powrót któregokolwiek elementu wymaga osobnej decyzji zmieniającej Product Co
 
 ## 10. Następna czynność
 
-Aktywnym i jedynym zakresem jest **PR-01 — read-only Trainer Session Brief**, utworzony z `product-recovery`.
+Implementacja **PR-01 — read-only Trainer Session Brief** znajduje się w Draft PR #17. Nie rozpoczynać PR-02.
 
-Ma złożyć istniejące dane Supabase w krótki kontekst przed sesją: bezpieczeństwo i ograniczenia, aktualny fokus, ostatnia decyzja trenera, ostatni sygnał klienta, aktywne paper-first guidance oraz termin przeglądu. Nie wolno dodawać migracji, nowych zapisów, automatycznych rekomendacji, zmian Auth/MFA/RLS/Storage ani deploymentu.
+Następną czynnością jest test akceptacyjny Damiana na telefonie lub w widoku 360 px, bez użycia realnych danych klienta. Kryterium: w mniej niż 60 sekund wskazać, co wymaga uwagi, co wydarzyło się ostatnio i jaka decyzja nadal należy do trenera; równocześnie potwierdzić brak poziomego przewijania.
 
-PR-01 pozostaje Draftem do testu zadaniowego Damiana. Dopiero potwierdzenie, że w mniej niż 60 sekund pozwala przygotować się do sesji, zamyka ten etap.
+Po zapisaniu wyniku w PR #17 można poprawić brief albo — jeśli test przejdzie — oznaczyć PR jako gotowy, scalić go do `product-recovery` i zaktualizować ten plan. Do tego czasu PR-01 pozostaje `IN REVIEW`.
