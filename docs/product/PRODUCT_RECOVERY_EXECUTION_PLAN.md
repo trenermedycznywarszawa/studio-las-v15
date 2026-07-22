@@ -1,9 +1,9 @@
 # Studio Las OS — Product Recovery Execution Plan
 
 **Status dokumentu:** ACTIVE  
-**Wersja:** 1.0  
+**Wersja:** 1.1  
 **Data utworzenia:** 2026-07-22  
-**Aktualny etap:** G0 — przyjęcie dokumentacji i ustalenie kanonicznej linii Git  
+**Aktualny etap:** PR-01 — read-only Trainer Session Brief  
 **Następny PR implementacyjny:** PR-01 — read-only Trainer Session Brief
 
 ---
@@ -95,13 +95,13 @@ Poniższych decyzji nie negocjujemy ponownie w każdym PR-ze:
 - [x] Audyt Product Recovery został wykonany na podstawie kodu i historii Git.
 - [x] Audyt zapisano w `docs/product/PRODUCT_RECOVERY_AUDIT_2026-07-22.md`.
 - [x] Draft PR #14 otwarto z dokładnie jednym dokumentem; commit `da967b8fe378dded483882856b2ea666a3226446`.
-- [ ] Draft PR #14 został merytorycznie zaakceptowany.
-- [ ] Draft PR #14 został scalony do zatwierdzonej bazy.
-- [ ] Ten Execution Plan został scalony i ustanowiony jako operacyjna lista kontrolna.
+- [x] PR #14 został merytorycznie zaakceptowany i scalony; merge commit `6a105b48d00fbf848d8181b5e7bc0e83e31b3085`.
+- [x] PR #15 został scalony; merge commit `f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`.
+- [x] Ten Execution Plan jest operacyjną listą kontrolną na kanonicznej linii Product Recovery.
 
 ---
 
-## 5. NOW — G0: jedna kanoniczna linia Git
+## 5. DONE — G0: jedna kanoniczna linia Git
 
 ### Problem
 
@@ -109,21 +109,21 @@ Poniższych decyzji nie negocjujemy ponownie w każdym PR-ze:
 
 ### Decyzja wykonawcza
 
-Pierwszy PR implementacyjny pozostaje PR-01 Trainer Session Brief, ale przed rozpoczęciem kodowania trzeba wskazać jedną kanoniczną bazę Product Recovery. Nie wolno domyślnie użyć `main` ani bezterminowo rozwijać produktu na gałęzi audytowej.
+Kanoniczną bazą rozwoju zostaje jawna gałąź `product-recovery`, utworzona z bezpiecznego SHA `f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`. Integracja do `main` pozostaje odłożona: istniejący PR #9 nadal jest Draftem, a jego bramka produkcyjna odwołuje się do otwartego issue #12 dotyczącego kwalifikowanej oceny RODO. Rozwój produktu może trwać bez deploymentu, produkcji i realnych danych klientów.
 
 ### Checklista G0
 
-- [ ] **NOW G0.1** — zweryfikować pełny diff i jedyny commit istniejący wyłącznie na `main` względem bezpiecznej linii.
-- [ ] G0.2 — sklasyfikować commit z `main`: zachować, odtworzyć, zastąpić albo odrzucić; zapisać dowód i uzasadnienie.
-- [ ] G0.3 — wybrać strategię integracji o najmniejszym ryzyku: uporządkowanie `main` albo jawna tymczasowa gałąź kanoniczna Product Recovery.
-- [ ] G0.4 — utworzyć osobny Draft PR integracyjny, jeśli zmiana historii lub zawartości jest potrzebna; bez zmian funkcjonalnych.
-- [ ] G0.5 — potwierdzić, że kanoniczna baza zawiera `446c522`, audyt i ten plan, a diff nie ukrywa obcych zmian.
-- [ ] G0.6 — zapisać nazwę i SHA kanonicznej bazy poniżej.
-- [ ] G0.7 — dopiero po G0.1–G0.6 rozpocząć PR-01.
+- [x] G0.1 — pełny diff zweryfikowany; `main` ma jeden własny commit `e371c7694f2c30b3bcf1a1bbbab5d3a9ac7b68ba`.
+- [x] G0.2 — commit `e371c76` zachowujemy; dodaje wyłącznie `noindex, nofollow` do 27 stron podglądu v16 i nie należy do runtime Studio Las OS.
+- [x] G0.3 — wybrano jawną gałąź kanoniczną `product-recovery`; brak force-pusha i przepisywania historii.
+- [x] G0.4 — nie tworzono duplikatu integracyjnego PR-a; istniejący PR #9 pozostaje Draftem do `main` ze względu na otwartą bramkę #12.
+- [x] G0.5 — `product-recovery` zawiera `446c522`, scalony audyt z PR #14 oraz scalony plan z PR #15.
+- [x] G0.6 — nazwa i SHA bazowe zostały zapisane poniżej.
+- [x] G0.7 — PR-01 może rozpocząć się wyłącznie z `product-recovery`.
 
-**Kanoniczna gałąź Product Recovery:** `DO USTALENIA`  
-**Kanoniczny SHA:** `DO USTALENIA`  
-**Dowód decyzji:** `DO UZUPEŁNIENIA`
+**Kanoniczna gałąź Product Recovery:** `product-recovery`  
+**Kanoniczny SHA bazowy G0:** `f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`  
+**Dowód decyzji:** PR #14, PR #15, commit `e371c76`, Draft PR #9 oraz otwarte issue #12.
 
 ### Kryterium zakończenia G0
 
@@ -135,7 +135,7 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 
 ### M1 — Rdzeń pracy trenera — P0
 
-#### PR-01 — Trainer Session Brief
+#### NOW — PR-01 — Trainer Session Brief
 
 **Cel:** przed sesją pokazać trenerowi tylko informacje mogące zmienić jego decyzję.
 
@@ -285,8 +285,8 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 | ID | Stan | Decyzja lub wynik | Dowód |
 |---|---|---|---|
 | SEC-01 | DONE | Bezpieczeństwo CLOSED / PASS, 25/25 | `446c522ca5c61a9ad01808e7a03ea1ae9138527c` |
-| AUD-01 | DONE | Audyt odzyskania produktu wykonany | Draft PR #14, `da967b8fe378dded483882856b2ea666a3226446` |
-| GOV-01 | NOW | Ustalić kanoniczną linię Git | Do uzupełnienia po G0 |
+| AUD-01 | DONE | Audyt odzyskania produktu wykonany i scalony | PR #14, merge `6a105b48d00fbf848d8181b5e7bc0e83e31b3085` |
+| GOV-01 | DONE | Kanoniczna linia `product-recovery` ustanowiona bez naruszenia `main` i bramki RODO | `product-recovery@f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`; `main@e371c76`; Draft PR #9; issue #12 |
 | PR-01 | NOT STARTED | Trainer Session Brief | — |
 | PR-02 | NOT STARTED | Canonical Session Closure | — |
 | PR-03 | NOT STARTED | Paper Guidance and Signal Review | — |
@@ -322,8 +322,8 @@ Powrót któregokolwiek elementu wymaga osobnej decyzji zmieniającej Product Co
 
 ## 10. Następna czynność
 
-Nie implementować jeszcze Trainer Session Brief.
+Aktywnym i jedynym zakresem jest **PR-01 — read-only Trainer Session Brief**, utworzony z `product-recovery`.
 
-Następne polecenie ma wykonać wyłącznie **G0 — Canonical Git Line Decision**: porównać `main` z bezpieczną linią, rozstrzygnąć los jedynego commita po stronie `main`, wskazać kanoniczną bazę i przygotować minimalny, niedestrukcyjny sposób integracji. Bez zmian kodu aplikacji, Supabase, środowisk i bezpieczeństwa.
+Ma złożyć istniejące dane Supabase w krótki kontekst przed sesją: bezpieczeństwo i ograniczenia, aktualny fokus, ostatnia decyzja trenera, ostatni sygnał klienta, aktywne paper-first guidance oraz termin przeglądu. Nie wolno dodawać migracji, nowych zapisów, automatycznych rekomendacji, zmian Auth/MFA/RLS/Storage ani deploymentu.
 
-Po udowodnionym zamknięciu G0 następnym i jedynym aktywnym zakresem staje się PR-01.
+PR-01 pozostaje Draftem do testu zadaniowego Damiana. Dopiero potwierdzenie, że w mniej niż 60 sekund pozwala przygotować się do sesji, zamyka ten etap.
