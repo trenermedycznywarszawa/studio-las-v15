@@ -448,6 +448,7 @@ export class StudioLasRepository {
       assessments,
       homePlans,
       homePlanItems,
+      guidanceEvents,
       reports
     ] = await Promise.all([
       this.getClient(clientId),
@@ -462,6 +463,7 @@ export class StudioLasRepository {
       this.rest("assessment_results", { query: { ...byClient, select: "*", order: "performed_at.desc" } }),
       this.rest("home_plans", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
       this.rest("home_plan_items", { query: { ...byClient, select: "*", order: "sort_order.asc" } }),
+      this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_at,updated_at", order: "event_date.desc,created_at.desc", limit: 1 } }),
       this.rest("reports", { query: { ...byClient, select: "*", order: "created_at.desc" } })
     ]);
 
@@ -480,6 +482,7 @@ export class StudioLasRepository {
       assessments,
       homePlans,
       homePlanItems,
+      guidanceEvents,
       reports
     };
   }

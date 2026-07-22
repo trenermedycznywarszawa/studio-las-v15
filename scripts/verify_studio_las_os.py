@@ -19,6 +19,7 @@ JS_FILES = [
     ROOT / "assets/os/data.js",
     ROOT / "assets/os/trainer-mfa.js",
     ROOT / "assets/os/decision-support.js",
+    ROOT / "assets/os/session-brief.js",
     ROOT / "assets/os/password-auth.js",
     ROOT / "assets/os/app.js",
     ROOT / "assets/os/ui/common.js",
@@ -34,6 +35,7 @@ PRODUCTION_RUNTIME_FILES = [
     ROOT / "assets/os/data.js",
     ROOT / "assets/os/trainer-mfa.js",
     ROOT / "assets/os/decision-support.js",
+    ROOT / "assets/os/session-brief.js",
     ROOT / "assets/os/password-auth.js",
     ROOT / "assets/os/app.js",
     ROOT / "assets/os/ui/common.js",
@@ -230,6 +232,7 @@ def check_modularity() -> None:
         "assets/os/trainer-mfa.js": 180,
         "assets/os/app.js": 420,
         "assets/os/decision-support.js": 220,
+        "assets/os/session-brief.js": 220,
         "assets/os/password-auth.js": 260,
         "assets/os/runtime.js": 280,
         "assets/os/ui/common.js": 260,
@@ -277,6 +280,37 @@ def check_security_migration_contract() -> None:
     require("anon executed client_portal_snapshot" in role_tests, "anonymous RPC scenario missing")
 
 
+def check_session_brief_contract() -> None:
+    data = read(ROOT / "assets/os/data.js")
+    brief = read(ROOT / "assets/os/session-brief.js")
+    trainer = read(ROOT / "assets/os/ui/trainer.js")
+    styles = read(ROOT / "assets/os/styles.css")
+
+    require('this.rest("guidance_events"' in data, "session brief does not read client check-ins")
+    require('kind: "eq.client_checkin"' in data, "session brief read is not limited to client check-ins")
+    require('limit: 1' in data, "session brief client check-in read is not bounded")
+    require("guidanceEvents" in data, "session brief data is absent from workspace")
+    require("buildTrainerSessionBrief" in trainer, "trainer UI does not compose the session brief")
+    require("sessionBriefPanel(workspace)" in trainer, "trainer UI does not render the session brief")
+    require(
+        trainer.find("sessionBriefPanel(workspace)") < trainer.find('panel("Sygnały do przeglądu"'),
+        "session brief is not rendered before the existing workspace sections",
+    )
+    for fragment in [
+        "buildSafetyFacts",
+        "buildCurrentFocus",
+        "buildLastDecision",
+        "buildLatestClientSignal",
+        "buildActiveGuidance",
+        "sourceType",
+        "sourceDate",
+    ]:
+        require(fragment in brief, f"session brief contract missing: {fragment}")
+    require("recommend" not in brief.lower(), "session brief contains automatic recommendation language")
+    require(".brief-grid" in styles, "session brief responsive grid missing")
+    require(".brief-card.wide { grid-column: auto; }" in styles, "session brief mobile override missing")
+
+
 def main() -> int:
     check_js_syntax()
     check_import_targets()
@@ -287,6 +321,7 @@ def main() -> int:
     check_legacy_export_boundary()
     check_modularity()
     check_security_migration_contract()
+    check_session_brief_contract()
     print("Studio Las OS static security checks completed")
     return 0
 
