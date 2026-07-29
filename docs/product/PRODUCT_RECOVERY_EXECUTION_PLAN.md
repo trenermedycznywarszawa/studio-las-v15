@@ -3,9 +3,9 @@
 **Status dokumentu:** ACTIVE  
 **Wersja:** 1.2  
 **Data utworzenia:** 2026-07-22  
-**Aktualny etap:** kontrolowana integracja PR #17 jako technicznego fundamentu PR #18
+**Aktualna decyzja integracyjna:** PR #17 jest technicznym fundamentem PR #18; końcowe doświadczenie pozostaje w ocenie
 
-**Następna czynność:** korekta prawdy dokumentacyjnej i sekwencyjna kontrola integralności stosu
+**Następna bramka po publikacji:** integralność PR #18 12/12, zmiana base, ponowne checks i końcowa ocena produktowa
 
 ---
 
@@ -136,7 +136,7 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 
 ### M1 — Rdzeń pracy trenera — P0
 
-#### NOW — PR #17 + PR #18 — kontrolowany pakiet integracyjny
+#### PR #17 + PR #18 — zatwierdzona relacja warstwowa
 
 **Cel:** przed sesją pokazać trenerowi tylko informacje mogące zmienić jego decyzję.
 
@@ -149,7 +149,7 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 - [x] Kontrola techniczna przy 360 px: PASS; brak poziomego przewijania.
 - [x] Testy repozytorium i GitHub Actions #91 przechodzą.
 - [x] Test zadaniowy/orientacji: FAIL — powyżej 60 sekund; kryterium poznawcze nie zostało spełnione.
-- [ ] PR #17 może zostać scalony wyłącznie jako fundament PR #18, przez merge commit i bez oddzielnego wdrożenia.
+- [x] Zaakceptowana metoda integracji PR #17: foundation-only merge commit; publikacja tej wersji dokumentu jest dozwolona wyłącznie po wykonaniu tego merge’a i potwierdzeniu integralności stosu.
 - [ ] Końcowa hierarchia, orientacja i doświadczenie oczekują na ocenę w PR #18; istnienie PR #18 ani wcześniejszy E2E nie oznaczają końcowej akceptacji produktowej.
 
 **Kryterium wyniku:** Damian w mniej niż 60 sekund potrafi odpowiedzieć: co jest ważne, co wydarzyło się ostatnio i co wymaga jego decyzji — bez przeszukiwania oddzielnych ekranów. PR #17 nie spełnił tego kryterium; końcowa ocena należy do PR #18.
@@ -294,7 +294,7 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 | SEC-01 | DONE | Bezpieczeństwo CLOSED / PASS, 25/25 | `446c522ca5c61a9ad01808e7a03ea1ae9138527c` |
 | AUD-01 | DONE | Audyt odzyskania produktu wykonany i scalony | PR #14, merge `6a105b48d00fbf848d8181b5e7bc0e83e31b3085` |
 | GOV-01 | DONE | Kanoniczna linia `product-recovery` ustanowiona bez naruszenia `main` i bramki RODO | `product-recovery@f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`; `main@e371c76`; Draft PR #9; issue #12 |
-| PR-01 | IN REVIEW — FOUNDATION ONLY | Techniczna kontrola 360 px: PASS; test zadaniowy: FAIL — powyżej 60 sekund. PR #17 jest fundamentem PR #18, nie samodzielnie zaakceptowanym doświadczeniem | Draft PR #17 `cdd5d8fd65725de7add3c0d6c17a7c20653f9902`; Draft PR #18 `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
+| PR-01 | FOUNDATION ACCEPTED — EXPERIENCE IN REVIEW | Techniczna kontrola 360 px: PASS; test zadaniowy: FAIL — powyżej 60 sekund. PR #17 jest fundamentem PR #18, nie samodzielnie zaakceptowanym doświadczeniem | PR #17 `cdd5d8fd65725de7add3c0d6c17a7c20653f9902`; PR #18 `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
 | PR-02 | NOT STARTED | Canonical Session Closure | — |
 | PR-03 | NOT STARTED | Paper Guidance and Signal Review | — |
 | PR-04 | NOT STARTED | Diagnostic Entry and Selective Intake | — |
@@ -327,18 +327,31 @@ Powrót któregokolwiek elementu wymaga osobnej decyzji zmieniającej Product Co
 
 ---
 
-## 10. Następna czynność
+## 10. Warunki publikacji i następna bramka
 
-PR #17 i PR #18 tworzą jeden kontrolowany pakiet integracyjny. PR #17 pozostaje wyłącznie technicznym fundamentem PR #18 i nie może zostać wdrożony oddzielnie. PR #18 pozostaje miejscem końcowej oceny hierarchii, orientacji i doświadczenia; wcześniejszy E2E nie oznacza jeszcze akceptacji produktowej.
+PR #17 jest zaakceptowany wyłącznie jako techniczny fundament PR #18. Hierarchia i samodzielne doświadczenie PR #17 nie są zaakceptowane, a PR #17 nie może zostać wdrożony oddzielnie. Zaakceptowaną metodą jego integracji jest foundation-only merge commit. PR #18 pozostaje miejscem końcowej oceny hierarchii, orientacji i doświadczenia; wcześniejszy E2E nie oznacza akceptacji produktowej.
 
-Kontrolowana kolejność:
+### A. Warunki publikacji tej wersji dokumentu
 
-1. zaakceptować jednoplikiową korektę prawdy dokumentacyjnej;
-2. opublikować komentarz decyzyjny do PR #17;
-3. scalić PR #17 wyłącznie przez merge commit;
-4. natychmiast potwierdzić niezmieniony head PR #18, dokładnie 12 ścieżek, manifest blobów 12/12 oraz brak deploymentu;
-5. zmienić base tej korekty dokumentacyjnej na `product-recovery`, ponownie potwierdzić dokładnie jeden plik i scalić korektę;
-6. potwierdzić, że aktywny Execution Plan przedstawia obowiązujący stan projektu;
-7. dopiero potem skontrolować i ewentualnie zmienić base PR #18.
+Ta wersja może stać się kanoniczna w `product-recovery` wyłącznie po spełnieniu wszystkich warunków:
 
-`product-recovery` pozostaje gałęzią integracyjną. Integracja z `main` i deployment pozostają odłożone. Ta operacja nie obejmuje Supabase, danych ani produkcji.
+1. komentarz decyzyjny został opublikowany w PR #17;
+2. PR #17 został scalony przez merge commit;
+3. merge nie uruchomił deploymentu ani operacji Supabase;
+4. integralność PR #18 została potwierdzona: niezmieniony head `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466`, dokładnie 12 ścieżek i manifest blobów 12/12;
+5. base PR #19 został zmieniony na `product-recovery`;
+6. po zmianie base PR #19 nadal obejmuje dokładnie jeden plik i ma czysty diff.
+
+Lista określa warunki publikacji tej wersji, a nie stan wykonania przed zapisaniem odpowiednich dowodów.
+
+### B. Następna bramka po publikacji dokumentu
+
+Po opublikowaniu tej wersji jako aktywnego Execution Plan:
+
+1. potwierdzić aktywną treść dokumentu w `product-recovery`;
+2. zmienić base PR #18 na `product-recovery`, bez rebase’u, cherry-picku i zmiany head;
+3. ponownie potwierdzić head `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466`, dokładnie 12 plików oraz manifest blobów 12/12;
+4. uzyskać zielone checks dla PR #18;
+5. przeprowadzić osobną końcową ocenę produktową hierarchii, orientacji i doświadczenia PR #18.
+
+Ta bramka nie udziela zgody na merge PR #18, integrację z `main` ani deployment. `product-recovery` pozostaje gałęzią integracyjną. Operacje Supabase i produkcyjne pozostają poza zakresem.
