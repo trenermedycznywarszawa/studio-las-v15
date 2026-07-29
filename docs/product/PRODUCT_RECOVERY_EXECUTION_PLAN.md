@@ -3,8 +3,9 @@
 **Status dokumentu:** ACTIVE  
 **Wersja:** 1.2  
 **Data utworzenia:** 2026-07-22  
-**Aktualny etap:** PR-01 — read-only Trainer Session Brief  
-**Następny PR implementacyjny:** PR-01 — read-only Trainer Session Brief
+**Aktualny etap:** kontrolowana integracja PR #17 jako technicznego fundamentu PR #18
+
+**Następna czynność:** korekta prawdy dokumentacyjnej i sekwencyjna kontrola integralności stosu
 
 ---
 
@@ -135,21 +136,27 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 
 ### M1 — Rdzeń pracy trenera — P0
 
-#### NOW — PR-01 — Trainer Session Brief
+#### NOW — PR #17 + PR #18 — kontrolowany pakiet integracyjny
 
 **Cel:** przed sesją pokazać trenerowi tylko informacje mogące zmienić jego decyzję.
 
-- [x] Zakres i hierarchia informacji zatwierdzone.
+- [x] Techniczny zakres read-only PR #17 zaakceptowany jako fundament PR #18.
+- [ ] Hierarchia informacji i samodzielne doświadczenie PR #17 nie zostały zaakceptowane.
 - [x] Read-only brief zaimplementowany z istniejących danych Supabase.
 - [x] Każdy fakt ma źródło i datę.
 - [x] Brak automatycznej rekomendacji, nowego zapisu i migracji.
 - [x] Empty states są czytelne i nie sugerują nieistniejących danych.
-- [ ] Widok działa bez poziomego przewijania przy szerokości 360 px — oczekuje na test Damiana.
+- [x] Kontrola techniczna przy 360 px: PASS; brak poziomego przewijania.
 - [x] Testy repozytorium i GitHub Actions #91 przechodzą.
-- [ ] Damian wykonuje test zadaniowy przed rzeczywistą lub symulowaną sesją.
-- [ ] PR #17 scalony do kanonicznej bazy.
+- [x] Test zadaniowy/orientacji: FAIL — powyżej 60 sekund; kryterium poznawcze nie zostało spełnione.
+- [ ] PR #17 może zostać scalony wyłącznie jako fundament PR #18, przez merge commit i bez oddzielnego wdrożenia.
+- [ ] Końcowa hierarchia, orientacja i doświadczenie oczekują na ocenę w PR #18; istnienie PR #18 ani wcześniejszy E2E nie oznaczają końcowej akceptacji produktowej.
 
-**Kryterium wyniku:** Damian w mniej niż 60 sekund potrafi odpowiedzieć: co jest ważne, co wydarzyło się ostatnio i co wymaga jego decyzji — bez przeszukiwania oddzielnych ekranów.
+**Kryterium wyniku:** Damian w mniej niż 60 sekund potrafi odpowiedzieć: co jest ważne, co wydarzyło się ostatnio i co wymaga jego decyzji — bez przeszukiwania oddzielnych ekranów. PR #17 nie spełnił tego kryterium; końcowa ocena należy do PR #18.
+
+**Rola PR #17:** techniczny fundament PR #18, nie samodzielnie zaakceptowane doświadczenie. PR #17 nie może zostać wdrożony oddzielnie, a jego integracja wymaga merge commita zachowującego integralność warstwowego PR #18.
+
+**Rola PR #18:** miejsce oceny końcowej hierarchii, orientacji i doświadczenia. Dotychczasowy E2E potwierdza testowany pionowy wycinek, lecz nie stanowi końcowej akceptacji produktowej.
 
 #### PR-02 — Canonical Session Closure
 
@@ -287,7 +294,7 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 | SEC-01 | DONE | Bezpieczeństwo CLOSED / PASS, 25/25 | `446c522ca5c61a9ad01808e7a03ea1ae9138527c` |
 | AUD-01 | DONE | Audyt odzyskania produktu wykonany i scalony | PR #14, merge `6a105b48d00fbf848d8181b5e7bc0e83e31b3085` |
 | GOV-01 | DONE | Kanoniczna linia `product-recovery` ustanowiona bez naruszenia `main` i bramki RODO | `product-recovery@f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`; `main@e371c76`; Draft PR #9; issue #12 |
-| PR-01 | IN REVIEW | Read-only Trainer Session Brief zaimplementowany; oczekuje na test 360 px i test zadaniowy Damiana | Draft PR #17; `0392e785a1d33405134f3cd30f24250ef52981ac`; GitHub Actions #91 PASS |
+| PR-01 | IN REVIEW — FOUNDATION ONLY | Techniczna kontrola 360 px: PASS; test zadaniowy: FAIL — powyżej 60 sekund. PR #17 jest fundamentem PR #18, nie samodzielnie zaakceptowanym doświadczeniem | Draft PR #17 `cdd5d8fd65725de7add3c0d6c17a7c20653f9902`; Draft PR #18 `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
 | PR-02 | NOT STARTED | Canonical Session Closure | — |
 | PR-03 | NOT STARTED | Paper Guidance and Signal Review | — |
 | PR-04 | NOT STARTED | Diagnostic Entry and Selective Intake | — |
@@ -322,8 +329,16 @@ Powrót któregokolwiek elementu wymaga osobnej decyzji zmieniającej Product Co
 
 ## 10. Następna czynność
 
-Implementacja **PR-01 — read-only Trainer Session Brief** znajduje się w Draft PR #17. Nie rozpoczynać PR-02.
+PR #17 i PR #18 tworzą jeden kontrolowany pakiet integracyjny. PR #17 pozostaje wyłącznie technicznym fundamentem PR #18 i nie może zostać wdrożony oddzielnie. PR #18 pozostaje miejscem końcowej oceny hierarchii, orientacji i doświadczenia; wcześniejszy E2E nie oznacza jeszcze akceptacji produktowej.
 
-Następną czynnością jest test akceptacyjny Damiana na telefonie lub w widoku 360 px, bez użycia realnych danych klienta. Kryterium: w mniej niż 60 sekund wskazać, co wymaga uwagi, co wydarzyło się ostatnio i jaka decyzja nadal należy do trenera; równocześnie potwierdzić brak poziomego przewijania.
+Kontrolowana kolejność:
 
-Po zapisaniu wyniku w PR #17 można poprawić brief albo — jeśli test przejdzie — oznaczyć PR jako gotowy, scalić go do `product-recovery` i zaktualizować ten plan. Do tego czasu PR-01 pozostaje `IN REVIEW`.
+1. zaakceptować jednoplikiową korektę prawdy dokumentacyjnej;
+2. opublikować komentarz decyzyjny do PR #17;
+3. scalić PR #17 wyłącznie przez merge commit;
+4. natychmiast potwierdzić niezmieniony head PR #18, dokładnie 12 ścieżek, manifest blobów 12/12 oraz brak deploymentu;
+5. zmienić base tej korekty dokumentacyjnej na `product-recovery`, ponownie potwierdzić dokładnie jeden plik i scalić korektę;
+6. potwierdzić, że aktywny Execution Plan przedstawia obowiązujący stan projektu;
+7. dopiero potem skontrolować i ewentualnie zmienić base PR #18.
+
+`product-recovery` pozostaje gałęzią integracyjną. Integracja z `main` i deployment pozostają odłożone. Ta operacja nie obejmuje Supabase, danych ani produkcji.
