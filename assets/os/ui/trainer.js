@@ -1,253 +1,46 @@
-import {
-  button,
-  clear,
-  create,
-  detailsForm,
-  formatDate,
-  panel,
-  recordList
-} from "./common.js";
-import {
-  assessmentForm,
-  homePlanForm,
-  homePlanItemForm,
-  measurementForm,
-  newClientForm,
-  reportForm,
-  sessionForm,
-  trainingLoadForm
-} from "./forms.js";
-import {
-  CANONICAL_ENGAGEMENTS,
-  CANONICAL_STAGES
-} from "../runtime.js";
-import { buildTrainerSessionBrief } from "../session-brief.js";
-
-function summaryGrid(client) {
-  const values = [
-    ["Typ współpracy", CANONICAL_ENGAGEMENTS[client.engagement_type] || "Archiwalny typ współpracy"],
-    ["Etap", CANONICAL_STAGES[client.stage] || "Proces Studio Las"],
-    ["Następna sesja", formatDate(client.next_session_date)],
-    ["Następny przegląd", formatDate(client.next_review_date)],
-    ["Cel procesu", client.goal || "Nie zapisano"],
-    ["Następny kamień milowy", client.next_milestone || "Nie zapisano"]
-  ];
-
-  return create("div", { className: "summary-grid" }, values.map(([label, value], index) =>
-    create("div", { className: `summary-item ${index > 3 ? "wide" : ""}` }, [
-      create("span", { text: label }),
-      create("strong", { text: value })
-    ])
-  ));
-}
-
-function signalPanel(result) {
-  const body = create("div", { className: "signal-list" });
-  if (!result?.signals?.length) {
-    body.append(create("div", { className: "status ok", text: "Brak automatycznych sygnałów do przeglądu. Decyzję nadal podejmuje trener." }));
-  } else {
-    result.signals.forEach(signal => {
-      body.append(create("article", { className: `signal ${signal.level}` }, [
-        create("strong", { text: signal.label }),
-        signal.context ? create("p", { text: signal.context }) : null,
-        create("p", { className: "muted", text: `Pytanie dla trenera: ${signal.trainerQuestion}` })
-      ]));
-    });
-  }
-  body.append(create("p", { className: "disclaimer", text: result?.disclaimer || "Program nie podejmuje decyzji medycznych." }));
-  return body;
-}
-
-function sourceLine(item) {
-  return create("p", {
-    className: "brief-source",
-    text: `Źródło: ${item.sourceType} · ${formatDate(item.sourceDate)}`
-  });
-}
-
-function briefFactCard(title, item, emptyText, className = "brief-card") {
-  return create("article", { className }, [
-    create("h3", { text: title }),
-    item
-      ? create("div", {}, [create("p", { text: item.value }), sourceLine(item)])
-      : create("p", { className: "muted", text: emptyText })
-  ]);
-}
-
-function briefListCard(title, items, emptyText, className = "brief-card") {
-  const content = items.length
-    ? create("div", { className: "brief-list" }, items.map(item => create("div", { className: "brief-list-item" }, [
-        create("strong", { text: item.label }),
-        create("p", { text: item.value }),
-        sourceLine(item)
-      ])))
-    : create("p", { className: "muted", text: emptyText });
-  return create("article", { className }, [create("h3", { text: title }), content]);
-}
-
-function sessionBriefPanel(workspace) {
-  const brief = buildTrainerSessionBrief(workspace);
-  const timing = create("div", { className: "brief-timing" }, [
-    briefFactCard("Następna sesja", brief.nextSession, "Nie zapisano terminu następnej sesji."),
-    briefFactCard("Punkt przeglądu", brief.reviewPoint, "Nie zapisano terminu przeglądu.")
-  ]);
-  const context = create("div", { className: "brief-grid" }, [
-    briefListCard(
-      "Bezpieczeństwo i ograniczenia",
-      brief.safety,
-      "Nie zapisano ograniczeń. To nie jest potwierdzenie ich braku."
-    ),
-    briefFactCard("Aktualny fokus", brief.currentFocus, "Nie zapisano aktualnego fokusu."),
-    briefFactCard("Ostatnia decyzja trenera", brief.lastDecision, "Nie zapisano jeszcze decyzji trenera."),
-    briefFactCard("Ostatni sygnał klienta", brief.latestClientSignal, "Klient nie zapisał jeszcze sygnału."),
-    briefListCard(
-      "Aktywne prowadzenie na papierze",
-      brief.activeGuidance,
-      "Brak aktywnego, opublikowanego prowadzenia.",
-      "brief-card wide"
-    )
-  ]);
-
-  return panel("Przed następną sesją", create("div", { className: "session-brief" }, [
-    create("p", {
-      className: "brief-intro",
-      text: "Krótki kontekst z istniejących zapisów. System nie interpretuje go i nie podejmuje decyzji za trenera."
-    }),
-    timing,
-    context
-  ]), "Tylko odczyt · każdy fakt pokazuje źródło i datę");
-}
-
-function sessionsSection(workspace, model) {
-  return panel("Sesje", create("div", {}, [
-    recordList(workspace.sessions, session => create("article", { className: "record" }, [
-      create("strong", { text: formatDate(session.date) }),
-      create("p", { text: session.trainer_observation || "Brak obserwacji" }),
-      create("p", { className: "muted", text: session.trainer_decision || "Brak zapisanej decyzji trenera" })
-    ]), "Brak sesji."),
-    detailsForm("Dodaj sesję", sessionForm(model.onSaveSession))
-  ]));
-}
-
-function measurementsSection(workspace, model) {
-  const measurements = create("div", {}, [
-    create("h3", { text: "Pomiary" }),
-    recordList(workspace.measurements, item => create("article", { className: "record" }, [
-      create("strong", { text: `${formatDate(item.measured_at)} · ${item.source}` }),
-      create("p", { text: item.client_summary || item.trainer_interpretation || "Brak podsumowania" })
-    ]), "Brak pomiarów."),
-    detailsForm("Dodaj pomiar", measurementForm(model.onSaveMeasurement))
-  ]);
-
-  const trainingLoad = create("div", {}, [
-    create("h3", { text: "Polar / tolerancja obciążenia" }),
-    recordList(workspace.trainingLoad, item => create("article", { className: "record" }, [
-      create("strong", { text: `${formatDate(item.observed_at)} · ${item.session_type || "Sesja"}` }),
-      create("p", { text: `RPE: ${item.rpe ?? "—"}, HR śr.: ${item.hr_avg ?? "—"}` }),
-      create("p", { className: "muted", text: item.trainer_note || "Brak notatki" })
-    ]), "Brak odczytów."),
-    detailsForm("Dodaj odczyt", trainingLoadForm(model.onSaveTrainingLoad))
-  ]);
-
-  return panel("Pomiary i tolerancja obciążenia", create("div", { className: "two-column" }, [measurements, trainingLoad]));
-}
-
-function assessmentsSection(workspace, model) {
-  return panel("Obserwacje ruchowe", create("div", {}, [
-    recordList(workspace.assessments, item => create("article", { className: "record" }, [
-      create("strong", { text: `${formatDate(item.performed_at)} · ${item.test_name || "Obserwacja"}` }),
-      create("p", { text: item.result_text || "Brak opisu" }),
-      create("p", { className: "muted", text: item.interpretation || "Bez automatycznej interpretacji" })
-    ]), "Brak zapisanych obserwacji."),
-    detailsForm("Dodaj obserwację", assessmentForm(model.onSaveAssessment))
-  ]));
-}
-
-function plansSection(workspace, model) {
-  const plans = create("div", {}, [
-    create("h3", { text: "Plany" }),
-    recordList(workspace.homePlans, plan => create("article", { className: "record" }, [
-      create("strong", { text: plan.title || "Plan" }),
-      create("p", { text: plan.focus || "Brak kierunku" }),
-      create("p", { className: "muted", text: `${plan.status} · ${plan.published_at ? "opublikowany" : "nieopublikowany"}` })
-    ]), "Brak planu."),
-    detailsForm("Utwórz plan", homePlanForm(model.onSaveHomePlan))
-  ]);
-
-  const items = create("div", {}, [
-    create("h3", { text: "Zadania" }),
-    recordList(workspace.homePlanItems, item => create("article", { className: "record" }, [
-      create("strong", { text: item.name }),
-      create("p", { text: [item.dosage, item.frequency].filter(Boolean).join(" · ") || "Brak dawkowania" }),
-      create("p", { className: "muted", text: item.client_cue || "Brak wskazówki" })
-    ]), "Brak zadań."),
-    detailsForm("Dodaj zadanie", homePlanItemForm(workspace.homePlans, model.onSaveHomePlanItem))
-  ]);
-
-  return panel("Plan domowy", create("div", { className: "two-column" }, [plans, items]));
-}
-
-function reportsSection(workspace, model) {
-  return panel("Raporty", create("div", {}, [
-    recordList(workspace.reports, report => create("article", { className: "record" }, [
-      create("strong", { text: report.title || report.type }),
-      create("p", { text: `${report.content.slice(0, 260)}${report.content.length > 260 ? "…" : ""}` }),
-      create("p", { className: "muted", text: `${report.audience} · ${report.status}` })
-    ]), "Brak raportów."),
-    detailsForm("Dodaj raport", reportForm(model.onSaveReport))
-  ]));
-}
+import { button, clear, create } from "./common.js";
+import { createTrainerChrome } from "./trainer-navigation.js";
+import { renderTrainerView } from "./trainer-views.js";
 
 export function renderTrainer(root, model) {
   clear(root);
+  document.body.classList.remove("modal-open");
+  let sessionDirty = false;
 
-  const clientSelect = create("select", { className: "client-select", "aria-label": "Wybierz klienta" }, [
-    create("option", { value: "", text: "Wybierz klienta" }),
-    ...model.clients.map(client => create("option", { value: client.id, text: client.name }))
-  ]);
-  clientSelect.value = model.activeClientId || "";
-  clientSelect.addEventListener("change", () => model.onSelectClient(clientSelect.value));
+  const confirmDiscard = () => !sessionDirty || window.confirm(
+    "Niezapisana sesja zostanie wyczyszczona. Kontynuować?"
+  );
+  const navigate = view => {
+    if (view === model.activeView) return true;
+    if (!confirmDiscard()) return false;
+    model.onNavigate(view);
+    return true;
+  };
+  const selectClient = clientId => {
+    if (clientId === model.activeClientId) return true;
+    if (!confirmDiscard()) return false;
+    model.onSelectClient(clientId);
+    return true;
+  };
 
-  const header = create("header", { className: "topbar" }, [
-    create("div", {}, [
-      create("p", { className: "eyebrow", text: "Studio Las OS · produkcja" }),
-      create("h1", { text: "Panel trenera" })
-    ]),
-    create("div", { className: "top-actions" }, [
-      create("span", { className: "role-badge", text: model.profile.display_name || model.profile.email || "Trener" }),
-      button("Dostęp klientów", { onclick: () => window.location.assign("./tools/client-access-admin.html") }),
-      button("MFA", { onclick: model.onManageMfa }),
-      button("Odśwież", { onclick: model.onReload }),
-      button("Wyloguj", { className: "button danger", onclick: model.onLogout })
-    ])
-  ]);
-
-  const sidebar = create("aside", { className: "sidebar" }, [
-    create("h2", { text: "Klienci" }),
-    clientSelect,
-    detailsForm("Dodaj klienta", newClientForm(model.onCreateClient)),
-    create("div", { className: "security-note" }, [
-      create("strong", { text: "Jedno źródło prawdy" }),
-      create("p", { text: "Każdy zapis trafia bezpośrednio do Supabase. Brak localStorage i kolejki offline." })
-    ])
-  ]);
-
-  const content = create("main", { className: "workspace" });
-  if (!model.workspace) {
-    content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Po wyborze zobaczysz proces i formularze zapisujące bezpośrednio do Supabase." })));
+  const chrome = createTrainerChrome(model, { navigate, selectClient });
+  const content = create("main", { className: "trainer-workspace" });
+  const view = renderTrainerView(model, () => { sessionDirty = true; });
+  if (view) {
+    content.append(view);
   } else {
-    const workspace = model.workspace;
-    content.append(
-      panel(workspace.client.name, summaryGrid(workspace.client)),
-      sessionBriefPanel(workspace),
-      panel("Sygnały do przeglądu", signalPanel(model.attentionSignals), "Program nie podejmuje decyzji za trenera."),
-      sessionsSection(workspace, model),
-      measurementsSection(workspace, model),
-      assessmentsSection(workspace, model),
-      plansSection(workspace, model),
-      reportsSection(workspace, model)
-    );
+    content.append(create("section", { className: "empty-workspace" }, [
+      create("p", { className: "eyebrow", text: "Jeden kontekst naraz" }),
+      create("h1", { text: "Wybierz aktywnego klienta" }),
+      create("p", { text: "Po wyborze system pobierze pełny, autoryzowany kontekst tej osoby." }),
+      button("Wybierz klienta", { className: "button primary", onclick: chrome.openDrawer })
+    ]));
   }
 
-  root.append(header, create("div", { className: "app-layout" }, [sidebar, content]));
+  root.append(
+    chrome.header,
+    create("div", { className: "trainer-shell" }, [chrome.sidebar, content]),
+    chrome.bottomNavigation,
+    chrome.layer
+  );
 }
