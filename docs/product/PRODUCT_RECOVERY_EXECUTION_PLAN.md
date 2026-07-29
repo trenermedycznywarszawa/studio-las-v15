@@ -3,8 +3,9 @@
 **Status dokumentu:** ACTIVE  
 **Wersja:** 1.2  
 **Data utworzenia:** 2026-07-22  
-**Aktualny etap:** PR-01 — read-only Trainer Session Brief  
-**Następny PR implementacyjny:** PR-01 — read-only Trainer Session Brief
+**Aktualna decyzja integracyjna:** PR #17 jest technicznym fundamentem PR #18; końcowe doświadczenie pozostaje w ocenie
+
+**Następna bramka po publikacji:** integralność PR #18 12/12, zmiana base, ponowne checks i końcowa ocena produktowa
 
 ---
 
@@ -135,21 +136,27 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 
 ### M1 — Rdzeń pracy trenera — P0
 
-#### NOW — PR-01 — Trainer Session Brief
+#### PR #17 + PR #18 — zatwierdzona relacja warstwowa
 
 **Cel:** przed sesją pokazać trenerowi tylko informacje mogące zmienić jego decyzję.
 
-- [x] Zakres i hierarchia informacji zatwierdzone.
+- [x] Techniczny zakres read-only PR #17 zaakceptowany jako fundament PR #18.
+- [ ] Hierarchia informacji i samodzielne doświadczenie PR #17 nie zostały zaakceptowane.
 - [x] Read-only brief zaimplementowany z istniejących danych Supabase.
 - [x] Każdy fakt ma źródło i datę.
 - [x] Brak automatycznej rekomendacji, nowego zapisu i migracji.
 - [x] Empty states są czytelne i nie sugerują nieistniejących danych.
-- [ ] Widok działa bez poziomego przewijania przy szerokości 360 px — oczekuje na test Damiana.
+- [x] Kontrola techniczna przy 360 px: PASS; brak poziomego przewijania.
 - [x] Testy repozytorium i GitHub Actions #91 przechodzą.
-- [ ] Damian wykonuje test zadaniowy przed rzeczywistą lub symulowaną sesją.
-- [ ] PR #17 scalony do kanonicznej bazy.
+- [x] Test zadaniowy/orientacji: FAIL — powyżej 60 sekund; kryterium poznawcze nie zostało spełnione.
+- [x] Zaakceptowana metoda integracji PR #17: foundation-only merge commit; publikacja tej wersji dokumentu jest dozwolona wyłącznie po wykonaniu tego merge’a i potwierdzeniu integralności stosu.
+- [ ] Końcowa hierarchia, orientacja i doświadczenie oczekują na ocenę w PR #18; istnienie PR #18 ani wcześniejszy E2E nie oznaczają końcowej akceptacji produktowej.
 
-**Kryterium wyniku:** Damian w mniej niż 60 sekund potrafi odpowiedzieć: co jest ważne, co wydarzyło się ostatnio i co wymaga jego decyzji — bez przeszukiwania oddzielnych ekranów.
+**Kryterium wyniku:** Damian w mniej niż 60 sekund potrafi odpowiedzieć: co jest ważne, co wydarzyło się ostatnio i co wymaga jego decyzji — bez przeszukiwania oddzielnych ekranów. PR #17 nie spełnił tego kryterium; końcowa ocena należy do PR #18.
+
+**Rola PR #17:** techniczny fundament PR #18, nie samodzielnie zaakceptowane doświadczenie. PR #17 nie może zostać wdrożony oddzielnie, a jego integracja wymaga merge commita zachowującego integralność warstwowego PR #18.
+
+**Rola PR #18:** miejsce oceny końcowej hierarchii, orientacji i doświadczenia. Dotychczasowy E2E potwierdza testowany pionowy wycinek, lecz nie stanowi końcowej akceptacji produktowej.
 
 #### PR-02 — Canonical Session Closure
 
@@ -287,7 +294,7 @@ Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 
 | SEC-01 | DONE | Bezpieczeństwo CLOSED / PASS, 25/25 | `446c522ca5c61a9ad01808e7a03ea1ae9138527c` |
 | AUD-01 | DONE | Audyt odzyskania produktu wykonany i scalony | PR #14, merge `6a105b48d00fbf848d8181b5e7bc0e83e31b3085` |
 | GOV-01 | DONE | Kanoniczna linia `product-recovery` ustanowiona bez naruszenia `main` i bramki RODO | `product-recovery@f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`; `main@e371c76`; Draft PR #9; issue #12 |
-| PR-01 | IN REVIEW | Read-only Trainer Session Brief zaimplementowany; oczekuje na test 360 px i test zadaniowy Damiana | Draft PR #17; `0392e785a1d33405134f3cd30f24250ef52981ac`; GitHub Actions #91 PASS |
+| PR-01 | FOUNDATION ACCEPTED — EXPERIENCE IN REVIEW | Techniczna kontrola 360 px: PASS; test zadaniowy: FAIL — powyżej 60 sekund. PR #17 jest fundamentem PR #18, nie samodzielnie zaakceptowanym doświadczeniem | PR #17 `cdd5d8fd65725de7add3c0d6c17a7c20653f9902`; PR #18 `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
 | PR-02 | NOT STARTED | Canonical Session Closure | — |
 | PR-03 | NOT STARTED | Paper Guidance and Signal Review | — |
 | PR-04 | NOT STARTED | Diagnostic Entry and Selective Intake | — |
@@ -320,10 +327,31 @@ Powrót któregokolwiek elementu wymaga osobnej decyzji zmieniającej Product Co
 
 ---
 
-## 10. Następna czynność
+## 10. Warunki publikacji i następna bramka
 
-Implementacja **PR-01 — read-only Trainer Session Brief** znajduje się w Draft PR #17. Nie rozpoczynać PR-02.
+PR #17 jest zaakceptowany wyłącznie jako techniczny fundament PR #18. Hierarchia i samodzielne doświadczenie PR #17 nie są zaakceptowane, a PR #17 nie może zostać wdrożony oddzielnie. Zaakceptowaną metodą jego integracji jest foundation-only merge commit. PR #18 pozostaje miejscem końcowej oceny hierarchii, orientacji i doświadczenia; wcześniejszy E2E nie oznacza akceptacji produktowej.
 
-Następną czynnością jest test akceptacyjny Damiana na telefonie lub w widoku 360 px, bez użycia realnych danych klienta. Kryterium: w mniej niż 60 sekund wskazać, co wymaga uwagi, co wydarzyło się ostatnio i jaka decyzja nadal należy do trenera; równocześnie potwierdzić brak poziomego przewijania.
+### A. Warunki publikacji tej wersji dokumentu
 
-Po zapisaniu wyniku w PR #17 można poprawić brief albo — jeśli test przejdzie — oznaczyć PR jako gotowy, scalić go do `product-recovery` i zaktualizować ten plan. Do tego czasu PR-01 pozostaje `IN REVIEW`.
+Ta wersja może stać się kanoniczna w `product-recovery` wyłącznie po spełnieniu wszystkich warunków:
+
+1. komentarz decyzyjny został opublikowany w PR #17;
+2. PR #17 został scalony przez merge commit;
+3. merge nie uruchomił deploymentu ani operacji Supabase;
+4. integralność PR #18 została potwierdzona: niezmieniony head `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466`, dokładnie 12 ścieżek i manifest blobów 12/12;
+5. base PR #19 został zmieniony na `product-recovery`;
+6. po zmianie base PR #19 nadal obejmuje dokładnie jeden plik i ma czysty diff.
+
+Lista określa warunki publikacji tej wersji, a nie stan wykonania przed zapisaniem odpowiednich dowodów.
+
+### B. Następna bramka po publikacji dokumentu
+
+Po opublikowaniu tej wersji jako aktywnego Execution Plan:
+
+1. potwierdzić aktywną treść dokumentu w `product-recovery`;
+2. zmienić base PR #18 na `product-recovery`, bez rebase’u, cherry-picku i zmiany head;
+3. ponownie potwierdzić head `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466`, dokładnie 12 plików oraz manifest blobów 12/12;
+4. uzyskać zielone checks dla PR #18;
+5. przeprowadzić osobną końcową ocenę produktową hierarchii, orientacji i doświadczenia PR #18.
+
+Ta bramka nie udziela zgody na merge PR #18, integrację z `main` ani deployment. `product-recovery` pozostaje gałęzią integracyjną. Operacje Supabase i produkcyjne pozostają poza zakresem.
