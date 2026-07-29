@@ -21,6 +21,7 @@ import {
   CANONICAL_ENGAGEMENTS,
   CANONICAL_STAGES
 } from "../runtime.js";
+import { buildTrainerSessionBrief } from "../session-brief.js";
 
 function summaryGrid(client) {
   const values = [
@@ -55,6 +56,66 @@ function signalPanel(result) {
   }
   body.append(create("p", { className: "disclaimer", text: result?.disclaimer || "Program nie podejmuje decyzji medycznych." }));
   return body;
+}
+
+function sourceLine(item) {
+  return create("p", {
+    className: "brief-source",
+    text: `Źródło: ${item.sourceType} · ${formatDate(item.sourceDate)}`
+  });
+}
+
+function briefFactCard(title, item, emptyText, className = "brief-card") {
+  return create("article", { className }, [
+    create("h3", { text: title }),
+    item
+      ? create("div", {}, [create("p", { text: item.value }), sourceLine(item)])
+      : create("p", { className: "muted", text: emptyText })
+  ]);
+}
+
+function briefListCard(title, items, emptyText, className = "brief-card") {
+  const content = items.length
+    ? create("div", { className: "brief-list" }, items.map(item => create("div", { className: "brief-list-item" }, [
+        create("strong", { text: item.label }),
+        create("p", { text: item.value }),
+        sourceLine(item)
+      ])))
+    : create("p", { className: "muted", text: emptyText });
+  return create("article", { className }, [create("h3", { text: title }), content]);
+}
+
+function sessionBriefPanel(workspace) {
+  const brief = buildTrainerSessionBrief(workspace);
+  const timing = create("div", { className: "brief-timing" }, [
+    briefFactCard("Następna sesja", brief.nextSession, "Nie zapisano terminu następnej sesji."),
+    briefFactCard("Punkt przeglądu", brief.reviewPoint, "Nie zapisano terminu przeglądu.")
+  ]);
+  const context = create("div", { className: "brief-grid" }, [
+    briefListCard(
+      "Bezpieczeństwo i ograniczenia",
+      brief.safety,
+      "Nie zapisano ograniczeń. To nie jest potwierdzenie ich braku."
+    ),
+    briefFactCard("Aktualny fokus", brief.currentFocus, "Nie zapisano aktualnego fokusu."),
+    briefFactCard("Ostatnia decyzja trenera", brief.lastDecision, "Nie zapisano jeszcze decyzji trenera."),
+    briefFactCard("Ostatni sygnał klienta", brief.latestClientSignal, "Klient nie zapisał jeszcze sygnału."),
+    briefListCard(
+      "Aktywne prowadzenie na papierze",
+      brief.activeGuidance,
+      "Brak aktywnego, opublikowanego prowadzenia.",
+      "brief-card wide"
+    )
+  ]);
+
+  return panel("Przed następną sesją", create("div", { className: "session-brief" }, [
+    create("p", {
+      className: "brief-intro",
+      text: "Krótki kontekst z istniejących zapisów. System nie interpretuje go i nie podejmuje decyzji za trenera."
+    }),
+    timing,
+    context
+  ]), "Tylko odczyt · każdy fakt pokazuje źródło i datę");
 }
 
 function sessionsSection(workspace, model) {
@@ -178,6 +239,7 @@ export function renderTrainer(root, model) {
     const workspace = model.workspace;
     content.append(
       panel(workspace.client.name, summaryGrid(workspace.client)),
+      sessionBriefPanel(workspace),
       panel("Sygnały do przeglądu", signalPanel(model.attentionSignals), "Program nie podejmuje decyzji za trenera."),
       sessionsSection(workspace, model),
       measurementsSection(workspace, model),
