@@ -61,7 +61,7 @@ The interrupted turn did not finish Stage 0. The repository contains a valid loc
 
 ### Unverified assumptions and later decisions
 
-- `docs/architecture/04_CLIENT_SAFE_SURFACES.md` still describes paper as the fixed morning surface and says the app does not guide the morning ritual. This active projection conflicts with Constitution v1.1 and Home Guidance System v2.0; it must be reconciled in a separately reviewed documentation correction before this Stage 0 Draft may merge.
+- **Resolved in Stage 0:** `docs/architecture/04_CLIENT_SAFE_SURFACES.md` now follows Constitution v1.1 and Home Guidance System v2.0. Paper, the app, and a deliberate hybrid are valid trainer-selected channels, with one authoritative instruction source and Damian’s approval required before AI-prepared material is published to the client.
 - The adaptive full-intake v2 is described in Plan Architecture v3.1, but neither its claimed DOCX source nor an approved 42-question contract exists in the inspected repository/workspace. Stage 3 cannot begin until that artifact is recovered, versioned, reviewed, and given an explicit owner of truth.
 - No AI provider/runtime contract is approved for real client content. Provider, endpoint, retention, region/transfer, logging, cost, fallback, and evaluation remain Stage 1 decisions.
 - The final production URL, email/SMTP path, privacy/RODO sign-off, retention schedule, and real-data rollout authorization are not proven complete by the repository evidence inspected here.
