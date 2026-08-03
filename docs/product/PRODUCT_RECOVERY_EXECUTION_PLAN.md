@@ -1,7 +1,7 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGE 0 MERGED AND CLOSED; STAGE 1 AUTHORIZED FOR CONTRACT DESIGN ONLY
-**Version:** 2.1
+**Status:** STAGE 0 MERGED AND CLOSED; STAGE 1 CONTRACT CORRECTION PREPARED; FINAL VALIDATION BLOCKED; IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.2
 **Updated:** 2026-08-03
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
@@ -245,8 +245,10 @@ No phase starts before the previous phase meets its exit gate. Each phase requir
 
 Define before UI:
 
-- the nine information types, with `client_material` as the only client-content type;
-- independent `information_type`, `review_state`, and `publication_state` axes;
+- the nine information types, with `Client Signal` mapped to allowed source-information types rather than added as a tenth type;
+- `client_material` as the only type eligible for the controlled Studio Las client-publication lifecycle;
+- independent `information_type`, `review_state`, and `publication_state` axes, with visibility kept as a separate authorization/projection rule;
+- semantic information objects separated from operational records and artifacts;
 - authorship, timestamps, complete `derived_from` links, source locators, uncertainty, versioning, and exact-version approval;
 - file ingestion boundaries for forms, PDFs, Tanita, and other documents;
 - retention, access, audit, and deletion rules;
@@ -403,11 +405,14 @@ Only after the manual flows work:
 | PR-17 | EVIDENCE | Read-only brief foundation merged; not complete product architecture | `c669a79372aae70f63c8b235fd63330c0555ab5e` |
 | PR-18 | FROZEN | Open Draft preserved for selective recovery after approved contracts | `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
 | DIR-01 | DONE | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 merged | PR #20; `62f2366e0c77abf2d1413e437173cc82a7735455`; owner accepted 2026-08-03 |
+| PR-21 | VALIDATION BLOCKED | Stage 1 data, permission, and AI contract correction prepared; Execution Plan advanced to v2.2; no implementation permission | Draft PR #21; five exact `python3` regression commands cannot start in the current environment |
 
 ---
 
 ## 10. Next action
 
-Stage 1 is authorized for contract design only from `product-recovery@62f2366e0c77abf2d1413e437173cc82a7735455`. Prepare the five Data, Permission, and AI contracts as one Draft PR for Damian's owner contract review.
+The five Stage 1 Data, Permission, and AI contracts are prepared in Draft PR #21 from `product-recovery@62f2366e0c77abf2d1413e437173cc82a7735455`, and the final contract correction is documented. Final validation is blocked because the five required `python3 scripts/...` commands resolve only to an unavailable Windows Store alias in the current environment.
 
-This authorization does not permit implementation, UI work, SQL, schema approval, migrations, provider selection by assumption, AI calls, real client data, Supabase changes, staging/production changes, Stage 2, integration with `main`, or any modification, rebase, retarget, or merge of PR #18.
+The next action is to restore the exact `python3` command, rerun all seven required regression commands plus `git diff --check` without substitution, and only after 7/7 PASS proceed to Damian's final owner contract review. `READY FOR OWNER CONTRACT REVIEW` does not mean `OWNER ACCEPTED`.
+
+Until those separate gates pass, there is no permission for implementation, UI work, SQL, schema approval, migrations, provider selection by assumption, AI calls, real client data, Supabase changes, staging/production changes, Stage 2, integration with `main`, or any modification, rebase, retarget, or merge of PR #18.

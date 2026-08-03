@@ -20,9 +20,11 @@ Every information object has three independent axes:
 
 1. `information_type` — what the information is;
 2. `review_state` — where that exact version is in Damian's review process;
-3. `publication_state` — whether that exact approved version is available to the client.
+3. `publication_state` — where that exact version is in the controlled publication process for Studio Las content prepared for a client.
 
 Changing one axis never changes either of the other two.
+
+`Visibility` is not a fourth state axis. It is a separate authorization and projection rule evaluated for the actor, subject, purpose, information type, and applicable states. A client-safe projection may therefore show a client their own authorized source information without approving it, publishing it as Studio Las communication, or changing its `information_type`.
 
 ## Common information envelope
 
@@ -44,7 +46,7 @@ Every persistent or auditable information object must be capable of carrying the
 | `supersedes` | Reference to the prior version when this version replaces it. |
 | `review_state` | One allowed review state, attached to this exact version. |
 | `publication_state` | One allowed publication state, attached to this exact version. |
-| Visibility | Effective audience derived from type and states, never inferred from a generic UI flag alone. |
+| Visibility | Effective audience determined by explicit authorization and projection rules using subject, actor, purpose, type, and applicable states; never inferred from a generic UI flag alone. |
 | Uncertainty | Extraction quality, matching uncertainty, or hypothesis uncertainty when applicable. |
 | Approval record | Approver, time, exact version, approved use, and deliberate action when approval is required. |
 | Audit references | Events that created, reviewed, approved, rejected, superseded, published, withdrew, corrected, or deleted the object. |
@@ -69,13 +71,46 @@ The allowed Stage 1 types are:
 
 Names such as `client_safe_draft`, `client_safe_publication`, `published_material`, or any type containing a review or publication state are forbidden.
 
+## `Client Signal` domain-object mapping
+
+`Client Signal` is a domain object and process event, not a separate epistemic `information_type`. Its content is represented by the appropriate information type according to origin and processing:
+
+- an original client response, entry, or submitted record may be a `source_artifact`;
+- a specific statement or value communicated directly by the client may be a `source_fact`;
+- a structured or normalized value created by the system or AI may be an `extracted_fact`, with complete `derived_from` lineage to the exact source version;
+- meaning assigned to the signal by Damian is a separate `trainer_interpretation`;
+- a decision resulting from the signal is a separate `trainer_decision`;
+- an explanation, summary, response, or instruction prepared for the client is a separate `client_material`.
+
+Showing a client their own signal through an authorized client-safe projection does not turn the signal into `client_material`, does not approve it on Damian's behalf, and does not set `publication_state: published`.
+
+## Information objects and operational records
+
+The closed vocabulary of nine `information_type` values applies to semantic information objects. The following are operational records, process events, or delivery artifacts, not additional `information_type` values:
+
+- `audit_event`;
+- `ai_run`;
+- `extraction_run`;
+- `association_event`;
+- `review_event`;
+- `approval_event`;
+- `publication_event`;
+- `withdrawal_event`;
+- `access_event`;
+- `deletion_event`;
+- `export_package`;
+- an export manifest;
+- an error or timeout record.
+
+Operational records must reference the exact versions of information objects involved and record actor, time, scope, outcome, and reason. They do not change `information_type`, do not receive artificial `review_state` or `publication_state` values, do not become `client_material`, and are not an independent source of truth about a client. They must remain minimal and auditable and must not copy full content merely for convenience.
+
 ## Type contracts
 
 | Type | Author and provenance | Default visibility and review | Uncertainty | Correction and publication |
 | --- | --- | --- | --- | --- |
-| `source_artifact` | Original sender/system plus acquisition actor; content hash and acquisition context required. | Trainer/system only; review concerns identity and integrity, not approval of every claim. | Matching, completeness, or integrity uncertainty may be recorded. | Never overwritten. A corrected/replaced artifact is a new version or object with an explicit relation. It is not directly published as Studio Las guidance merely because the client supplied it. |
-| `source_fact` | Human or system transcription of a statement in one source; exact locator required. | Trainer-only by default; review is required before decision use when material. | No confidence score may alter what the source says. Disputes are separate annotations or versions. | Correction preserves the original and creates a traceable corrected version. Client use requires a new `client_material`. |
-| `extracted_fact` | Human or AI extraction; `derived_from` must reach the exact source version and locator. | `needs_review` when machine-extracted; trainer-only. | Extraction confidence may describe extraction or mapping quality only. | Correction creates a new version and never changes the source. Client use requires a new `client_material`. |
+| `source_artifact` | Original sender/system plus acquisition actor; content hash and acquisition context required. | Trainer/system by default. The same client may see their own authorized artifact or entry only through an intentional client-safe projection; review concerns identity and integrity, not approval of every claim. | Matching, completeness, or integrity uncertainty may be recorded. | Never overwritten. A corrected/replaced artifact is a new version or object with an explicit relation. Visibility of a client-supplied artifact does not publish it as Studio Las guidance. |
+| `source_fact` | Human or system transcription of a statement in one source; exact locator required. | Trainer by default. The same client may see their own authorized statement through a client-safe projection; review is required before decision use when material. | No confidence score may alter what the source says. Disputes are separate annotations or versions. | Correction preserves the original and creates a traceable corrected version. Communicating Studio Las meaning or guidance requires a new `client_material`; showing the client's own statement does not. |
+| `extracted_fact` | Human or AI extraction; `derived_from` must reach the exact source version and locator. | `needs_review` when machine-extracted; trainer-only by default. A client-safe projection may expose an authorized normalized value to the same client without treating it as approved or published. | Extraction confidence may describe extraction or mapping quality only. | Correction creates a new version and never changes the source. Communicating Studio Las meaning or guidance requires a new `client_material`; visibility of the client's own value does not. |
 | `trainer_observation` | Damian; event time is required when the observation concerns a session or test. | Trainer-only by default. | Uncertainty may describe limits of observation. | Corrections are versioned. It does not become a fact stated by a source. Client use requires a new `client_material`. |
 | `ai_hypothesis` | AI runtime with provider/model/run metadata and full input provenance. | `needs_review`; trainer-only. | Uncertainty and missing evidence must remain visible. | It cannot be approved into a fact, interpretation, or decision by status change. Damian may create a separate interpretation or decision derived from it. Never directly publishable. |
 | `ai_suggestion` | AI runtime with provider/model/run metadata and input provenance. | `needs_review`; trainer-only. | Rationale, limits, and missing context must be visible where safety-relevant. | Acceptance means only that Damian chose to use or adapt it. A separate `trainer_decision` and/or `client_material` is required. Never directly publishable. |
@@ -110,16 +145,18 @@ An edit to approved content creates a new version whose state is `draft` or `nee
 
 The closed vocabulary is:
 
-- `unpublished` — not available on a client surface;
-- `published` — the exact approved version is available for its approved client/use;
-- `withdrawn` — previously published and no longer available to the client.
+- `unpublished` — not released as Studio Las content prepared for client communication;
+- `published` — the exact approved `client_material` version is released for its approved client/use;
+- `withdrawn` — previously published `client_material` is no longer available to the client.
 
 Allowed transitions for `client_material` only:
 
 - `unpublished` → `published` after the publication gate passes;
 - `published` → `withdrawn` after a deliberate withdrawal action.
 
-All other information types remain `unpublished`. A `client_material` may not return from `withdrawn` to `published`; republication requires a new version and a new approval decision.
+The full `unpublished` → `published` → `withdrawn` lifecycle applies to `client_material`. All other information types remain `unpublished` when the publication field is materialized: they cannot become Studio Las communications by being made visible. This does not force all non-`client_material` information to be invisible. A deliberate client-safe projection may show a client selected, authorized information about that same client, including their own signal, while its publication state remains `unpublished`.
+
+A `client_material` may not return from `withdrawn` to `published`; republication requires a new version and a new approval decision.
 
 ## Creating client material
 
@@ -174,6 +211,8 @@ The system must prohibit at least:
 - publication of a version different from the approved version;
 - silent editing of approved or published content;
 - automatic publication after AI/system approval or after Damian's review approval alone;
+- treating visibility of a client's own authorized signal as approval, publication, or conversion to `client_material`;
+- exposing any signal to a different client or revealing that another client's signal exists;
 - treating approved client communication as verified source truth;
 - removing required provenance before publication;
 - overwriting an original artifact or fact with an extraction, correction, interpretation, or draft;
@@ -226,9 +265,11 @@ Damian can complete every process without AI by reading the original source, rec
 This contract is satisfied only when:
 
 - the nine information types remain distinct;
-- `client_material` is the only client-content type;
+- `client_material` is the only type eligible for the controlled Studio Las client-publication lifecycle;
+- `Client Signal` remains a domain/process object whose content maps to the closed vocabulary rather than a tenth type;
 - all derived content preserves complete `derived_from` lineage;
-- review and publication are independent;
+- type, review, and publication are independent, while visibility remains a separate authorization/projection rule;
+- operational records remain outside the information-type vocabulary and carry no artificial review or publication state;
 - approval binds to one immutable version and one use;
 - no AI object can be published directly;
 - withdrawal preserves history;

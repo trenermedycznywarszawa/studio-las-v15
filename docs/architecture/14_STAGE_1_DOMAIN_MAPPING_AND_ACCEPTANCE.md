@@ -24,9 +24,10 @@ It also defines contract acceptance cases. These are semantic tests for later PR
 
 | Stage 1 concept | Domain object / decision supported | Current implementation evidence to inspect | Lifecycle | History | Owner | Visibility | Semantic reuse risk | Later gap / ADR question | Status |
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
-| `source_artifact` | Source Evidence supporting a client/process decision | `client_documents`; `client_intakes.raw_payload`; private Storage contract | Persistent only for approved purpose; quarantine may be temporary | Immutable original and replacement relation required | Studio Las; source authorship remains explicit | Trainer/system; client only through separate approved material | Existing document status combines audience/publication and lacks complete integrity/reprocessing semantics | How to preserve hash, source version, quarantine, claimed/confirmed subject, and deletion dependencies | `gap` |
-| `source_fact` | Source Evidence / Client Context | Intake fields, measurement source fields, source text currently embedded in records | Persistent when decision-relevant; otherwise temporary | Source wording and locator history required | Original source actor; Studio Las records it | Trainer by default | Existing fields may look verified although they are only claims from a source | How to represent exact source statement and locator without duplicating the source | `gap` |
-| `extracted_fact` | Structured Source Evidence supporting preparation | `client_intakes`; `body_measurements` parse metadata; existing import records | Working until reviewed; persistent when used by downstream decisions | Extraction run, correction, and process/model version required | Extraction actor/runtime; Damian reviews | Trainer-only before a separate client material | Current parse fields do not prove exact locator, complete lineage, or immutable corrected versions | Whether existing measurement/import structures can preserve extraction provenance safely | `reuse_candidate` |
+| `source_artifact` | Source Evidence supporting a client/process decision | `client_documents`; `client_intakes.raw_payload`; private Storage contract | Persistent only for approved purpose; quarantine may be temporary | Immutable original and replacement relation required | Studio Las; source authorship remains explicit | Trainer/system by default; the same client's authorized source may appear through a deliberate client-safe projection without publication | Existing document status combines audience/publication and lacks complete integrity/reprocessing semantics | How to preserve hash, source version, quarantine, claimed/confirmed subject, and deletion dependencies | `gap` |
+| `source_fact` | Source Evidence / Client Context | Intake fields, measurement source fields, source text currently embedded in records | Persistent when decision-relevant; otherwise temporary | Source wording and locator history required | Original source actor; Studio Las records it | Trainer by default; the same client may see their own authorized statement through a deliberate client-safe projection | Existing fields may look verified although they are only claims from a source | How to represent exact source statement and locator without duplicating the source | `gap` |
+| `extracted_fact` | Structured Source Evidence supporting preparation | `client_intakes`; `body_measurements` parse metadata; existing import records | Working until reviewed; persistent when used by downstream decisions | Extraction run, correction, and process/model version required | Extraction actor/runtime; Damian reviews | Trainer-only by default; the same client's authorized normalized value may appear through a deliberate client-safe projection without approval/publication | Current parse fields do not prove exact locator, complete lineage, or immutable corrected versions | Whether existing measurement/import structures can preserve extraction provenance safely | `reuse_candidate` |
+| `Client Signal` | Client Signal domain/process event supporting preparation of the next conversation, session, plan correction, or report; its content is `source_artifact`, `source_fact`, or `extracted_fact` | `guidance_events(kind=client_checkin)`; `save_client_checkin()`; bounded session-brief read; existing client projection | Persist only when decision-relevant; preserve the date and the exact task, plan, instruction version, or process version the signal concerns | Preserve client authorship, exact content version, context links, and corrections | Client authors the original content; Damian / Studio Las owns the process | Damian; optionally the same client through a deliberate client-safe projection; never another client | Existing check-ins, generic statuses, and payload fields could be reused as a universal signal model or turned into discipline, compliance, or client-value scoring | Determine workflow-specific safe reuse without approving a table, field, schema, or universal check-in model | `reuse_candidate` |
 | `trainer_observation` | Session Observation / Measurement Observation | `sessions.trainer_observation`; `post_session_observations`; `assessment_results`; `training_load_observations` | Persistent when decision-relevant | Version/correction history required for material use | Damian | Trainer-only by default | Several structures overlap; observation may be mixed with decisions or client summaries | Which existing domain object owns observation in each workflow without creating duplicate truth | `reuse_candidate` |
 | `ai_hypothesis` | Working Trainer Hypothesis support | `clients.working_hypothesis` is current evidence only | Temporary or working; persist only for continuity/audit purpose | Generation and disposition history required when used | AI authors; Damian owns any later interpretation | Trainer-only | Current field suggests one mutable hypothesis and does not distinguish AI from trainer authorship | Whether Trainer Hypothesis needs versioned provenance independent of current client field | `gap` |
 | `ai_suggestion` | Decision Support input, never a decision | No approved persistent structure; deterministic `decision-support.js` is not an AI suggestion store | Prefer temporary; persist only when needed for review/audit/continuity | Preserve version if accepted/rejected or used downstream | AI authors; Damian accepts/rejects | Trainer-only | Reusing task, decision, or note fields would make suggestion look authoritative | Define minimal persistence and relation to a later trainer decision | `gap` |
@@ -45,7 +46,7 @@ No row approves a future table or field. Existing names above identify audit evi
 
 ## Acceptance notation
 
-- `S1`, `E1`, `H1`, `G1`, `I1`, `D1`, and `M1` denote fictional versions of source, extracted fact, AI hypothesis, AI suggestion, trainer interpretation, trainer decision, and client material.
+- `S1`, `E1`, `H1`, `G1`, `I1`, `D1`, and `M1` denote fictional versions of source, extracted fact, AI hypothesis, AI suggestion, trainer interpretation, trainer decision, and client material. `CS1` denotes a fictional Client Signal domain event whose content uses one of the allowed source information types.
 - `M2 supersedes M1` denotes a new immutable material version.
 - “None” under client visibility means no client surface returns the object.
 - Every audit event below is metadata-only and must not copy raw sensitive content into ordinary logs.
@@ -97,7 +98,15 @@ No row approves a future table or field. Existing names above identify audit evi
 | A31 Access revoked | Existing information types/states unchanged; authorization closed | Content lineage unchanged | Confirm owner-scoped revocation and outcome | No future client access | Grant/revoke/session outcome | Delete process data automatically or leave active access | Revoke through controlled admin path and verify |
 | A32 Published source later unavailable | M1 may become `withdrawn`; dependent objects `needs_review` as appropriate | Unresolved S1 remains recorded; versions intact | Recover source, assess impact, withdraw/revalidate | No affected material while unresolved unless explicitly justified | Source loss, dependency review, withdrawal/revalidation | Detach lineage and continue silently | Reacquire source or issue approved correction |
 | A33 Duplicate file for second claimed client | One S1; second association remains pending/quarantined | Association relation separate from artifact version | Compare identity evidence; reject or confirm deliberately | None to either client by acquisition alone | Duplicate and association decision | Share one person's source with another | Obtain correct source separately |
-| A34 Export request | Export artifact is controlled output, not `client_material`; source types unchanged | Export manifest references included exact versions | Verify requester, scope, exclusions, delivery | Requester sees only approved lawful scope | Request, generation, delivery/expiry | Include other clients, raw audit, or secrets | Prepare reviewed encrypted export manually |
+| A34 Export request | Short-lived `export_package` operational artifact; no new `information_type` and no artificial `review_state` or `publication_state`; source types unchanged | Manifest references every included exact information version | Verify recipient, lawful scope, exclusions, secure delivery, and expiry/deletion deadline | Verified requester receives only the authorized scope | Request, generation, delivery, expiry/deletion metadata; no copied source content | Include another client's data, unauthorized trainer-only information, raw audit content, or secrets | Prepare a reviewed encrypted export with controlled delivery and recorded expiry/deletion |
+
+## Contract acceptance cases — Client Signal
+
+| ID and fictional case | Type / review / publication | `derived_from` and version | Damian sees / required action | Client visibility | Audit event | Critical error prohibited | Manual fallback |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| A35 Client records own signal | CS1 remains a Client Signal domain event; its content is `source_artifact`, `source_fact`, or `extracted_fact` as applicable; it remains `unpublished` and is not `client_material` | Client authorship retained; exact task, plan, instruction version, date, and signal version preserved; any extraction points to the original exact version | Sees the signal in its correct process context; interprets or decides only through separate trainer objects | The same client sees CS1 only when a specific client-safe projection authorizes it; visibility is neither Damian approval nor publication | Signal creation and projection access metadata without copied content | Gamification, streaks, scoring, discipline/compliance judgment, automatic material conversion, or context loss | Client communicates the same minimal signal through the approved manual channel and Damian records its source/context |
+| A36 AI summarizes several signals | Exact signal types stay unchanged and unpublished; H1 `ai_hypothesis`, G1 `ai_suggestion`, or another allowed trainer-only AI output is `needs_review` and `unpublished` | AI output `derived_from` every exact CS/source version used and records run/model configuration | Sees the trainer-only output, limitations, and lineage; may reject it or create separate M1 | None for the AI output; client access requires new M1 `client_material`, `needs_review`, exact-version approval by Damian, and separate publication | AI run/output creation, review, and any later material/approval/publication events | Direct AI visibility/publication, hidden source omission, or reuse of AI output as approved client copy | Damian reviews the signals and writes, approves, and communicates a separate exact client material manually |
+| A37 Client attempts another client's signal | Information objects and states remain unchanged; access is denied before projection | Subject/client boundary and requested object reference remain protected | May see metadata-only denied-access evidence when operationally required | No content and no confirmation that the other signal exists | Denied `access_event` metadata without copying signal content | Any cross-client response, existence disclosure, cached fallback, or substitute record from another client | No fallback reveals data; the requesting client continues only with their own authorized context |
 
 ## Acceptance requirements across every case
 
@@ -118,8 +127,11 @@ Passing a happy path cannot compensate for a forbidden transition that remains p
 
 ### Contract decisions made
 
-- Nine information types are defined; `client_material` is the only client-content type.
-- Review and publication states are independent from type and from each other.
+- Nine information types are defined; `Client Signal` maps to `source_artifact`, `source_fact`, or `extracted_fact` content rather than becoming a tenth type.
+- `client_material` is the only type eligible for the controlled Studio Las client-publication lifecycle.
+- Type, review, and publication remain independent; visibility is a separate authorization/projection rule rather than a fourth state axis.
+- A client's own authorized signal may be visible to that client without approval or publication and is never visible to another client.
+- Operational records and artifacts, including `export_package`, remain outside the information-type vocabulary and receive no artificial review/publication states.
 - Exact-version approval and complete `derived_from` lineage are mandatory.
 - AI content is trainer-only by default and cannot publish, decide, contact, or mutate a plan.
 - Original sources remain separate and immutable in meaning.
@@ -138,26 +150,38 @@ Passing a happy path cannot compensate for a forbidden transition that remains p
 
 Blocked/deferred decisions are visible contract outcomes. They do not authorize assumptions.
 
-## Stage 1 exit-gate assessment template
+## Stage 1 exit-gate assessment
+
+**Assessment status:** `STAGE 1 — BLOCKED BEFORE FINAL OWNER CONTRACT ACCEPTANCE`; `READY FOR OWNER CONTRACT REVIEW` does not mean `OWNER ACCEPTED`.
+**Validation date:** 2026-08-03
+**Validation HEAD:** `bc5fcd8173ed8c56f66f85f7eedb7863a8747ca3` — the checked-out HEAD for final candidate validation. The commands run against this HEAD plus the final correction worktree; the resulting final commit SHA is recorded in Draft PR #21 because a commit cannot contain its own SHA.
+**Validation result:** 2/7 exact regression commands PASS; 5/7 are blocked before test start because the required `python3` command resolves only to an unavailable Windows Store alias; `git diff --check` PASS; final active-document contradiction audit PASS.
 
 Stage 1 may be reported ready for owner contract review only if repository validation confirms all of the following:
 
-- [ ] information types contain no review/publication state;
-- [ ] `client_material` is the only client-content type;
-- [ ] the three axes remain independent;
-- [ ] every derivative preserves `derived_from`;
-- [ ] AI-based material is a new object, not a type/status mutation;
-- [ ] publication requires `approved` plus Damian's auditable exact-version approval and a separate publication action;
-- [ ] rejection blocks publication;
-- [ ] withdrawal preserves history and removes client visibility;
-- [ ] approval changes neither provenance nor epistemic type;
-- [ ] source integrity, wrong-person handling, and prompt injection are covered;
-- [ ] AI runtime, logging, retention, transfer, model change, failure, and manual fallback are contracted or explicitly blocked;
-- [ ] legal, security, owner, and implementation decisions remain visible;
-- [ ] mapping does not approve schema or implementation by implication;
-- [ ] all acceptance cases above are present;
+- [x] information types contain no review/publication state;
+- [x] `client_material` is the only type eligible for the controlled Studio Las client-publication lifecycle;
+- [x] `Client Signal` maps to the closed vocabulary and is not a tenth `information_type`;
+- [x] the three axes remain independent and visibility remains a separate authorization/projection rule;
+- [x] a client's own authorized signal can be projected without approval/publication and no client can access another client's signal;
+- [x] operational records and `export_package` are not information types and receive no artificial review/publication states;
+- [x] every derivative preserves `derived_from`;
+- [x] AI-based material is a new object, not a type/status mutation;
+- [x] publication requires `approved` plus Damian's auditable exact-version approval and a separate publication action;
+- [x] rejection blocks publication;
+- [x] withdrawal preserves history and removes client visibility;
+- [x] approval changes neither provenance nor epistemic type;
+- [x] source integrity, wrong-person handling, and prompt injection are covered;
+- [x] AI runtime, logging, retention, transfer, model change, failure, and manual fallback are contracted or explicitly blocked;
+- [x] legal, security, owner, and implementation decisions remain visible;
+- [x] mapping does not approve schema or implementation by implication;
+- [x] all acceptance cases above are present;
 - [ ] the seven exact inherited regression commands and `git diff --check` pass on the final tree.
+
+Provider selection, schema approval, legal/privacy decisions, production authorization, and implementation remain blocked or deferred to their named later gates. Their explicit deferral does not imply approval and does not block Stage 1 contract acceptance when the boundary is preserved.
+
+If every checked condition passes, the document may be reported `READY FOR OWNER CONTRACT REVIEW`; only Damian can produce `OWNER ACCEPTED`.
 
 If any item fails, the required outcome is:
 
-`STAGE 1 — BLOCKED BEFORE OWNER CONTRACT REVIEW`
+`STAGE 1 — BLOCKED BEFORE FINAL OWNER CONTRACT ACCEPTANCE`
