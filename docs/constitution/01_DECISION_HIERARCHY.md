@@ -136,8 +136,8 @@ Before any change, answer:
 2. Which layer owns that concept?
 3. Is this changing truth or projecting truth?
 4. Has the higher layer been updated first?
-5. Does this preserve Paper -> Trainer -> App -> Report?
-6. Does this increase screen time?
+5. Does this preserve trainer accountability and client-safe publication?
+6. Is the chosen channel appropriate for this client and task, without unnecessary duplication or screen time?
 7. Does this make the OS more central than the method?
 8. Does this create duplicate truth?
 9. Does this create client-safe, privacy, or medical-content risk?

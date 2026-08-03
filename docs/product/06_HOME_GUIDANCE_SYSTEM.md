@@ -1,284 +1,249 @@
 # 06 Home Guidance System
 
+**Version:** 2.0
+**Intentional review:** 2026-08-01
+
 ## Purpose
 
-This document defines the Studio Las home guidance system.
+This document defines how Studio Las guides a client between sessions.
 
-It explains how guidance works between sessions without turning Studio Las OS into a morning app, habit tracker, or motivation system.
+Home guidance is part of the trainer-led method. It is not a notification system, engagement loop, universal digital checklist, or fixed paper ritual.
 
-Home guidance is part of the method.
+Its job is to preserve continuity, reduce uncertainty, support useful action, return decision-relevant information to the trainer, and gradually increase client independence.
 
-It is not a feature set.
+## Permanent boundary
 
-It is not a notification system.
+The trainer owns the guidance decision.
 
-It is not a digital checklist.
+Technology may present guidance, collect a checklist, record repetitions or responses, receive questions, and help the trainer prepare. It may not independently change the plan, judge the client, or publish new meaning.
 
-## Core principle
+The phrase `Paper guides the morning. Trainer gives meaning. App records the signal. Report shows the pattern.` remains a useful design heuristic. It is not a ban on digital guidance.
 
-Paper guides the morning.
+## Channel decision
 
-The trainer gives meaning.
+For each client and task, the trainer chooses one primary channel:
 
-The app records the signal.
+- paper,
+- app,
+- deliberate hybrid.
 
-The report shows the pattern.
+The decision is based on:
 
-Home guidance must protect this order.
+1. Which channel creates the least friction for this person?
+2. Does the instruction need frequent updates?
+3. Will a checklist, repetition count, response, or question improve the next decision?
+4. Does phone use help clarity or create distraction?
+5. Does the client need a visible physical cue?
+6. Can the trainer maintain one authoritative version of the instruction?
 
-## Why home guidance exists
+No channel is constitutionally superior. The best channel is the one that improves the client process without creating duplicate truth, pressure, or avoidable dependency.
 
-Studio Las does not happen only during 1:1 sessions.
+## Paper as the primary channel
 
-The client needs a simple bridge between meetings.
+Paper is appropriate when:
 
-Home guidance exists to:
+- a visible physical cue helps the client act,
+- screen-free guidance supports calm or attention,
+- the task changes rarely,
+- the client prefers paper,
+- digital access would be a barrier.
 
-- preserve continuity,
-- reduce uncertainty,
-- help the client repeat what matters,
-- build trust through small actions,
-- create selected signals for the trainer,
-- support the future report,
-- move the client toward independence.
-
-Home guidance is not designed to maximize daily engagement.
-
-It is designed to make the next session and next decision better.
-
-## Why paper
-
-Paper is used because the client should not start the morning from the phone.
-
-A phone can easily turn guidance into:
-
-- scrolling,
-- checking,
-- comparison,
-- distraction,
-- over-monitoring,
-- dependence on the app.
-
-Paper keeps the morning quiet.
-
-Paper makes the action visible without opening a device.
-
-Paper helps the client act before tracking.
-
-## What paper should do
-
-A paper guide should answer:
+Paper should answer:
 
 - what to do,
 - when to do it,
-- how much is enough,
+- what dose is enough,
 - what to notice,
-- when to stop or reduce,
-- what signal to record later.
+- when to reduce or stop,
+- what, if anything, to report.
 
-It should be short enough to use.
+Paper must not become a productivity planner, scoring system, motivational challenge, or second independent copy of a digital plan.
 
-It should be clear enough to reduce hesitation.
+## App as the primary channel
 
-It should not become a complex workbook.
+The app is appropriate when:
 
-## What paper should not do
+- the current plan changes during the 12-week process,
+- a short checklist reduces uncertainty,
+- repetitions, duration, difficulty, or response may change the next decision,
+- the client needs an immediate place to record a question,
+- the trainer benefits from seeing selected signals before the next session,
+- accessibility or convenience is better digitally.
 
-Paper should not become:
+The app may:
 
-- a productivity planner,
-- a habit tracker,
-- a scoring system,
-- a motivational challenge,
-- a long educational manual,
-- a place for excessive self-analysis.
+- show today's trainer-approved guidance,
+- present minimum, standard, or extended variants when the trainer has assigned them,
+- let the client mark an item as done, partly done, or not done,
+- record repetitions, duration, load, or another task-specific result when it matters,
+- collect a short response or note,
+- attach a question to the exact task,
+- show stop or reduction criteria,
+- preserve the current authoritative version of the plan.
 
-Paper should carry the morning, not consume the morning.
+The app must not infer moral value from completion. It must not show discipline scores, streaks, rankings, shame states, or universal adherence percentages.
 
-## Role of the trainer
+## Deliberate hybrid
 
-The trainer designs the home guidance.
+A hybrid is not two complete systems.
+
+It is allowed only when each channel has a distinct role. Examples:
+
+- paper carries the morning sequence; the app is the authoritative place for updated dose and questions,
+- the app carries the current plan; one paper card provides a visible environmental cue,
+- paper supports learning during the first week; the app becomes primary after the trainer confirms readiness.
+
+Every hybrid must state:
+
+- which channel is authoritative,
+- what the secondary channel adds,
+- how stale instructions are retired,
+- when the channel choice will be reviewed.
+
+## Digital checklist contract
+
+A digital checklist is a legitimate Studio Las tool when it serves a defined trainer decision.
+
+Each item must have:
+
+- a clear instruction,
+- a reason or current focus,
+- a dose or completion condition,
+- stop or reduction criteria when relevant,
+- only the response fields that can change a conversation, plan, or report.
+
+Completion alone is not enough evidence of progress. Non-completion is not evidence of poor discipline.
+
+The trainer should be able to distinguish at least:
+
+- done as planned,
+- changed or partly done,
+- not done,
+- question or uncertainty.
+
+Additional fields such as repetitions, duration, discomfort, confidence, or RPE appear only when their values may change the next decision.
+
+## Client notes and questions
+
+The client may attach a short note or question to a task.
+
+The system should preserve the task, plan version, date, and unresolved/resolved state so the trainer can prepare before the next contact.
+
+The notes area is not an emergency channel, diagnosis tool, or unbounded chat. The interface must explain the expected response path and what requires urgent external help.
+
+## Trainer role
 
 The trainer decides:
 
-- what the client should do,
-- what the client should not do yet,
-- what signal matters,
-- how much autonomy the client can handle,
-- when guidance should be simplified,
-- when the home task should be changed.
+- the current focus,
+- the guidance content,
+- the primary channel,
+- the minimum effective dose,
+- which response fields matter,
+- when to simplify, progress, regress, pause, or refer,
+- what becomes client-safe,
+- what may influence the report.
 
-The trainer interprets the signal later.
+The trainer interprets completion and non-completion in context.
 
-The app does not interpret it for the client.
+## AI assistance
 
-## Role of the client
+Trainer-facing AI may:
 
-The client should not manage the whole system.
+- summarize completed, changed, and missed tasks,
+- surface unanswered client questions,
+- detect gaps or inconsistent source data,
+- suggest questions for the next interview,
+- propose alternative exercises, doses, or session structures,
+- prepare a draft explanation for trainer review.
 
-The client should:
+AI must keep source facts separate from hypotheses and suggestions.
 
-- follow the paper guide,
-- notice the selected signal,
-- avoid overthinking the process,
-- record a short signal later if requested,
-- bring uncertainty back to the trainer.
+AI must not:
 
-The client’s responsibility should be clear and limited.
+- label the client compliant or non-compliant,
+- diagnose,
+- change or publish the plan automatically,
+- contact the client without an explicit approved workflow,
+- turn uncertainty into a fact,
+- replace trainer review.
 
-## Role of the app
+## Between-session cycle
 
-The app is used after the offline action.
+1. Trainer defines the current focus and guidance.
+2. Trainer selects the primary channel.
+3. Client acts using that channel.
+4. Client records only the requested result, response, note, or question.
+5. The OS preserves the source and plan version.
+6. AI may prepare a trainer-only summary and questions.
+7. Trainer reviews the context and decides what changes.
+8. Selected evidence may enter the trainer-approved report.
 
-Its role is to record a short signal, such as:
-
-- done / not done,
-- pain response,
-- confidence response,
-- unusual difficulty,
-- short client note,
-- missed because of pain / time / fear / confusion.
-
-The app should not:
-
-- wake the client into the protocol,
-- push notifications,
-- gamify completion,
-- show streaks,
-- create pressure,
-- become the primary guide,
-- replace trainer meaning.
-
-The app remains a quiet record.
-
-## Role of the report
-
-Home guidance signals become useful when they reveal patterns across time.
-
-A single missed task may not mean much.
-
-Repeated missed tasks may show:
-
-- the protocol is too hard,
-- the protocol is unclear,
-- the timing is wrong,
-- fear is higher than expected,
-- the client needs less complexity,
-- the trainer’s hypothesis should change.
-
-The report should show the pattern, not shame the client.
-
-## Home guidance design rules
-
-Good home guidance is:
-
-- short,
-- specific,
-- offline-first,
-- tied to the current trainer hypothesis,
-- easy to understand,
-- safe enough for the client’s current state,
-- connected to one or two useful signals,
-- adjustable after observation.
-
-Weak home guidance is:
-
-- long,
-- generic,
-- app-dependent,
-- overloaded with tasks,
-- designed for motivation rather than clarity,
-- disconnected from the session,
-- impossible to interpret later.
+The app may be central to steps 3 and 4 for a specific client. It still does not own step 7.
 
 ## Minimum effective guidance
 
-Studio Las should prefer the minimum effective dose.
+Studio Las should prefer the smallest guidance set that can improve function and the next decision.
 
-This may mean:
+This may be:
 
-- one exercise,
-- one breathing drill,
-- one walking instruction,
-- one mobility action,
-- one recovery rule,
-- one observation task,
-- one thing not to do yet.
+- one morning action,
+- one breathing technique,
+- one strength or mobility task,
+- one walking or recovery instruction,
+- one thing to avoid temporarily,
+- one observation question.
 
-More guidance is not automatically better.
+More tasks are not automatically better. Complexity must be earned by the client's needs, not by the software's capacity.
 
-The client should succeed with less before receiving more.
+## Report use
 
-## Morning boundary
+Home guidance data matters only when it helps explain a pattern, a decision, or the next step.
 
-The morning should not begin with Studio Las OS.
+The report may show, after trainer review:
 
-The morning should begin with the paper guide, the body, the environment, and the selected action.
+- what guidance was tried,
+- how the client responded,
+- what was adapted and why,
+- which pattern became meaningful,
+- what the next direction is.
 
-The app can appear later.
-
-This protects the client from turning the process into another screen-based obligation.
-
-## Between-session rhythm
-
-A typical between-session rhythm:
-
-1. Trainer gives paper guidance.
-2. Client follows it offline.
-3. Client records a short signal later when appropriate.
-4. Trainer reviews the signal before or during the next session.
-5. Trainer adjusts the guidance.
-6. Repeated signals inform the report.
-
-The app is only one point in this rhythm.
-
-It is not the rhythm.
+The report must not shame the client or present completion volume as proof of worth.
 
 ## Anti-patterns
 
 Do not build home guidance around:
 
-- daily streaks,
-- badges,
-- push reminders,
-- motivational quotes,
-- completion pressure,
-- endless checklists,
-- app-first rituals,
-- automatic plan progression,
-- client-facing AI coaching,
-- broad wellness tracking.
+- streaks, badges, rankings, or discipline scores,
+- default push pressure,
+- endless universal checklists,
+- automatic progression,
+- duplicated paper and app plans,
+- broad wellness tracking without a decision purpose,
+- autonomous client-facing AI coaching,
+- data collection because it may be interesting later.
 
-These patterns would pull Studio Las toward a generic fitness or wellness app.
+## Acceptance test for a guidance feature
 
-## Implication for Studio Las OS
+Before implementation, answer:
 
-Before implementing home guidance features, define:
+1. Which client problem or trainer decision does this improve?
+2. Why is the selected channel better for this client and task?
+3. What is the authoritative instruction source?
+4. What is the minimum useful input?
+5. How will completion, change, uncertainty, and non-completion be interpreted without judgment?
+6. What can AI suggest, and where is trainer approval required?
+7. How does the client ask a question?
+8. How is a stale plan retired?
+9. What may enter the report?
+10. How will we know the feature reduced friction rather than adding it?
 
-1. What does the paper guide carry?
-2. What does the trainer explain?
-3. What exact signal should the app record?
-4. When should the app be used?
-5. What should the app deliberately not do?
-6. How will the signal help the report or next decision?
-
-If the feature makes the phone the morning guide, it violates the product rule.
-
-If the feature increases screen time without improving trainer decisions, it should not be built.
+If these questions cannot be answered, the feature is not ready.
 
 ## Long-term aim
 
-The goal of home guidance is not perfect compliance.
+The goal is not perfect compliance or maximum app use.
 
-The goal is a client who becomes more capable of caring for the body between sessions.
+The goal is a client who becomes more capable of acting, noticing, asking for help, and making sound choices with progressively less external prompting.
 
-The best home guidance gradually teaches the client:
-
-- what to do,
-- what to notice,
-- when to continue,
-- when to reduce,
-- when to ask for help,
-- how to trust the body again.
-
-Studio Las succeeds when the client needs less digital prompting and more embodied confidence.
+Paper and software are instruments. The guided human process is the product.

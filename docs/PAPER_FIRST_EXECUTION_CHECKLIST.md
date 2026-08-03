@@ -1,5 +1,7 @@
 # Paper-first Execution Checklist
 
+**Status note (2026-08-01): HISTORICAL PRODUCT DIRECTION.** Retain for implementation and security evidence only. It does not require paper as the current primary channel. Constitution v1.1 and `docs/product/06_HOME_GUIDANCE_SYSTEM.md` govern paper/app/hybrid selection.
+
 This checklist is the go/no-go control document for executing the Paper-first `client_checkin` migration.
 
 Target migration:

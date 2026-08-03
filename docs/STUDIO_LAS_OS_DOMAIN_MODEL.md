@@ -1,5 +1,7 @@
 # Studio Las OS Domain Model
 
+**Status note (2026-08-01):** Data-reuse and domain-boundary decisions remain active. References to `paper-first` describe the historical implementation slice and do not define the current guidance channel. Constitution v1.1 and `docs/product/06_HOME_GUIDANCE_SYSTEM.md` govern paper/app/hybrid selection.
+
 This document defines the business/domain model of Studio Las OS.
 
 It is not a database schema.

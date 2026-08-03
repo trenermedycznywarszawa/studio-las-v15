@@ -2,6 +2,8 @@
 
 Date: 2026-07-07
 
+**Status note (2026-08-03): HISTORICAL REVIEW.** This review proves consistency of the former paper-first direction. It does not govern the current channel choice; Constitution v1.1 and Home Guidance System v2.0 supersede that product assumption.
+
 Scope:
 
 - `README.md`

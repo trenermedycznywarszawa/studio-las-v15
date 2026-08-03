@@ -45,10 +45,13 @@ Studio Las OS may:
 - preserve client process history,
 - record selected trainer decisions,
 - record minimal client signals,
+- deliver trainer-assigned guidance through the chosen primary channel,
+- support purposeful checklists and client notes when they improve a decision,
 - support trainer review,
 - support report preparation,
 - protect client-safe boundaries,
-- organize paper-first guidance assignments,
+- organize between-session guidance assignments,
+- provide trainer-facing AI analysis and suggestions under explicit review,
 - help the trainer notice patterns.
 
 ## What Studio Las OS must not do
@@ -56,8 +59,8 @@ Studio Las OS may:
 Studio Las OS must not:
 
 - replace trainer judgment,
-- become the client's morning interface,
-- coach the client automatically,
+- impose one universal guidance channel on every client,
+- coach the client autonomously,
 - diagnose,
 - auto-progress or auto-regress a client,
 - publish report meaning without trainer approval,
@@ -130,17 +133,21 @@ Data does not exist for dashboards, curiosity, future speculation, marketing pro
 
 ## AI and automation boundary
 
-AI may later support trainer-facing organization, summarization, analysis, or drafting.
+AI may support trainer-facing organization, summarization, analysis, option generation, or drafting.
+
+AI may propose questions, hypotheses, tests, exercises, progressions, regressions, session structures, and communication drafts when the source and uncertainty remain reviewable.
 
 AI must not:
 
-- coach the client,
-- decide meaning,
+- coach the client autonomously,
+- decide final meaning,
 - diagnose,
-- publish report content,
-- decide progression,
+- publish report content without trainer approval,
+- decide progression automatically,
 - replace the trainer,
 - create automated client-facing recommendations.
+
+An AI suggestion becomes part of the client process only after the trainer reviews and adopts it.
 
 ## Growth boundary
 
@@ -152,8 +159,8 @@ It may grow in documentation.
 
 It may grow in internal tools.
 
-It must not grow by adding features that make the method less human, less trainer-led, less paper-first, or more screen-dependent.
+It must not grow by adding features that make the method less human, less trainer-led, more coercive, or unnecessarily screen-dependent.
 
 ## Final rule
 
-If a boundary is unclear, choose the smaller, quieter, more trainer-led option until Product and Architecture explicitly approve otherwise.
+If a boundary is unclear, choose the option that preserves trainer accountability, client dignity, and reversibility until Product and Architecture explicitly approve otherwise.

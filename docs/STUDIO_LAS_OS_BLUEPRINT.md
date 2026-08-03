@@ -17,12 +17,14 @@ Read in this order:
 5. `docs/architecture/09_SECURITY_RUNTIME_ARCHITECTURE.md`
 6. relevant PRD and implementation documents
 
-Core rule:
+Historical design heuristic:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
+
+Current Constitution v1.1 treats this as a heuristic, not a mandatory channel sequence. See `docs/product/06_HOME_GUIDANCE_SYSTEM.md`.
 
 ## Canonical cooperation vocabulary
 
@@ -45,8 +47,8 @@ Studio Las OS:
 - stores only information needed for the process,
 - keeps the trainer responsible for interpretation and decisions,
 - gives the client only a calm, narrow, published view,
-- minimizes screen time,
-- treats paper guidance as primary and the app record as secondary.
+- avoids unnecessary screen time,
+- supports the trainer-selected primary channel without duplicate guidance.
 
 Studio Las OS is not:
 

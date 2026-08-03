@@ -1,19 +1,30 @@
 # Studio Las Constitution
 
+**Version:** 1.1
+**Last intentional review:** 2026-08-01
+
 This folder is the highest active documentation layer for Studio Las and Studio Las OS.
 
 Its job is to define identity, authority, non-negotiables, product boundaries, and governance constraints.
 
 The Constitution exists to protect Studio Las from being redefined by implementation, website copy, migrations, forms, reports, tests, or runtime behavior.
 
-## Core constitutional rule
+## Core constitutional invariant
+
+The trainer remains accountable for interpretation, decisions, and client-safe publication.
+
+Technology may analyze, organize, suggest, draft, guide, and record. It may not silently become the decision-maker or publish a decision without trainer approval.
+
+The client and the quality of the process come before loyalty to a medium. Paper, the app, or a deliberate hybrid may carry guidance when that choice serves the person and the task.
+
+## Design heuristic
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
 
-Every lower layer must preserve this rule.
+This sentence remains a useful design heuristic, not a mandatory technical sequence. Lower layers must preserve its intent: embodied action before unnecessary tracking, trainer authority over meaning, purposeful data, and a trainer-approved report.
 
 ## Reading order
 
@@ -86,10 +97,10 @@ Do not turn Studio Las OS into:
 - a habit tracker,
 - a quantified-self dashboard,
 - a SaaS product,
-- a client-facing AI coach,
+- an autonomous client-facing AI coach,
 - a gamified motivation system,
 - a wearable data platform,
-- a product that increases screen time.
+- an engagement product that maximizes screen time instead of improving the client process.
 
 ## Relationship to Source of Truth Registry
 
@@ -119,3 +130,7 @@ Before any architecture, PRD, implementation, database, UI, website, form, repor
 Studio Las must not be governed by whichever file was edited most recently.
 
 Studio Las must be governed by explicit constitutional authority.
+
+### Version 1.1 decision
+
+Version 1.1 separates permanent product boundaries from an implementation preference. Paper-first is no longer a constitutional ban on digital guidance. The non-negotiable boundary is trainer accountability, client benefit, deliberate channel choice, and protection from scoring, pressure, and autonomous publication.

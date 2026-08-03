@@ -1,357 +1,412 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status dokumentu:** ACTIVE  
-**Wersja:** 1.2  
-**Data utworzenia:** 2026-07-22  
-**Aktualna decyzja integracyjna:** PR #17 jest technicznym fundamentem PR #18; końcowe doświadczenie pozostaje w ocenie
-
-**Następna bramka po publikacji:** integralność PR #18 12/12, zmiana base, ponowne checks i końcowa ocena produktowa
-
----
-
-## 1. Rola dokumentu
-
-Ten plik jest operacyjnym źródłem prawdy dla realizacji Product Recovery Studio Las OS. Odpowiada na pięć pytań:
-
-1. Co zostało zakończone i na podstawie jakiego dowodu?
-2. Co robimy teraz?
-3. Co robimy później i dlaczego w tej kolejności?
-4. Jak rozpoznajemy, że dany etap jest naprawdę zakończony?
-5. Czego świadomie nie budujemy?
-
-Ten dokument nie zastępuje Constitution, architektury ani audytu. Nie powtarza ich uzasadnień. Łączy zatwierdzone decyzje w jeden kontrolowany plan wykonania.
-
-### Hierarchia źródeł prawdy
-
-1. `docs/constitution/` — tożsamość, granice i zasady nienegocjowalne.
-2. `docs/product/` oraz `docs/architecture/` — metoda, przepływ informacji i odpowiedzialności systemu.
-3. `docs/product/PRODUCT_RECOVERY_AUDIT_2026-07-22.md` — dowody z historii Git i porównanie starego monolitu z bezpiecznym runtime.
-4. Ten dokument — kolejność realizacji, status, bramki i kryteria ukończenia.
-5. Kod i testy w konkretnym PR — dowód wykonania, nigdy nowa definicja produktu.
-
-W razie sprzeczności wyższa warstwa ma pierwszeństwo. Kod nie może samodzielnie zmienić metody Studio Las.
+**Status:** OWNER ACCEPTED FOR DRAFT PUBLICATION; MERGE PENDING
+**Version:** 2.1
+**Updated:** 2026-08-03
+**Canonical integration line:** `product-recovery`
+**No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
 
 ---
 
-## 2. Zasady prowadzenia planu
+## 1. Role
 
-### 2.1 Oznaczenia
+This is the operational source of truth for the order of Studio Las OS work.
 
-- `[ ]` — niewykonane albo nieudowodnione.
-- `[x]` — wykonane i poparte linkiem do PR-a, commita, testu lub dokumentu.
-- `NOW` — dokładnie jedno aktywne zadanie na poziomie programu.
-- `BLOCKED` — praca zatrzymana; przy zadaniu musi być zapisany blocker i decyzja potrzebna do odblokowania.
-- `REJECTED` — świadomie wyłączone z produktu; nie wraca do backlogu bez zmiany decyzji produktowej.
+It connects approved product direction with Git and implementation gates. It does not replace Constitution, Product, Architecture, privacy governance, or a scoped PRD.
 
-### 2.2 Reguły aktualizacji
+Authority order:
 
-1. Nie zaznaczamy zadania jako wykonane tylko dlatego, że kod został napisany.
-2. Funkcja jest zakończona dopiero po spełnieniu kryteriów akceptacji i zapisaniu dowodu.
-3. Na raz realizujemy jeden PR produktowy. Wyjątkiem jest niezależna poprawka krytyczna bezpieczeństwa lub awarii.
-4. Następny PR nie rozpoczyna się przed zamknięciem zależności poprzedniego etapu.
-5. Każdy PR aktualizuje odpowiedni fragment tego planu albo wskazuje, dlaczego aktualizacja nie jest potrzebna.
-6. Nowy pomysł trafia najpierw do oceny wartości, ryzyka i zgodności z Constitution — nie bezpośrednio do realizacji.
-7. Odkrycie braku danych nie oznacza automatycznie nowej tabeli. Najpierw sprawdzamy istniejący model i odpowiedzialność domenową.
-8. Nie utrzymujemy drugiej równoległej listy zadań dla Product Recovery.
+1. `docs/constitution/`
+2. `docs/product/`
+3. `docs/architecture/`
+4. this execution plan
+5. scoped PRD and acceptance contract
+6. implementation, code, and runtime
 
-### 2.3 Minimalny dowód ukończenia
-
-Każde odhaczone zadanie musi zawierać co najmniej jeden z poniższych dowodów:
-
-- numer i link do scalonego PR-a;
-- pełny hash commita;
-- wynik odpowiedniego testu z datą;
-- ścieżkę zatwierdzonego dokumentu decyzyjnego;
-- wynik testu zadaniowego wykonanego przez Damiana, jeżeli kryterium dotyczy realnej pracy trenera.
+Lower layers may implement approved truth. They may not create it.
 
 ---
 
-## 3. Stałe decyzje programu
+## 2. Stage 0 audit result
 
-Poniższych decyzji nie negocjujemy ponownie w każdym PR-ze:
+The interrupted turn did not finish Stage 0. The repository contains a valid local documentation candidate, but it has not been pushed or merged. The table below records the verified state and prevents old summaries from becoming truth.
 
-- [x] Bezpieczny runtime z `446c522ca5c61a9ad01808e7a03ea1ae9138527c` jest jedynym fundamentem technicznym.
-- [x] Supabase jest jedynym źródłem prawdy dla danych aplikacyjnych.
-- [x] Historyczny `studio-management-os-3.0.html@c7206dc` jest wyłącznie materiałem dowodowym.
-- [x] Etap bezpieczeństwa jest `CLOSED / PASS`; 25/25 testów uwierzytelnionych przeszło.
-- [x] MFA/AAL2, RLS, Edge Function, Storage i izolacja klientów nie są ponownie projektowane w Product Recovery.
-- [x] Rdzeniem produktu jest pętla decyzji trenera, nie liczba ekranów.
-- [x] Pierwszym PR-em implementacyjnym będzie read-only Trainer Session Brief.
-- [x] Nie dodajemy nowego schematu, dopóki pierwszy read-only slice nie udowodni rzeczywistego braku modelu.
-- [x] Każdy przepływ ma respektować zasadę: `Paper guides the morning. Trainer gives meaning. App records the signal. Report shows the pattern.`
+| Source or item | Verified state on 2026-08-03 | Stage 0 decision |
+|---|---|---|
+| Constitution on `product-recovery@69ea624` | Version 1.0 still treats paper-first as a permanent rule and narrows AI too far. | Supersede with Constitution v1.1 from this Stage 0 branch after Damian accepts it. |
+| `docs/product/06_HOME_GUIDANCE_SYSTEM.md` on `product-recovery@69ea624` | Paper owns the morning by default and the app records only a later signal. | Supersede with Home Guidance System v2.0: paper, app, or a deliberate hybrid; one authoritative instruction source. |
+| `Studio-Las-OS-Plan-Architektury-v3.md` v3.1 | Valuable product-design input stored outside the canonical repository. Its AI/channel decisions match the approved direction, but its Stage 0 PR assumptions are stale: PR #13 and #17 are already merged. | Adopt its approved product decisions through Constitution, Product, Architecture, and this plan. Do not treat the standalone file as an authority or implementation specification. |
+| `Studio-Las-OS-Integration-Map-v1.md` | Historical pre-merge plan for PR #17. It says implementation has not started and makes paper-first guidance the next fixed slice. Both assumptions are now stale. | Preserve as decision evidence only. It does not control the roadmap after Stage 0. |
+| PR #13 | Closed and merged as `1d5362e8f40096676532ef3f28908e2fe7df8196`; final staging regression is 25/25 PASS. | Security evidence and ancestor of `product-recovery`; not a branch to merge again and not permission to change production. |
+| PR #17 | Closed and merged into `product-recovery` as `c669a79372aae70f63c8b235fd63330c0555ab5e`. | Keep as read-only brief foundation and technical evidence. Its task-orientation acceptance failed and it is not a complete product experience. |
+| PR #18 | Open, mergeable Draft at `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466`; one commit ahead and four commits behind `product-recovery` at audit time. | Freeze and preserve. Do not merge, rebase, retarget, or use as the base. Recover components only after approved screen and data contracts exist. |
+| Local `agent/trainer-session-brief@aaf527d` worktree | Behind the canonical branch and dirty with mixed documentation, runtime, workflow, test, prototype, and image changes. | Preserve without touching. It is not an integration base and none of its unrelated changes belong to Stage 0. |
+| `main@e371c7694f2c30b3bcf1a1bbbab5d3a9ac7b68ba` | Has a separate website-preview commit; it diverges from the OS recovery line. | Not the current OS implementation base. Integrating `product-recovery` with `main` is a later, separately planned decision. |
 
-### Kanoniczna pętla produktu
+### Conflict resolution
 
-> kontekst klienta → brief przed sesją → praca offline od ekranu → wybrana obserwacja → interpretacja i decyzja trenera → paper-first guidance → działanie klienta offline → minimalny sygnał → przegląd na kolejnej sesji → wzorzec → raport zatwierdzony przez trenera → następna decyzja
+- The permanent rule is trainer accountability, not compulsory paper.
+- A trainer-facing AI assistant may analyze, suggest, and draft. A suggestion remains visibly separate from source facts and from Damian's decision.
+- The former phrase "No AI recommendation" in the security-runtime document applied to the existing deterministic `decision-support.js` module. This Stage 0 branch narrows that wording without weakening any security control. A future trainer-facing AI suggestion layer still requires the separate Stage 1 contract.
+- Historical `PAPER_FIRST_*` files and dated reviews remain evidence. They cannot override Constitution v1.1 or Home Guidance System v2.0.
+- PR #17 and PR #18 are implementation evidence, not sources of product truth.
 
----
+### PR reuse boundaries
 
-## 4. Stan początkowy i wykonane prace
+| PR | Preserve | Do not inherit |
+|---|---|---|
+| #13 | AAL2 enforcement, RLS/Storage/Edge isolation contract, static and authenticated regression evidence. | The old head branch as a new base, any assumption that staging PASS equals production authorization, or any reopening of controls without a new security defect. |
+| #17 | Read-only brief composition, provenance and dates, bounded query, empty-state discipline, and its test harness. | The claim that the brief is a complete experience or passed Damian's under-60-second orientation test. |
+| #18 | Modular workspace separation, responsive/mobile techniques, accessibility work, visual tokens, and reusable test patterns after file-level review. | Its fixed `Dzisiaj → Brief → Sesja` slice as the architecture of the whole OS, its information hierarchy as approved product truth, or its branch as the implementation base. |
 
-- [x] Constitution v1.0 ustanawia nadrzędne granice produktu.
-- [x] Warstwa Product opisuje metodę, client journey, coaching i pomiary.
-- [x] PR #13 został scalony; merge commit `1d5362e8f40096676532ef3f28908e2fe7df8196`.
-- [x] Końcowa regresja bezpieczeństwa została zapisana w `446c522ca5c61a9ad01808e7a03ea1ae9138527c`.
-- [x] Backup danych aplikacyjnych został zweryfikowany; nie jest traktowany jako pełny test odtworzenia platformy Supabase.
-- [x] Audyt Product Recovery został wykonany na podstawie kodu i historii Git.
-- [x] Audyt zapisano w `docs/product/PRODUCT_RECOVERY_AUDIT_2026-07-22.md`.
-- [x] Draft PR #14 otwarto z dokładnie jednym dokumentem; commit `da967b8fe378dded483882856b2ea666a3226446`.
-- [x] PR #14 został merytorycznie zaakceptowany i scalony; merge commit `6a105b48d00fbf848d8181b5e7bc0e83e31b3085`.
-- [x] PR #15 został scalony; merge commit `f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`.
-- [x] Ten Execution Plan jest operacyjną listą kontrolną na kanonicznej linii Product Recovery.
+### Unverified assumptions and later decisions
 
----
-
-## 5. DONE — G0: jedna kanoniczna linia Git
-
-### Problem
-
-`main` i bezpieczna linia `agent/security-architecture-hardening@446c522` mają rozbieżną historię. Rozpoczęcie kolejnych funkcji na tymczasowej gałęzi `agent/*` bez decyzji integracyjnej zwiększa ryzyko fałszywych diffów, konfliktów i utraty czytelności historii.
-
-### Decyzja wykonawcza
-
-Kanoniczną bazą rozwoju zostaje jawna gałąź `product-recovery`, utworzona z bezpiecznego SHA `f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`. Integracja do `main` pozostaje odłożona: istniejący PR #9 nadal jest Draftem, a jego bramka produkcyjna odwołuje się do otwartego issue #12 dotyczącego kwalifikowanej oceny RODO. Rozwój produktu może trwać bez deploymentu, produkcji i realnych danych klientów.
-
-### Checklista G0
-
-- [x] G0.1 — pełny diff zweryfikowany; `main` ma jeden własny commit `e371c7694f2c30b3bcf1a1bbbab5d3a9ac7b68ba`.
-- [x] G0.2 — commit `e371c76` zachowujemy; dodaje wyłącznie `noindex, nofollow` do 27 stron podglądu v16 i nie należy do runtime Studio Las OS.
-- [x] G0.3 — wybrano jawną gałąź kanoniczną `product-recovery`; brak force-pusha i przepisywania historii.
-- [x] G0.4 — nie tworzono duplikatu integracyjnego PR-a; istniejący PR #9 pozostaje Draftem do `main` ze względu na otwartą bramkę #12.
-- [x] G0.5 — `product-recovery` zawiera `446c522`, scalony audyt z PR #14 oraz scalony plan z PR #15.
-- [x] G0.6 — nazwa i SHA bazowe zostały zapisane poniżej.
-- [x] G0.7 — PR-01 może rozpocząć się wyłącznie z `product-recovery`.
-
-**Kanoniczna gałąź Product Recovery:** `product-recovery`  
-**Kanoniczny SHA bazowy G0:** `f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`  
-**Dowód decyzji:** PR #14, PR #15, commit `e371c76`, Draft PR #9 oraz otwarte issue #12.
-
-### Kryterium zakończenia G0
-
-Istnieje jedna jawnie wskazana baza, z której można utworzyć mały PR-01 bez 122 niezwiązanych commitów, bez utraty bezpiecznej architektury i bez dwuznaczności, która gałąź reprezentuje najnowszy produkt.
+- `docs/architecture/04_CLIENT_SAFE_SURFACES.md` still describes paper as the fixed morning surface and says the app does not guide the morning ritual. This active projection conflicts with Constitution v1.1 and Home Guidance System v2.0; it must be reconciled in a separately reviewed documentation correction before this Stage 0 Draft may merge.
+- The adaptive full-intake v2 is described in Plan Architecture v3.1, but neither its claimed DOCX source nor an approved 42-question contract exists in the inspected repository/workspace. Stage 3 cannot begin until that artifact is recovered, versioned, reviewed, and given an explicit owner of truth.
+- No AI provider/runtime contract is approved for real client content. Provider, endpoint, retention, region/transfer, logging, cost, fallback, and evaluation remain Stage 1 decisions.
+- The final production URL, email/SMTP path, privacy/RODO sign-off, retention schedule, and real-data rollout authorization are not proven complete by the repository evidence inspected here.
+- The staging security result does not prove that the same release is deployed and configured in production. Production verification must be a separate controlled release gate.
+- PR #18 has technical E2E evidence but no final product acceptance. A passing implementation test cannot substitute for Damian's task test or approved screen contracts.
 
 ---
 
-## 6. Roadmapa Product Recovery
+## 3. Permanent decisions
 
-### M1 — Rdzeń pracy trenera — P0
+### Product and authority
 
-#### PR #17 + PR #18 — zatwierdzona relacja warstwowa
+- The product is the trainer-led Studio Las Method, not the app.
+- Damian remains accountable for interpretation, decisions, and client-safe publication.
+- Studio Las OS is the operational memory, preparation layer, guidance surface, and publication control for that method.
+- The system may improve trainer judgment; it may not silently become the judge.
 
-**Cel:** przed sesją pokazać trenerowi tylko informacje mogące zmienić jego decyzję.
+### AI assistant
 
-- [x] Techniczny zakres read-only PR #17 zaakceptowany jako fundament PR #18.
-- [ ] Hierarchia informacji i samodzielne doświadczenie PR #17 nie zostały zaakceptowane.
-- [x] Read-only brief zaimplementowany z istniejących danych Supabase.
-- [x] Każdy fakt ma źródło i datę.
-- [x] Brak automatycznej rekomendacji, nowego zapisu i migracji.
-- [x] Empty states są czytelne i nie sugerują nieistniejących danych.
-- [x] Kontrola techniczna przy 360 px: PASS; brak poziomego przewijania.
-- [x] Testy repozytorium i GitHub Actions #91 przechodzą.
-- [x] Test zadaniowy/orientacji: FAIL — powyżej 60 sekund; kryterium poznawcze nie zostało spełnione.
-- [x] Zaakceptowana metoda integracji PR #17: foundation-only merge commit; publikacja tej wersji dokumentu jest dozwolona wyłącznie po wykonaniu tego merge’a i potwierdzeniu integralności stosu.
-- [ ] Końcowa hierarchia, orientacja i doświadczenie oczekują na ocenę w PR #18; istnienie PR #18 ani wcześniejszy E2E nie oznaczają końcowej akceptacji produktowej.
+Trainer-facing AI may:
 
-**Kryterium wyniku:** Damian w mniej niż 60 sekund potrafi odpowiedzieć: co jest ważne, co wydarzyło się ostatnio i co wymaga jego decyzji — bez przeszukiwania oddzielnych ekranów. PR #17 nie spełnił tego kryterium; końcowa ocena należy do PR #18.
+- extract facts from approved source material,
+- identify missing or inconsistent information,
+- propose interview questions,
+- suggest hypotheses and alternatives,
+- suggest tests, exercises, progressions, regressions, and session structure,
+- prepare phone, PWD, follow-up, and report drafts,
+- summarize patterns for trainer review.
 
-**Rola PR #17:** techniczny fundament PR #18, nie samodzielnie zaakceptowane doświadczenie. PR #17 nie może zostać wdrożony oddzielnie, a jego integracja wymaga merge commita zachowującego integralność warstwowego PR #18.
+AI output must remain distinguishable from source facts and trainer decisions. It cannot diagnose, publish, contact the client, change a plan, or present a suggestion as approved meaning without an explicit trainer action.
 
-**Rola PR #18:** miejsce oceny końcowej hierarchii, orientacji i doświadczenia. Dotychczasowy E2E potwierdza testowany pionowy wycinek, lecz nie stanowi końcowej akceptacji produktowej.
+### Guidance channel
 
-#### PR-02 — Canonical Session Closure
+`Paper guides the morning. Trainer gives meaning. App records the signal. Report shows the pattern.` is a design heuristic, not a mandatory interface sequence.
 
-**Cel:** jedna sesja pozostawia jeden czytelny ślad: obserwacja → interpretacja → decyzja → client-safe next step.
+For each client and task, the trainer selects:
 
-- [ ] Minimalny zestaw pól potwierdzony z Damianem.
-- [ ] Odpowiedzialność `sessions` i `post_session_observations` rozdzielona bez duplikowania zapisu.
-- [ ] Jeden submit tworzy jeden kanoniczny rekord Supabase.
-- [ ] Publikacja treści klientowi jest jawna i domyślnie bezpieczna.
-- [ ] Brak localStorage i pozornego sukcesu przed potwierdzeniem zapisu.
-- [ ] Zapis po sesji jest używalny na telefonie.
-- [ ] Test odczytu po ponownym załadowaniu potwierdza identyczny stan.
-- [ ] PR scalony do kanonicznej bazy.
+- paper,
+- app,
+- deliberate hybrid.
 
-**Kryterium wyniku:** domknięcie sesji nie odrywa trenera od relacji i pozostawia wystarczający materiał do kolejnej decyzji oraz raportu.
+There must be one authoritative instruction source. The app may present guidance, support a checklist, record repetitions or responses, and collect questions when this improves the process.
 
-#### PR-03 — Paper Guidance and Signal Review
+### Boundaries that remain
 
-**Cel:** trener ustala małe zadanie prowadzące pracę offline; klient przekazuje później minimalny sygnał, który wraca do następnego briefu.
+Do not build:
 
-- [ ] Kanoniczne role `home_plan_items`, `guidance_events` i `client_tasks` zapisane.
-- [ ] Trener publikuje tylko aktywne paper-first guidance.
-- [ ] Klient widzi małą liczbę aktualnych pozycji, bez dashboardu i gamifikacji.
-- [ ] Check-in następuje po działaniu offline i pozostaje minimalny.
-- [ ] Trener widzi sygnał klienta z datą i kontekstem.
-- [ ] Brak compliance score, streaków, przypomnień push i automatycznej progresji.
-- [ ] Pętla PR-01 → PR-02 → PR-03 przetestowana end-to-end.
-- [ ] PR scalony do kanonicznej bazy.
-
-**Kryterium zakończenia M1:** bezpieczna aplikacja obsługuje pełną pętlę jednej decyzji trenera od przygotowania, przez sesję i guidance, do sygnału widocznego przed kolejną sesją.
+- autonomous client-facing AI coaching,
+- auto-diagnosis or automatic progression,
+- gamification, streaks, rankings, or compliance scores,
+- shame-based red statuses,
+- a quantified-self or wearable dashboard,
+- a generic SaaS for other trainers,
+- duplicate paper and digital plans,
+- data collection without a decision, safety, continuity, or report purpose.
 
 ---
 
-### M2 — Punkt startowy i dowód postępu — P1
+## 4. Verified technical and Git baseline
 
-#### PR-04 — Diagnostic Entry and Selective Intake
+### Security foundation
 
-- [ ] Minimalny zakres intake uzgodniony; brak pól „na wszelki wypadek”.
-- [ ] Cel, ograniczenia, flagi i pierwszy fokus są zapisywane w Supabase.
-- [ ] Surowe dane trenera są oddzielone od client-safe summary.
-- [ ] System nie stawia diagnozy, nie liczy ryzyka i nie generuje rekomendacji.
-- [ ] Import legacy pozostaje poza zwykłym runtime albo ma osobny kontrolowany proces.
-- [ ] PR scalony do kanonicznej bazy.
+- `446c522ca5c61a9ad01808e7a03ea1ae9138527c` remains the proven secure runtime foundation.
+- Security is `CLOSED / PASS`; 25/25 authenticated tests passed.
+- PR #13 was merged as `1d5362e8f40096676532ef3f28908e2fe7df8196`.
+- MFA/AAL2, RLS, Edge Function, Storage, and client isolation are not reopened by Product Recovery.
+- Supabase remains the only application data source of truth.
+- Production and real client data remain outside design and staging work.
 
-#### PR-05 — Report Evidence and Trainer Approval
+### Branch truth at Stage 0 entry
 
-- [ ] Raport korzysta wyłącznie z zatwierdzonych, report-relevant evidence.
-- [ ] System wskazuje źródła; trener tworzy znaczenie i wniosek.
-- [ ] Draft, zatwierdzenie i publikacja są rozdzielone.
-- [ ] Klient widzi tylko wersję published/client-safe.
-- [ ] Brak automatycznej narracji, readiness score i AI verdict.
-- [ ] Damian zatwierdza użyteczność raportu do decyzji „co dalej po 12 tygodniach”.
-- [ ] PR scalony do kanonicznej bazy.
+- `product-recovery@69ea62446210e4d374d8118176841a4d86a599e1` is the canonical OS integration line.
+- `main@e371c7694f2c30b3bcf1a1bbbab5d3a9ac7b68ba` has a separate website-preview commit and is not the active OS development base.
+- PR #17 is merged as `c669a79372aae70f63c8b235fd63330c0555ab5e`; its read-only brief remains technical evidence, not the complete product architecture.
+- PR #18 is an open Draft at `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` and has diverged from `product-recovery` (`ahead 1`, `behind 4` at audit time).
+- PR #18 must not be merged, rebased, retargeted, or treated as product truth during Stage 0. Its branch remains preserved as implementation evidence until approved screen contracts determine what to recover.
 
-**Kryterium zakończenia M2:** system potrafi połączyć punkt startowy, decyzje z kolejnych sesji i wybrane sygnały w raport, którego autorem i interpretatorem pozostaje trener.
+### Stage 0 branch strategy
 
----
+All Stage 0 documentation changes start from `product-recovery@69ea62446210e4d374d8118176841a4d86a599e1` on one dedicated documentation branch.
 
-### M3 — Spokojna projekcja klienta — P1
+No change in Stage 0 may touch:
 
-#### PR-06 — Client-safe Current Direction
-
-- [ ] Portal pokazuje jedno aktualne ustalenie, aktywne guidance i opublikowany raport.
-- [ ] Klient rozumie bieżący kierunek w mniej niż 60 sekund.
-- [ ] Brak surowych notatek trenera i niepublikowanych danych.
-- [ ] Brak bezpośrednich odczytów tabel; zachowany wąski kontrakt RPC.
-- [ ] Cross-client isolation pozostaje obowiązkowym testem regresyjnym.
-- [ ] Brak chatu, inboxu, push i dashboardu metryk.
-- [ ] PR scalony do kanonicznej bazy.
-
-**Kryterium zakończenia M3:** portal wspiera ustalenie z trenerem, lecz nie staje się osobnym produktem wymagającym codziennej obsługi.
+- runtime JavaScript or HTML,
+- Supabase migrations, functions, policies, or configuration,
+- production or staging,
+- authentication or MFA,
+- PR #18 code.
 
 ---
 
-### M4 — Funkcje selektywne, wyłącznie po udowodnieniu potrzeby — P2
+## 5. Mandatory gate before any real client data
 
-#### PR-07 — Selective Measurement and Observation History
+The 25/25 staging result proves the tested security contract. It does not by itself authorize real data in the new runtime. Real client data may enter Studio Las OS only after one explicit production-readiness decision confirms all three gates below.
 
-- [ ] PR-01 i PR-05 udowodniły, które sygnały są realnie potrzebne.
-- [ ] Historia obejmuje tylko pomiary i obserwacje wspierające decyzję lub raport.
-- [ ] Brak live wearables, false precision i auto-interpretacji.
-- [ ] PR scalony do kanonicznej bazy.
+### A. Technical and access-control gate
 
-#### PR-08 — Curated Trainer Exercise Library
+- Production uses Supabase as the only application source of truth; no health, client, session, plan, report, or trainer-note data is persisted in `localStorage`, an offline queue, a demo fixture, a public file, or a parallel spreadsheet.
+- Trainer access requires Supabase Auth, the active trainer role, mandatory TOTP MFA, and an AAL2 session. Public signup remains disabled. Recovery and revocation paths are tested without weakening MFA.
+- Every Data API object has deliberate object grants and RLS. Exposed tables have RLS enabled and the policy enforces ownership, not only the `authenticated` role. Privileged helpers remain outside exposed schemas or have explicitly restricted execution.
+- Cross-tenant tests prove that a trainer cannot access another trainer's client and a client cannot access another client's data. Revocation takes effect as designed.
+- The client reads only an explicit client-safe projection. Trainer notes, hypotheses, AI drafts, unpublished reports, technical IDs, and audit data are excluded.
+- Storage remains private with explicit client paths, allowed MIME types, size limits, publication metadata, and tested read/write isolation. Client uploads remain disabled until a separate reviewed design is accepted.
+- Service-role and AI-provider secrets exist only in trusted server-side operations. Tokens, TOTP material, client content, and raw payloads do not enter URLs, browser bundles, Git, analytics, screenshots, or ordinary logs.
+- Backup and restore are verified for the exact release scope; incident ownership, credential rotation, MFA recovery, account revocation, and audit review have executable procedures.
+- The exact production release candidate passes the security suite, Data API/RLS/Storage checks, and a controlled end-to-end test with prefixed fictional records before the first real record is created.
 
-- [ ] PR-03 udowodnił potrzebę biblioteki.
-- [ ] Każde ćwiczenie ma źródło, właściciela i status review.
-- [ ] Tylko zweryfikowane ćwiczenia mogą wejść do guidance.
-- [ ] Brak masowego importu seedów i klientowej przeglądarki fitness.
-- [ ] PR scalony do kanonicznej bazy.
+Current Supabase guidance confirms that object grants and RLS are separate controls and both must be deliberate: [Securing your API](https://supabase.com/docs/guides/api/securing-your-api).
 
-#### PR-09 — Private Documents Lifecycle
+### B. Privacy and operating gate
 
-- [ ] Istnieje zaakceptowana polityka retencji i usuwania.
-- [ ] Storage path, MIME, rozmiar, audience i publikacja mają jawny kontrakt.
-- [ ] Metadata i obiekt mają pełny, spójny lifecycle.
-- [ ] Brak public bucket, base64 i trwałych publicznych URL.
-- [ ] Testy autoryzacji i izolacji przechodzą.
-- [ ] PR scalony do kanonicznej bazy.
+- Controller identity, purposes, Article 6 legal basis and Article 9 condition for health-related data are recorded for the actual Studio Las process.
+- The privacy notice matches the real flow across the website/form, email, Supabase, hosting, backups, support, and any AI provider.
+- Processor agreements, subprocessors, regions, international-transfer safeguards, retention, deletion, export/correction, incident response, and the DPIA decision are approved by a qualified reviewer.
+- Data collection is limited to fields with a current process, safety, decision, continuity, or report purpose.
+- Formspree email, manual paste, PDF import, Tanita, Polar, and AI each receive a separate approved data-flow decision before real content uses that path.
 
-**Kryterium zakończenia M4:** każda funkcja P2 istnieje dlatego, że wcześniejsza praca udowodniła jej wartość — nie dlatego, że była widoczna w starej aplikacji.
+The European Data Protection Board describes the DPIA as an assessment used to identify safeguards and demonstrate risk control; it is a decision to assess, not a box the AI may close automatically: [EDPB small-business compliance guide](https://www.edpb.europa.eu/sme/be-compliant/be-compliant_en).
+
+### C. AI processing gate
+
+- AI runs through a server-side boundary with an approved provider, contract, endpoint, region/transfer analysis, retention setting, and subprocessor inventory.
+- Only the minimum source material needed for the named task is sent. Client content is not reused for unrelated training, analytics, or debugging.
+- Prompts, outputs, retries, failures, and model changes have a defined logging and redaction policy; raw client content is not copied into general application logs.
+- Source facts, extracted facts, AI hypotheses, AI suggestions, trainer decisions, and client-safe publications remain separate and traceable.
+- AI cannot publish, message the client, change a plan, qualify a client, progress/regress an exercise, or close a decision without the explicit Damian action defined for that workflow.
+- Failure is safe: Damian can continue manually, and no session or client instruction depends on a model response being available.
+- The AI flow first passes diverse fictional cases, including conflicting input, wrong-person attachment, prompt injection inside an uploaded source, incomplete extraction, provider failure, and an inappropriate suggestion.
+
+### Data-environment rule
+
+- Development, automated tests, demos, screenshots, GitHub, staging, and design reviews use fictional or properly anonymized data only.
+- Real client data is allowed only in the approved production path after the gates above are signed off.
+- The first real-client pilot belongs to the controlled rollout stage, not to Stage 0 or early feature development.
 
 ---
 
-## 7. Bramka każdego PR-a
+## 6. NOW — Stage 0: align product truth
+
+### Goal
+
+Remove the contradiction between the old paper-first prohibition and the approved direction in which AI is a useful trainer assistant and the guidance channel may be paper, app, or hybrid.
+
+### Required changes
+
+- [x] Verify PR #13, #17, and #18 facts rather than trusting old summaries.
+- [x] Confirm `product-recovery` as the canonical integration line.
+- [x] Define the permanent invariant: trainer accountability and client-safe publication.
+- [x] Reclassify Paper/Trainer/App/Report as a design heuristic.
+- [x] Define AI as a trainer-facing suggestion and drafting layer.
+- [x] Define one authoritative channel per task.
+- [x] Prepare Constitution v1.1 on the Stage 0 branch.
+- [x] Prepare Home Guidance System v2.0 on the Stage 0 branch.
+- [x] Update Product and Architecture projections that still contain absolute paper-first rules.
+- [x] Mark historical `PAPER_FIRST_*` documents as evidence, not active product direction.
+- [x] Classify Plan Architecture v3.1 and Integration Map v1 as inputs/evidence rather than independent truth.
+- [x] Record the mandatory production and AI gate before real client data.
+- [x] Prepare this Execution Plan v2.1 on the Stage 0 branch.
+- [x] Validate that the Stage 0 diff contains documentation only.
+- [ ] Merge the Stage 0 PR into `product-recovery` only after Damian accepts the product direction.
+
+### Exit gate
+
+Stage 0 is complete only when a new contributor can answer consistently:
+
+1. Who decides? Damian.
+2. What may AI do? Analyze, suggest, and draft for trainer review.
+3. Can the app guide the morning? Yes, when intentionally selected for that client and task.
+4. Can paper remain primary? Yes.
+5. Can both carry separate versions of the same plan? No.
+6. May AI publish or progress a client automatically? No.
+7. Which branch is the implementation base? `product-recovery` after the accepted Stage 0 merge.
+
+---
+
+## 7. Implementation roadmap after Stage 0
+
+No phase starts before the previous phase meets its exit gate. Each phase requires its own contract and small Draft PR.
+
+### Stage 1 — Data, permission, and AI contracts
+
+Define before UI:
+
+- source fact, extracted fact, trainer observation, AI hypothesis, AI suggestion, trainer decision, client-safe publication;
+- authorship, timestamps, source links, confidence/uncertainty, versioning, and approval state;
+- file ingestion boundaries for forms, PDFs, Tanita, and other documents;
+- retention, access, audit, and deletion rules;
+- model/provider boundary and prohibited logging of client content;
+- failure states and human fallback.
+
+**Exit gate:** no AI output can be mistaken for source truth or published without trainer approval; no new schema is approved without mapping to an existing domain concept.
+
+### Stage 2 — First vertical slice: inquiry to phone decision
+
+Flow:
+
+> pasted or imported inquiry → structured facts and gaps → AI-prepared call scenario → Damian's call notes → client reaction → next decision
+
+The slice must support:
+
+- manual paste first; Formspree automation later,
+- clear separation of source text and extracted fields,
+- suggested questions and communication, not automatic qualification,
+- decisions such as continue, send full intake, defer/consult, or not the right product,
+- complete audit trail and editability.
+
+**Exit gate:** on fictional cases Damian prepares and closes a call faster, without losing context or accepting AI output blindly.
+
+### Stage 3 — Full intake to PWD preparation
+
+Flow:
+
+> full intake → structured client record → missing/conflicting information → trainer brief → suggested PWD questions and candidate tests
+
+Requirements:
+
+- adaptive full intake is the source, not the legacy 13-section form,
+- test suggestions include purpose, what to observe, stop criteria, and what decision the result may change,
+- suggestions remain editable and unapproved by default,
+- client-safe and trainer-only content stay separate.
+
+**Exit gate:** Damian can prepare the PWD from one coherent brief and trace every important claim to its source.
+
+### Stage 4 — PWD workspace and decision conversation
+
+Combine in one client context:
+
+- interview,
+- Tanita PDF ingestion and comparable-measurement context,
+- selected functional tests,
+- observation, client reaction, trainer interpretation, and decision,
+- AI-prepared conversation options,
+- START, START CONDITIONAL, DEFER/CONSULT, or NOT THIS PRODUCT,
+- follow-up draft when an immediate decision is inappropriate.
+
+**Exit gate:** the workspace supports a good professional decision and conversation; it does not pressure a sale or turn a test result into a diagnosis.
+
+### Stage 5 — Twelve-week program and client portal
+
+Build only after Stages 2–4 prove the upstream model.
+
+Scope:
+
+- week-by-week process structure,
+- 90-minute studio session plan,
+- home plan from the curated exercise atlas,
+- trainer-selected paper/app/hybrid channel,
+- digital checklist where useful,
+- task-specific repetitions, duration, load, RPE, or response,
+- client notes and questions tied to the task,
+- plan versioning and publication,
+- client portal focused on Today, Plan, and Progress.
+
+**Exit gate:** the client knows what to do and how to ask; Damian sees only information that can improve the next conversation or decision; no duplicate plan or gamification exists.
+
+### Stage 6 — Weekly trainer preparation and session support
+
+AI may prepare:
+
+- what changed,
+- unanswered questions,
+- missed or modified tasks that deserve a non-judgmental question,
+- candidate warm-up, main block, and down-regulation structure,
+- alternatives and progressions/regressions,
+- questions to ask during the session.
+
+Damian approves the session direction and records the final observation, interpretation, decision, and next step.
+
+**Exit gate:** AI reduces preparation time while the trainer can always see why a suggestion appeared and can ignore or replace it.
+
+### Stage 7 — Twelve-week report and next offer decision
+
+The system assembles evidence; Damian authors and approves meaning.
+
+The report should show:
+
+- starting context,
+- selected evidence and comparable measurements,
+- meaningful changes,
+- adaptations and trainer decisions,
+- current capabilities and unresolved limits,
+- recommended next direction.
+
+**Exit gate:** the report is useful even when progress is mixed, contains no unapproved AI claim, and supports an honest continuation, independence, referral, pause, or finish decision.
+
+### Stage 8 — Integrations, automation, and controlled pilot
+
+Only after the manual flows work:
+
+- automate Formspree intake,
+- automate approved document ingestion,
+- evaluate Tanita import reliability,
+- evaluate Polar import after defining the minimum useful fields,
+- add notifications only where a real missed obligation justifies them,
+- pilot one full fictional case,
+- then one real client under production privacy controls,
+- then 3–5 clients before broader use.
+
+**Exit gate:** automation removes copying without hiding errors, changing decisions, or expanding data collection by default.
+
+---
+
+## 8. Gate for every implementation PR
 
 ### Definition of Ready
 
-- [ ] Jedno zdanie opisuje wartość dla trenera lub klienta.
-- [ ] Zakres i zakazany zakres są zapisane.
-- [ ] Znane są tabele, API i moduły.
-- [ ] Zależności od wcześniejszych PR-ów są zamknięte.
-- [ ] Kryteria akceptacji obejmują funkcję, bezpieczeństwo i telefon.
-- [ ] Wiadomo, jak sprawdzimy wartość w realnym przepływie Studio Las.
+- one user or trainer decision is named;
+- source, owner, visibility, and approval state are defined;
+- AI suggestion and trainer decision are separate;
+- primary channel and authoritative instruction source are defined;
+- scope and forbidden scope are explicit;
+- failure and empty states are specified;
+- relevant security and privacy boundaries are known;
+- acceptance can be tested with fictional data.
 
 ### Definition of Done
 
-- [ ] Kryteria akceptacji przechodzą.
-- [ ] Supabase pozostaje jedynym źródłem prawdy.
-- [ ] Brak produkcyjnego localStorage i danych demonstracyjnych w runtime.
-- [ ] Brak niezamierzonej zmiany Auth, MFA/AAL2, RLS, Storage i client-safe projection.
-- [ ] Testy automatyczne i właściwy test manualny przechodzą.
-- [ ] Widok jest używalny na telefonie w zadaniu, dla którego powstał.
-- [ ] Damian potwierdza użyteczność, jeśli PR zmienia pracę trenera lub klienta.
-- [ ] PR ma mały, audytowalny diff i nie zawiera obcej refaktoryzacji.
-- [ ] Ten plan zawiera aktualny status i dowód.
-- [ ] PR został scalony do kanonicznej bazy; dopiero wtedy rozpoczyna się następny PR.
+- acceptance tests pass;
+- Supabase remains the only application source of truth;
+- Auth, MFA/AAL2, RLS, Storage, and client isolation remain intact;
+- source facts, AI output, trainer decisions, and client-safe publication remain distinguishable;
+- no automatic client publication or progression exists;
+- no duplicate paper/app plan exists;
+- phone use is purposeful and accessible;
+- the diff is small, auditable, and free of unrelated refactoring;
+- Damian confirms usefulness when the change affects his workflow.
 
 ---
 
-## 8. Rejestr dowodów i decyzji
+## 9. Evidence register
 
-| ID | Stan | Decyzja lub wynik | Dowód |
+| ID | State | Decision or result | Evidence |
 |---|---|---|---|
-| SEC-01 | DONE | Bezpieczeństwo CLOSED / PASS, 25/25 | `446c522ca5c61a9ad01808e7a03ea1ae9138527c` |
-| AUD-01 | DONE | Audyt odzyskania produktu wykonany i scalony | PR #14, merge `6a105b48d00fbf848d8181b5e7bc0e83e31b3085` |
-| GOV-01 | DONE | Kanoniczna linia `product-recovery` ustanowiona bez naruszenia `main` i bramki RODO | `product-recovery@f914a2f9ce65d97f0bcfb2e50ba2522c3398a225`; `main@e371c76`; Draft PR #9; issue #12 |
-| PR-01 | FOUNDATION ACCEPTED — EXPERIENCE IN REVIEW | Techniczna kontrola 360 px: PASS; test zadaniowy: FAIL — powyżej 60 sekund. PR #17 jest fundamentem PR #18, nie samodzielnie zaakceptowanym doświadczeniem | PR #17 `cdd5d8fd65725de7add3c0d6c17a7c20653f9902`; PR #18 `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
-| PR-02 | NOT STARTED | Canonical Session Closure | — |
-| PR-03 | NOT STARTED | Paper Guidance and Signal Review | — |
-| PR-04 | NOT STARTED | Diagnostic Entry and Selective Intake | — |
-| PR-05 | NOT STARTED | Report Evidence and Trainer Approval | — |
-| PR-06 | NOT STARTED | Client-safe Current Direction | — |
-| PR-07 | NOT STARTED | Selective Measurement and Observation History | — |
-| PR-08 | NOT STARTED | Curated Trainer Exercise Library | — |
-| PR-09 | NOT STARTED | Private Documents Lifecycle | — |
+| SEC-01 | DONE | Security CLOSED / PASS, 25/25 | `446c522ca5c61a9ad01808e7a03ea1ae9138527c` |
+| PR-13 | DONE | Trainer MFA/AAL2 merged | `1d5362e8f40096676532ef3f28908e2fe7df8196` |
+| AUD-01 | DONE | Product Recovery audit merged | PR #14, `6a105b48d00fbf848d8181b5e7bc0e83e31b3085` |
+| GIT-01 | DONE | `product-recovery` established as canonical OS line | `f914a2f9ce65d97f0bcfb2e50ba2522c3398a225` |
+| PR-17 | EVIDENCE | Read-only brief foundation merged; not complete product architecture | `c669a79372aae70f63c8b235fd63330c0555ab5e` |
+| PR-18 | FROZEN | Open Draft preserved for selective recovery after approved contracts | `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
+| DIR-01 | ACCEPTED FOR DRAFT | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 | `agent/stage-0-product-truth`; owner accepted 2026-08-03; merge pending |
 
 ---
 
-## 9. Rejestr świadomych odrzuceń
+## 10. Next action
 
-Poniższe elementy mają status `REJECTED`, a nie „kiedyś”:
+Publish the owner-accepted Stage 0 documentation candidate from `agent/stage-0-product-truth` as a Draft PR to `product-recovery` and verify the exact documentation-only diff. Draft publication does not authorize merge; merge still requires a separate explicit owner approval.
 
-- stary monolit jako runtime lub źródło kodu do kopiowania;
-- localStorage jako persystencja danych zdrowotnych i procesu;
-- lokalne kody `LAS-*` oraz stare logowanie klienta;
-- auto-diagnoza, scoring, automatyczne rekomendacje i automatyczne znaczenie;
-- raport generowany bez autorstwa i zatwierdzenia trenera;
-- gamifikacja, streaki, odznaki i compliance score;
-- chat, inbox i push notifications;
-- live wearable ingestion i dashboard biohackingu;
-- klient-facing AI;
-- osobna aplikacja mobilna fitness;
-- SaaS dla innych trenerów;
-- funkcje zwiększające czas ekranowy bez wpływu na decyzję lub raport.
-
-Powrót któregokolwiek elementu wymaga osobnej decyzji zmieniającej Product Constitution lub Product Recovery Audit. Nie może wejść „przy okazji” innego PR-a.
-
----
-
-## 10. Warunki publikacji i następna bramka
-
-PR #17 jest zaakceptowany wyłącznie jako techniczny fundament PR #18. Hierarchia i samodzielne doświadczenie PR #17 nie są zaakceptowane, a PR #17 nie może zostać wdrożony oddzielnie. Zaakceptowaną metodą jego integracji jest foundation-only merge commit. PR #18 pozostaje miejscem końcowej oceny hierarchii, orientacji i doświadczenia; wcześniejszy E2E nie oznacza akceptacji produktowej.
-
-### A. Warunki publikacji tej wersji dokumentu
-
-Ta wersja może stać się kanoniczna w `product-recovery` wyłącznie po spełnieniu wszystkich warunków:
-
-1. komentarz decyzyjny został opublikowany w PR #17;
-2. PR #17 został scalony przez merge commit;
-3. merge nie uruchomił deploymentu ani operacji Supabase;
-4. integralność PR #18 została potwierdzona: niezmieniony head `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466`, dokładnie 12 ścieżek i manifest blobów 12/12;
-5. base PR #19 został zmieniony na `product-recovery`;
-6. po zmianie base PR #19 nadal obejmuje dokładnie jeden plik i ma czysty diff.
-
-Lista określa warunki publikacji tej wersji, a nie stan wykonania przed zapisaniem odpowiednich dowodów.
-
-### B. Następna bramka po publikacji dokumentu
-
-Po opublikowaniu tej wersji jako aktywnego Execution Plan:
-
-1. potwierdzić aktywną treść dokumentu w `product-recovery`;
-2. zmienić base PR #18 na `product-recovery`, bez rebase’u, cherry-picku i zmiany head;
-3. ponownie potwierdzić head `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466`, dokładnie 12 plików oraz manifest blobów 12/12;
-4. uzyskać zielone checks dla PR #18;
-5. przeprowadzić osobną końcową ocenę produktową hierarchii, orientacji i doświadczenia PR #18.
-
-Ta bramka nie udziela zgody na merge PR #18, integrację z `main` ani deployment. `product-recovery` pozostaje gałęzią integracyjną. Operacje Supabase i produkcyjne pozostają poza zakresem.
+Do not merge PR #18, start a new feature PR, change Supabase, or use real client data before Stage 0 is accepted and merged into `product-recovery`.
