@@ -93,36 +93,40 @@ The workflow rejects another-client requests and warns on partial or suspicious 
 ### Preparation
 
 - FR-06: Present separate sections for known, unknown, conflicting/unclear, goal, questions, caution, and outline.
-- FR-07: Show information type, author, source locator, and review state for each preparation item.
+- FR-07: Show the allowed information type when present, separate operational role, author, exact version, source locator, lineage, and review state for each preparation item.
 - FR-08: Visually distinguish source-derived facts from AI suggestions and hypotheses.
-- FR-09: Allow editing or rejection of derivatives without editing the source.
+- FR-09: Editing creates a new exact derivative/version with `derived_from` and `supersedes`; it never mutates the source or earlier derivative.
 - FR-10: Provide five to eight optional questions for fixture-assisted cases.
-- FR-11: Support a complete manual preparation fallback.
+- FR-11: Support a complete manual preparation fallback and disable fixture-assisted labeling for a raw manual paste.
 
 ### Call
 
 - FR-12: Add notes as client statement, Damian observation, or Damian interpretation.
 - FR-13: Mark a question as asked, skipped, or incomplete answer.
 - FR-14: Record client reaction separately.
-- FR-15: Preserve note author, time, context, and local identifier.
+- FR-15: Preserve note author, time, context, local identifier, exact version, and correction/supersession chain.
 - FR-16: Never show scoring, discipline, compliance, conversion probability, or automatic qualification.
 
 ### Close
 
 - FR-17: Present `CONTINUE`, `SEND_FULL_INTAKE`, `DEFER_OR_CONSULT`, and `NOT_RIGHT_PRODUCT` without preselection.
 - FR-18: Require a non-empty rationale.
-- FR-19: Let Damian select supporting facts/notes.
+- FR-19: Let Damian select only reviewed source/extracted facts and deliberately recorded phone records, always by exact version.
 - FR-20: Record the decision only after explicit Damian action.
-- FR-21: Optionally create a new follow-up draft after a decision.
-- FR-22: Mark the draft `DO SPRAWDZENIA — NIE WYSŁANO`, `needs_review`, and `unpublished`.
+- FR-21: Optionally create a follow-up draft solely from the active exact decision version and its exact evidence versions.
+- FR-22: Mark every created or edited draft version `DO SPRAWDZENIA — NIE WYSŁANO`, `needs_review`, and `unpublished`; editing creates a superseding version.
 - FR-23: Provide no send, publish, booking, or Formspree action.
 
 ### Audit and failure
 
-- FR-24: Show a metadata-only audit summary that does not repeat full source, notes, or draft.
+- FR-24: Show metadata-only audit events with actor and exact primary/related object-version references, without repeating source, notes, rationale, or draft.
 - FR-25: Display actionable empty and invalid-state messages.
 - FR-26: Keep the prototype usable at 360 px without horizontal overflow.
 - FR-27: Keep primary controls keyboard reachable with visible focus.
+- FR-28: Reject every `information_type` outside the closed nine-value Stage 1 dictionary and store workflow roles separately.
+- FR-29: Block placeholders, flagged items, and unreviewed machine content from the call and decision evidence.
+- FR-30: Invalidate dependent decisions and drafts after every material upstream change; require an explicit superseding decision save.
+- FR-31: Preserve historical and current active versions visibly.
 
 ## Safety requirements
 
@@ -174,17 +178,17 @@ Exact limits, provider fields, schema, retention, region, cost, model, and runti
 
 - AC-01: The current repository form fields and Formspree behavior are documented as audit evidence, not automated.
 - AC-02: An immutable source remains visible beside editable derivatives.
-- AC-03: Source facts, extracted facts, AI suggestions/hypotheses, trainer interpretation, trainer decision, and client material are visibly distinct.
+- AC-03: The nine allowed information types remain closed, while source facts, extracted facts, AI suggestions/hypotheses, trainer records, decisions, client material, and operational roles are visibly distinct.
 - AC-04: Every derivative displays or conceptually preserves exact `derived_from`.
 - AC-05: At least 12 fictional cases cover happy, ambiguous, unsafe, failure, and isolation paths.
 - AC-06: Five to eight questions are available in assisted preparation and can be edited/rejected.
-- AC-07: Notes preserve explicit authorship/type.
+- AC-07: Notes and reactions preserve explicit authorship, allowed type, operational role, exact version, and supersession.
 - AC-08: No score or automatic qualification is present.
 - AC-09: All four decisions require Damian's action and rationale.
-- AC-10: A follow-up draft stays visibly unsent and unpublished.
+- AC-10: A follow-up draft matches its exact saved decision/evidence, and every edit remains a new visibly unsent and unpublished version.
 - AC-11: The complete workflow works in manual fallback mode.
 - AC-12: No external requests, secrets, storage, real AI, or real client data are present.
-- AC-13: Automated structural test and inherited seven tests pass on the final tree.
+- AC-13: Automated behavioral/state-transition test and inherited seven tests pass on the final tree.
 - AC-14: `git diff --check` passes.
 - AC-15: Damian executes the owner workflow test and records `PASS`, `PASS WITH CORRECTIONS`, or `FAIL` before Stage 2 acceptance.
 

@@ -40,6 +40,10 @@ It applies the owner-accepted Stage 1 contracts. It does not approve tables, fie
 
 ## Information objects
 
+The Stage 1 `information_type` dictionary remains closed to exactly: `source_artifact`, `source_fact`, `extracted_fact`, `trainer_observation`, `ai_hypothesis`, `ai_suggestion`, `trainer_interpretation`, `trainer_decision`, and `client_material`. Stage 2 cannot add values to this field.
+
+Workflow/domain roles such as `preparation_gap`, `call_conflict`, `call_goal`, `call_question`, `caution_topic`, `call_outline_item`, `client_statement`, and `client_reaction` are separate operational labels. They are never stored as `information_type`. A record may carry an allowed information type and an operational role only when both meanings are independently true.
+
 ### `inquiry_source`
 
 Domain representation: `source_artifact`.
@@ -76,13 +80,13 @@ Operational preparation item, not a new Stage 1 information type. It states that
 
 ### `call_question`
 
-Domain representation: `ai_suggestion` when machine prepared, or trainer-authored suggestion when Damian creates it.
+Domain representation: `ai_suggestion` when machine prepared. A question authored or deliberately rewritten by Damian is an operational `call_question`; that role is not an `information_type`.
 
 It includes purpose, optional caution, `derived_from`, author, review state, and call outcome: `not_asked`, `asked`, `skipped`, or `incomplete_answer`.
 
 ### `call_outline_item`
 
-Domain representation: `ai_suggestion` or trainer-authored preparation. It may suggest an opening, middle, or closing step but cannot be displayed as mandatory instruction.
+Domain representation: `ai_suggestion` when machine prepared. A trainer-authored outline remains the operational `call_outline_item` role and does not invent a trainer-preparation information type. It may suggest an opening, middle, or closing step but cannot be displayed as mandatory instruction.
 
 ### `call_client_statement`
 
@@ -98,7 +102,7 @@ Domain representation: `trainer_interpretation`. It records meaning assigned by 
 
 ### `client_reaction`
 
-A client-authored call signal whose content follows Stage 1 `Client Signal` mapping. It is not a score, discipline grade, consent inference, or decision.
+A client-authored call signal represented as reviewed `source_fact` with operational role `client_reaction`. `Client Signal` is a Stage 1 domain role, not an `information_type`. The record is not a score, discipline grade, consent inference, or decision.
 
 ### `phone_decision`
 
@@ -174,10 +178,12 @@ These are workflow presentation states, not information types, review states, pu
 ## Review and edit behavior
 
 - Source text is read-only after capture.
-- An extracted fact can be approved, rejected, or corrected.
-- An AI suggestion can be retained, edited into a trainer-authored derivative, or rejected.
-- Rejected items remain traceable but are not used as active preparation.
-- Editing creates a visible distinction between original machine suggestion and Damian's version.
+- An extracted fact can be approved, rejected, or corrected; every transition creates an exact version.
+- An AI suggestion can be approved, edited into a new trainer-authored operational derivative, or rejected.
+- Rejected and superseded items remain traceable but are not used as active preparation.
+- Editing never changes original content, identity, author, or information type. The new visible version carries exact `derived_from` and `supersedes`.
+- Rejected, superseded, unreviewed, flagged, and placeholder items cannot enter the active call or decision evidence.
+- Every active machine question must be approved, rewritten into a trainer-owned `call_question`, or rejected before the call.
 - A rejected inappropriate question cannot reappear as active because another UI section references it.
 
 ## Phone-note behavior
@@ -188,7 +194,7 @@ Every note requires one explicit category:
 - `trainer_observation`;
 - `trainer_interpretation`.
 
-The system must preserve category, author, time, and current call context. It may not silently summarize all three categories into one fact. A changed client answer is a new client statement and may mark the earlier statement as contradicted; it does not overwrite it.
+The system must preserve category, author, time, current call context, and exact version. It may not silently summarize all three categories into one fact. Client statements and reactions use `source_fact` semantics plus their operational roles. A correction creates a new version with `supersedes`; the earlier wording remains unchanged and traceable.
 
 ## Decision behavior
 
@@ -201,7 +207,13 @@ The decision control must:
 - reject empty or incomplete submissions visibly;
 - never preselect a decision;
 - never compute a recommendation score;
-- never infer `SEND_FULL_INTAKE` from readiness, pain, location, or any form field.
+- never infer `SEND_FULL_INTAKE` from readiness, pain, location, or any form field;
+- accept as evidence only reviewed `source_fact` / `extracted_fact` records and deliberate phone statements, reactions, observations, or interpretations;
+- store exact evidence-version references and the upstream input revision;
+- become invalid when decision controls, rationale, evidence, preparation, question state, phone notes, or client reaction changes after save;
+- require a new explicit save to create a superseding decision version.
+
+A follow-up draft is generated only from the active exact decision and the exact evidence versions saved with it. Fixture-authored canned wording cannot override the selected decision. Editing client material creates a superseding `client_material` version that remains `needs_review` and `unpublished`; it never mutates the stored version.
 
 ## Minimal AI dataset candidate
 
@@ -264,7 +276,7 @@ Manual paste is the only non-fixture acquisition behavior demonstrated:
 3. Paste creates a source version, capture time, and locator scheme.
 4. The system never edits the source after capture.
 5. Partial or clipped text is visibly flagged; missing ranges are not interpreted as negative answers.
-6. Preparation proceeds manually or with deterministic fictional fixture suggestions.
+6. A raw manual paste exposes only truthful manual fallback. Fixture-assisted preparation is disabled because no deterministic fixture output exists for that source.
 
 Formspree remains outside the workflow runtime. Finding and versioning any future source-format contract remains a dependency before automation.
 
@@ -285,7 +297,7 @@ Minimum metadata-only events:
 - cross-client access attempt denied;
 - workflow reset.
 
-Audit summaries use identifiers, types, timestamps, and outcome categories. They do not duplicate full source, notes, or draft content.
+Every audit event contains the actor plus an exact primary object/version reference and exact related references where applicable. Audit summaries use identifiers, types, timestamps, and outcome categories. They do not duplicate full source, notes, rationale, or draft content.
 
 ## Cross-client isolation
 
@@ -318,6 +330,6 @@ There is no real send, publish, booking, Formspree, Supabase, or AI control.
 
 ## Acceptance gate
 
-The contract remains a candidate until Damian completes the owner workflow test with fictional cases. A passing automated test proves structural boundaries only; it cannot prove usefulness, speed, clarity, or owner acceptance.
+The contract remains a candidate until Damian completes the owner workflow test with fictional cases. A passing automated suite proves state-transition, provenance, vocabulary, dependency, and static safety boundaries; it cannot prove usefulness, speed, clarity, or owner acceptance.
 
 Stage 3, production implementation, provider choice, schema design, real data, and deployment remain unauthorized.

@@ -90,7 +90,7 @@ The preparation view separates:
 - `Tematy wymagające ostrożności` — warnings, not diagnoses;
 - `Proponowany przebieg rozmowy` — opening, middle, and closing suggestions.
 
-Every prepared item shows its information type, author, source locator, and review state. Damian may edit or reject a derivative. AI-origin items remain visibly different from source facts and remain `needs_review` and `unpublished`.
+Every prepared item shows an allowed information type when applicable, a separate operational role, author, exact version, source locator, lineage, and review state. Damian may approve, create a trainer-authored derivative, or reject it. The original remains unchanged and visible. AI-origin items remain visibly different from source facts and remain `needs_review` and `unpublished` until deliberate review.
 
 ### 3. During the call
 
@@ -100,7 +100,7 @@ Damian may record a note as:
 - Damian observation;
 - Damian interpretation.
 
-Client statements retain client authorship, call time, and context. Damian's meaning is always a separate `trainer_interpretation`. Questions may be marked `asked`, `skipped`, or `incomplete answer`. A separate field records the client's reaction.
+Client statements and reactions use `source_fact` semantics plus separate operational roles and retain client authorship, call context, exact versions, and supersession. Damian's meaning is always a separate `trainer_interpretation`. Questions may be marked `asked`, `skipped`, or `incomplete answer`. Corrections create new versions rather than replacing earlier wording.
 
 There is no score, discipline judgment, automatic qualification, or automatic decision.
 
@@ -121,7 +121,7 @@ After Damian records the decision, the system may prepare a new `client_material
 
 `DO SPRAWDZENIA — NIE WYSŁANO`
 
-The draft starts with `review_state: needs_review` and `publication_state: unpublished`, preserves complete `derived_from`, and has no send or publish action. A later exact-version review and separate publication/contact process are outside Stage 2.
+The draft is generated deterministically from the active exact decision and the exact evidence versions saved with it; fixture wording cannot contradict Damian's choice. It starts with `review_state: needs_review` and `publication_state: unpublished`, preserves complete `derived_from`, and has no send or publish action. Editing creates a superseding `client_material` version. A later exact-version review and separate publication/contact process are outside Stage 2.
 
 ## Sales-pressure boundaries
 
@@ -159,7 +159,7 @@ The manual path is a first-class workflow:
 5. select and justify the decision;
 6. write a follow-up draft manually if needed.
 
-AI unavailability must never block the call or make an empty output look successful.
+AI unavailability must never block the call or make an empty output look successful. A manually pasted source cannot enter or claim fixture-assisted mode; its placeholders must be deliberately replaced or rejected before use.
 
 ## Separation from full intake and PWD
 
@@ -182,7 +182,8 @@ The first inquiry call collects only enough context to choose the next step. It 
 - Preparation contains five to eight relevant questions but allows rejection and editing.
 - Damian can finish manually without AI.
 - Notes preserve authorship and context without duplicating the full source into audit logs.
-- The final decision is impossible to save without Damian's explicit choice and rationale.
+- The final decision is impossible to save without Damian's explicit choice, rationale, and reviewed exact-version evidence.
+- Material changes to preparation, call records, reaction, rationale, selected evidence, or decision invalidate dependent decision/draft versions and require a new save.
 - The owner test can measure preparation time and decision-close time without claiming an improvement in advance.
 
 ## Stage 2 acceptance boundary

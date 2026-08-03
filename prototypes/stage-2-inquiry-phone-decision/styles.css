@@ -772,3 +772,21 @@ footer {
     transition: none !important;
   }
 }
+
+.is-superseded {
+  opacity: 0.68;
+  border-style: dashed;
+}
+
+.is-unresolved {
+  border: 2px solid var(--warning);
+  background: var(--warning-soft);
+}
+
+.version-history {
+  display: grid;
+  gap: 0.45rem;
+  padding-left: 1.4rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}

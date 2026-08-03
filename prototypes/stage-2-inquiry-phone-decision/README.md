@@ -25,7 +25,8 @@ You can also use another verified local static-file server. Do not deploy this p
 - `index.html` — four-stage accessible workflow shell;
 - `styles.css` — local responsive presentation, including a 360 px layout and visible focus;
 - `fixtures.js` — 15 explicit fictional cases and deterministic preparation content;
-- `app.js` — current-page state and interactions only.
+- `app.js` — current-page UI and interactions only;
+- `workflow-state.js` — pure closed-vocabulary, versioning, gate, dependency, draft, and audit transitions.
 
 Refresh clears every change. There is no `localStorage`, `sessionStorage`, IndexedDB, cookie, service worker, analytics, remote font, runtime dependency, API, AI call, send action, or publish action.
 
@@ -49,7 +50,7 @@ Refresh clears every change. There is no `localStorage`, `sessionStorage`, Index
 
 All people, statements, identifiers, notes, and outcomes are fictional.
 
-## Automated structural test
+## Automated behavioral contract test
 
 From the repository root:
 
@@ -57,7 +58,7 @@ From the repository root:
 node scripts/test_stage2_inquiry_phone_decision.mjs
 ```
 
-This checks static contract boundaries. It does not establish usefulness or owner acceptance.
+This executes pure workflow transitions for vocabulary enforcement, immutable derivatives, review/call/evidence gates, exact-version invalidation, decision-linked drafts, draft edits, phone-record corrections, and audit references. It also preserves small static checks for offline/no-send, responsive, keyboard, and fictional-fixture boundaries. It does not establish usefulness or owner acceptance.
 
 ## Damian's owner workflow test
 

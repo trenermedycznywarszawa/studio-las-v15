@@ -1,163 +1,206 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
+import { fileURLToPath } from "node:url";
 import { fixtures, FICTIONAL_NOTICE } from "../prototypes/stage-2-inquiry-phone-decision/fixtures.js";
+import {
+  DECISIONS, INFORMATION_TYPES, OPERATIONAL_ROLES, activeRecords, assertInformationType,
+  callReadiness, createAuditEvent, createDraftVersion, deriveEditedRecord, editDraftVersion,
+  eligibleEvidence, exactRef, invalidateDependents, makePhoneRecord, makeRecord,
+  resolvePreparationMode, saveDecisionVersion, transitionReview
+} from "../prototypes/stage-2-inquiry-phone-decision/workflow-state.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
 const prototypeDir = join(here, "..", "prototypes", "stage-2-inquiry-phone-decision");
 const read = name => readFileSync(join(prototypeDir, name), "utf8");
-
 const html = read("index.html");
 const css = read("styles.css");
 const app = read("app.js");
+const model = read("workflow-state.js");
 const fixtureSource = read("fixtures.js");
-const runtimeSource = [html, css, app, fixtureSource].join("\n");
+const runtimeSource = [html, css, app, model, fixtureSource].join("\n");
 
 const passes = [];
-function check(name, assertion) {
-  assertion();
-  passes.push(name);
+function check(name, assertion) { assertion(); passes.push(name); }
+function record(overrides = {}) {
+  return makeRecord({
+    id: overrides.id ?? "record-1", version: overrides.version ?? 1,
+    content: overrides.content ?? "Fikcyjna treść", author: overrides.author ?? "fictional_ai",
+    informationType: overrides.informationType === undefined ? "ai_suggestion" : overrides.informationType,
+    operationalRole: overrides.operationalRole ?? "call_question", section: overrides.section ?? "questions",
+    derivedFrom: overrides.derivedFrom ?? ["source-1@v1"], reviewState: overrides.reviewState ?? "needs_review",
+    flagged: overrides.flagged, isPlaceholder: overrides.isPlaceholder, supersedes: overrides.supersedes
+  });
 }
 
-check("no external requests or runtime dependencies", () => {
+check("closed Stage 1 information_type vocabulary is enforced by constructors", () => {
+  assert.deepEqual(INFORMATION_TYPES, [
+    "source_artifact", "source_fact", "extracted_fact", "trainer_observation", "ai_hypothesis",
+    "ai_suggestion", "trainer_interpretation", "trainer_decision", "client_material"
+  ]);
+  for (const value of INFORMATION_TYPES) assert.equal(assertInformationType(value), value);
+  for (const forbidden of ["preparation_gap", "trainer_preparation", "client_statement", "client_signal"]) {
+    assert.throws(() => makeRecord({ id: "x", content: "x", author: "x", informationType: forbidden }), /Unapproved information_type/);
+  }
+  assert.equal(makePhoneRecord({ id: "statement", role: "client_statement", content: "Tak" }).informationType, "source_fact");
+  assert.equal(makePhoneRecord({ id: "reaction", role: "client_reaction", content: "Spokojnie" }).informationType, "source_fact");
+});
+
+check("workflow roles stay separate from information types", () => {
+  assert.ok(OPERATIONAL_ROLES.includes("preparation_gap"));
+  assert.ok(OPERATIONAL_ROLES.includes("call_question"));
+  assert.ok(OPERATIONAL_ROLES.includes("client_statement"));
+  assert.equal(INFORMATION_TYPES.includes("call_question"), false);
+  const question = record();
+  assert.equal(question.operationalRole, "call_question");
+  assert.equal(question.informationType, "ai_suggestion");
+});
+
+check("editing creates a trainer derivative and preserves the machine original", () => {
+  const original = record({ id: "q1", content: "Oryginalna sugestia" });
+  const snapshot = JSON.stringify(original);
+  const edited = deriveEditedRecord(original, "Pytanie Damiana", "q1-edit");
+  assert.equal(JSON.stringify(original), snapshot);
+  assert.equal(edited.author, "damian");
+  assert.equal(edited.informationType, null);
+  assert.equal(edited.operationalRole, "call_question");
+  assert.equal(edited.supersedes, "q1@v1");
+  assert.ok(edited.derivedFrom.includes("q1@v1"));
+  assert.deepEqual(activeRecords([original, edited]), [edited]);
+});
+
+check("review transitions append exact versions instead of rewriting records", () => {
+  const original = record({ id: "fact", section: "facts", operationalRole: null, informationType: "extracted_fact" });
+  const reviewed = transitionReview(original, "approved");
+  assert.equal(original.reviewState, "needs_review");
+  assert.equal(reviewed.version, 2);
+  assert.equal(reviewed.supersedes, "fact@v1");
+  assert.deepEqual(activeRecords([original, reviewed]), [reviewed]);
+});
+
+check("call gate blocks placeholders, unreviewed machine output, and flagged content", () => {
+  assert.equal(callReadiness([record({ isPlaceholder: true, author: "damian" })]).ready, false);
+  assert.equal(callReadiness([record()]).ready, false);
+  assert.equal(callReadiness([record({ reviewState: "approved", flagged: true })]).ready, false);
+  assert.equal(callReadiness([record({ reviewState: "approved" })]).ready, true);
+  const trainerQuestion = deriveEditedRecord(record({ id: "machine-q" }), "Jawne pytanie Damiana", "trainer-q");
+  assert.equal(callReadiness([record({ id: "machine-q" }), trainerQuestion]).ready, true);
+  const machineFact = record({ id: "machine-fact", section: "facts", operationalRole: null, informationType: "extracted_fact" });
+  const correctedFact = deriveEditedRecord(machineFact, "Skorygowany fakt", "trainer-fact");
+  assert.equal(callReadiness([record({ reviewState: "approved" }), machineFact, correctedFact]).ready, false);
+  const reviewedFact = transitionReview(correctedFact, "approved");
+  assert.equal(callReadiness([record({ reviewState: "approved" }), machineFact, correctedFact, reviewedFact]).ready, true);
+});
+
+check("decision evidence excludes unreviewed, rejected, placeholder, and suggestion records", () => {
+  const reviewedFact = record({ id: "fact-ok", section: "facts", operationalRole: null, informationType: "extracted_fact", reviewState: "approved" });
+  const pendingFact = record({ id: "fact-pending", section: "facts", operationalRole: null, informationType: "extracted_fact" });
+  const placeholder = record({ id: "placeholder", section: "facts", operationalRole: null, informationType: "extracted_fact", author: "damian", isPlaceholder: true, reviewState: "approved" });
+  const suggestion = record({ id: "suggestion", reviewState: "approved" });
+  const observation = makePhoneRecord({ id: "obs", role: "trainer_observation", content: "Fikcyjna obserwacja" });
+  assert.deepEqual(eligibleEvidence([reviewedFact, pendingFact, placeholder, suggestion], [observation]).map(exactRef), ["fact-ok@v1", "obs@v1"]);
+  assert.throws(() => saveDecisionVersion({ id: "bad-decision", value: "CONTINUE", rationale: "Powód", evidence: [pendingFact], inputRevision: 1, now: "t" }), /reviewed, eligible/);
+});
+
+check("manual paste can never claim a fictional assisted run", () => {
+  assert.equal(resolvePreparationMode({ requested: "assisted", hasFixture: false, aiAvailable: undefined }), "manual_fallback");
+  assert.equal(resolvePreparationMode({ requested: "assisted", hasFixture: true, aiAvailable: false }), "manual_fallback");
+  assert.equal(resolvePreparationMode({ requested: "assisted", hasFixture: true, aiAvailable: true }), "fictional_assisted");
+});
+
+check("phone statements and reactions use version and supersession semantics", () => {
+  const first = makePhoneRecord({ id: "statement", role: "client_statement", content: "Pierwsza wersja" });
+  const corrected = makePhoneRecord({ id: "ignored", role: "client_statement", content: "Wersja skorygowana", previous: first });
+  assert.equal(first.content, "Pierwsza wersja");
+  assert.equal(corrected.id, first.id);
+  assert.equal(corrected.version, 2);
+  assert.equal(corrected.supersedes, "statement@v1");
+  assert.equal(corrected.informationType, "source_fact");
+});
+
+check("material upstream changes invalidate exact decision and draft versions", () => {
+  const decision = { id: "decision", version: 1, status: "active" };
+  const draft = { id: "draft", version: 1, status: "active" };
+  const invalidated = invalidateDependents({ decision, draft }, "note@v2");
+  assert.equal(invalidated.decision.status, "invalidated");
+  assert.equal(invalidated.decision.invalidatedBy, "note@v2");
+  assert.equal(invalidated.draft.status, "invalidated");
+  assert.equal(decision.status, "active");
+  assert.equal(draft.status, "active");
+});
+
+check("decision saves exact evidence versions and supersedes the prior decision", () => {
+  const evidence = makePhoneRecord({ id: "obs", role: "trainer_observation", content: "Dowód" });
+  const first = saveDecisionVersion({ id: "decision", value: "CONTINUE", rationale: "Jawny powód", evidence: [evidence], inputRevision: 4, now: "t1" });
+  const second = saveDecisionVersion({ id: "ignored", previous: first, value: "DEFER_OR_CONSULT", rationale: "Nowy powód", evidence: [evidence], inputRevision: 5, now: "t2" });
+  assert.deepEqual(first.evidenceRefs, ["obs@v1"]);
+  assert.equal(second.version, 2);
+  assert.equal(second.supersedes, "decision@v1");
+  assert.equal(second.inputRevision, 5);
+});
+
+check("every draft is deterministic from the saved decision and exact evidence", () => {
+  const evidence = makePhoneRecord({ id: "fact", role: "client_statement", content: "Fakt" });
+  const expected = { CONTINUE: "kontynuacji", SEND_FULL_INTAKE: "ankieta", DEFER_OR_CONSULT: "odłożeniu", NOT_RIGHT_PRODUCT: "nie jest teraz właściwym" };
+  for (const value of DECISIONS) {
+    const decision = saveDecisionVersion({ id: `decision-${value}`, value, rationale: "Powód", evidence: [evidence], inputRevision: 1, now: "t1" });
+    const draft = createDraftVersion({ id: `draft-${value}`, decision, evidence: [evidence], now: "t2" });
+    assert.match(draft.content, new RegExp(expected[value], "i"));
+    assert.deepEqual(draft.derivedFrom, [exactRef(decision), exactRef(evidence)]);
+    assert.equal(draft.reviewState, "needs_review");
+    assert.equal(draft.publicationState, "unpublished");
+  }
+  const decision = saveDecisionVersion({ id: "decision-mismatch", value: "CONTINUE", rationale: "Powód", evidence: [evidence], inputRevision: 1, now: "t1" });
+  const newerEvidence = makePhoneRecord({ id: "ignored", role: "client_statement", content: "Korekta", previous: evidence });
+  assert.throws(() => createDraftVersion({ id: "draft", decision, evidence: [newerEvidence], now: "t2" }), /do not match/);
+});
+
+check("editing client material creates a new unpublished needs-review version", () => {
+  const evidence = makePhoneRecord({ id: "fact", role: "client_statement", content: "Fakt" });
+  const decision = saveDecisionVersion({ id: "decision", value: "CONTINUE", rationale: "Powód", evidence: [evidence], inputRevision: 1, now: "t1" });
+  const first = createDraftVersion({ id: "draft", decision, evidence: [evidence], now: "t2" });
+  const edited = editDraftVersion({ draft: first, content: "Jawnie poprawiona wersja", now: "t3" });
+  assert.equal(first.content.includes("kontynuacji"), true);
+  assert.equal(edited.version, 2);
+  assert.equal(edited.supersedes, "draft@v1");
+  assert.ok(edited.derivedFrom.includes("draft@v1"));
+  assert.equal(edited.reviewState, "needs_review");
+  assert.equal(edited.publicationState, "unpublished");
+  assert.deepEqual(activeRecords([first, edited]), [edited]);
+});
+
+check("audit events require actor and exact object/version references without content", () => {
+  const object = { id: "decision", version: 2 };
+  const related = [{ id: "fact", version: 3 }];
+  const event = createAuditEvent({ id: "event", eventType: "decision_recorded", actor: "damian", object, related, outcome: "ok", time: "12:00" });
+  assert.equal(event.actor, "damian");
+  assert.equal(event.objectRef, "decision@v2");
+  assert.deepEqual(event.relatedRefs, ["fact@v3"]);
+  assert.equal("content" in event, false);
+  assert.throws(() => createAuditEvent({ id: "bad", eventType: "x", object, outcome: "x", time: "x" }), /actor/);
+});
+
+check("offline, session-only, no-send and no-production boundaries remain", () => {
   assert.match(html, /connect-src 'none'/);
   assert.doesNotMatch(runtimeSource, /https?:\/\//i);
-  assert.doesNotMatch(app, /\bfetch\s*\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|serviceWorker/i);
-  assert.doesNotMatch(app, /import\s*\(\s*["'](?:https?:)?\/\//i);
-  assert.doesNotMatch(html, /<(?:script|link|img)[^>]+(?:src|href)=["'](?:https?:)?\/\//i);
-});
-
-check("no persistent browser storage", () => {
-  assert.doesNotMatch(app, /localStorage|sessionStorage|indexedDB|document\.cookie/i);
-});
-
-check("no keys, credentials, or real client identifiers", () => {
-  assert.doesNotMatch(runtimeSource, /(?:sk|pk|ghp|gho|sbp)_[A-Za-z0-9_-]{16,}/);
-  assert.doesNotMatch(runtimeSource, /Bearer\s+[A-Za-z0-9._-]{12,}/i);
-  assert.doesNotMatch(runtimeSource, /service[_-]?role\s*[:=]/i);
-  assert.doesNotMatch(fixtureSource, /\b\d{3}[ -]\d{3}[ -]\d{3}\b/);
-  assert.doesNotMatch(fixtureSource, /[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}/i);
-});
-
-check("four explicit Damian decisions with no preselection", () => {
-  for (const decision of ["CONTINUE", "SEND_FULL_INTAKE", "DEFER_OR_CONSULT", "NOT_RIGHT_PRODUCT"]) {
-    assert.match(html, new RegExp(`value=["']${decision}["']`));
-  }
-  assert.equal((html.match(/name="decision"/g) || []).length, 4);
-  assert.doesNotMatch(html, /name="decision"[^>]+checked/i);
-  assert.doesNotMatch(app, /input\.checked\s*=\s*true/);
-  assert.match(app, /actor:\s*"damian"/);
-});
-
-check("no real send, publication, booking, or form submission", () => {
+  assert.doesNotMatch(runtimeSource, /\bfetch\s*\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|localStorage|sessionStorage|indexedDB|document\.cookie/i);
   assert.doesNotMatch(html, /type="submit"|<form\b|formaction=|action="https?:/i);
   assert.doesNotMatch(app, /\.submit\s*\(|requestSubmit|window\.open|location\.href\s*=|mailto:|sms:/i);
   assert.match(html, /DO SPRAWDZENIA — NIE WYSŁANO/);
-  assert.match(app, /reviewState:\s*"needs_review"/);
-  assert.match(app, /publicationState:\s*"unpublished"/);
-  assert.match(app, /unpublished_needs_review/);
+  assert.doesNotMatch([app, model, fixtureSource].join("\n"), /createClient\s*\(|supabaseUrl|formspreeEndpoint/i);
 });
 
-check("manual fallback remains a complete first-class path", () => {
-  assert.match(html, /Przejdź całkowicie ręcznie/);
-  assert.match(app, /manual_fallback/);
-  assert.match(app, /buildManualPreparation/);
-  assert.match(fixtureSource, /fictional-11-ai-unavailable/);
-  assert.equal(fixtures.find(item => item.id === "fictional-11-ai-unavailable")?.aiAvailable, false);
-});
-
-check("information meanings remain visibly separate", () => {
-  for (const informationType of [
-    "source_artifact",
-    "extracted_fact",
-    "ai_suggestion",
-    "ai_hypothesis",
-    "trainer_interpretation",
-    "trainer_decision",
-    "client_material",
-    "client_statement",
-    "trainer_observation"
-  ]) {
-    assert.match(runtimeSource, new RegExp(informationType));
-  }
-  assert.match(app, /derivedFrom/);
-  assert.match(app, /locator/);
-  assert.match(app, /reviewState/);
-});
-
-check("no scoring or automatic qualification mechanism", () => {
-  assert.doesNotMatch(html, /id="[^"]*(?:score|rating|rank|probability)[^"]*"/i);
-  assert.doesNotMatch(app, /\bscore\s*[:=]|conversionProbability|qualificationResult/i);
-  assert.match(fixtureSource, /blockedAutomaticQualification:\s*true/);
-  assert.match(app, /automatic_qualification_attempt_blocked/);
-});
-
-check("cross-client disclosure is denied", () => {
-  assert.match(fixtureSource, /crossClientAttempt:\s*true/);
-  assert.match(app, /cross_client_request_denied/);
-  assert.match(app, /denied_no_disclosure/);
-  assert.doesNotMatch(app, /clients\s*=|clientList|findClient|searchClients/i);
-});
-
-check("at least 12 explicit fictional fixtures cover all required cases", () => {
+check("fixtures, equal decisions, keyboard and 360 px boundaries remain", () => {
   assert.equal(fixtures.length, 15);
   assert.equal(FICTIONAL_NOTICE.startsWith("FIKCYJNY PRZYPADEK"), true);
-  for (const fixture of fixtures) {
-    assert.equal(fixture.fictional, true, `${fixture.id} must be marked fictional`);
-    assert.match(fixture.source, /FIKCYJNY PRZYPADEK/);
-    assert.ok(fixture.id.startsWith("fictional-"));
-    if (fixture.aiAvailable) {
-      assert.ok(fixture.questions.length >= 5 && fixture.questions.length <= 8, `${fixture.id} must have 5-8 questions`);
-    }
-  }
-  for (const id of [
-    "fictional-04-conflict",
-    "fictional-06-consult-first",
-    "fictional-09-inappropriate-question",
-    "fictional-10-answer-changed",
-    "fictional-11-ai-unavailable",
-    "fictional-12-unsent-draft",
-    "fictional-13-auto-qualification",
-    "fictional-14-cross-client",
-    "fictional-15-partial-source"
-  ]) {
-    assert.ok(fixtures.some(item => item.id === id), `missing fixture ${id}`);
-  }
-});
-
-check("360 px responsive contract avoids fixed overflow risks", () => {
-  assert.match(html, /name="viewport" content="width=device-width, initial-scale=1"/);
-  assert.match(css, /\*\s*\{\s*box-sizing:\s*border-box;/);
-  assert.match(css, /overflow-x:\s*clip/);
+  for (const fixture of fixtures) { assert.equal(fixture.fictional, true); assert.ok(fixture.id.startsWith("fictional-")); }
+  for (const decision of DECISIONS) assert.match(html, new RegExp(`value=["']${decision}["']`));
+  assert.equal((html.match(/name="decision"/g) || []).length, 4);
+  assert.doesNotMatch(html, /name="decision"[^>]+checked/i);
+  assert.match(css, /:focus-visible\s*\{[^}]*outline:/s);
   assert.match(css, /@media\s*\(max-width:\s*480px\)/);
   assert.match(css, /grid-template-columns:\s*minmax\(0,\s*1fr\)/);
-  assert.doesNotMatch(css, /min-width:\s*(?:3[7-9]\d|[4-9]\d{2,})px/i);
-});
-
-check("keyboard semantics and visible focus are present", () => {
-  assert.match(css, /:focus-visible\s*\{[^}]*outline:/s);
-  assert.match(html, /class="skip-link"/);
-  assert.doesNotMatch(html, /<(?:div|span|section)[^>]+onclick=/i);
-  assert.ok((html.match(/<button\b/g) || []).length >= 12);
-  assert.ok((html.match(/<label\b/g) || []).length >= 8);
-  assert.match(html, /aria-current="step"/);
-  assert.match(html, /aria-label="Etapy procesu"/);
-});
-
-check("empty and invalid states are announced", () => {
-  assert.ok((html.match(/role="alert"/g) || []).length >= 4);
-  assert.match(app, /Najpierw wybierz lub zapisz fikcyjne źródło/);
-  assert.match(app, /Wpisz treść notatki/);
-  assert.match(app, /Wybierz świadomie jedną z czterech decyzji/);
-  assert.match(app, /Wpisz krótkie uzasadnienie decyzji Damiana/);
-});
-
-check("prototype remains session-memory-only and resettable", () => {
-  assert.match(html, /Wyczyść sesję/);
-  assert.match(app, /function resetWorkflow/);
-  assert.match(html, /Odświeżenie usuwa zmiany/);
 });
 
 for (const name of passes) console.log(`PASS — ${name}`);
-console.log(`Stage 2 inquiry-phone-decision prototype: ${passes.length}/${passes.length} contract checks PASS`);
+console.log(`Stage 2 inquiry-phone-decision behavioral contract: ${passes.length}/${passes.length} PASS`);

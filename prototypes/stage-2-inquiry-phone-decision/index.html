@@ -97,7 +97,7 @@
         <div>
           <p class="eyebrow">Etap 2</p>
           <h2 id="prepare-title">Przygotowanie rozmowy</h2>
-          <p>Źródło pozostaje obok. Każdy element pochodny ma autora, typ, lokalizator i własny status przeglądu.</p>
+          <p>Źródło pozostaje obok. Każdy element pochodny ma autora, dokładną wersję i pochodzenie. Rola operacyjna jest oddzielona od zamkniętego information_type.</p>
         </div>
         <span id="preparation-mode" class="status-chip status-ai">tryb</span>
       </div>
@@ -215,7 +215,9 @@
           <span>Treść projektu · <code>needs_review</code> · <code>unpublished</code></span>
           <textarea id="draft-text" rows="7"></textarea>
         </label>
+        <button class="button button-secondary" id="save-draft-version" type="button" hidden>Zapisz edycję jako nową wersję</button>
         <div id="draft-state" class="message message-warning" hidden></div>
+        <ol id="draft-history" class="version-history" aria-label="Historia wersji projektu"></ol>
       </section>
 
       <section class="panel audit-panel" aria-labelledby="audit-title">
