@@ -1,6 +1,6 @@
 # 11 AI Runtime and Provider Contract
 
-**Status:** Stage 1 contract candidate — owner review required
+**Status:** OWNER ACCEPTED — 2026-08-03
 **Provider status:** `PROVIDER DECISION — BLOCKED`
 **Implementation permission:** none
 

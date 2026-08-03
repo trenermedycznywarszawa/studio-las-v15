@@ -1,6 +1,6 @@
 # 12 File Ingestion and Source Integrity Contract
 
-**Status:** Stage 1 contract candidate — owner review required
+**Status:** OWNER ACCEPTED — 2026-08-03
 **Scope:** manually pasted text, form messages, PDFs, Tanita documents, and future attachments
 **Implementation permission:** none
 

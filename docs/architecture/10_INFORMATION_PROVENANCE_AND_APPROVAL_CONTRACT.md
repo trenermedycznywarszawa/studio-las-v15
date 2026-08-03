@@ -1,6 +1,6 @@
 # 10 Information Provenance and Approval Contract
 
-**Status:** Stage 1 contract candidate — owner review required
+**Status:** OWNER ACCEPTED — 2026-08-03
 **Scope:** information meaning, provenance, review, versioning, and client publication
 **Implementation permission:** none
 

@@ -1,6 +1,6 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGE 0 MERGED AND CLOSED; STAGE 1 CONTRACTS READY FOR FINAL OWNER ACCEPTANCE; IMPLEMENTATION NOT AUTHORIZED
+**Status:** STAGE 0 MERGED AND CLOSED; STAGE 1 CONTRACTS OWNER ACCEPTED; IMPLEMENTATION NOT AUTHORIZED
 **Version:** 2.2
 **Updated:** 2026-08-03
 **Canonical integration line:** `product-recovery`
@@ -405,14 +405,14 @@ Only after the manual flows work:
 | PR-17 | EVIDENCE | Read-only brief foundation merged; not complete product architecture | `c669a79372aae70f63c8b235fd63330c0555ab5e` |
 | PR-18 | FROZEN | Open Draft preserved for selective recovery after approved contracts | `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
 | DIR-01 | DONE | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 merged | PR #20; `62f2366e0c77abf2d1413e437173cc82a7735455`; owner accepted 2026-08-03 |
-| PR-21 | OWNER ACCEPTANCE | Stage 1 data, permission, and AI contracts validated; Execution Plan v2.2 remains contract-only with no implementation permission | Draft PR #21; 7/7 exact regression commands and `git diff --check` PASS; final owner acceptance pending |
+| PR-21 | DONE | Stage 1 data, permission, and AI contracts owner accepted 2026-08-03; Execution Plan v2.2 remains contract-only with no implementation permission | Draft PR #21; this acceptance commit (`docs: record Stage 1 owner acceptance`; exact SHA recorded in the PR after publication); 18/18 exit gate PASS; 7/7 tests PASS; `git diff --check` PASS; no implementation authorization |
 
 ---
 
 ## 10. Next action
 
-The five Stage 1 Data, Permission, and AI contracts are prepared and finally validated in Draft PR #21 from `product-recovery@62f2366e0c77abf2d1413e437173cc82a7735455`. On Windows, the five Python scripts ran through the verified Python 3 launcher `py -3`; all seven required regression commands and `git diff --check` passed.
+The five Stage 1 Data, Permission, and AI contracts in Draft PR #21 are owner accepted as of 2026-08-03. This closes the Stage 1 contract gate only; it does not automatically start Stage 2.
 
-The next action is Damian's final owner contract acceptance or requested correction. `READY FOR FINAL OWNER CONTRACT ACCEPTANCE` does not mean `OWNER ACCEPTED`.
+Stage 2 requires a separate explicit instruction from Damian. The AI provider, first AI task, exact minimum dataset, schema, and legal/privacy decisions remain blocked or deferred, and PR #18 remains frozen.
 
-Until those separate gates pass, there is no permission for implementation, UI work, SQL, schema approval, migrations, provider selection by assumption, AI calls, real client data, Supabase changes, staging/production changes, Stage 2, integration with `main`, or any modification, rebase, retarget, or merge of PR #18.
+There is still no permission for implementation, UI work, SQL, schema approval, migrations, provider selection by assumption, AI calls, real client data, Supabase changes, staging/production changes, integration with `main`, or any modification, rebase, retarget, or merge of PR #18.

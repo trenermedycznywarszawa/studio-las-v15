@@ -1,6 +1,6 @@
 # 14 Stage 1 Domain Mapping and Acceptance
 
-**Status:** Stage 1 contract candidate — owner review required
+**Status:** OWNER ACCEPTED — 2026-08-03
 **Schema status:** `SCHEMA — NOT APPROVED`
 **Data rule:** fictional cases only
 
@@ -152,7 +152,7 @@ Blocked/deferred decisions are visible contract outcomes. They do not authorize 
 
 ## Stage 1 exit-gate assessment
 
-**Assessment status:** `STAGE 1 — READY FOR FINAL OWNER CONTRACT ACCEPTANCE`; `READY FOR OWNER CONTRACT REVIEW` does not mean `OWNER ACCEPTED`.
+**Assessment status:** `STAGE 1 — OWNER CONTRACT ACCEPTED` — 2026-08-03.
 **Validation date:** 2026-08-03
 **Validation HEAD:** `1f4f4dc38fbf29ee9f60652abd6a8dd365f598f0` — the clean checked-out HEAD used for final validation before this validation-record-only commit.
 **Validation environment:** Windows; Python Launcher `py -3`; `py -3 --version` returned `Python 3.13.14`; executable `C:\Users\Damian\AppData\Local\Programs\Python\Python313\python.exe`.
@@ -192,7 +192,7 @@ Stage 1 may be reported ready for owner contract review only if repository valid
 
 Provider selection, schema approval, legal/privacy decisions, production authorization, and implementation remain blocked or deferred to their named later gates. Their explicit deferral does not imply approval and does not block Stage 1 contract acceptance when the boundary is preserved.
 
-If every checked condition passes, the document may be reported `READY FOR OWNER CONTRACT REVIEW`; only Damian can produce `OWNER ACCEPTED`.
+Every checked condition passes, and Damian recorded `OWNER ACCEPTED` on 2026-08-03. This contract acceptance does not approve implementation, schema, an AI provider, real client data, staging, or production.
 
 If any item fails, the required outcome is:
 

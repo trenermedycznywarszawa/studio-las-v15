@@ -1,6 +1,6 @@
 # 13 Data Lifecycle, Access, Audit, and Deletion Contract
 
-**Status:** Stage 1 contract candidate — owner and qualified legal/privacy review required
+**Status:** OWNER ACCEPTED — 2026-08-03
 **Scope:** conceptual lifecycle, access, audit, correction, withdrawal, export, and deletion
 **Implementation permission:** none
 
