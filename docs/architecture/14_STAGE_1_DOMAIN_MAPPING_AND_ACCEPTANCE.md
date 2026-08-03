@@ -152,10 +152,22 @@ Blocked/deferred decisions are visible contract outcomes. They do not authorize 
 
 ## Stage 1 exit-gate assessment
 
-**Assessment status:** `STAGE 1 — BLOCKED BEFORE FINAL OWNER CONTRACT ACCEPTANCE`; `READY FOR OWNER CONTRACT REVIEW` does not mean `OWNER ACCEPTED`.
+**Assessment status:** `STAGE 1 — READY FOR FINAL OWNER CONTRACT ACCEPTANCE`; `READY FOR OWNER CONTRACT REVIEW` does not mean `OWNER ACCEPTED`.
 **Validation date:** 2026-08-03
-**Validation HEAD:** `bc5fcd8173ed8c56f66f85f7eedb7863a8747ca3` — the checked-out HEAD for final candidate validation. The commands run against this HEAD plus the final correction worktree; the resulting final commit SHA is recorded in Draft PR #21 because a commit cannot contain its own SHA.
-**Validation result:** 2/7 exact regression commands PASS; 5/7 are blocked before test start because the required `python3` command resolves only to an unavailable Windows Store alias; `git diff --check` PASS; final active-document contradiction audit PASS.
+**Validation HEAD:** `1f4f4dc38fbf29ee9f60652abd6a8dd365f598f0` — the clean checked-out HEAD used for final validation before this validation-record-only commit.
+**Validation environment:** Windows; Python Launcher `py -3`; `py -3 --version` returned `Python 3.13.14`; executable `C:\Users\Damian\AppData\Local\Programs\Python\Python313\python.exe`.
+**Validation result:** 7/7 exact regression commands PASS; `git diff --check` PASS; final active-document contradiction audit PASS.
+
+Exact commands executed:
+
+- `py -3 scripts/verify_studio_las_os.py` — PASS;
+- `py -3 scripts/verify_access_lifecycle.py` — PASS;
+- `node scripts/test_trainer_mfa.mjs` — PASS;
+- `node scripts/test_session_brief.mjs` — PASS;
+- `py -3 scripts/verify_trainer_mfa.py` — PASS;
+- `py -3 scripts/verify_target_preflight_read_only.py` — PASS;
+- `py -3 scripts/verify_backup_workflow.py` — PASS;
+- `git diff --check` — PASS.
 
 Stage 1 may be reported ready for owner contract review only if repository validation confirms all of the following:
 
@@ -176,7 +188,7 @@ Stage 1 may be reported ready for owner contract review only if repository valid
 - [x] legal, security, owner, and implementation decisions remain visible;
 - [x] mapping does not approve schema or implementation by implication;
 - [x] all acceptance cases above are present;
-- [ ] the seven exact inherited regression commands and `git diff --check` pass on the final tree.
+- [x] the seven exact inherited regression commands and `git diff --check` pass on the final tree.
 
 Provider selection, schema approval, legal/privacy decisions, production authorization, and implementation remain blocked or deferred to their named later gates. Their explicit deferral does not imply approval and does not block Stage 1 contract acceptance when the boundary is preserved.
 
