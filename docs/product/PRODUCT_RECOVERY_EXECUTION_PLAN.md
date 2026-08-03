@@ -1,7 +1,7 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** OWNER ACCEPTED FOR DRAFT PUBLICATION; MERGE PENDING
-**Version:** 2.1
+**Status:** STAGE 0 MERGED AND CLOSED; STAGE 1 CONTRACTS OWNER ACCEPTED; IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.2
 **Updated:** 2026-08-03
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
@@ -27,9 +27,9 @@ Lower layers may implement approved truth. They may not create it.
 
 ---
 
-## 2. Stage 0 audit result
+## 2. Stage 0 closure and audit result
 
-The interrupted turn did not finish Stage 0. The repository contains a valid local documentation candidate, but it has not been pushed or merged. The table below records the verified state and prevents old summaries from becoming truth.
+Stage 0 was owner accepted and squash-merged into `product-recovery` as `62f2366e0c77abf2d1413e437173cc82a7735455` on 2026-08-03. The table below preserves the verified entry-state audit and prevents old summaries from becoming current truth.
 
 | Source or item | Verified state on 2026-08-03 | Stage 0 decision |
 |---|---|---|
@@ -221,7 +221,7 @@ Remove the contradiction between the old paper-first prohibition and the approve
 - [x] Record the mandatory production and AI gate before real client data.
 - [x] Prepare this Execution Plan v2.1 on the Stage 0 branch.
 - [x] Validate that the Stage 0 diff contains documentation only.
-- [ ] Merge the Stage 0 PR into `product-recovery` only after Damian accepts the product direction.
+- [x] Merge the owner-accepted Stage 0 PR into `product-recovery` as `62f2366e0c77abf2d1413e437173cc82a7735455`.
 
 ### Exit gate
 
@@ -245,8 +245,11 @@ No phase starts before the previous phase meets its exit gate. Each phase requir
 
 Define before UI:
 
-- source fact, extracted fact, trainer observation, AI hypothesis, AI suggestion, trainer decision, client-safe publication;
-- authorship, timestamps, source links, confidence/uncertainty, versioning, and approval state;
+- the nine information types, with `Client Signal` mapped to allowed source-information types rather than added as a tenth type;
+- `client_material` as the only type eligible for the controlled Studio Las client-publication lifecycle;
+- independent `information_type`, `review_state`, and `publication_state` axes, with visibility kept as a separate authorization/projection rule;
+- semantic information objects separated from operational records and artifacts;
+- authorship, timestamps, complete `derived_from` links, source locators, uncertainty, versioning, and exact-version approval;
 - file ingestion boundaries for forms, PDFs, Tanita, and other documents;
 - retention, access, audit, and deletion rules;
 - model/provider boundary and prohibited logging of client content;
@@ -401,12 +404,15 @@ Only after the manual flows work:
 | GIT-01 | DONE | `product-recovery` established as canonical OS line | `f914a2f9ce65d97f0bcfb2e50ba2522c3398a225` |
 | PR-17 | EVIDENCE | Read-only brief foundation merged; not complete product architecture | `c669a79372aae70f63c8b235fd63330c0555ab5e` |
 | PR-18 | FROZEN | Open Draft preserved for selective recovery after approved contracts | `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
-| DIR-01 | ACCEPTED FOR DRAFT | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 | `agent/stage-0-product-truth`; owner accepted 2026-08-03; merge pending |
+| DIR-01 | DONE | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 merged | PR #20; `62f2366e0c77abf2d1413e437173cc82a7735455`; owner accepted 2026-08-03 |
+| PR-21 | DONE | Stage 1 data, permission, and AI contracts owner accepted 2026-08-03; Execution Plan v2.2 remains contract-only with no implementation permission | Draft PR #21; this acceptance commit (`docs: record Stage 1 owner acceptance`; exact SHA recorded in the PR after publication); 18/18 exit gate PASS; 7/7 tests PASS; `git diff --check` PASS; no implementation authorization |
 
 ---
 
 ## 10. Next action
 
-Publish the owner-accepted Stage 0 documentation candidate from `agent/stage-0-product-truth` as a Draft PR to `product-recovery` and verify the exact documentation-only diff. Draft publication does not authorize merge; merge still requires a separate explicit owner approval.
+The five Stage 1 Data, Permission, and AI contracts in Draft PR #21 are owner accepted as of 2026-08-03. This closes the Stage 1 contract gate only; it does not automatically start Stage 2.
 
-Do not merge PR #18, start a new feature PR, change Supabase, or use real client data before Stage 0 is accepted and merged into `product-recovery`.
+Stage 2 requires a separate explicit instruction from Damian. The AI provider, first AI task, exact minimum dataset, schema, and legal/privacy decisions remain blocked or deferred, and PR #18 remains frozen.
+
+There is still no permission for implementation, UI work, SQL, schema approval, migrations, provider selection by assumption, AI calls, real client data, Supabase changes, staging/production changes, integration with `main`, or any modification, rebase, retarget, or merge of PR #18.
