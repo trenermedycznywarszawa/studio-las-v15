@@ -1,5 +1,7 @@
 # Studio Las OS — Product Recovery Audit — 2026-07-22
 
+**Status note (2026-08-03): HISTORICAL EVIDENCE.** Repository findings and recovery evidence remain valid. Paper-first channel assumptions and the proposed first-slice sequence were superseded by Constitution v1.1, Home Guidance System v2.0, and `PRODUCT_RECOVERY_EXECUTION_PLAN.md` v2.1.
+
 ## 0. Decyzja wykonawcza
 
 Studio Las OS nie wymaga przywrócenia starej aplikacji. Wymaga odzyskania ciągłości decyzji trenera na bezpiecznym runtime.

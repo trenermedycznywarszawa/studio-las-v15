@@ -26,7 +26,7 @@ The product is the relationship between:
 - the trainer,
 - the method,
 - the environment,
-- the paper guidance,
+- the selected guidance channel,
 - the observed signals,
 - the final report and next decision.
 
@@ -100,18 +100,20 @@ The method is the product logic.
 
 The environment supports the client’s state.
 
-Paper carries the morning.
+The trainer selects the right guidance channel for the person and task.
 
-The app records only the signal.
+Paper may guide. The app may guide and record. A deliberate hybrid may do both without creating competing instructions.
 
 The report reveals the pattern and supports the next decision.
 
-Core rule:
+Design heuristic:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
+
+The heuristic is not a mandatory technical sequence. Its permanent meaning is embodied action, trainer authority, purposeful data, and trainer-approved synthesis.
 
 ## Decision rule
 
@@ -122,7 +124,7 @@ Before approving any product or OS change, ask:
 1. Does this make the trainer’s decision better?
 2. Does this make the client calmer, clearer, or more independent?
 3. Does this reduce chaos rather than add another task?
-4. Does this work without the client starting the morning from the phone?
+4. Is the chosen channel the clearest and least burdensome option for this client and task?
 5. Does this support the future report and next decision?
 6. Does this avoid gamification, comparison, pressure, and unnecessary tracking?
 7. Does this protect the trainer’s role instead of replacing it?
@@ -136,6 +138,7 @@ Studio Las OS is an internal support system.
 Its role is to:
 
 - preserve client process history,
+- present current trainer-approved guidance when the app is the selected channel,
 - record short signals,
 - support trainer memory,
 - organize observations,
@@ -146,12 +149,12 @@ Its role is not to:
 
 - motivate the client through screen mechanics,
 - replace trainer judgment,
-- become the primary client experience,
+- become an autonomous substitute for the trainer-led relationship,
 - become a separate product,
 - increase screen time,
 - collect data because it is technically possible.
 
-The app must remain quiet, narrow, and subordinate to the method.
+The app must remain purposeful and subordinate to the method. It may be central to a specific task without becoming the product.
 
 ## Product boundary
 
@@ -167,9 +170,9 @@ Studio Las can use reports.
 
 Studio Las cannot reduce the person to a report.
 
-Studio Las can use AI later to support trainer analysis.
+Studio Las can use trainer-facing AI to analyze source material, identify gaps, suggest questions and options, and prepare drafts.
 
-Studio Las cannot give the client an AI replacement for the trainer.
+Studio Las cannot let AI authorize or publish a client decision without trainer review, or give the client an AI replacement for the trainer.
 
 ## Long-term product test
 

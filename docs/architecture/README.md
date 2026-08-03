@@ -21,12 +21,14 @@ This layer is subordinate to:
 3. `docs/product/00_PRODUCT_MODEL.md`
 4. `docs/product/02_STUDIO_LAS_METHOD.md`
 
-All architecture decisions must preserve the core rule:
+All architecture decisions must preserve the intent of this design heuristic:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
+
+The heuristic is not a fixed interface sequence. Architecture may support paper, app, or hybrid guidance. It must preserve trainer accountability, purposeful data, one authoritative instruction source, and trainer-approved publication.
 
 ## Reading order
 

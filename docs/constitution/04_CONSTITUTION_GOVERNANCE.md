@@ -49,7 +49,7 @@ Before changing Constitution, answer:
 4. Which Architecture documents would be affected?
 5. Which public surfaces would become stale?
 6. Which implementation assumptions would need review?
-7. Does the change preserve Paper -> Trainer -> App -> Report?
+7. Does the change preserve trainer accountability, deliberate channel choice, and client-safe publication?
 8. Does the change increase product drift risk?
 9. Is this truly constitutional, or does it belong in Product, Architecture, PRD, or Governance?
 
@@ -124,6 +124,18 @@ Constitution should be reviewed:
 - before adding AI/automation to trainer workflows,
 - before changing the offer model,
 - before making the app more central to the client experience.
+
+## Version 1.1 decision record — 2026-08-01
+
+1. **Truth changed:** paper-first stopped being a permanent channel prohibition; trainer accountability and deliberate channel choice became the permanent boundary.
+2. **Why v1.0 was insufficient:** it confused protection from engagement pressure with a ban on useful digital guidance and unnecessarily weakened a legitimate trainer-facing AI assistant.
+3. **Product impact:** Product Model, Studio Las Method, Coaching System, Home Guidance System, and Report System required aligned projections.
+4. **Architecture impact:** Architecture Principles, Method-to-OS Mapping, Information Flow, and related guidance references required aligned projections.
+5. **Public-surface impact:** none is authorized by this change; website and client runtime remain unchanged.
+6. **Implementation impact:** historical paper-first documents remain evidence but no longer define channel choice; runtime and Supabase require later scoped contracts.
+7. **Protected invariant:** Damian remains accountable for interpretation, decisions, and client-safe publication.
+8. **Drift control:** one authoritative instruction source, no autonomous publication, no scoring, no gamification, and no unnecessary screen-time optimization remain binding.
+9. **Layer decision:** trainer authority is constitutional; paper/app/hybrid selection belongs to Product and the trainer workflow.
 
 ## Governance failure examples
 

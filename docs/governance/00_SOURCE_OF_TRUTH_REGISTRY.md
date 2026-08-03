@@ -18,14 +18,18 @@ This document does not define database schema.
 
 It defines ownership of truth.
 
-## Core rule
+## Core invariant
+
+The trainer remains accountable for interpretation, decisions, and client-safe publication. Guidance uses the channel selected for the client and task. Technology may support analysis, guidance, records, and drafts, but it may not silently become the authority.
+
+## Design heuristic
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
 
-Every source of truth must preserve this order.
+Every source of truth must preserve this intent. The sentence is not a mandatory interface order and does not prohibit digital guidance.
 
 No website page, code file, migration, form, blog post, README, test fixture, or runtime behavior may redefine this rule.
 
@@ -68,7 +72,7 @@ If two places define the same concept differently, the registry determines which
 | Trainer role | Product | Product docs | Architecture, OS trainer workspace | AI, automation, client app | Low | Trainer remains product owner of meaning. |
 | Client role | Product | Product docs | Client journey, website, client-safe surfaces | App behavior alone | Medium | Client is a guided person, not a SaaS user first. |
 | OS role | Product + Architecture | Product docs, Architecture docs | PRD, implementation, code | Runtime behavior, dev helpers | High | OS supports method; OS is not product. |
-| Paper-first morning | Product | Home Guidance Product docs | Architecture, paper guides, OS signal recording | Client app, check-in UI, notifications | High | Paper guides; app records later. |
+| Guidance channel | Product | `docs/product/06_HOME_GUIDANCE_SYSTEM.md` | Architecture, paper materials, OS guidance and signal recording | UI, migrations, historical `PAPER_FIRST_*` files | High | Trainer selects paper, app, or deliberate hybrid; one instruction source remains authoritative. |
 | Home Guidance | Product | Home Guidance Product docs | Architecture, paper materials, OS assigned guidance | Migrations, client check-in mechanics | High | Implementation must not convert guidance into habit tracking. |
 | Client signal | Architecture + PRD | Architecture decision docs, future PRD | OS, Supabase, reports | Migrations alone, UI alone | High | Signal definition must be approved before production implementation. |
 | Trainer decision | Architecture | `docs/architecture/07_DECISION_ARCHITECTURE.md` | Trainer workspace, reports, PRD | Automation, AI, scoring logic | Low | OS may support decisions but must not own them. |
@@ -177,7 +181,7 @@ The following are violations:
 - README points to missing authority files,
 - demo/test data shapes real product decisions,
 - report UI turns trainer meaning into raw dashboard,
-- client app becomes morning guide,
+- client app or paper becomes a universal channel regardless of client need,
 - AI or automation owns interpretation.
 
 ## Classification of repository knowledge
@@ -205,7 +209,7 @@ The following areas require cleanup after this registry is accepted:
 4. Report as pattern vs report as proof/dashboard.
 5. Website offer pages defining packages independently.
 6. Medical/oncology claims without clear governance owner.
-7. Paper-first check-in implementation advancing ahead of PRD.
+7. Historical paper-first implementation documents conflicting with channel-neutral Home Guidance v2.0.
 8. OS/client portal behavior existing before final client-safe production boundary.
 9. v14/v15 public metadata and canonical drift.
 
@@ -264,7 +268,7 @@ When a future change is proposed, ask:
 2. Who owns the truth for this concept?
 3. Is this changing truth or projecting truth?
 4. Is the correct owner being updated first?
-5. Does this violate Paper -> Trainer -> App -> Report?
+5. Does this violate trainer accountability, deliberate channel choice, or client-safe publication?
 6. Does this create duplicate truth?
 7. Does this create client-safe or privacy risk?
 8. Does this require PRD before implementation?

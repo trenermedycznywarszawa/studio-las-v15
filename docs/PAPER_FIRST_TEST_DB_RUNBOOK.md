@@ -1,5 +1,7 @@
 # Paper-first Test DB Runbook
 
+**Status note (2026-08-01): HISTORICAL PRODUCT DIRECTION.** Database test steps remain evidence; the document does not define the current guidance channel.
+
 This runbook describes how to test the Paper-first `client_checkin` migration on a fresh/test Supabase database.
 
 Target migration:

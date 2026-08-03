@@ -6,12 +6,14 @@ It does not describe screens, features, database tables, or app behavior.
 
 It describes the Studio Las Method: the private trainer-led method for helping a person recover functional capacity, trust in the body, and long-term independence.
 
-Core rule:
+Design heuristic:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
+
+This heuristic protects the trainer-led method; it does not require paper for every client or task. Home guidance may use paper, the app, or a deliberate hybrid. The trainer remains accountable for meaning and publication.
 
 ## Reading order
 
@@ -21,7 +23,7 @@ Core rule:
 4. `03_COACHING_SYSTEM.md` — the trainer-led operating cycle.
 5. `04_MEASUREMENT_SYSTEM.md` — what is measured, why, when, and what is intentionally not measured.
 6. `05_REPORT_SYSTEM.md` — how reports turn process history into the next decision.
-7. `06_HOME_GUIDANCE_SYSTEM.md` — how guidance works between sessions without turning the app into the morning ritual.
+7. `06_HOME_GUIDANCE_SYSTEM.md` — how the trainer selects paper, app, or hybrid guidance without creating duplicate truth or engagement pressure.
 
 ## Boundary
 

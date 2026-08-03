@@ -28,8 +28,8 @@ For every method element, define:
 | Client context | Preserve process history | Do not expose private context to client by default |
 | Trainer hypothesis | Store or reference trainer-only working interpretation | Do not present hypothesis as diagnosis |
 | Session work | Record selected observations and decisions | Do not turn session into performance dashboard |
-| Home guidance | Preserve assigned paper-first guidance | Do not make the app the morning guide |
-| Client signal | Record minimal signal after offline action | Do not create habit tracking pressure |
+| Home guidance | Preserve and present trainer-approved guidance in the selected channel | Do not create competing instructions or engagement pressure |
+| Client signal | Record only a decision-relevant result, response, note, or question | Do not create habit tracking pressure |
 | Trainer interpretation | Support trainer review and notes | Do not automate meaning for the client |
 | Measurement | Store selected report-relevant data | Do not collect everything |
 | Report | Assemble patterns for trainer-authored decision | Do not generate automatic verdicts |
@@ -163,9 +163,7 @@ Session records help show progression, tolerance, response, and decision changes
 
 ### Method need
 
-The client needs simple between-session guidance without turning the phone into the coach.
-
-Paper carries the morning.
+The client needs simple between-session guidance through the channel that creates the least friction without turning technology into an autonomous coach.
 
 ### Trainer decision
 
@@ -173,11 +171,12 @@ What should the client do alone before the next meeting, and what should they no
 
 ### OS responsibility
 
-Studio Las OS should preserve the assignment and later record only the selected signal.
+Studio Las OS should preserve the assignment, present it when the app is the selected channel, and record only the selected result, response, note, or question.
 
 The OS may store:
 
-- assigned paper guide reference,
+- primary channel and authoritative instruction version,
+- paper or app guidance reference,
 - assignment reason,
 - start/end dates,
 - status,
@@ -186,9 +185,9 @@ The OS may store:
 
 ### OS boundary
 
-The OS must not become the morning interface.
+The OS must not impose one universal morning interface.
 
-The OS must not send push reminders.
+The OS must not create default push pressure.
 
 The OS must not show streaks, points, badges, or pressure.
 
@@ -200,7 +199,7 @@ Home guidance data helps reveal whether the guidance reduced chaos, created fric
 
 ### Method need
 
-The trainer needs a short signal from the client after offline action.
+The trainer needs a short signal from the client when it can improve the next decision.
 
 The client should not be asked to track everything.
 

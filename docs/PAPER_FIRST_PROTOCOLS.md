@@ -1,5 +1,7 @@
 # Paper-first Protocols
 
+**Status note (2026-08-01): HISTORICAL PRODUCT DIRECTION.** Retain as prior protocol evidence only. It does not require paper as the current primary channel. Constitution v1.1 and `docs/product/06_HOME_GUIDANCE_SYSTEM.md` govern paper/app/hybrid selection.
+
 This document defines the paper-first protocol model for Studio Las OS.
 
 This is an OS support document.

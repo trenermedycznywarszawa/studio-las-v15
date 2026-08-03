@@ -4,12 +4,16 @@ Status: implementation authority for the security-hardening branch.
 
 This document is subordinate to Constitution and Product. It defines the technical boundaries required before real client health/process data may be used.
 
-Core rule:
+**Stage 0 interpretation (2026-08-03):** all security controls in this document remain active. Constitution v1.1 and Home Guidance System v2.0 govern paper/app/hybrid channel choice. Section 6 limits the existing deterministic `decision-support.js` module; it does not authorize that module to recommend and does not create a product-wide ban on a future, separately contracted trainer-facing AI suggestion layer.
+
+Design heuristic:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
+
+This sentence protects trainer authority and purposeful data. It is not a mandatory interface sequence.
 
 Priority order for this work:
 
@@ -265,7 +269,8 @@ The trainer records the actual decision separately. No client-facing automatic i
 - No clinical scoring system.
 - No automatic plan change.
 - No automatic client warning based solely on numeric thresholds.
-- No AI recommendation.
+- No AI recommendation from the current deterministic `decision-support.js` module.
+- No future trainer-facing AI suggestion layer without a separate server-side data, provider, approval, failure, and audit contract.
 
 ---
 

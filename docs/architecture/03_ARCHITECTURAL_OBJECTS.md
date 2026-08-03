@@ -260,7 +260,7 @@ Session observations help show changes, tolerance, fear reduction, load response
 
 Trainer-assigned guidance for the client between sessions.
 
-It is usually paper-first and should be understandable without the app.
+It has one trainer-selected primary channel and one authoritative instruction version. It may be delivered through paper, the app, or a deliberate hybrid.
 
 ## Trainer decision supported
 
@@ -294,7 +294,7 @@ Shows how between-session guidance contributed to continuity, independence, or f
 
 ## OS must not
 
-- make the app the morning interface,
+- make paper or the app a universal morning interface regardless of the client and task,
 - add push notifications,
 - add streaks or compliance pressure,
 - turn home guidance into a habit tracker.
