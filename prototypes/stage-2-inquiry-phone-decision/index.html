@@ -1,0 +1,242 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta name="referrer" content="no-referrer">
+  <link rel="icon" href="data:,">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; connect-src 'none'; img-src 'self' data:; font-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Stage 2 — przygotowanie pierwszej rozmowy · fikcyjny prototyp</title>
+  <link rel="stylesheet" href="./styles.css">
+  <script type="module" src="./app.js"></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Przejdź do procesu</a>
+
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Studio Las OS · Stage 2</p>
+      <h1>Pierwsze zgłoszenie → rozmowa → decyzja</h1>
+    </div>
+    <button class="button button-quiet" id="reset-workflow" type="button">Wyczyść sesję</button>
+  </header>
+
+  <div class="prototype-warning" role="status">
+    <strong>PROTOTYP — WYŁĄCZNIE DANE FIKCYJNE</strong>
+    <span>Brak AI, sieci, Supabase, Formspree, trwałego zapisu i wysyłki. Odświeżenie usuwa zmiany.</span>
+  </div>
+
+  <nav class="stepper" aria-label="Etapy procesu">
+    <button class="step is-current" type="button" data-step-target="source" aria-current="step"><span>1</span> Źródło</button>
+    <button class="step" type="button" data-step-target="prepare" disabled><span>2</span> Przygotowanie</button>
+    <button class="step" type="button" data-step-target="call" disabled><span>3</span> Rozmowa</button>
+    <button class="step" type="button" data-step-target="close" disabled><span>4</span> Zamknięcie</button>
+  </nav>
+
+  <main id="workspace" class="workspace" tabindex="-1">
+    <section class="screen is-active" id="screen-source" data-screen="source" aria-labelledby="source-title">
+      <div class="screen-heading">
+        <div>
+          <p class="eyebrow">Etap 1</p>
+          <h2 id="source-title">Źródło zgłoszenia</h2>
+          <p>Wybierz gotowy przypadek albo wklej własny, jawnie fikcyjny tekst. Po zapisaniu źródło staje się tylko do odczytu.</p>
+        </div>
+        <span class="status-chip status-source">source_artifact</span>
+      </div>
+
+      <div class="two-column source-layout">
+        <section class="panel" aria-labelledby="fixture-title">
+          <h3 id="fixture-title">Fikcyjny przypadek</h3>
+          <label class="field" for="fixture-select">
+            <span>Wybierz scenariusz</span>
+            <select id="fixture-select">
+              <option value="">— wybierz fikcyjny przypadek —</option>
+            </select>
+          </label>
+          <div id="fixture-description" class="hint">Każdy przypadek jest jawnie fikcyjny i ma odrębny cel testowy.</div>
+          <button class="button button-secondary" id="load-fixture" type="button">Wczytaj fikcyjny przypadek</button>
+        </section>
+
+        <section class="panel" aria-labelledby="paste-title">
+          <h3 id="paste-title">Ręczne wklejenie</h3>
+          <label class="field" for="manual-source">
+            <span>Surowy tekst zgłoszenia</span>
+            <textarea id="manual-source" rows="9" placeholder="Wklej wyłącznie wymyślony tekst testowy. Nie wpisuj imienia, telefonu ani e-maila."></textarea>
+          </label>
+          <label class="check-row" for="fictional-confirmation">
+            <input id="fictional-confirmation" type="checkbox">
+            <span>Potwierdzam, że tekst jest fikcyjny i nie zawiera danych prawdziwego klienta.</span>
+          </label>
+          <button class="button button-secondary" id="capture-manual" type="button">Zapisz fikcyjne źródło</button>
+        </section>
+      </div>
+
+      <div id="source-error" class="message message-error" role="alert" hidden></div>
+
+      <section class="panel source-preview" id="source-preview" aria-labelledby="source-preview-title" hidden>
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Niezmienne źródło</p>
+            <h3 id="source-preview-title">Podgląd source_artifact</h3>
+          </div>
+          <span class="status-chip">wersja 1</span>
+        </div>
+        <dl class="metadata-grid" id="source-metadata"></dl>
+        <pre class="source-text" id="source-text"></pre>
+        <div id="source-warning" class="message message-warning" hidden></div>
+        <div class="actions">
+          <button class="button button-primary" id="start-assisted" type="button">Przygotuj na fikcyjnych sugestiach</button>
+          <button class="button button-secondary" id="start-manual" type="button">Przejdź całkowicie ręcznie</button>
+        </div>
+      </section>
+    </section>
+
+    <section class="screen" id="screen-prepare" data-screen="prepare" aria-labelledby="prepare-title" hidden>
+      <div class="screen-heading">
+        <div>
+          <p class="eyebrow">Etap 2</p>
+          <h2 id="prepare-title">Przygotowanie rozmowy</h2>
+          <p>Źródło pozostaje obok. Każdy element pochodny ma autora, typ, lokalizator i własny status przeglądu.</p>
+        </div>
+        <span id="preparation-mode" class="status-chip status-ai">tryb</span>
+      </div>
+
+      <div class="source-reminder" id="source-reminder"></div>
+      <div id="preparation-error" class="message message-error" role="alert" hidden></div>
+      <div class="preparation-grid" id="preparation-sections"></div>
+      <div class="actions sticky-actions">
+        <button class="button button-secondary" type="button" data-go-step="source">Wróć do źródła</button>
+        <button class="button button-primary" id="begin-call" type="button">Rozpocznij rozmowę</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-call" data-screen="call" aria-labelledby="call-title" hidden>
+      <div class="screen-heading">
+        <div>
+          <p class="eyebrow">Etap 3</p>
+          <h2 id="call-title">Rozmowa telefoniczna</h2>
+          <p>Zapisuj wypowiedzi klienta, obserwacje i własne interpretacje osobno. Nie ma scoringu ani automatycznej decyzji.</p>
+        </div>
+        <span class="status-chip status-trainer">Damian prowadzi</span>
+      </div>
+
+      <div class="two-column call-layout">
+        <section class="panel" aria-labelledby="question-progress-title">
+          <h3 id="question-progress-title">Pytania i przebieg</h3>
+          <div id="call-questions" class="question-list"></div>
+        </section>
+
+        <section class="panel" aria-labelledby="note-title">
+          <h3 id="note-title">Nowa notatka</h3>
+          <label class="field" for="note-type">
+            <span>Rodzaj i autor informacji</span>
+            <select id="note-type">
+              <option value="client_statement">Wypowiedź klienta</option>
+              <option value="trainer_observation">Obserwacja Damiana</option>
+              <option value="trainer_interpretation">Interpretacja Damiana</option>
+            </select>
+          </label>
+          <label class="field" for="note-text">
+            <span>Treść notatki</span>
+            <textarea id="note-text" rows="5" placeholder="Zapisz tylko informację potrzebną do tej rozmowy."></textarea>
+          </label>
+          <button class="button button-secondary" id="add-note" type="button">Dodaj notatkę</button>
+          <div id="note-error" class="message message-error" role="alert" hidden></div>
+        </section>
+      </div>
+
+      <section class="panel" aria-labelledby="notes-list-title">
+        <h3 id="notes-list-title">Notatki z tej rozmowy</h3>
+        <div id="notes-list" class="note-list empty-state">Nie zapisano jeszcze żadnej notatki.</div>
+      </section>
+
+      <section class="panel" aria-labelledby="reaction-title">
+        <h3 id="reaction-title">Reakcja klienta</h3>
+        <label class="field" for="client-reaction">
+          <span>Zapis klienta lub opis reakcji przekazanej w rozmowie</span>
+          <textarea id="client-reaction" rows="4" placeholder="To jest informacja pochodząca od klienta, nie decyzja ani ocena."></textarea>
+        </label>
+      </section>
+
+      <div class="actions sticky-actions">
+        <button class="button button-secondary" type="button" data-go-step="prepare">Wróć do przygotowania</button>
+        <button class="button button-primary" id="finish-call" type="button">Zakończ rozmowę i zdecyduj</button>
+      </div>
+    </section>
+
+    <section class="screen" id="screen-close" data-screen="close" aria-labelledby="close-title" hidden>
+      <div class="screen-heading">
+        <div>
+          <p class="eyebrow">Etap 4</p>
+          <h2 id="close-title">Decyzja Damiana</h2>
+          <p>Żadna decyzja nie jest wybrana automatycznie. Wszystkie cztery rozstrzygnięcia mają równą wagę.</p>
+        </div>
+        <span class="status-chip status-decision">trainer_decision</span>
+      </div>
+
+      <section class="panel" aria-labelledby="decision-title">
+        <fieldset>
+          <legend id="decision-title">Wybierz jedno rozstrzygnięcie</legend>
+          <div class="decision-grid" id="decision-options">
+            <label class="decision-card"><input type="radio" name="decision" value="CONTINUE"><span><strong>CONTINUE</strong><small>Kontynuuj kontakt lub uzgodniony krok — bez pełnej ankiety.</small></span></label>
+            <label class="decision-card"><input type="radio" name="decision" value="SEND_FULL_INTAKE"><span><strong>SEND_FULL_INTAKE</strong><small>Pełna ankieta może zostać wysłana później, w osobnym procesie.</small></span></label>
+            <label class="decision-card"><input type="radio" name="decision" value="DEFER_OR_CONSULT"><span><strong>DEFER_OR_CONSULT</strong><small>Odłóż decyzję albo wskaż wcześniejszą konsultację.</small></span></label>
+            <label class="decision-card"><input type="radio" name="decision" value="NOT_RIGHT_PRODUCT"><span><strong>NOT_RIGHT_PRODUCT</strong><small>Studio Las nie jest teraz właściwym produktem.</small></span></label>
+          </div>
+        </fieldset>
+
+        <label class="field" for="decision-rationale">
+          <span>Krótkie uzasadnienie Damiana <strong aria-hidden="true">*</strong></span>
+          <textarea id="decision-rationale" rows="4" placeholder="Dlaczego wybierasz ten krok? Nie wpisuj diagnozy."></textarea>
+        </label>
+
+        <fieldset>
+          <legend>Fakty i notatki wspierające decyzję</legend>
+          <div id="decision-evidence" class="evidence-list empty-state">Najpierw przygotuj rozmowę lub dodaj notatkę.</div>
+        </fieldset>
+
+        <button class="button button-primary" id="save-decision" type="button">Zapisz moją decyzję</button>
+        <div id="decision-error" class="message message-error" role="alert" hidden></div>
+        <div id="decision-confirmation" class="message message-success" role="status" hidden></div>
+      </section>
+
+      <section class="panel" id="draft-panel" aria-labelledby="draft-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Opcjonalny client_material</p>
+            <h3 id="draft-title">Projekt wiadomości po rozmowie</h3>
+          </div>
+          <span class="unsent-label">DO SPRAWDZENIA — NIE WYSŁANO</span>
+        </div>
+        <p class="hint">Utworzenie projektu nie jest akceptacją ani wysyłką. W tym prototypie nie istnieje przycisk wysyłki.</p>
+        <button class="button button-secondary" id="create-draft" type="button" disabled>Przygotuj lokalny projekt</button>
+        <label class="field" for="draft-text" id="draft-field" hidden>
+          <span>Treść projektu · <code>needs_review</code> · <code>unpublished</code></span>
+          <textarea id="draft-text" rows="7"></textarea>
+        </label>
+        <div id="draft-state" class="message message-warning" hidden></div>
+      </section>
+
+      <section class="panel audit-panel" aria-labelledby="audit-title">
+        <div class="panel-heading">
+          <div>
+            <p class="eyebrow">Bez kopiowania treści</p>
+            <h3 id="audit-title">Podsumowanie audytowe</h3>
+          </div>
+          <span class="status-chip">metadata only</span>
+        </div>
+        <ol id="audit-list" class="audit-list"></ol>
+      </section>
+
+      <div class="actions sticky-actions">
+        <button class="button button-secondary" type="button" data-go-step="call">Wróć do rozmowy</button>
+      </div>
+    </section>
+  </main>
+
+  <footer>
+    <p>Stage 2 candidate · contract design and fictional workflow prototype only · Stage 3 not started.</p>
+  </footer>
+</body>
+</html>
