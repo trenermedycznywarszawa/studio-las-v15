@@ -1,6 +1,8 @@
 # Stage 2 Inquiry → Phone → Decision prototype
 
-**Status:** fictional prototype awaiting independent delegated re-audit; not production software
+**Status:** independent delegated prototype audit PASS on 2026-08-10; not production software
+
+Audit evidence: [`AUDIT_2026-08-10.md`](./AUDIT_2026-08-10.md).
 
 This directory demonstrates the Stage 2 contract without AI, network access, persistent storage, Formspree, Supabase, or real client data.
 
