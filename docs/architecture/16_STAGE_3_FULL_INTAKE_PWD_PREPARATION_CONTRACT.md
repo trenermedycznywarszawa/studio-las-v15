@@ -1,11 +1,13 @@
 # 16 Stage 3 Full Intake and PWD Preparation Contract
 
-- **Status:** BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION
+- **Status:** CORRECTIVE ACTIONS IN PROGRESS — INDEPENDENT AUDIT PENDING
 - **Authorization:** fictional contract prototype only
 - **Schema:** `NOT APPROVED`
 - **Provider:** `BLOCKED`
 - **Task ID:** `prepare_trainer_for_pwd`
-- **Task contract version:** `stage3-candidate-v1`
+- **Task contract version:** `stage3-candidate-v2`
+
+PRD 003 is permitted by the narrow 2026-08-10 owner exception for an isolated fictional prototype only. Stage 3 and PR #23 remain unaccepted. The earlier browser report was an implementation check, not an independent audit.
 
 ## Scope
 
@@ -50,6 +52,9 @@ Question, response, gap, conflict, module, brief section, caution signal, candid
 - answer state from the closed set `answered`, `unanswered`, `declined`, `not_applicable`, `not_asked`;
 - content only when the state supports content;
 - no interpretation or safety conclusion.
+- `review_state` defaults to `needs_review`; `answered` alone is never eligible decision evidence;
+- review names the actor and applies to that exact response version;
+- correction creates the next immutable content version, records `supersedes` and `superseded_by`, resets review to `needs_review`, and invalidates dependent derivatives, brief, and decision.
 
 `unanswered`, `declined`, `not_applicable`, and `not_asked` must never collapse into `false` or `no`.
 
@@ -99,6 +104,9 @@ It requires Damian, a rationale, exact reviewed evidence versions, an input revi
 5. A module can be `not_applicable`, `active_incomplete`, `active_complete`, or `declined`; these are operational states.
 6. A hidden/non-activated module contributes no fabricated negative facts.
 7. A prompt-injection string in a client answer remains untrusted source text and cannot change workflow instructions.
+8. Every module state is a versioned case-scoped record with an exact source version, `derived_from`, activation reason, event type, and manual actor when applicable.
+9. Fixtures may activate a module only from an answered source or an explicit manual trigger record. Activation is a workflow routing event, never a diagnosis.
+10. Activation, deactivation, and reset remain visible in module history and metadata-only audit events.
 
 ## Brief readiness gate
 
@@ -115,6 +123,8 @@ The brief cannot become ready while any of the following is true:
 
 Rejected and superseded items remain traceable but are excluded from the active brief.
 
+The readiness decision revalidates each selected reference at save time against the same case and the exact current reviewed version. No reviewed evidence means a hard save rejection. The saved decision records every evidence identifier and version.
+
 ## Invalidation
 
 A change to a response, module state, reviewed fact, gap, conflict, hypothesis, question, or candidate domain increments `input_revision` and invalidates:
@@ -128,6 +138,8 @@ The system must show the invalidated version and require a new explicit assembly
 ## Isolation
 
 Every source and derivative belongs to one pseudonymous case context. Cross-case references fail closed. Fixture lookup cannot search another fixture's content. The UI provides no global client search or copied contact identity.
+
+The rejection occurs in domain logic before mutation. A foreign derivative or decision is not appended and the case state remains byte-for-byte unchanged; the UI reports the denial in Polish.
 
 ## Audit events
 
@@ -177,4 +189,4 @@ The fictional prototype must demonstrate at least:
 
 ## Exit gate
 
-`PASS` requires exact source traceability, complete review controls, manual fallback, explicit Damian decision, 360 px and keyboard accessibility, no network/persistence/send, and all required regression tests. It does not authorize schema, provider selection, real data, staging, production, merge, or Stage 4.
+`PASS` requires exact source traceability, complete review controls, manual fallback, explicit Damian decision, 360 px and keyboard accessibility, no network/persistence/send, all required regression tests on the frozen commit/tree, and a separate read-only reviewer who finds no P0/P1. The implementer's browser check is not an independent audit. A pass does not authorize schema, provider selection, real data, staging, production, merge, or Stage 4.

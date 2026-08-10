@@ -1,8 +1,11 @@
 # 08 Full Intake and PWD Preparation System
 
-- **Status:** STAGE 3 BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION
+- **Status:** STAGE 3 CORRECTIVE ACTIONS IN PROGRESS — NOT OWNER ACCEPTED
 - **Owner:** Damian
 - **Recovered source date:** 2026-07-29
+- **Source manifest:** `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`
+
+The earlier browser result remains dated historical implementation evidence. It was not an independent audit and does not satisfy the corrected Stage 3 exit gate.
 
 ## Purpose
 

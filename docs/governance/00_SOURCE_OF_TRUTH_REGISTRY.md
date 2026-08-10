@@ -231,6 +231,17 @@ PRD may not begin until the following are resolved:
 7. Website content ownership is defined.
 8. Supabase/RLS audit path is defined.
 
+### Narrow Product Recovery prototype exception
+
+**Decision date:** 2026-08-10
+**Decision owner:** Damian
+
+> Akceptuję, że PRD 002 i PRD 003 mogą funkcjonować jako odizolowane kontrakty fikcyjnych prototypów w ramach Product Recovery mimo ogólnej PRD entry rule. Decyzja nie zatwierdza produkcji, schematu danych, Supabase, AI runtime, prawdziwych danych klientów, publikacji ani Etapu 4. Registry i statusy mają zostać skorygowane jawnie, bez przepisywania historii.
+
+This is an exception only for the isolated, fictional contract prototypes described by PRD 002 and PRD 003. The general PRD entry rule above remains in force and the exception does not extend to later PRDs.
+
+The decision does not accept Stage 3, PR #23, a merge, production architecture, real data, Supabase, an AI runtime, publication, or Stage 4. Stage 2 had already been owner accepted and merged; its earlier candidate statuses remain historical records rather than being rewritten as if this exception predated them.
+
 ## Production entry rule
 
 Production may not proceed until:

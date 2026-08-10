@@ -1,6 +1,6 @@
 # Stage 3 — Full Intake to PWD Preparation Prototype
 
-**Status:** BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION
+**Status:** CORRECTIVE ACTIONS IN PROGRESS — INDEPENDENT AUDIT PENDING
 
 This is a fictional, deterministic, offline, session-memory prototype. It demonstrates the Stage 3 contract only.
 
@@ -30,23 +30,22 @@ Review cases `02`, `03`, `06`, `07`, `08`, and `09` deliberately.
 
 1. Select case `01` and create the source.
 2. Confirm 26 response rows and exact references.
-3. Select fictional assisted preparation.
-4. Approve, edit, or reject every active derivative.
-5. Assemble the brief.
-6. Confirm nine brief sections and source references.
-7. Open readiness.
-8. Confirm no decision is preselected.
-9. Choose one decision, enter a rationale, select evidence, and save.
-10. Return to Review and edit an active derivative.
-11. Confirm the brief and decision become invalidated and remain visible in history.
+3. Mark at least one exact answered version as reviewed.
+4. Select fictional assisted preparation.
+5. Approve, edit, or reject every active derivative.
+6. Assemble the brief and confirm its nine sections.
+7. Open readiness; confirm no decision is preselected.
+8. Choose one decision, enter a rationale, select exact reviewed evidence, and save.
+9. Correct the reviewed response or edit a derivative.
+10. Confirm downstream records are invalidated and every version remains visible.
 
 ## Manual fallback
 
 1. Select case `10`.
 2. Choose the manual path.
-3. Add zero or more trainer-authored notes.
+3. Mark an exact answered response as reviewed or add a trainer-authored reviewed fact with explicit source provenance.
 4. Assemble the brief from the source without AI-derived records.
-5. Save an explicit readiness decision.
+5. Save an explicit readiness decision using exact current reviewed evidence.
 
 ## Browser audit
 
@@ -99,4 +98,4 @@ DELEGATED AUDIT RESULT: PASS / PASS WITH CORRECTIONS / FAIL
 
 `PASS` is fictional-prototype evidence only. It does not authorize schema, provider selection, real data, staging, production, merge, or Stage 4.
 
-Completed audit evidence: [`AUDIT_2026-08-10.md`](./AUDIT_2026-08-10.md).
+Historical implementation-check evidence: [`AUDIT_2026-08-10.md`](./AUDIT_2026-08-10.md). It is not an independent audit.

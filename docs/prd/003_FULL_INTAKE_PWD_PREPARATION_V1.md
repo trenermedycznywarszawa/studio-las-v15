@@ -1,8 +1,10 @@
 # PRD 003 — Full Intake to PWD Preparation v1
 
-- **Status:** BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION
+- **Status:** CORRECTIVE ACTIONS IN PROGRESS — NOT OWNER ACCEPTED
 - **Stage:** 3 — contract and fictional workflow prototype only
 - **Base:** `product-recovery@040bce6303c9138ba3b1af6366def54c21bd157c`
+
+The 2026-08-10 owner decision permits PRD 003 to exist only as an isolated fictional prototype contract despite the general PRD entry rule. It does not accept Stage 3 or PR #23. The earlier browser-audit status is preserved in its dated report but is not independent confirmation because it was produced during the implementation pass.
 
 ## Problem
 
@@ -115,6 +117,16 @@ No conversion metric, diagnostic accuracy, readiness score, or number of approve
 ## Required fictional cases
 
 Cases `01`–`15` map one-to-one to the architecture acceptance matrix. Cases `01`, `04`, `05`, `10`, `11`, `12`, `13`, `14`, and `15` require end-to-end execution; remaining cases require deliberate review.
+
+## Corrective acceptance requirements
+
+- Every response starts `needs_review`; `answered` without review is ineligible.
+- A correction creates an immutable successor with `supersedes`/`superseded_by`, preserves derivative history, and invalidates active brief and decision.
+- A saved decision requires a rationale plus exact current reviewed evidence from the same case and stores every evidence id/version.
+- Each conditional-module state carries exact source/version, `derived_from`, reason, event, and manual actor when applicable; fixtures cannot activate a module without an answered or explicit manual trigger.
+- Activation, deactivation, reset, manual fallback, correction, invalidation, brief, and decision are reconstructable from version history and metadata-only events.
+- Cross-case derivative/decision references are rejected in domain logic before state mutation with a clear Polish message.
+- The source manifest is `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`; controlled archival access remains `OWNER ACTION REQUIRED`.
 
 ## Independent delegated audit
 

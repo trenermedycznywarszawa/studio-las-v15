@@ -26,6 +26,7 @@ This heuristic protects the trainer-led method; it does not require paper for ev
 7. `06_HOME_GUIDANCE_SYSTEM.md` — how the trainer selects paper, app, or hybrid guidance without creating duplicate truth or engagement pressure.
 8. `07_INQUIRY_TO_PHONE_DECISION_SYSTEM.md` — how an inquiry becomes a trainer-owned phone decision without automatic qualification.
 9. `08_FULL_INTAKE_AND_PWD_PREPARATION_SYSTEM.md` — how the adaptive full intake becomes a traceable trainer brief and explicit PWD-readiness decision.
+10. `STAGE_3_SOURCE_ARTIFACT_MANIFEST.md` — private-source filenames, SHA-256 verification, bounded access procedure, and the unresolved controlled-archive owner action.
 
 ## Boundary
 
