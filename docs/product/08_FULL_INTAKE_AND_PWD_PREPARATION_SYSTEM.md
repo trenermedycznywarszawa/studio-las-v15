@@ -1,8 +1,8 @@
 # 08 Full Intake and PWD Preparation System
 
-**Status:** STAGE 3 BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION  
-**Owner:** Damian  
-**Recovered source date:** 2026-07-29
+- **Status:** STAGE 3 BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION
+- **Owner:** Damian
+- **Recovered source date:** 2026-07-29
 
 ## Purpose
 

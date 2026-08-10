@@ -1,11 +1,11 @@
 # 16 Stage 3 Full Intake and PWD Preparation Contract
 
-**Status:** BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION  
-**Authorization:** fictional contract prototype only  
-**Schema:** `NOT APPROVED`  
-**Provider:** `BLOCKED`  
-**Task ID:** `prepare_trainer_for_pwd`  
-**Task contract version:** `stage3-candidate-v1`
+- **Status:** BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION
+- **Authorization:** fictional contract prototype only
+- **Schema:** `NOT APPROVED`
+- **Provider:** `BLOCKED`
+- **Task ID:** `prepare_trainer_for_pwd`
+- **Task contract version:** `stage3-candidate-v1`
 
 ## Scope
 

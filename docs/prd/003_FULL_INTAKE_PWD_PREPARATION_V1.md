@@ -1,8 +1,8 @@
 # PRD 003 — Full Intake to PWD Preparation v1
 
-**Status:** BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION  
-**Stage:** 3 — contract and fictional workflow prototype only  
-**Base:** `product-recovery@040bce6303c9138ba3b1af6366def54c21bd157c`
+- **Status:** BROWSER AUDIT PASS — READY FOR OWNER MERGE DECISION
+- **Stage:** 3 — contract and fictional workflow prototype only
+- **Base:** `product-recovery@040bce6303c9138ba3b1af6366def54c21bd157c`
 
 ## Problem
 
