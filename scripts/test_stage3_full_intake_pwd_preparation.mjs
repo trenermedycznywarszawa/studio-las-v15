@@ -138,6 +138,20 @@ check("derivative construction cannot bypass exact current lineage validation", 
     /Exact current source reference required/);
 });
 
+check("an invalidated derivative cannot be edited or reviewed back into eligible evidence", () => {
+  const source = lineageSource();
+  const derivative = makeDerivative({ id: "stale-fact", content: "Stary fakt", informationType: "extracted_fact",
+    operationalRole: "reviewed_fact", section: "facts", derivedFrom: [exactRef(source)], sourceObjects: [source], caseId: source.caseId });
+  const approved = transitionReview(derivative, "approved").current;
+  const corrected = correctResponse(source, { state: "answered", content: "Bieżąca skorygowana odpowiedź" });
+  const invalidated = invalidateDerivative(approved, exactRef(corrected.current)).current;
+  assert.throws(() => editDerivative(invalidated, "Pozorna naprawa bez nowego źródła"), /wymaga odbudowy z dokładnych bieżących źródeł/);
+  const reviewedAgain = transitionReview(invalidated, "approved").current;
+  assert.equal(reviewedAgain.flagged, true);
+  assert.equal(reviewedAgain.invalidatedBy, exactRef(corrected.current));
+  assert.deepEqual(eligibleEvidence({ caseId: source.caseId, records: [reviewedAgain], responses: [] }), []);
+});
+
 check("candidate observation domains require purpose, observation, stop and decision impact", () => {
   const source = lineageSource();
   const lineage = { derivedFrom: [exactRef(source)], sourceObjects: [source] };

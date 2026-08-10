@@ -138,6 +138,7 @@ export function transitionReview(record, reviewState) {
 
 export function editDerivative(record, content, id = record.id) {
   if (!String(content).trim()) throw new Error("Edited content cannot be empty");
+  if (record.flagged || record.invalidatedBy) throw new Error("Unieważniona pochodna wymaga odbudowy z dokładnych bieżących źródeł");
   const current = Object.freeze({ ...record, id, version: record.version + 1, content: String(content).trim(), author: "damian",
     informationType: record.informationType === "extracted_fact" ? "extracted_fact" : null,
     reviewState: "approved", derivedFrom: [...new Set([...record.derivedFrom, exactRef(record)])], supersedes: exactRef(record),
@@ -234,7 +235,8 @@ export function assembleBrief({ id = "brief", previous = null, caseId, submissio
 export function eligibleEvidence({ caseId, records, responses }) {
   const evidence = [
     ...activeRecords(responses).filter(response => response.state === "answered" && response.reviewState === "approved"),
-    ...activeRecords(records).filter(record => record.reviewState === "approved" && ["extracted_fact", "trainer_observation", "trainer_interpretation"].includes(record.informationType))
+    ...activeRecords(records).filter(record => record.reviewState === "approved" && !record.flagged && !record.invalidatedBy
+      && ["extracted_fact", "trainer_observation", "trainer_interpretation"].includes(record.informationType))
   ];
   assertCaseIsolation(caseId, evidence);
   return evidence;
