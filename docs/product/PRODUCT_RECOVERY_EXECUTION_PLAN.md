@@ -1,6 +1,6 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGE 0 MERGED AND CLOSED; STAGE 1 CONTRACTS OWNER ACCEPTED; IMPLEMENTATION NOT AUTHORIZED
+**Status:** STAGE 0 MERGED AND CLOSED; STAGE 1 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 2 AUTHORIZED FOR CONTRACT AND FICTIONAL WORKFLOW PROTOTYPE ONLY; IMPLEMENTATION NOT AUTHORIZED
 **Version:** 2.2
 **Updated:** 2026-08-03
 **Canonical integration line:** `product-recovery`
@@ -406,13 +406,14 @@ Only after the manual flows work:
 | PR-18 | FROZEN | Open Draft preserved for selective recovery after approved contracts | `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
 | DIR-01 | DONE | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 merged | PR #20; `62f2366e0c77abf2d1413e437173cc82a7735455`; owner accepted 2026-08-03 |
 | PR-21 | DONE | Stage 1 data, permission, and AI contracts owner accepted 2026-08-03; Execution Plan v2.2 remains contract-only with no implementation permission | Draft PR #21; this acceptance commit (`docs: record Stage 1 owner acceptance`; exact SHA recorded in the PR after publication); 18/18 exit gate PASS; 7/7 tests PASS; `git diff --check` PASS; no implementation authorization |
+| STG-02 | OWNER WORKFLOW REVIEW | Contract and fictional workflow prototype for inquiry → phone → Damian decision | Base `product-recovery@8ecfe2620ec658a1a3c6dbef90694274a3b12082`; first AI task `Prepare the trainer for the first inquiry phone call.` authorized by Damian; provider, schema, real data, Formspree automation, staging, production, merge, and Stage 3 remain unauthorized |
 
 ---
 
 ## 10. Next action
 
-The five Stage 1 Data, Permission, and AI contracts in Draft PR #21 are owner accepted as of 2026-08-03. This closes the Stage 1 contract gate only; it does not automatically start Stage 2.
+Stage 1 is owner accepted, merged, and closed. Stage 2 is authorized only for contract design and an independent fictional workflow prototype, starting from `product-recovery@8ecfe2620ec658a1a3c6dbef90694274a3b12082`.
 
-Stage 2 requires a separate explicit instruction from Damian. The AI provider, first AI task, exact minimum dataset, schema, and legal/privacy decisions remain blocked or deferred, and PR #18 remains frozen.
+Damian authorized the first AI task as `Prepare the trainer for the first inquiry phone call.` The minimum dataset remains a candidate for owner review rather than an approved schema or production payload. PR #18 remains frozen.
 
-There is still no permission for implementation, UI work, SQL, schema approval, migrations, provider selection by assumption, AI calls, real client data, Supabase changes, staging/production changes, integration with `main`, or any modification, rebase, retarget, or merge of PR #18.
+The AI provider/model, schema, SQL, migrations, real client data, Formspree automation, AI runtime, Supabase, staging, production, integration with `main`, and merge remain unauthorized. Stage 3 has not started and requires a separate explicit instruction after Damian's fictional owner workflow review.
