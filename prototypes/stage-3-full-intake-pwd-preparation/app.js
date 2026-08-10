@@ -1,8 +1,9 @@
 import { CORE_PROMPTS, FICTIONAL_NOTICE, fixtures } from "./fixtures.js";
 import {
-  activeRecords, addManualRecord, assembleBrief, createAuditEvent, editDerivative, eligibleEvidence,
-  exactRef, invalidateDownstream, makePreparationRecords, makeResponse, makeSubmission, reviewGate,
-  saveReadinessDecision, transitionReview
+  activeRecords, addManualRecord, assembleBrief, assertCaseIsolation, correctResponse, createAuditEvent,
+  editDerivative, eligibleEvidence, exactRef, invalidateDerivative, invalidateDownstream, makeFixtureModuleRecords,
+  makePreparationRecords, makeResponse, makeSubmission, reviewGate, reviewResponse, saveReadinessDecision,
+  transitionModule, transitionReview
 } from "./workflow-state.js";
 
 const $ = selector => document.querySelector(selector);
@@ -12,7 +13,12 @@ const promptById = new Map(CORE_PROMPTS.map(prompt => [prompt.id, prompt]));
 
 let state = freshState();
 function freshState() {
-  return { fixture: fixtures[0], submission: null, responses: [], records: [], mode: null, briefHistory: [], decisionHistory: [], audit: [], manualCounter: 0 };
+  return { fixture: fixtures[0], submission: null, responses: [], moduleRecords: [], records: [], mode: null,
+    briefHistory: [], decisionHistory: [], audit: [], manualCounter: 0, isolationDenial: "" };
+}
+
+function replaceVersion(history, change) {
+  return [...history.map(item => exactRef(item) === exactRef(change.previous) ? change.previous : item), change.current];
 }
 
 function escapeHtml(value) {
@@ -24,9 +30,9 @@ function polishError(error) {
   const translations = new Map([
     ["Explicit readiness decision is required", "Wybierz decyzję o gotowości."],
     ["Decision rationale is required", "Wpisz uzasadnienie decyzji."],
-    ["At least one evidence item is required", "Wybierz co najmniej jedną dokładną wersję dowodu."],
+    ["At least one reviewed evidence item is required", "Wybierz co najmniej jedną dokładną przejrzaną wersję dowodu."],
     ["Active brief is required", "Najpierw złóż aktywną wersję briefu."],
-    ["Cross-case reference denied", "Odmowa: dowód należy do innej sprawy."]
+    ["Cross-case reference denied", "Odmowa: twardo odrzucono referencję należącą do innej sprawy; stan nie został zmieniony."]
   ]);
   return translations.get(message) || message;
 }
@@ -51,7 +57,19 @@ function captureSource() {
   state = { ...freshState(), fixture };
   state.submission = makeSubmission({ caseId: fixture.id, capturedAt: now(), partial: fixture.partial });
   state.responses = fixture.responses.map(response => makeResponse({ submission: state.submission, questionId: response.questionId, state: response.state, content: response.content }));
+  state.moduleRecords = makeFixtureModuleRecords({ fixture, responses: state.responses });
   state.audit.push(createAuditEvent({ id: "event-source", eventType: "intake_captured", actor: "damian", object: state.submission, outcome: "fictional_session_only", time: now() }));
+  for (const module of state.moduleRecords) state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`,
+    eventType: module.eventType, actor: module.actor, object: module, related: [state.responses.find(item => exactRef(item) === module.sourceRef)],
+    outcome: module.state, time: now() }));
+  if (fixture.isolationAttempt) {
+    try { assertCaseIsolation(fixture.id, [{ id: "foreign-source", version: 1, caseId: "fictional-01" }]); }
+    catch (error) {
+      state.isolationDenial = polishError(error);
+      state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: "cross_case_reference_denied",
+        actor: "system_rule", object: state.submission, outcome: "state_unchanged", time: now() }));
+    }
+  }
   renderSource();
   enableScreen("review", false); enableScreen("brief", false); enableScreen("readiness", false);
 }
@@ -65,15 +83,55 @@ function renderSource() {
   const warnings = [];
   if (state.fixture.partial) warnings.push("Źródło jest częściowe. Brak odpowiedzi nie oznacza odpowiedzi przeczącej.");
   if (state.fixture.injection) warnings.push("Treść przypominająca instrukcję pozostaje nieufną odpowiedzią klienta; nie jest wykonywana.");
-  if (state.fixture.isolationAttempt) warnings.push("Odmowa dostępu do innej sprawy: prototyp nie załadował żadnej obcej treści ani tożsamości.");
+  if (state.isolationDenial) warnings.push(state.isolationDenial);
   $("#source-warning").hidden = warnings.length === 0;
   $("#source-warning").textContent = warnings.join(" ");
-  $("#module-list").innerHTML = Object.entries(state.fixture.modules).map(([id, value]) => `<div><span class="tag ${value === 'active_incomplete' ? 'pending' : ''}">${escapeHtml(value)}</span> <strong>${escapeHtml(id)}</strong></div>`).join("");
-  $("#response-table").innerHTML = state.responses.map(response => {
+  $("#module-list").innerHTML = activeRecords(state.moduleRecords).map(module => `<div><span class="tag ${module.state === 'active_incomplete' ? 'pending' : ''}">${escapeHtml(module.state)}</span> <strong>${escapeHtml(module.moduleId)}</strong><br><span class="ref">${escapeHtml(exactRef(module))} · źródło ${escapeHtml(module.sourceRef)} · ${escapeHtml(module.eventType)} · ${escapeHtml(module.reason)}</span></div>`).join("");
+  $("#response-table").innerHTML = activeRecords(state.responses).map(response => {
     const questionId = response.questionRef.split("#")[1];
-    return `<tr><td data-label="Pytanie"><strong>${questionId}</strong> — ${escapeHtml(promptById.get(questionId).label)}</td><td data-label="Stan"><span class="tag ${response.state === 'answered' ? '' : 'pending'}">${escapeHtml(response.state)}</span></td><td data-label="Treść">${response.content ? escapeHtml(response.content) : "—"}</td><td data-label="Referencja"><span class="ref">${escapeHtml(exactRef(response))}</span></td></tr>`;
+    const controls = response.state === "answered" ? `<textarea rows="2" data-response-edit="${escapeHtml(exactRef(response))}">${escapeHtml(response.content)}</textarea>
+      <div class="review-actions"><button type="button" class="button button-small" data-response-action="approve" data-ref="${escapeHtml(exactRef(response))}">Oznacz jako reviewed</button>
+      <button type="button" class="button button-small button-quiet" data-response-action="correct" data-ref="${escapeHtml(exactRef(response))}">Zapisz korektę</button></div>` : "";
+    return `<tr><td data-label="Pytanie"><strong>${questionId}</strong> — ${escapeHtml(promptById.get(questionId).label)}</td>
+      <td data-label="Stan"><span class="tag ${response.state === 'answered' ? '' : 'pending'}">${escapeHtml(response.state)}</span><br><span class="tag ${response.reviewState === 'needs_review' ? 'pending' : response.reviewState}">${escapeHtml(response.reviewState)}</span></td>
+      <td data-label="Treść">${controls || (response.content ? escapeHtml(response.content) : "—")}</td>
+      <td data-label="Referencja"><span class="ref">${escapeHtml(exactRef(response))}</span></td></tr>`;
   }).join("");
   $("#source-error").textContent = "";
+}
+
+function invalidateDependencies(previous, current) {
+  for (const record of activeRecords(state.records).filter(item => item.derivedFrom.includes(exactRef(previous)))) {
+    state.records = replaceVersion(state.records, invalidateDerivative(record, exactRef(current)));
+  }
+  for (const module of activeRecords(state.moduleRecords).filter(item => item.sourceRef === exactRef(previous))) {
+    const change = transitionModule(module, { state: module.state, source: current, reason: "Reset po korekcie dokładnej wersji źródła.",
+      actor: "damian", eventType: "module_reset" });
+    state.moduleRecords = replaceVersion(state.moduleRecords, change);
+    state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: "module_reset",
+      actor: "damian", object: change.current, related: [current], outcome: change.current.state, time: now() }));
+  }
+  invalidateCurrent(exactRef(current));
+  state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: "response_corrected",
+    actor: "damian", object: current, related: [previous], outcome: "needs_review", time: now() }));
+}
+
+function handleResponseAction(button) {
+  const response = activeRecords(state.responses).find(item => exactRef(item) === button.dataset.ref);
+  if (!response) return;
+  if (button.dataset.responseAction === "approve") {
+    const reviewed = reviewResponse(response, "approved");
+    state.responses = state.responses.map(item => exactRef(item) === exactRef(response) ? reviewed : item);
+    state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: "response_reviewed",
+      actor: "damian", object: reviewed, outcome: "approved", time: now() }));
+  } else {
+    const content = document.querySelector(`textarea[data-response-edit='${CSS.escape(exactRef(response))}']`).value.trim();
+    if (!content) { $("#source-error").textContent = "Korekta odpowiedzi nie może być pusta."; return; }
+    const change = correctResponse(response, { state: "answered", content });
+    state.responses = replaceVersion(state.responses, change);
+    invalidateDependencies(change.previous, change.current);
+  }
+  renderSource(); renderReview(); renderHistory();
 }
 
 function startPreparation() {
@@ -115,7 +173,7 @@ function renderReview() {
         </div></article>`;
     }).join("");
   }
-  const gate = reviewGate({ records: state.records, moduleStates: state.fixture.modules });
+  const gate = reviewGate({ records: state.records, moduleRecords: state.moduleRecords });
   $("#review-blockers").innerHTML = gate.ready ? "<li>Brak blokerów kontraktowych.</li>" : gate.blockers.map(blocker => `<li>${escapeHtml(blocker)}</li>`).join("");
   $("#assemble-brief").disabled = !gate.ready;
   $("#review-error").textContent = "";
@@ -125,16 +183,16 @@ function findActiveRecord(ref) { return activeRecords(state.records).find(record
 
 function handleReviewAction(button) {
   const record = findActiveRecord(button.dataset.ref); if (!record) return;
-  let next;
-  if (button.dataset.action === "approve") next = transitionReview(record, "approved");
-  if (button.dataset.action === "reject") next = transitionReview(record, "rejected");
+  let change;
+  if (button.dataset.action === "approve") change = transitionReview(record, "approved");
+  if (button.dataset.action === "reject") change = transitionReview(record, "rejected");
   if (button.dataset.action === "edit") {
     const content = $(`textarea[data-edit-ref='${CSS.escape(button.dataset.ref)}']`).value;
-    try { next = editDerivative(record, content); } catch (error) { $("#review-error").textContent = error.message; return; }
+    try { change = editDerivative(record, content); } catch (error) { $("#review-error").textContent = error.message; return; }
   }
-  if (!next) return;
-  state.records.push(next); invalidateCurrent(exactRef(next));
-  state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: `derivative_${button.dataset.action}`, actor: "damian", object: next, related: [record], outcome: next.reviewState, time: now() }));
+  if (!change) return;
+  state.records = replaceVersion(state.records, change); invalidateCurrent(exactRef(change.current));
+  state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: `derivative_${button.dataset.action}`, actor: "damian", object: change.current, related: [record], outcome: change.current.reviewState, time: now() }));
   renderReview(); renderHistory();
 }
 
@@ -145,15 +203,21 @@ function addManual() {
   const role = { facts: "reviewed_fact", issues: "preparation_gap", hypotheses: "trainer_interpretation", questions: "pwd_question" }[section];
   state.manualCounter += 1;
   const source = state.responses.find(response => response.state === "answered") || state.responses[0];
-  const record = addManualRecord({ id: `manual-${state.manualCounter}`, content, section, role, caseId: state.fixture.id, derivedFrom: [exactRef(source)] });
+  const record = addManualRecord({ id: `manual-${state.manualCounter}`, content, section, role, caseId: state.fixture.id,
+    derivedFrom: [exactRef(source)], sourceObjects: [source] });
   state.records.push(record); invalidateCurrent(exactRef(record));
+  state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: "manual_fallback_recorded",
+    actor: "damian", object: record, related: [source], outcome: section, time: now() }));
   $("#manual-content").value = ""; $("#manual-error").textContent = ""; renderReview();
 }
 
 function assemble() {
   try {
     const previous = state.briefHistory.at(-1) || null;
-    const brief = assembleBrief({ previous, caseId: state.fixture.id, submission: state.submission, responses: state.responses, records: state.records, moduleStates: state.fixture.modules, now: now() });
+    const brief = assembleBrief({ previous, caseId: state.fixture.id, submission: state.submission, responses: state.responses,
+      records: state.records, moduleRecords: state.moduleRecords, now: now() });
+    if (previous) state.briefHistory = state.briefHistory.map(item => exactRef(item) === exactRef(previous)
+      ? Object.freeze({ ...item, supersededBy: exactRef(brief), status: "superseded" }) : item);
     state.briefHistory.push(brief);
     state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: "brief_assembled", actor: "damian", object: brief, related: [state.submission], outcome: "active", time: now() }));
     enableScreen("brief"); renderBrief(); setScreen("brief");
@@ -179,7 +243,7 @@ function renderBrief() {
 }
 
 function renderEvidence() {
-  const evidence = eligibleEvidence(state.records, state.responses);
+  const evidence = eligibleEvidence({ caseId: state.fixture.id, records: state.records, responses: state.responses });
   $("#evidence-list").innerHTML = evidence.map(item => `<label class="evidence-item"><input type="checkbox" name="decision-evidence" value="${escapeHtml(exactRef(item))}"><span><span class="ref">${escapeHtml(exactRef(item))}</span> — ${escapeHtml(item.content || item.state)}</span></label>`).join("");
 }
 
@@ -190,10 +254,13 @@ function saveDecision() {
   const value = $("input[name='readiness-decision']:checked")?.value;
   const rationale = $("#decision-rationale").value;
   const selectedRefs = new Set($$("input[name='decision-evidence']:checked").map(input => input.value));
-  const evidence = eligibleEvidence(state.records, state.responses).filter(item => selectedRefs.has(exactRef(item)));
+  const evidence = eligibleEvidence({ caseId: state.fixture.id, records: state.records, responses: state.responses }).filter(item => selectedRefs.has(exactRef(item)));
   try {
     const previous = state.decisionHistory.at(-1) || null;
-    const decision = saveReadinessDecision({ previous, caseId: state.fixture.id, value, rationale, evidence, brief, now: now() });
+    const decision = saveReadinessDecision({ previous, caseId: state.fixture.id, value, rationale, evidence,
+      records: state.records, responses: state.responses, brief, now: now() });
+    if (previous) state.decisionHistory = state.decisionHistory.map(item => exactRef(item) === exactRef(previous)
+      ? Object.freeze({ ...item, supersededBy: exactRef(decision), status: "superseded" }) : item);
     state.decisionHistory.push(decision);
     state.audit.push(createAuditEvent({ id: `event-${state.audit.length + 1}`, eventType: "readiness_decision_saved", actor: "damian", object: decision, related: [brief], outcome: value, time: now() }));
     $("#decision-error").textContent = ""; renderHistory();
@@ -201,12 +268,28 @@ function saveDecision() {
 }
 
 function renderHistory() {
-  const items = [...state.briefHistory.map(item => ({ ...item, kind: "brief" })), ...state.decisionHistory.map(item => ({ ...item, kind: "decision" }))];
-  $("#history-list").innerHTML = items.length ? items.map(item => `<div class="history-entry ${item.status}"><strong>${item.kind === 'brief' ? 'Brief' : 'Decyzja'} ${escapeHtml(exactRef(item))}</strong> · ${escapeHtml(item.status)}${item.value ? ` · ${escapeHtml(item.value)}` : ""}${item.invalidatedBy ? `<br><span class="ref">unieważniony przez ${escapeHtml(item.invalidatedBy)}</span>` : ""}</div>`).join("") : "<p>Brak zapisanej wersji.</p>";
+  const items = [
+    ...state.responses.map(item => ({ ...item, kind: "odpowiedź" })),
+    ...state.moduleRecords.map(item => ({ ...item, kind: "moduł" })),
+    ...state.records.map(item => ({ ...item, kind: "pochodna" })),
+    ...state.briefHistory.map(item => ({ ...item, kind: "brief" })),
+    ...state.decisionHistory.map(item => ({ ...item, kind: "decyzja" }))
+  ];
+  $("#history-list").innerHTML = items.length ? items.map(item => `<div class="history-entry ${item.status || item.reviewState || item.state}">
+    <strong>${escapeHtml(item.kind)} ${escapeHtml(exactRef(item))}</strong> · ${escapeHtml(item.status || item.reviewState || item.state)}
+    ${item.supersedes ? `<br><span class="ref">zastępuje ${escapeHtml(item.supersedes)}</span>` : ""}
+    ${item.supersededBy ? `<br><span class="ref">zastąpiony przez ${escapeHtml(item.supersededBy)}</span>` : ""}
+    ${item.invalidatedBy ? `<br><span class="ref">unieważniony przez ${escapeHtml(item.invalidatedBy)}</span>` : ""}</div>`).join("") : "<p>Brak zapisanej wersji.</p>";
 }
 
 function resetSession() {
+  const resetEvents = activeRecords(state.moduleRecords).map(module => createAuditEvent({
+    id: `event-${state.audit.length + 1}-${module.moduleId}`, eventType: "module_reset", actor: "damian",
+    object: module, outcome: "session_cleared", time: now()
+  }));
+  const audit = [...state.audit, ...resetEvents];
   state = freshState();
+  state.audit = audit;
   $$("input[type='radio'], input[type='checkbox']").forEach(input => { input.checked = false; });
   $("#decision-rationale").value = ""; $("#source-metadata").textContent = "Wybierz przypadek i utwórz źródło.";
   $("#source-content").hidden = true; $("#source-warning").hidden = true;
@@ -222,5 +305,9 @@ $("#assemble-brief").addEventListener("click", assemble);
 $("#open-readiness").addEventListener("click", openReadiness);
 $("#save-decision").addEventListener("click", saveDecision);
 $("#reset-session").addEventListener("click", resetSession);
+$("#response-table").addEventListener("click", event => {
+  const button = event.target.closest("button[data-response-action]");
+  if (button) handleResponseAction(button);
+});
 $("#review-list").addEventListener("click", event => { const button = event.target.closest("button[data-action]"); if (button) handleReviewAction(button); });
 $$(".step").forEach(step => step.addEventListener("click", () => { if (!step.disabled) { if (step.dataset.screen === "brief") renderBrief(); if (step.dataset.screen === "readiness") { renderEvidence(); renderHistory(); } setScreen(step.dataset.screen); } }));

@@ -65,7 +65,7 @@
           <h3>Odpowiedzi klienta</h3>
           <div class="table-wrap">
             <table>
-              <thead><tr><th>Pytanie</th><th>Stan</th><th>Treść źródłowa</th><th>Dokładna referencja</th></tr></thead>
+              <thead><tr><th>Pytanie</th><th>Stan / review</th><th>Treść źródłowa i korekta</th><th>Dokładna referencja</th></tr></thead>
               <tbody id="response-table"></tbody>
             </table>
           </div>
@@ -76,7 +76,7 @@
     <section id="screen-review" class="screen" aria-labelledby="review-title">
       <div class="section-heading">
         <div><p class="eyebrow">Krok 2</p><h2 id="review-title">Przegląd pochodnych</h2></div>
-        <p>Zatwierdź, popraw albo odrzuć. Oryginalna odpowiedź nie zmienia się.</p>
+        <p>Zatwierdź, popraw albo odrzuć. Korekta odpowiedzi tworzy nową wersję; poprzednia pozostaje w historii.</p>
       </div>
 
       <section id="manual-composer" class="panel" hidden>
@@ -144,14 +144,15 @@
       </section>
 
       <section class="panel">
-        <h3>Historia briefu i decyzji</h3>
+        <h3>Pełna historia wersji</h3>
+        <p>Odpowiedzi, moduły, pochodne, briefy i decyzje pokazują, co zostało zastąpione albo unieważnione.</p>
         <div id="history-list" class="stack"></div>
       </section>
     </section>
   </main>
 
   <footer>
-    Stage 3 candidate · fictional contract prototype only · Stage 4 not started.
+    Stage 3 corrective candidate · fictional contract prototype only · independent audit pending · Stage 4 not started.
   </footer>
   <script type="module" src="app.js"></script>
 </body>

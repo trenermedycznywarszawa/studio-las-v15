@@ -30,6 +30,7 @@ export const CORE_PROMPTS = Object.freeze([
 ].map(([id, label]) => Object.freeze({ id, label })));
 
 export const MODULE_IDS = Object.freeze(["pregnancy_postpartum", "oncology", "service_test", "pain_injury"]);
+const MODULE_SOURCE_IDS = Object.freeze({ pregnancy_postpartum: "B3", oncology: "B3", service_test: "A1", pain_injury: "E3" });
 
 const DEFAULT_ANSWERS = Object.freeze({
   A1: "Chcę swobodniej chodzić po schodach i wrócić do dłuższych spacerów.",
@@ -79,7 +80,12 @@ function makeFixture({ id, title, scenario, answers = {}, modules = {}, partial 
     state: responseState(merged[prompt.id]),
     content: responseContent(merged[prompt.id])
   }));
-  const moduleStates = Object.fromEntries(MODULE_IDS.map(moduleId => [moduleId, modules[moduleId] ?? "not_applicable"]));
+  const moduleStates = Object.fromEntries(MODULE_IDS.map(moduleId => {
+    const state = modules[moduleId] ?? "not_applicable";
+    return [moduleId, Object.freeze({ state, sourceQuestionId: MODULE_SOURCE_IDS[moduleId],
+      reason: state.startsWith("active") ? `Jawna odpowiedź uruchamia profil ${moduleId}; to nie jest diagnoza.` : `Jawny zapis sesji nie uruchamia profilu ${moduleId}.`,
+      actor: "system_rule" })];
+  }));
   return Object.freeze({
     id: `fictional-${id}`,
     title: `${id} — ${title}`,
@@ -121,8 +127,8 @@ export const fixtures = Object.freeze([
   makeFixture({ id: "03", title: "sygnał wymagający uwagi trenera", scenario: "caution", answers: { B2: "Wysiłek przerwano po nowym uczuciu ucisku w klatce piersiowej.", C4: "Reakcja pojawiła się podczas wejścia po schodach." }, preparation: { ...basePreparation, issues: [{ id: "issue-caution", content: "Źródło zawiera sygnał wymagający decyzji Damiana o odroczeniu lub konsultacji; system nie ustala przyczyny.", refs: ["B2", "C4"], role: "caution_signal" }] } }),
   makeFixture({ id: "04", title: "sprzeczne odpowiedzi", scenario: "conflict", answers: { B1: "Specjalista zalecił ograniczenie intensywnego wysiłku.", C4: "Nie mam żadnych ograniczeń i mogę ćwiczyć bez zmian." }, preparation: { ...basePreparation, issues: [{ id: "issue-conflict", content: "Odpowiedzi B1 i C4 są sprzeczne; obie wersje muszą pozostać widoczne.", refs: ["B1", "C4"], role: "preparation_conflict" }] } }),
   makeFixture({ id: "05", title: "aktywny moduł ból/uraz", scenario: "pain_module", answers: { E2: "Schylanie po lekką torbę.", E3: "Po około 10 minutach pracy w ogrodzie pojawia się większy dyskomfort." }, modules: { pain_injury: "active_complete" }, preparation: basePreparation }),
-  makeFixture({ id: "06", title: "moduł ciąża/postpartum", scenario: "pregnancy_module", modules: { pregnancy_postpartum: "active_complete" }, preparation: basePreparation }),
-  makeFixture({ id: "07", title: "moduł onkologiczny", scenario: "oncology_module", modules: { oncology: "active_complete" }, preparation: basePreparation }),
+  makeFixture({ id: "06", title: "moduł ciąża/postpartum", scenario: "pregnancy_module", answers: { B3: "Jestem 8 miesięcy po porodzie i chcę uwzględnić aktualne zalecenia specjalisty." }, modules: { pregnancy_postpartum: "active_complete" }, preparation: basePreparation }),
+  makeFixture({ id: "07", title: "moduł onkologiczny", scenario: "oncology_module", answers: { B3: "Aktualna opieka onkologiczna może wpływać na wysiłek; mam zalecenia do omówienia." }, modules: { oncology: "active_complete" }, preparation: basePreparation }),
   makeFixture({ id: "08", title: "test służb mundurowych", scenario: "service_test_module", answers: { A1: "Chcę przygotować się do konkretnego testu sprawnościowego służby." }, modules: { service_test: "active_complete" }, preparation: basePreparation }),
   makeFixture({ id: "09", title: "moduły jawnie nie dotyczą", scenario: "modules_not_applicable", preparation: basePreparation }),
   makeFixture({ id: "10", title: "pełna ścieżka ręczna bez AI", scenario: "manual_fallback", preparation: basePreparation }),
