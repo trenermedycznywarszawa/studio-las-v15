@@ -109,7 +109,7 @@ export function makeFixtureModuleRecords({ fixture, responses }) {
   });
 }
 
-export function makeDerivative({ id, content, author = "fictional_ai", informationType = "ai_suggestion", operationalRole, section, derivedFrom, sourceObjects = null, reviewState = "needs_review", version = 1, supersedes = null, uncertainty = null, fields = null, caseId, flagged = false, placeholder = false }) {
+export function makeDerivative({ id, content, author = "fictional_ai", informationType = "ai_suggestion", operationalRole, section, derivedFrom, sourceObjects, reviewState = "needs_review", version = 1, supersedes = null, uncertainty = null, fields = null, caseId, flagged = false, placeholder = false }) {
   if (informationType === null) {
     if (author !== "damian" || !operationalRole) throw new Error("Only a trainer-authored operational derivative may omit information_type");
   } else {
@@ -117,8 +117,9 @@ export function makeDerivative({ id, content, author = "fictional_ai", informati
   }
   if (!id || !String(content).trim()) throw new Error("Derivative requires id and content");
   if (!REVIEW_STATES.includes(reviewState)) throw new Error("Unsupported review state");
+  if (!Array.isArray(sourceObjects) || sourceObjects.length === 0) throw new Error("Derivative source objects are required");
   const refs = normalizeRefs(derivedFrom);
-  if (sourceObjects) assertExactLineage(caseId, sourceObjects, refs);
+  assertExactLineage(caseId, sourceObjects, refs);
   return Object.freeze({ id, version, content: String(content).trim(), author, informationType, operationalRole, section,
     derivedFrom: refs, reviewState, supersedes, supersededBy: null, uncertainty, fields, caseId,
     flagged: Boolean(flagged), placeholder: Boolean(placeholder), creationMode: author === "damian" ? "manual_or_edit" : "fictional_assisted" });
@@ -137,9 +138,10 @@ export function transitionReview(record, reviewState) {
 
 export function editDerivative(record, content, id = record.id) {
   if (!String(content).trim()) throw new Error("Edited content cannot be empty");
-  const current = makeDerivative({ ...record, id, version: record.version + 1, content, author: "damian", informationType: record.informationType === "extracted_fact" ? "extracted_fact" : null,
-    reviewState: "approved", derivedFrom: [...record.derivedFrom, exactRef(record)], supersedes: exactRef(record),
-    flagged: false, placeholder: false });
+  const current = Object.freeze({ ...record, id, version: record.version + 1, content: String(content).trim(), author: "damian",
+    informationType: record.informationType === "extracted_fact" ? "extracted_fact" : null,
+    reviewState: "approved", derivedFrom: [...new Set([...record.derivedFrom, exactRef(record)])], supersedes: exactRef(record),
+    supersededBy: null, flagged: false, placeholder: false, creationMode: "manual_or_edit" });
   return { previous: Object.freeze({ ...record, supersededBy: exactRef(current) }), current };
 }
 

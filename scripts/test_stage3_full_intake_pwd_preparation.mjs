@@ -30,6 +30,11 @@ function sourceFor(fixture = fixtures[0]) {
   return { submission, responses };
 }
 
+function lineageSource(caseId = "fictional-x") {
+  const submission = makeSubmission({ caseId, capturedAt: "2026-08-10T10:00:00Z" });
+  return makeResponse({ submission, questionId: "A1", state: "answered", content: "Jawne źródło" });
+}
+
 function approveAll(records) {
   return records.flatMap(record => {
     const change = transitionReview(record, "approved");
@@ -112,7 +117,9 @@ check("editing creates a trainer-authored version and does not mutate the machin
 });
 
 check("review transitions append versions and rejected records leave the active brief", () => {
-  const record = makeDerivative({ id: "q", content: "Pytanie", operationalRole: "pwd_question", section: "questions", derivedFrom: ["answer@v1"], caseId: "fictional-x" });
+  const source = lineageSource();
+  const record = makeDerivative({ id: "q", content: "Pytanie", operationalRole: "pwd_question", section: "questions",
+    derivedFrom: [exactRef(source)], sourceObjects: [source], caseId: "fictional-x" });
   const change = transitionReview(record, "rejected");
   const rejected = change.current;
   assert.equal(record.reviewState, "needs_review");
@@ -122,15 +129,28 @@ check("review transitions append versions and rejected records leave the active 
   assert.deepEqual(activeRecords([change.previous, rejected]), [rejected]);
 });
 
+check("derivative construction cannot bypass exact current lineage validation", () => {
+  const source = lineageSource();
+  const base = { id: "lineage-guard", content: "Nie zapisuj bez źródła", operationalRole: "reviewed_fact",
+    section: "facts", caseId: "fictional-x" };
+  assert.throws(() => makeDerivative({ ...base, derivedFrom: [exactRef(source)] }), /source objects are required/);
+  assert.throws(() => makeDerivative({ ...base, derivedFrom: [`${source.id}@v2`], sourceObjects: [source] }),
+    /Exact current source reference required/);
+});
+
 check("candidate observation domains require purpose, observation, stop and decision impact", () => {
-  const valid = makeDerivative({ id: "domain", content: "Cel", operationalRole: "candidate_observation_domain", section: "domains", derivedFrom: ["answer@v1"], caseId: "fictional-x", fields: { purpose: "Cel", observe: "Obserwacja", stopCriteria: "Kryterium", decisionImpact: "Wpływ" } });
-  const invalid = makeDerivative({ id: "bad-domain", content: "Cel", operationalRole: "candidate_observation_domain", section: "domains", derivedFrom: ["answer@v1"], caseId: "fictional-x", fields: { purpose: "Cel", observe: "", stopCriteria: "Kryterium", decisionImpact: "Wpływ" } });
+  const source = lineageSource();
+  const lineage = { derivedFrom: [exactRef(source)], sourceObjects: [source] };
+  const valid = makeDerivative({ id: "domain", content: "Cel", operationalRole: "candidate_observation_domain", section: "domains", ...lineage, caseId: "fictional-x", fields: { purpose: "Cel", observe: "Obserwacja", stopCriteria: "Kryterium", decisionImpact: "Wpływ" } });
+  const invalid = makeDerivative({ id: "bad-domain", content: "Cel", operationalRole: "candidate_observation_domain", section: "domains", ...lineage, caseId: "fictional-x", fields: { purpose: "Cel", observe: "", stopCriteria: "Kryterium", decisionImpact: "Wpływ" } });
   assert.equal(isCandidateDomainValid(valid), true);
   assert.equal(isCandidateDomainValid(invalid), false);
 });
 
 check("brief gate blocks pending, malformed, flagged and incomplete-module state", () => {
-  const pending = makeDerivative({ id: "pending", content: "x", operationalRole: "pwd_question", section: "questions", derivedFrom: ["a@v1"], caseId: "fictional-x" });
+  const pendingSource = lineageSource();
+  const pending = makeDerivative({ id: "pending", content: "x", operationalRole: "pwd_question", section: "questions",
+    derivedFrom: [exactRef(pendingSource)], sourceObjects: [pendingSource], caseId: "fictional-x" });
   assert.equal(reviewGate({ records: [pending], moduleRecords: [] }).ready, false);
   const approved = transitionReview(pending, "approved");
   const source = makeResponse({ submission: makeSubmission({ caseId: "fictional-x", capturedAt: "t" }),
