@@ -1,6 +1,6 @@
 # Stage 2 Inquiry → Phone → Decision prototype
 
-**Status:** fictional owner-workflow prototype; not production software
+**Status:** fictional prototype awaiting independent delegated re-audit; not production software
 
 This directory demonstrates the Stage 2 contract without AI, network access, persistent storage, Formspree, Supabase, or real client data.
 
@@ -58,13 +58,15 @@ From the repository root:
 node scripts/test_stage2_inquiry_phone_decision.mjs
 ```
 
-This executes pure workflow transitions for vocabulary enforcement, immutable derivatives, review/call/evidence gates, exact-version invalidation, decision-linked drafts, draft edits, phone-record corrections, and audit references. It also preserves small static checks for offline/no-send, responsive, keyboard, and fictional-fixture boundaries. It does not establish usefulness or owner acceptance.
+This executes pure workflow transitions for vocabulary enforcement, immutable derivatives, review/call/evidence gates, exact-version invalidation, versioned question outcomes, decision-linked drafts, draft edits, phone-record corrections, and audit references. It also preserves small static checks for offline/no-send, responsive, keyboard, and fictional-fixture boundaries. It does not authorize production implementation or any later gate.
 
-## Damian's owner workflow test
+## Independent delegated prototype audit
 
 ### Rule
 
-Only Damian records the result. The prototype is not accepted merely because automated tests pass.
+Damian delegated fictional-prototype QA to ChatGPT. The delegated auditor records the prototype result. Damian retains exclusive authority over product direction and every later schema, provider, real-data, staging, production, merge, and Stage 3 gate.
+
+The auditor must be independent from the implementation pass. Automated tests alone do not close the delegated audit.
 
 Use only the included fictional cases. Do not copy a real Formspree message, email, phone number, client note, or client record.
 
@@ -90,7 +92,7 @@ Run at least these cases end to end:
 - 14 to confirm no other-client disclosure;
 - 15 to confirm the partial-source warning.
 
-Review the remaining six fixtures for coverage and wording. Damian may run them end to end when a concern appears.
+Review the remaining six fixtures for coverage and wording. Damian may run any case later, but his personal browser execution is not required for this prototype gate.
 
 ### Timed workflow
 
@@ -135,9 +137,9 @@ For each required scenario answer `YES`, `NO`, or `UNCLEAR`:
 ## Result form
 
 ```text
-STAGE 2 OWNER WORKFLOW TEST
+STAGE 2 INDEPENDENT DELEGATED PROTOTYPE AUDIT
 Date:
-Tester: Damian
+Auditor:
 Browser/version:
 Viewport(s): desktop / 360 px
 
@@ -167,8 +169,10 @@ Observed friction:
 Required corrections:
 What must remain unchanged:
 
-OWNER RESULT: PASS / PASS WITH CORRECTIONS / FAIL
-Owner signature/confirmation:
+DELEGATED AUDIT RESULT: PASS / PASS WITH CORRECTIONS / FAIL
+Audit confirmation:
 ```
 
-`PASS` means the fictional workflow is understandable and ready for the next separately authorized decision. It does not authorize schema, provider selection, real data, Formspree automation, staging, production, merge, or Stage 3.
+`PASS` means only that the fictional prototype satisfies its delegated contract audit. It is not owner acceptance and does not authorize schema, provider selection, real data, Formspree automation, staging, production, merge, or Stage 3.
+
+Using `Wyczyść sesję` deliberately clears the entire current-page state, including the local metadata-only audit list. Therefore a persistent `workflow_reset` event is outside this session-memory demonstrator; a future persistent runtime must define and audit reset/deletion semantics separately.

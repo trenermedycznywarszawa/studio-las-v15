@@ -1,9 +1,9 @@
 import { FICTIONAL_NOTICE, fixtures } from "./fixtures.js";
 import {
   activeRecords, callReadiness, createAuditEvent, createDraftVersion,
-  deriveEditedRecord, editDraftVersion, eligibleEvidence, exactRef,
+  decisionHistoryEntries, deriveEditedRecord, editDraftVersion, eligibleEvidence, exactRef,
   invalidateDependents, makePhoneRecord, makeRecord, resolvePreparationMode,
-  saveDecisionVersion, transitionReview
+  makeSourceArtifact, recordQuestionStatus, saveDecisionVersion, transitionReview
 } from "./workflow-state.js";
 
 const $ = selector => document.querySelector(selector);
@@ -51,7 +51,7 @@ function addAudit(eventType, actor, object, outcome = "ok", related = []) {
   renderAudit();
 }
 
-function invalidateAfter(object, eventType) {
+function invalidateAfter(object, eventType, outcome = null, related = []) {
   state.inputRevision += 1;
   const priorDecision = state.decision;
   const priorDraft = state.draft;
@@ -67,8 +67,8 @@ function invalidateAfter(object, eventType) {
     setMessage($("#draft-state"), `Projekt ${exactRef(priorDraft)} został unieważniony przez zmianę upstream.`);
   }
   $("#create-draft").disabled = !state.decision || state.decision.status !== "active";
-  addAudit(eventType, "damian", object, priorDecision?.status === "active" ? "downstream_invalidated" : "recorded");
-  renderDraftHistory();
+  addAudit(eventType, "damian", object, outcome ?? (priorDecision?.status === "active" ? "downstream_invalidated" : "recorded"), related);
+  renderDecisionHistory(); renderDraftHistory();
 }
 
 function updateFixtureDescription() {
@@ -77,7 +77,8 @@ function updateFixtureDescription() {
 }
 
 function captureSource({ text, label, fixture = null, partial = false }) {
-  state.source = Object.freeze({ id: makeId("INQ-FIC"), version: 1, text: text.trim(), label, informationType: "source_artifact", capturedAt: nowIso(), partial });
+  const sourceAuthorCategory = fixture ? "client" : "unknown_source_author";
+  state.source = makeSourceArtifact({ id: makeId("INQ-FIC"), text, label, author: sourceAuthorCategory, capturedAt: nowIso(), partial });
   Object.assign(state, { fixture, preparationMode: null, preparation: [], callStarted: false, phoneRecords: [], inputRevision: 0, controlVersion: 0, decision: null, decisionHistory: [], draft: null, draftHistory: [], audit: [] });
   state.questionStates.clear();
   addAudit("source_version_created", "damian", state.source, partial ? "warning_partial" : "ok");
@@ -91,7 +92,7 @@ function renderSource() {
   if (!state.source) { preview.hidden = true; return; }
   preview.hidden = false;
   $("#source-text").textContent = state.source.text;
-  const metadata = [["ID", state.source.id], ["Źródło", state.source.label], ["Wersja", exactRef(state.source)], ["Czas", new Date(state.source.capturedAt).toLocaleString("pl-PL")]];
+  const metadata = [["ID", state.source.id], ["Źródło", state.source.label], ["Autor źródła", state.source.sourceAuthorCategory], ["Wersja", exactRef(state.source)], ["Czas", new Date(state.source.capturedAt).toLocaleString("pl-PL")]];
   $("#source-metadata").replaceChildren(...metadata.map(([term, value]) => {
     const wrapper = document.createElement("div"); const dt = document.createElement("dt"); const dd = document.createElement("dd");
     dt.textContent = term; dd.textContent = value; wrapper.append(dt, dd); return wrapper;
@@ -198,7 +199,11 @@ function beginCall() {
   const gate = callReadiness(state.preparation);
   if (!gate.ready) return setMessage($("#preparation-error"), gate.reason);
   clearMessage($("#preparation-error")); state.callStarted = true;
-  gate.questions.forEach(question => { if (!state.questionStates.has(exactRef(question))) state.questionStates.set(exactRef(question), "not_asked"); });
+  gate.questions.forEach(question => {
+    if (!state.questionStates.has(exactRef(question))) {
+      state.questionStates.set(exactRef(question), recordQuestionStatus({ id: makeId("question-status"), question, status: "not_asked", now: nowIso() }));
+    }
+  });
   addAudit("call_started", "damian", state.source, "trainer_action", gate.questions);
   unlockStep("call", true); renderCall(); showStep("call");
 }
@@ -210,8 +215,13 @@ function renderCall() {
     const text = document.createElement("span"); text.textContent = question.content;
     const select = document.createElement("select"); select.setAttribute("aria-label", `Status pytania: ${question.content}`);
     [["not_asked", "Nie zadano"], ["asked", "Zadane"], ["skipped", "Pominięte"], ["incomplete_answer", "Odpowiedź niepełna"]].forEach(([value, label]) => { const option = document.createElement("option"); option.value = value; option.textContent = label; select.append(option); });
-    select.value = state.questionStates.get(exactRef(question)) ?? "not_asked";
-    select.addEventListener("change", () => { state.questionStates.set(exactRef(question), select.value); invalidateAfter(question, "question_status_changed"); });
+    select.value = state.questionStates.get(exactRef(question))?.status ?? "not_asked";
+    select.addEventListener("change", () => {
+      const previous = state.questionStates.get(exactRef(question));
+      const statusRecord = recordQuestionStatus({ id: makeId("question-status"), question, status: select.value, previous, now: nowIso() });
+      state.questionStates.set(exactRef(question), statusRecord);
+      invalidateAfter(statusRecord, "question_status_changed", `status:${statusRecord.status}`, [question]);
+    });
     row.append(text, select); return row;
   }));
   renderPhoneRecords();
@@ -280,7 +290,7 @@ function renderClosure() {
       const span = document.createElement("span"); span.textContent = `${candidate.label} · ${exactRef(candidate.record)}`; label.append(input, span); return label;
     }));
   }
-  $("#create-draft").disabled = !state.decision || state.decision.status !== "active"; renderDraftHistory(); renderAudit();
+  $("#create-draft").disabled = !state.decision || state.decision.status !== "active"; renderDecisionHistory(); renderDraftHistory(); renderAudit();
 }
 
 function decisionInputChanged() {
@@ -303,7 +313,7 @@ function saveDecision() {
   if (state.draft?.status === "active") { state.draft = { ...state.draft, status: "invalidated", invalidatedBy: exactRef(decision) }; replaceHistoryVersion(state.draftHistory, state.draft); }
   addAudit("trainer_decision_recorded", "damian", decision, selected.value, evidence);
   setMessage($("#decision-confirmation"), `Zapisano aktywną decyzję ${exactRef(decision)} Damiana. Każda zmiana upstream wymaga nowej wersji.`);
-  $("#create-draft").disabled = false; renderDraftHistory();
+  $("#create-draft").disabled = false; renderDecisionHistory(); renderDraftHistory();
 }
 
 function decisionEvidenceVersions() {
@@ -316,7 +326,7 @@ function createDraft() {
     const evidence = decisionEvidenceVersions();
     const draft = createDraftVersion({ id: makeId("material"), previous: state.draft, decision: state.decision, evidence, now: nowIso() });
     state.draft = draft; state.draftHistory.push(draft); $("#draft-field").hidden = false; $("#save-draft-version").hidden = false; $("#draft-text").value = draft.content;
-    setMessage($("#draft-state"), `${exactRef(draft)} · DO SPRAWDZENIA — NIE WYSŁANO · client_material · needs_review · unpublished.`);
+    setMessage($("#draft-state"), `${exactRef(draft)} · autor:${draft.author} · cel:${draft.intendedUse} · DO SPRAWDZENIA — NIE WYSŁANO · client_material · needs_review · unpublished.`);
     addAudit("client_material_draft_created", "damian", draft, "unpublished_needs_review", [state.decision, ...evidence]); renderDraftHistory();
   } catch (error) { setMessage($("#draft-state"), error.message); }
 }
@@ -327,7 +337,7 @@ function saveDraftEdit() {
     const previous = state.draft;
     const draft = editDraftVersion({ draft: previous, content: $("#draft-text").value, now: nowIso() });
     state.draft = draft; state.draftHistory.push(draft);
-    setMessage($("#draft-state"), `${exactRef(draft)} · nowa wersja · DO SPRAWDZENIA — NIE WYSŁANO · unpublished.`);
+    setMessage($("#draft-state"), `${exactRef(draft)} · autor:${draft.author} · cel:${draft.intendedUse} · nowa wersja · DO SPRAWDZENIA — NIE WYSŁANO · unpublished.`);
     addAudit("client_material_version_created", "damian", draft, "unpublished_needs_review", [previous, state.decision, ...decisionEvidenceVersions()]); renderDraftHistory();
   } catch (error) { setMessage($("#draft-state"), error.message); }
 }
@@ -335,7 +345,16 @@ function saveDraftEdit() {
 function renderDraftHistory() {
   const root = $("#draft-history"); if (!root) return;
   const superseded = new Set(state.draftHistory.map(draft => draft.supersedes).filter(Boolean));
-  root.replaceChildren(...state.draftHistory.map(draft => { const item = document.createElement("li"); const status = superseded.has(exactRef(draft)) ? "superseded" : draft.status; item.textContent = `${exactRef(draft)} · ${status} · derived_from: ${draft.derivedFrom.join(", ")}`; return item; }));
+  root.replaceChildren(...state.draftHistory.map(draft => { const item = document.createElement("li"); const status = superseded.has(exactRef(draft)) ? "superseded" : draft.status; item.textContent = `${exactRef(draft)} · ${status} · autor:${draft.author} · cel:${draft.intendedUse} · derived_from: ${draft.derivedFrom.join(", ")}`; return item; }));
+}
+
+function renderDecisionHistory() {
+  const root = $("#decision-history"); if (!root) return;
+  root.replaceChildren(...decisionHistoryEntries(state.decisionHistory).map(entry => {
+    const item = document.createElement("li");
+    item.textContent = `${entry.ref} · ${entry.status}${entry.superseded ? " · superseded" : ""} · derived_from: ${entry.derivedFrom.join(", ")}`;
+    return item;
+  }));
 }
 
 function renderAudit() {
@@ -362,7 +381,7 @@ function resetWorkflow() {
   $("#note-text").value = ""; $("#client-reaction").value = ""; $("#decision-rationale").value = ""; $$("input[name='decision']").forEach(input => { input.checked = false; });
   $("#draft-field").hidden = true; $("#save-draft-version").hidden = true; $("#draft-text").value = "";
   ["source-error", "preparation-error", "note-error", "decision-error", "decision-confirmation", "draft-state"].forEach(id => clearMessage($(`#${id}`)));
-  ["prepare", "call", "close"].forEach(step => unlockStep(step, false)); renderSource(); renderAudit(); renderDraftHistory(); updateFixtureDescription(); showStep("source");
+  ["prepare", "call", "close"].forEach(step => unlockStep(step, false)); renderSource(); renderAudit(); renderDecisionHistory(); renderDraftHistory(); updateFixtureDescription(); showStep("source");
 }
 
 function initialize() {

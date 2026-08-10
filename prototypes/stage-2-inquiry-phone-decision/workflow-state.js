@@ -28,6 +28,13 @@ export const DECISIONS = Object.freeze([
   "NOT_RIGHT_PRODUCT"
 ]);
 
+export const QUESTION_STATUSES = Object.freeze([
+  "not_asked",
+  "asked",
+  "skipped",
+  "incomplete_answer"
+]);
+
 const decisionCopy = Object.freeze({
   CONTINUE: "Dziękuję za rozmowę. Damian zapisał decyzję o kontynuacji kontaktu i uzgodnieniu kolejnego kroku.",
   SEND_FULL_INTAKE: "Dziękuję za rozmowę. Damian zapisał decyzję, że kolejnym krokiem może być pełna ankieta w osobnym procesie.",
@@ -51,6 +58,22 @@ export function assertOperationalRole(value) {
     throw new Error(`Unapproved operational role: ${value}`);
   }
   return value ?? null;
+}
+
+export function makeSourceArtifact({ id, text, label, author, capturedAt, partial = false }) {
+  if (!["client", "unknown_source_author"].includes(author)) throw new Error(`Unsupported source author category: ${author}`);
+  if (!id || !text?.trim() || !label || !capturedAt) throw new Error("Source identity, text, label and capture time are required");
+  return Object.freeze({
+    id,
+    version: 1,
+    text: text.trim(),
+    label,
+    informationType: "source_artifact",
+    author,
+    sourceAuthorCategory: author,
+    capturedAt,
+    partial: Boolean(partial)
+  });
 }
 
 export function makeRecord(input) {
@@ -164,6 +187,24 @@ export function invalidateDependents({ decision, draft }, causeRef) {
   };
 }
 
+export function recordQuestionStatus({ id, question, status, previous = null, now }) {
+  if (!question?.id || !question?.version) throw new Error("An exact question version is required");
+  if (!QUESTION_STATUSES.includes(status)) throw new Error(`Unsupported question status: ${status}`);
+  if (previous && previous.questionRef !== exactRef(question)) {
+    throw new Error("Question status history must stay attached to one exact question version");
+  }
+  return Object.freeze({
+    id: previous?.id ?? id,
+    version: previous ? previous.version + 1 : 1,
+    operationalRole: "question_status",
+    questionRef: exactRef(question),
+    status,
+    actor: "damian",
+    recordedAt: now,
+    supersedes: previous ? exactRef(previous) : null
+  });
+}
+
 export function saveDecisionVersion({ id, previous = null, value, rationale, evidence, inputRevision, now }) {
   if (!DECISIONS.includes(value)) throw new Error("Unsupported decision");
   if (!rationale.trim()) throw new Error("Decision rationale is required");
@@ -179,6 +220,7 @@ export function saveDecisionVersion({ id, previous = null, value, rationale, evi
     value,
     rationale: rationale.trim(),
     evidenceRefs: evidence.map(exactRef),
+    derivedFrom: evidence.map(exactRef),
     actor: "damian",
     inputRevision,
     recordedAt: now,
@@ -196,6 +238,9 @@ export function createDraftVersion({ id, previous = null, decision, evidence, no
     version: previous ? previous.version + 1 : 1,
     content: decisionCopy[decision.value],
     informationType: "client_material",
+    author: "studio_las_system",
+    draftingActor: "studio_las_system",
+    intendedUse: "post_call_follow_up",
     reviewState: "needs_review",
     publicationState: "unpublished",
     derivedFrom: [exactRef(decision), ...evidenceRefs],
@@ -212,6 +257,9 @@ export function editDraftVersion({ draft, content, now }) {
     ...draft,
     version: draft.version + 1,
     content: trimmed,
+    author: "damian",
+    draftingActor: "damian",
+    intendedUse: draft.intendedUse,
     reviewState: "needs_review",
     publicationState: "unpublished",
     derivedFrom: [...draft.derivedFrom, exactRef(draft)],
@@ -219,6 +267,16 @@ export function editDraftVersion({ draft, content, now }) {
     status: "active",
     createdAt: now
   });
+}
+
+export function decisionHistoryEntries(records) {
+  const superseded = new Set(records.map(record => record.supersedes).filter(Boolean));
+  return records.map(record => ({
+    ref: exactRef(record),
+    status: record.status,
+    superseded: superseded.has(exactRef(record)),
+    derivedFrom: [...record.derivedFrom]
+  }));
 }
 
 export function createAuditEvent({ id, eventType, actor, object, related = [], outcome, time }) {

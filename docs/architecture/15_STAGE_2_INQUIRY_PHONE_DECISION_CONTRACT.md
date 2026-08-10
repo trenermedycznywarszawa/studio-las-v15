@@ -1,6 +1,6 @@
 # 15 Stage 2 Inquiry, Phone, and Decision Contract
 
-**Status:** CANDIDATE FOR OWNER WORKFLOW REVIEW
+**Status:** CANDIDATE FOR INDEPENDENT DELEGATED PROTOTYPE RE-AUDIT
 **Authorization:** fictional contract prototype only
 **Schema status:** `SCHEMA — NOT APPROVED`
 **Provider status:** `PROVIDER DECISION — BLOCKED`
@@ -82,7 +82,7 @@ Operational preparation item, not a new Stage 1 information type. It states that
 
 Domain representation: `ai_suggestion` when machine prepared. A question authored or deliberately rewritten by Damian is an operational `call_question`; that role is not an `information_type`.
 
-It includes purpose, optional caution, `derived_from`, author, review state, and call outcome: `not_asked`, `asked`, `skipped`, or `incomplete_answer`.
+It includes purpose, optional caution, `derived_from`, author, and review state. Each outcome is a separate versioned operational record with an exact question-version reference and one closed value: `not_asked`, `asked`, `skipped`, or `incomplete_answer`.
 
 ### `call_outline_item`
 
@@ -115,13 +115,13 @@ Allowed candidate decision values:
 - `DEFER_OR_CONSULT`;
 - `NOT_RIGHT_PRODUCT`.
 
-The decision requires Damian as actor, a timestamp, a non-empty rationale, and references to the facts/notes supporting it. The names may later change, but these four meanings must remain unambiguous.
+The decision requires Damian as actor, a timestamp, a non-empty rationale, canonical exact-version `derived_from` references to the facts/notes supporting it, and visible version history. Invalidated, active, and superseded state must remain inspectable. The names may later change, but these four decision meanings must remain unambiguous.
 
 ### `follow_up_draft`
 
 Domain representation: `client_material`.
 
-It is a new exact content version with complete `derived_from`, `review_state: needs_review`, `publication_state: unpublished`, and an intended-use label. Creation does not approve or send it. The prototype exposes no send or publish action.
+It is a new exact content version with explicit drafting actor/author, complete `derived_from`, `review_state: needs_review`, `publication_state: unpublished`, and an intended-use label. Every edited version preserves explicit authorship and intended use. Creation does not approve or send it. The prototype exposes no send or publish action.
 
 ### `workflow_audit_event`
 
@@ -153,12 +153,12 @@ Every arrow is exact-version `derived_from`. The source remains unchanged. A sta
 | `manual_preparation_started` | Damian | Create editable review items separated from source | Claim an AI run occurred |
 | `preparation_item_edited` | Damian | Create trainer-edited derivative/version and preserve source | Edit source text |
 | `preparation_item_rejected` | Damian | Mark derivative rejected and exclude it from active preparation | Delete its provenance or source |
-| `question_status_changed` | Damian | Record asked/skipped/incomplete/not-asked state | Score the client or choose a decision |
+| `question_status_changed` | Damian | Create a versioned bounded outcome record with exact question-version reference for asked/skipped/incomplete/not-asked | Score the client or choose a decision |
 | `call_note_added` | Damian | Record explicit author/type and call context | Convert all notes into trainer interpretation |
 | `client_reaction_recorded` | Damian | Preserve client authorship and context | Infer consent, fit, or readiness |
 | `decision_recorded` | Damian | Save one allowed decision with rationale and evidence | Let AI choose or save it |
 | `client_material_drafted` | Damian | Create unpublished, needs-review draft | Send or publish it |
-| `workflow_reset` | Damian | Clear current in-memory prototype state | Delete or alter the immutable fixture definition |
+| `workflow_reset` | Damian | Clear current in-memory prototype state; the local audit clears with the session, so persistent reset auditing is outside this demonstrator | Claim that a persistent reset event survived or delete/alter the immutable fixture definition |
 
 ## Preparation states
 
@@ -210,6 +210,7 @@ The decision control must:
 - never infer `SEND_FULL_INTAKE` from readiness, pain, location, or any form field;
 - accept as evidence only reviewed `source_fact` / `extracted_fact` records and deliberate phone statements, reactions, observations, or interpretations;
 - store exact evidence-version references and the upstream input revision;
+- expose canonical `derived_from` for those same exact evidence versions and keep active, invalidated, and superseded decision versions visible;
 - become invalid when decision controls, rationale, evidence, preparation, question state, phone notes, or client reaction changes after save;
 - require a new explicit save to create a superseding decision version.
 
@@ -330,6 +331,8 @@ There is no real send, publish, booking, Formspree, Supabase, or AI control.
 
 ## Acceptance gate
 
-The contract remains a candidate until Damian completes the owner workflow test with fictional cases. A passing automated suite proves state-transition, provenance, vocabulary, dependency, and static safety boundaries; it cannot prove usefulness, speed, clarity, or owner acceptance.
+Damian delegated fictional-prototype QA to ChatGPT. The contract remains a candidate until an independent delegated audit, separate from the implementation pass, completes the fictional protocol and records its result. A passing automated suite supports state-transition, provenance, vocabulary, dependency, and static safety claims but does not by itself close the delegated audit.
+
+This delegation does not transfer Damian's exclusive authority over product direction or later schema, provider, real-data, staging, production, merge, and Stage 3 gates. A delegated prototype `PASS` is not owner acceptance.
 
 Stage 3, production implementation, provider choice, schema design, real data, and deployment remain unauthorized.

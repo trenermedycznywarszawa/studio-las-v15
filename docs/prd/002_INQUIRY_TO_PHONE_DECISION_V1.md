@@ -1,6 +1,6 @@
 # PRD 002 — Inquiry to Phone Decision v1
 
-**Status:** CANDIDATE FOR OWNER WORKFLOW REVIEW
+**Status:** CANDIDATE FOR INDEPENDENT DELEGATED PROTOTYPE RE-AUDIT
 **Stage:** 2 — contract and fictional workflow prototype only
 **Base:** `product-recovery@8ecfe2620ec658a1a3c6dbef90694274a3b12082`
 
@@ -87,7 +87,7 @@ The workflow rejects another-client requests and warns on partial or suspicious 
 - FR-01: Allow selection of at least 12 clearly fictional cases.
 - FR-02: Allow manual paste only when the user acknowledges fictional-data use.
 - FR-03: Present source text read-only after capture.
-- FR-04: Show source label, capture time, pseudonymous inquiry ID, and version.
+- FR-04: Show source label, explicit source-author category, capture time, pseudonymous inquiry ID, and version.
 - FR-05: Reset in-memory state deliberately without changing fixture definitions.
 
 ### Preparation
@@ -102,7 +102,7 @@ The workflow rejects another-client requests and warns on partial or suspicious 
 ### Call
 
 - FR-12: Add notes as client statement, Damian observation, or Damian interpretation.
-- FR-13: Mark a question as asked, skipped, or incomplete answer.
+- FR-13: Record every question outcome as a versioned bounded operational record with an exact question-version reference: not asked, asked, skipped, or incomplete answer.
 - FR-14: Record client reaction separately.
 - FR-15: Preserve note author, time, context, local identifier, exact version, and correction/supersession chain.
 - FR-16: Never show scoring, discipline, compliance, conversion probability, or automatic qualification.
@@ -113,8 +113,9 @@ The workflow rejects another-client requests and warns on partial or suspicious 
 - FR-18: Require a non-empty rationale.
 - FR-19: Let Damian select only reviewed source/extracted facts and deliberately recorded phone records, always by exact version.
 - FR-20: Record the decision only after explicit Damian action.
+- FR-20a: Store canonical exact-version `derived_from` on every decision and visibly preserve active, invalidated, and superseded decision versions.
 - FR-21: Optionally create a follow-up draft solely from the active exact decision version and its exact evidence versions.
-- FR-22: Mark every created or edited draft version `DO SPRAWDZENIA — NIE WYSŁANO`, `needs_review`, and `unpublished`; editing creates a superseding version.
+- FR-22: Mark every created or edited draft version `DO SPRAWDZENIA — NIE WYSŁANO`, `needs_review`, and `unpublished`; preserve explicit drafting actor/author and intended use; editing creates a superseding version.
 - FR-23: Provide no send, publish, booking, or Formspree action.
 
 ### Audit and failure
@@ -183,6 +184,7 @@ Exact limits, provider fields, schema, retention, region, cost, model, and runti
 - AC-05: At least 12 fictional cases cover happy, ambiguous, unsafe, failure, and isolation paths.
 - AC-06: Five to eight questions are available in assisted preparation and can be edited/rejected.
 - AC-07: Notes and reactions preserve explicit authorship, allowed type, operational role, exact version, and supersession.
+- AC-07a: Each source version preserves an explicit source-author category, and each `client_material` version preserves its drafting actor/author and intended use.
 - AC-08: No score or automatic qualification is present.
 - AC-09: All four decisions require Damian's action and rationale.
 - AC-10: A follow-up draft matches its exact saved decision/evidence, and every edit remains a new visibly unsent and unpublished version.
@@ -190,7 +192,7 @@ Exact limits, provider fields, schema, retention, region, cost, model, and runti
 - AC-12: No external requests, secrets, storage, real AI, or real client data are present.
 - AC-13: Automated behavioral/state-transition test and inherited seven tests pass on the final tree.
 - AC-14: `git diff --check` passes.
-- AC-15: Damian executes the owner workflow test and records `PASS`, `PASS WITH CORRECTIONS`, or `FAIL` before Stage 2 acceptance.
+- AC-15: An independent ChatGPT audit, separate from the implementation pass, executes the fictional prototype protocol and records `PASS`, `PASS WITH CORRECTIONS`, or `FAIL` before delegated prototype acceptance.
 
 ## Fictional prototype scope
 
@@ -206,7 +208,7 @@ In scope:
 - explicit trainer decision;
 - optional unsent follow-up draft;
 - metadata-only audit summary;
-- owner-test protocol and result form;
+- independent delegated audit protocol and result form;
 - static automated contract test.
 
 ## Outside prototype scope
@@ -240,7 +242,7 @@ In scope:
 
 Prototype completion does not authorize implementation. A later, separately instructed transition must:
 
-1. record Damian's owner-test result and corrections;
+1. record the independent delegated prototype-audit result and corrections;
 2. approve the exact task contract and minimum dataset;
 3. complete privacy/legal and security review;
 4. decide whether and how Formspree content becomes a versioned source;
@@ -252,6 +254,6 @@ Prototype completion does not authorize implementation. A later, separately inst
 
 ## Product acceptance rule
 
-Automated tests can prove that prohibited mechanics are absent from the prototype. Only Damian can determine whether the workflow is understandable and useful. Until his recorded test result, the correct status is:
+Damian delegated fictional-prototype QA to ChatGPT while retaining exclusive authority over product direction and all later schema, provider, real-data, staging, production, merge, and Stage 3 gates. Automated tests support but do not replace an independent delegated audit. Until that audit is recorded, the correct status is:
 
-`STAGE 2 — READY FOR OWNER WORKFLOW REVIEW`
+`STAGE 2 — READY FOR INDEPENDENT DELEGATED PROTOTYPE RE-AUDIT`

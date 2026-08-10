@@ -1,6 +1,6 @@
 # 07 Inquiry to Phone Decision System
 
-**Status:** STAGE 2 CANDIDATE FOR OWNER WORKFLOW REVIEW
+**Status:** STAGE 2 CANDIDATE FOR INDEPENDENT DELEGATED PROTOTYPE RE-AUDIT
 **Authorization:** contract and fictional workflow prototype only
 **First AI task:** `Prepare the trainer for the first inquiry phone call.`
 
@@ -48,7 +48,7 @@ The workflow should let Damian:
 - create an unpublished follow-up draft only when useful;
 - complete the entire process manually when AI is unavailable.
 
-No claim that the workflow saves time is accepted until Damian performs the owner workflow test.
+No claim that the workflow saves time is accepted from prototype timers alone. Any real improvement claim requires a later, separately authorized comparison with Damian's actual baseline.
 
 ## Current inquiry entry audit
 
@@ -74,7 +74,7 @@ For Stage 2, Formspree remains a manual source. Damian may copy a fictional or l
 
 ### 1. Before the call — source
 
-Damian selects a fictional case or pastes fictional inquiry text. The system creates an immutable `source_artifact` view with source label, capture time, version, and a pseudonymous inquiry identifier.
+Damian selects a fictional case or pastes fictional inquiry text. The system creates an immutable `source_artifact` view with source label, source-author category, capture time, version, and a pseudonymous inquiry identifier.
 
 The original text remains separate from extraction. Editing preparation never edits the source.
 
@@ -184,10 +184,10 @@ The first inquiry call collects only enough context to choose the next step. It 
 - Notes preserve authorship and context without duplicating the full source into audit logs.
 - The final decision is impossible to save without Damian's explicit choice, rationale, and reviewed exact-version evidence.
 - Material changes to preparation, call records, reaction, rationale, selected evidence, or decision invalidate dependent decision/draft versions and require a new save.
-- The owner test can measure preparation time and decision-close time without claiming an improvement in advance.
+- The delegated prototype audit can record preparation time and decision-close time without claiming an improvement in advance.
 
 ## Stage 2 acceptance boundary
 
-This document is a candidate for owner workflow review. It authorizes neither production implementation nor the use of real client data.
+This document is a candidate for independent delegated prototype re-audit. It authorizes neither production implementation nor the use of real client data.
 
-Stage 2 cannot be accepted until Damian performs the fictional owner workflow test and records `PASS`, `PASS WITH CORRECTIONS`, or `FAIL`.
+Damian delegated fictional-prototype QA to ChatGPT. Stage 2 prototype review remains open until an independent delegated audit records `PASS`, `PASS WITH CORRECTIONS`, or `FAIL`. This delegation does not transfer Damian's authority over product direction or any later schema, provider, real-data, staging, production, merge, or Stage 3 gate.

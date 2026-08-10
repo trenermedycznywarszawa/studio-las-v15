@@ -4,10 +4,10 @@ import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 import { fixtures, FICTIONAL_NOTICE } from "../prototypes/stage-2-inquiry-phone-decision/fixtures.js";
 import {
-  DECISIONS, INFORMATION_TYPES, OPERATIONAL_ROLES, activeRecords, assertInformationType,
+  DECISIONS, INFORMATION_TYPES, OPERATIONAL_ROLES, QUESTION_STATUSES, activeRecords, assertInformationType,
   callReadiness, createAuditEvent, createDraftVersion, deriveEditedRecord, editDraftVersion,
-  eligibleEvidence, exactRef, invalidateDependents, makePhoneRecord, makeRecord,
-  resolvePreparationMode, saveDecisionVersion, transitionReview
+  decisionHistoryEntries, eligibleEvidence, exactRef, invalidateDependents, makePhoneRecord, makeRecord,
+  makeSourceArtifact, recordQuestionStatus, resolvePreparationMode, saveDecisionVersion, transitionReview
 } from "../prototypes/stage-2-inquiry-phone-decision/workflow-state.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -54,6 +54,16 @@ check("workflow roles stay separate from information types", () => {
   const question = record();
   assert.equal(question.operationalRole, "call_question");
   assert.equal(question.informationType, "ai_suggestion");
+});
+
+check("source artifacts require an explicit bounded author category", () => {
+  const fixtureSourceRecord = makeSourceArtifact({ id: "source", text: "Fikcyjne zgłoszenie", label: "fictional_fixture:01", author: "client", capturedAt: "t" });
+  assert.equal(fixtureSourceRecord.informationType, "source_artifact");
+  assert.equal(fixtureSourceRecord.author, "client");
+  assert.equal(fixtureSourceRecord.sourceAuthorCategory, "client");
+  const manualSourceRecord = makeSourceArtifact({ id: "manual", text: "Fikcyjny tekst", label: "manual_paste:fictional", author: "unknown_source_author", capturedAt: "t" });
+  assert.equal(manualSourceRecord.sourceAuthorCategory, "unknown_source_author");
+  assert.throws(() => makeSourceArtifact({ id: "bad", text: "x", label: "x", author: "system", capturedAt: "t" }), /Unsupported source author category/);
 });
 
 check("editing creates a trainer derivative and preserves the machine original", () => {
@@ -118,6 +128,25 @@ check("phone statements and reactions use version and supersession semantics", (
   assert.equal(corrected.informationType, "source_fact");
 });
 
+check("question outcomes are closed, versioned and tied to an exact question", () => {
+  const question = record({ id: "question" });
+  let previous = null;
+  for (const status of QUESTION_STATUSES) {
+    const current = recordQuestionStatus({ id: "question-status", question, status, previous, now: `time-${status}` });
+    assert.equal(current.status, status);
+    assert.equal(current.questionRef, "question@v1");
+    assert.equal(current.version, previous ? previous.version + 1 : 1);
+    if (previous) assert.equal(current.supersedes, exactRef(previous));
+    previous = current;
+  }
+  assert.throws(() => recordQuestionStatus({ id: "bad", question, status: "completed", now: "t" }), /Unsupported question status/);
+  const differentQuestion = record({ id: "other-question" });
+  assert.throws(() => recordQuestionStatus({ id: "bad", question: differentQuestion, status: "asked", previous, now: "t" }), /one exact question/);
+  const event = createAuditEvent({ id: "status-event", eventType: "question_status_changed", actor: "damian", object: previous, related: [question], outcome: `status:${previous.status}`, time: "t" });
+  assert.equal(event.outcome, "status:incomplete_answer");
+  assert.deepEqual(event.relatedRefs, ["question@v1"]);
+});
+
 check("material upstream changes invalidate exact decision and draft versions", () => {
   const decision = { id: "decision", version: 1, status: "active" };
   const draft = { id: "draft", version: 1, status: "active" };
@@ -134,9 +163,16 @@ check("decision saves exact evidence versions and supersedes the prior decision"
   const first = saveDecisionVersion({ id: "decision", value: "CONTINUE", rationale: "Jawny powód", evidence: [evidence], inputRevision: 4, now: "t1" });
   const second = saveDecisionVersion({ id: "ignored", previous: first, value: "DEFER_OR_CONSULT", rationale: "Nowy powód", evidence: [evidence], inputRevision: 5, now: "t2" });
   assert.deepEqual(first.evidenceRefs, ["obs@v1"]);
+  assert.deepEqual(first.derivedFrom, ["obs@v1"]);
   assert.equal(second.version, 2);
   assert.equal(second.supersedes, "decision@v1");
   assert.equal(second.inputRevision, 5);
+  const invalidatedFirst = { ...first, status: "invalidated", invalidatedBy: "obs@v2" };
+  const history = decisionHistoryEntries([invalidatedFirst, second]);
+  assert.deepEqual(history, [
+    { ref: "decision@v1", status: "invalidated", superseded: true, derivedFrom: ["obs@v1"] },
+    { ref: "decision@v2", status: "active", superseded: false, derivedFrom: ["obs@v1"] }
+  ]);
 });
 
 check("every draft is deterministic from the saved decision and exact evidence", () => {
@@ -149,6 +185,9 @@ check("every draft is deterministic from the saved decision and exact evidence",
     assert.deepEqual(draft.derivedFrom, [exactRef(decision), exactRef(evidence)]);
     assert.equal(draft.reviewState, "needs_review");
     assert.equal(draft.publicationState, "unpublished");
+    assert.equal(draft.author, "studio_las_system");
+    assert.equal(draft.draftingActor, "studio_las_system");
+    assert.equal(draft.intendedUse, "post_call_follow_up");
   }
   const decision = saveDecisionVersion({ id: "decision-mismatch", value: "CONTINUE", rationale: "Powód", evidence: [evidence], inputRevision: 1, now: "t1" });
   const newerEvidence = makePhoneRecord({ id: "ignored", role: "client_statement", content: "Korekta", previous: evidence });
@@ -166,6 +205,9 @@ check("editing client material creates a new unpublished needs-review version", 
   assert.ok(edited.derivedFrom.includes("draft@v1"));
   assert.equal(edited.reviewState, "needs_review");
   assert.equal(edited.publicationState, "unpublished");
+  assert.equal(edited.author, "damian");
+  assert.equal(edited.draftingActor, "damian");
+  assert.equal(edited.intendedUse, "post_call_follow_up");
   assert.deepEqual(activeRecords([first, edited]), [edited]);
 });
 
@@ -178,6 +220,12 @@ check("audit events require actor and exact object/version references without co
   assert.deepEqual(event.relatedRefs, ["fact@v3"]);
   assert.equal("content" in event, false);
   assert.throws(() => createAuditEvent({ id: "bad", eventType: "x", object, outcome: "x", time: "x" }), /actor/);
+});
+
+check("source and decision histories expose required provenance metadata", () => {
+  assert.match(app, /makeSourceArtifact/);
+  assert.match(app, /renderDecisionHistory/);
+  assert.match(html, /id="decision-history"/);
 });
 
 check("offline, session-only, no-send and no-production boundaries remain", () => {
