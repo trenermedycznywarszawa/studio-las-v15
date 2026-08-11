@@ -1,8 +1,8 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGE 0 MERGED AND CLOSED; STAGE 1 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 2 AUTHORIZED FOR CONTRACT AND FICTIONAL WORKFLOW PROTOTYPE ONLY; IMPLEMENTATION NOT AUTHORIZED
-**Version:** 2.2
-**Updated:** 2026-08-03
+**Status:** STAGES 0–2 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 3 CORRECTIVE ACTIONS IN PROGRESS; IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.4
+**Updated:** 2026-08-10
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
 
@@ -62,7 +62,7 @@ Stage 0 was owner accepted and squash-merged into `product-recovery` as `62f2366
 ### Unverified assumptions and later decisions
 
 - **Resolved in Stage 0:** `docs/architecture/04_CLIENT_SAFE_SURFACES.md` now follows Constitution v1.1 and Home Guidance System v2.0. Paper, the app, and a deliberate hybrid are valid trainer-selected channels, with one authoritative instruction source and Damian’s approval required before AI-prepared material is published to the client.
-- The adaptive full-intake v2 is described in Plan Architecture v3.1, but neither its claimed DOCX source nor an approved 42-question contract exists in the inspected repository/workspace. Stage 3 cannot begin until that artifact is recovered, versioned, reviewed, and given an explicit owner of truth.
+- **Source evidence verified on 2026-08-10:** the two DOCX hashes and interpretation are recorded in `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`. The sources define 26 core prompts plus four conditional module profiles, not an approved 42-question form; seven observation domains are not seven mandatory tests. Controlled archive access remains `OWNER ACTION REQUIRED`.
 - No AI provider/runtime contract is approved for real client content. Provider, endpoint, retention, region/transfer, logging, cost, fallback, and evaluation remain Stage 1 decisions.
 - The final production URL, email/SMTP path, privacy/RODO sign-off, retention schedule, and real-data rollout authorization are not proven complete by the repository evidence inspected here.
 - The staging security result does not prove that the same release is deployed and configured in production. Production verification must be a separate controlled release gate.
@@ -406,14 +406,15 @@ Only after the manual flows work:
 | PR-18 | FROZEN | Open Draft preserved for selective recovery after approved contracts | `3dbc61e2f4813ecc4c0f17d6f2217832f4e11466` |
 | DIR-01 | DONE | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 merged | PR #20; `62f2366e0c77abf2d1413e437173cc82a7735455`; owner accepted 2026-08-03 |
 | PR-21 | DONE | Stage 1 data, permission, and AI contracts owner accepted 2026-08-03; Execution Plan v2.2 remains contract-only with no implementation permission | Draft PR #21; this acceptance commit (`docs: record Stage 1 owner acceptance`; exact SHA recorded in the PR after publication); 18/18 exit gate PASS; 7/7 tests PASS; `git diff --check` PASS; no implementation authorization |
-| STG-02 | OWNER WORKFLOW REVIEW | Contract and fictional workflow prototype for inquiry → phone → Damian decision | Base `product-recovery@8ecfe2620ec658a1a3c6dbef90694274a3b12082`; first AI task `Prepare the trainer for the first inquiry phone call.` authorized by Damian; provider, schema, real data, Formspree automation, staging, production, merge, and Stage 3 remain unauthorized |
+| STG-02 | DONE | Inquiry → phone → Damian decision contract and fictional prototype owner accepted and merged | PR #22; merge `040bce6303c9138ba3b1af6366def54c21bd157c`; Chrome audit PASS; 8/8 regression PASS; 18/18 Stage 2 contract PASS; owner accepted 2026-08-10 |
+| STG-03 | CORRECTIVE ACTIONS IN PROGRESS | Adaptive full intake → traceable PWD brief → Damian readiness decision | Stage 3 and PR #23 are not owner accepted; earlier browser PASS was not independent; corrected candidate requires full regression and separate read-only audit before an owner merge decision |
 
 ---
 
 ## 10. Next action
 
-Stage 1 is owner accepted, merged, and closed. Stage 2 is authorized only for contract design and an independent fictional workflow prototype, starting from `product-recovery@8ecfe2620ec658a1a3c6dbef90694274a3b12082`.
+Stages 0–2 are owner accepted, merged, and closed. On 2026-08-10 Damian recorded a narrow exception allowing PRD 002 and PRD 003 to exist as isolated fictional prototype contracts despite the general PRD entry rule. The exception does not accept Stage 3 or PR #23. The earlier Stage 3 browser check was performed during implementation and is not independent; corrective work, exact-tree regression, and a separate read-only audit are required before any owner merge decision.
 
-Damian authorized the first AI task as `Prepare the trainer for the first inquiry phone call.` The minimum dataset remains a candidate for owner review rather than an approved schema or production payload. PR #18 remains frozen.
+The Stage 3 task is `Prepare the trainer for PWD from one traceable adaptive-intake brief.` It may organize facts, gaps, conflicts, coaching hypotheses, questions, and candidate observation domains. Damian makes the readiness decision. The prototype does not execute AI and does not choose tests or establish safety.
 
-The AI provider/model, schema, SQL, migrations, real client data, Formspree automation, AI runtime, Supabase, staging, production, integration with `main`, and merge remain unauthorized. Stage 3 has not started and requires a separate explicit instruction after Damian's fictional owner workflow review.
+PR #18 remains frozen. The AI provider/model, schema, SQL, migrations, real client data, public questionnaire implementation, PAR-Q+ reproduction, AI runtime, Supabase, staging, production, integration with `main`, Stage 4, and merge remain unauthorized until their separate gates.

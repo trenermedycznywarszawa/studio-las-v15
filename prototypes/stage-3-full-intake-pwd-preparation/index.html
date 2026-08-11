@@ -1,0 +1,159 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Studio Las OS — Etap 3</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Studio Las OS · Etap 3</p>
+      <h1>Pełny wywiad → przygotowanie PWD</h1>
+      <p class="lede">Fikcyjny, trenerski demonstrator kontraktu. Źródło pozostaje źródłem. Damian nadaje znaczenie i podejmuje decyzję.</p>
+    </div>
+    <button id="reset-session" class="button button-quiet" type="button">Wyczyść sesję</button>
+  </header>
+
+  <div class="boundary" role="note">
+    <strong>FIKCYJNE DANE · BRAK AI · BRAK SIECI · BRAK ZAPISU · BRAK WYSYŁKI</strong>
+    <span>To nie jest formularz klienta, screening, diagnoza ani produkcja.</span>
+  </div>
+
+  <nav class="step-nav" aria-label="Etapy pracy">
+    <button class="step is-active" type="button" data-screen="source">1. Źródło</button>
+    <button class="step" type="button" data-screen="review" disabled>2. Przegląd</button>
+    <button class="step" type="button" data-screen="brief" disabled>3. Brief</button>
+    <button class="step" type="button" data-screen="readiness" disabled>4. Gotowość</button>
+  </nav>
+
+  <main>
+    <section id="screen-source" class="screen is-active" aria-labelledby="source-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Krok 1</p><h2 id="source-title">Niezmienne źródło</h2></div>
+        <p>26 pytań rdzenia. Moduły warunkowe tylko wtedy, gdy temat jawnie dotyczy klienta.</p>
+      </div>
+
+      <div class="panel controls-grid">
+        <label>Fikcyjny przypadek
+          <select id="fixture-select"></select>
+        </label>
+        <button id="capture-source" class="button" type="button">Utwórz źródło w sesji</button>
+      </div>
+
+      <div id="source-warning" class="message" hidden></div>
+      <div id="source-metadata" class="panel empty-state">Wybierz przypadek i utwórz źródło.</div>
+
+      <div id="source-content" hidden>
+        <div class="two-column">
+          <section class="panel">
+            <h3>Moduły warunkowe</h3>
+            <div id="module-list" class="stack"></div>
+          </section>
+          <section class="panel">
+            <h3>Tryb przygotowania</h3>
+            <label class="choice"><input type="radio" name="preparation-mode" value="fictional_assisted"> Fikcyjne przygotowanie wspomagane</label>
+            <label class="choice"><input type="radio" name="preparation-mode" value="manual_fallback"> Pełna ścieżka ręczna</label>
+            <button id="start-preparation" class="button" type="button">Przejdź do przeglądu</button>
+            <p id="source-error" class="error" role="alert"></p>
+          </section>
+        </div>
+
+        <section class="panel">
+          <h3>Odpowiedzi klienta</h3>
+          <div class="table-wrap">
+            <table>
+              <thead><tr><th>Pytanie</th><th>Stan / review</th><th>Treść źródłowa i korekta</th><th>Dokładna referencja</th></tr></thead>
+              <tbody id="response-table"></tbody>
+            </table>
+          </div>
+        </section>
+      </div>
+    </section>
+
+    <section id="screen-review" class="screen" aria-labelledby="review-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Krok 2</p><h2 id="review-title">Przegląd pochodnych</h2></div>
+        <p>Zatwierdź, popraw albo odrzuć. Korekta odpowiedzi tworzy nową wersję; poprzednia pozostaje w historii.</p>
+      </div>
+
+      <section id="manual-composer" class="panel" hidden>
+        <h3>Ręczna notatka do briefu</h3>
+        <div class="composer-grid">
+          <label>Rodzaj
+            <select id="manual-section">
+              <option value="facts">Fakt wydobyty</option>
+              <option value="issues">Brak lub sprzeczność</option>
+              <option value="hypotheses">Interpretacja trenera</option>
+              <option value="questions">Pytanie PWD</option>
+            </select>
+          </label>
+          <label>Treść
+            <textarea id="manual-content" rows="3"></textarea>
+          </label>
+          <button id="add-manual-record" class="button" type="button">Dodaj wersję Damiana</button>
+        </div>
+        <p id="manual-error" class="error" role="alert"></p>
+      </section>
+
+      <div id="review-list" class="stack"></div>
+      <section class="panel action-panel">
+        <div><h3>Bramka briefu</h3><ul id="review-blockers" class="compact-list"></ul></div>
+        <button id="assemble-brief" class="button" type="button">Złóż nową wersję briefu</button>
+      </section>
+      <p id="review-error" class="error" role="alert"></p>
+    </section>
+
+    <section id="screen-brief" class="screen" aria-labelledby="brief-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Krok 3</p><h2 id="brief-title">Brief trenera</h2></div>
+        <p>Jedna powierzchnia, dziewięć jawnych sekcji i referencje do źródła.</p>
+      </div>
+      <div id="brief-status" class="message"></div>
+      <div id="brief-content" class="brief-grid"></div>
+      <div class="panel action-panel">
+        <p>Brief nie wybiera gotowości. Ostatni krok należy do Damiana.</p>
+        <button id="open-readiness" class="button" type="button">Podejmij decyzję o gotowości</button>
+      </div>
+    </section>
+
+    <section id="screen-readiness" class="screen" aria-labelledby="readiness-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Krok 4</p><h2 id="readiness-title">Decyzja Damiana</h2></div>
+        <p>Trzy równorzędne kierunki. Żaden nie jest wybrany domyślnie.</p>
+      </div>
+
+      <section class="panel">
+        <fieldset>
+          <legend>Gotowość przygotowania PWD</legend>
+          <label class="decision-choice"><input type="radio" name="readiness-decision" value="READY_TO_PREPARE_PWD"> <span><strong>Gotowe do przygotowania PWD</strong><small>Brief jest wystarczający do zaplanowania rozmowy i obserwacji.</small></span></label>
+          <label class="decision-choice"><input type="radio" name="readiness-decision" value="NEEDS_CLARIFICATION"> <span><strong>Potrzebne wyjaśnienie</strong><small>Najpierw trzeba uzupełnić lub rozstrzygnąć ważną informację.</small></span></label>
+          <label class="decision-choice"><input type="radio" name="readiness-decision" value="DEFER_OR_CONSULT_BEFORE_PWD"> <span><strong>Odroczenie lub konsultacja przed PWD</strong><small>Damian nie rozpoczyna przygotowania PWD bez innego kroku.</small></span></label>
+        </fieldset>
+        <label>Uzasadnienie
+          <textarea id="decision-rationale" rows="4"></textarea>
+        </label>
+        <fieldset>
+          <legend>Dokładne wersje dowodów</legend>
+          <div id="evidence-list" class="evidence-list"></div>
+        </fieldset>
+        <button id="save-decision" class="button" type="button">Zapisz decyzję Damiana</button>
+        <p id="decision-error" class="error" role="alert"></p>
+      </section>
+
+      <section class="panel">
+        <h3>Pełna historia wersji</h3>
+        <p>Odpowiedzi, moduły, pochodne, briefy i decyzje pokazują, co zostało zastąpione albo unieważnione.</p>
+        <div id="history-list" class="stack"></div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    Stage 3 corrective candidate · fictional contract prototype only · independent audit pending · Stage 4 not started.
+  </footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

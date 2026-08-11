@@ -41,6 +41,14 @@ The heuristic is not a fixed interface sequence. Architecture may support paper,
 7. `06_REPORT_GENERATION_ARCHITECTURE.md` — how report architecture supports pattern recognition and next decisions.
 8. `07_DECISION_ARCHITECTURE.md` — trainer-owned decisions, decision boundaries, and automation limits.
 9. `08_INFORMATION_FLOW.md` — how context, observations, signals, decisions, guidance, and reports move through the method.
+10. `09_SECURITY_RUNTIME_ARCHITECTURE.md` — runtime trust boundaries and the existing deterministic module boundary.
+11. `10_INFORMATION_PROVENANCE_AND_APPROVAL_CONTRACT.md` — closed information types, review, publication, provenance, and version rules.
+12. `11_AI_RUNTIME_AND_PROVIDER_CONTRACT.md` — provider-neutral AI boundary and blocked provider decision.
+13. `12_FILE_INGESTION_AND_SOURCE_INTEGRITY_CONTRACT.md` — immutable source, parser, attachment, and prompt-injection boundaries.
+14. `13_DATA_LIFECYCLE_ACCESS_AUDIT_AND_DELETION_CONTRACT.md` — lifecycle, access, audit, deletion, and legal-review boundaries.
+15. `14_STAGE_1_DOMAIN_MAPPING_AND_ACCEPTANCE.md` — domain mapping and Stage 1 acceptance cases.
+16. `15_STAGE_2_INQUIRY_PHONE_DECISION_CONTRACT.md` — first inquiry, phone notes, client reaction, and trainer decision.
+17. `16_STAGE_3_FULL_INTAKE_PWD_PREPARATION_CONTRACT.md` — adaptive intake, traceable PWD brief, observation candidates, and trainer readiness decision.
 
 ## Architecture rule
 

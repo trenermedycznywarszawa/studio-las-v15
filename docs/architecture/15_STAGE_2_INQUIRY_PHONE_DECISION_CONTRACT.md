@@ -1,6 +1,8 @@
 # 15 Stage 2 Inquiry, Phone, and Decision Contract
 
-**Status:** CANDIDATE FOR INDEPENDENT DELEGATED PROTOTYPE RE-AUDIT
+**Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
+
+**Current record (2026-08-10):** Damian accepted Stage 2 and PR #22 was merged as `040bce6303c9138ba3b1af6366def54c21bd157c`. Earlier candidate and re-audit wording remains historical evidence. The later narrow PRD-entry exception records why PRD 002 may remain an isolated fictional prototype contract; it does not authorize schema, Supabase, AI runtime, real data, staging, production, or Stage 3.
 **Authorization:** fictional contract prototype only
 **Schema status:** `SCHEMA — NOT APPROVED`
 **Provider status:** `PROVIDER DECISION — BLOCKED`

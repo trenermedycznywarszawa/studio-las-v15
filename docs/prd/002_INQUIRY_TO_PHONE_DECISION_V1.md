@@ -1,6 +1,8 @@
 # PRD 002 — Inquiry to Phone Decision v1
 
-**Status:** CANDIDATE FOR INDEPENDENT DELEGATED PROTOTYPE RE-AUDIT
+**Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
+
+**Current record (2026-08-10):** Stage 2 was owner accepted and merged in PR #22 as `040bce6303c9138ba3b1af6366def54c21bd157c`. The candidate/re-audit statuses below are preserved as the status in force before that decision. The narrow governance exception recorded on 2026-08-10 permits this isolated fictional PRD; it does not retroactively change the earlier record or authorize production.
 **Stage:** 2 — contract and fictional workflow prototype only
 **Base:** `product-recovery@8ecfe2620ec658a1a3c6dbef90694274a3b12082`
 
