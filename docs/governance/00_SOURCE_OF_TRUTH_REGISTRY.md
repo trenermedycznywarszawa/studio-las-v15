@@ -93,6 +93,7 @@ If two places define the same concept differently, the registry determines which
 | Medical/health claims | Medical Content Governance | Future medical content governance document | Website, blog, forms | Unreviewed page copy | Critical | Any medical/oncology claim requires explicit review authority. |
 | Privacy/RODO | Privacy Governance | Future privacy/RODO governance document | Forms, footer links, policy pages | Form comments, Formspree copy, DATA_POLICY draft | Critical | Privacy copy must match actual processors and data flow. |
 | Forms/intake | Privacy Governance + Product | Future privacy/RODO + intake governance | `ankieta-*`, onboarding | Form HTML alone | High | Forms may collect only approved data with approved legal copy. |
+| Inquiry response and follow-up | Product | `docs/product/01_CLIENT_JOURNEY.md` and `docs/product/07_INQUIRY_TO_PHONE_DECISION_SYSTEM.md` | Website/form acknowledgements, contact templates, CRM task reminders, future approved PRD | CRM defaults, automation timers, sales scripts, social-media advice | High | Contact is prompt, agreed, pressure-free, and privacy-minimizing; no universal 48-hour booking cap, surprise sales call, emotion-based close, or health detail in routine reminders. |
 | Supabase schema | Architecture + PRD + Data Governance | Future PRD/data governance | migrations, SQL, RLS | migrations as doctrine | High | SQL implements approved truth; SQL does not create product rules. |
 | RLS/security | Security/Data Governance | Future Supabase/RLS governance | migrations, tests, views | assumptions in app code | High | Security rules must be independently reviewed before production. |
 | Dev/demo data | Data Governance | Future test-data governance | seeds, demo paths, importer tests | Production behavior | Medium | Demo data must never become product truth. |
@@ -183,6 +184,7 @@ The following are violations:
 - OS behavior defines client journey before Architecture/PRD,
 - blog post makes medical claim without content governance,
 - form copy defines privacy practice without privacy governance,
+- CRM timers, automatic calls, or message templates define contact cadence or sales pressure independently of Product policy,
 - README points to missing authority files,
 - demo/test data shapes real product decisions,
 - report UI turns trainer meaning into raw dashboard,
