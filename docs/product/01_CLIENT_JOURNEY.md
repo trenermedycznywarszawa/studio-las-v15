@@ -64,6 +64,19 @@ The first contact should clarify:
 
 A good product protects the client from a wrong process.
 
+#### First-contact service standard
+
+First-contact speed exists to reduce uncertainty, not to manufacture urgency.
+
+- An approved channel may acknowledge receipt immediately. The acknowledgement confirms receipt only; it does not qualify the person, promise acceptance, or substitute for Damian's review.
+- Damian should reply personally on the same working day when practicable and no later than the end of the next working day.
+- Before a phone call, Damian agrees a suitable time. Consent to contact does not make an unexpected sales call the default.
+- Studio Las may offer the earliest useful times, but it does not impose a universal 48-hour booking limit. Client fit, readiness, travel, and real availability take priority.
+- If an agreed call is not answered, Damian sends one short context message and asks for a suitable time. Routine messages do not repeat pain, diagnosis, or other health-related content.
+- After the call, Damian confirms the agreed next step on the same working day. The message explains the path; it does not exploit fresh emotion or create a forced decision.
+- If there is no answer, one respectful reminder may be sent after two to three working days. After seven calendar days without a reply, the inquiry may be closed without prejudice; the person may return later.
+- Phone and email are confirmed through the approved contact or booking flow before being relied on.
+
 ### 4. Diagnostic entry
 
 The diagnostic entry is not a sales meeting.
@@ -82,6 +95,12 @@ The trainer observes:
 The goal is not to prove weakness.
 
 The goal is to identify the first useful direction.
+
+#### Appointment and decision continuity
+
+Once a First Diagnostic Visit is agreed, the client receives a confirmation through the approved channel. A reminder should arrive around 24 hours before the visit and contain only practical information such as time, location, parking, and agreed preparation. It must not repeat health-related statements.
+
+After the visit, Damian provides the trainer-reviewed summary and next-step recommendation within the time agreed with the client. The current seven-day program decision and deduction boundary is owned by `docs/governance/02_OFFER_AND_PRICING_GOVERNANCE.md`. The decision window protects informed choice; it must not become same-day pressure or a countdown mechanic.
 
 ### 5. First direction
 
