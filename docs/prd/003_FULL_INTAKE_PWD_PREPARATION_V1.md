@@ -128,7 +128,7 @@ Cases `01`–`15` map one-to-one to the architecture acceptance matrix. Cases `0
 - Each conditional-module state carries exact source/version, `derived_from`, reason, event, and manual actor when applicable; fixtures cannot activate a module without an answered or explicit manual trigger.
 - Activation, deactivation, reset, manual fallback, correction, invalidation, brief, and decision are reconstructable from version history and metadata-only events.
 - Cross-case derivative/decision references are rejected in domain logic before state mutation with a clear Polish message.
-- The source manifest is `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`; controlled archival access remains `OWNER ACTION REQUIRED`.
+- The source manifest is `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`; controlled archival access was verified and the Stage 3 archive P2 closed on 2026-08-11 by private controlled-repository package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2`, with access governed by that repository's `stage-3/ACCESS_PROCEDURE.md`.
 
 ## Independent delegated audit
 

@@ -62,7 +62,7 @@ Stage 0 was owner accepted and squash-merged into `product-recovery` as `62f2366
 ### Unverified assumptions and later decisions
 
 - **Resolved in Stage 0:** `docs/architecture/04_CLIENT_SAFE_SURFACES.md` now follows Constitution v1.1 and Home Guidance System v2.0. Paper, the app, and a deliberate hybrid are valid trainer-selected channels, with one authoritative instruction source and Damian’s approval required before AI-prepared material is published to the client.
-- **Source evidence verified on 2026-08-10:** the two DOCX hashes and interpretation are recorded in `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`. The sources define 26 core prompts plus four conditional module profiles, not an approved 42-question form; seven observation domains are not seven mandatory tests. Controlled archive access remains `OWNER ACTION REQUIRED`.
+- **Source evidence verified on 2026-08-10; controlled archive P2 closed on 2026-08-11:** the two DOCX hashes and interpretation are recorded in `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`. The sources define 26 core prompts plus four conditional module profiles, not an approved 42-question form; seven observation domains are not seven mandatory tests. The encrypted package is canonical in the private controlled-source repository at package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2`; package SHA-256, privacy, checksum, restore, restored-hash, encrypted-backup, and cleanup evidence passed, and access follows that repository's `stage-3/ACCESS_PROCEDURE.md`.
 - No AI provider/runtime contract is approved for real client content. Provider, endpoint, retention, region/transfer, logging, cost, fallback, and evaluation remain Stage 1 decisions.
 - The final production URL, email/SMTP path, privacy/RODO sign-off, retention schedule, and real-data rollout authorization are not proven complete by the repository evidence inspected here.
 - The staging security result does not prove that the same release is deployed and configured in production. Production verification must be a separate controlled release gate.
@@ -288,7 +288,7 @@ Requirements:
 
 **Exit gate:** Damian can prepare the PWD from one coherent brief and trace every important claim to its source.
 
-**Closure record:** the separate read-only audit completed with `PASS` on 2026-08-10 for exact commit `00412a73e8faeb5187d8fa797e768a8bdb7cbb64` and tree `5f30c4392d191bb88bddf8ee49f928f3d9e0c430`. Damian accepted Stage 3 on 2026-08-11; PR #23 was marked Ready for review and merged into `product-recovery` as `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`. Controlled source-DOCX archival access remains `OWNER ACTION REQUIRED`.
+**Closure record:** the separate read-only audit completed with `PASS` on 2026-08-10 for exact commit `00412a73e8faeb5187d8fa797e768a8bdb7cbb64` and tree `5f30c4392d191bb88bddf8ee49f928f3d9e0c430`. Damian accepted Stage 3 on 2026-08-11; PR #23 was marked Ready for review and merged into `product-recovery` as `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`. The separate controlled source-DOCX archive P2 was then closed on 2026-08-11 by private package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2`; the canonical package, SHA-256, access procedure, filename privacy, checksum, clean restore, restored hashes, encrypted backup, and cleanup evidence are recorded in `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`.
 
 ### Stage 4 — PWD workspace and decision conversation
 
@@ -409,7 +409,7 @@ Only after the manual flows work:
 | DIR-01 | DONE | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 merged | PR #20; `62f2366e0c77abf2d1413e437173cc82a7735455`; owner accepted 2026-08-03 |
 | PR-21 | DONE | Stage 1 data, permission, and AI contracts owner accepted 2026-08-03; Execution Plan v2.2 remains contract-only with no implementation permission | Draft PR #21; this acceptance commit (`docs: record Stage 1 owner acceptance`; exact SHA recorded in the PR after publication); 18/18 exit gate PASS; 7/7 tests PASS; `git diff --check` PASS; no implementation authorization |
 | STG-02 | DONE | Inquiry → phone → Damian decision contract and fictional prototype owner accepted and merged | PR #22; merge `040bce6303c9138ba3b1af6366def54c21bd157c`; Chrome audit PASS; 8/8 regression PASS; 18/18 Stage 2 contract PASS; owner accepted 2026-08-10 |
-| STG-03 | DONE | Adaptive full intake → traceable PWD brief → Damian readiness decision | Owner accepted 2026-08-11; PR #23 merge `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`; independent read-only audit PASS 2026-08-10 on exact head `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`; source-DOCX archive remains `OWNER ACTION REQUIRED` |
+| STG-03 | DONE | Adaptive full intake → traceable PWD brief → Damian readiness decision | Owner accepted 2026-08-11; PR #23 merge `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`; independent read-only audit PASS 2026-08-10 on exact head `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`; controlled source archive P2 closed 2026-08-11 at private package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2`; Stage 4 not started |
 
 ---
 
