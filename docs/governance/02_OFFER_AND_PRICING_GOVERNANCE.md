@@ -71,11 +71,11 @@ The visit must not be framed as:
 
 ## Deduction rule
 
-The 300 PLN fee may be deducted from a later package only if the current offer rules explicitly allow it.
+The current accepted offer allows the 300 PLN First Diagnostic Visit fee to be deducted from the 12-week program when the client decides to enter that program within seven calendar days after receiving the trainer-reviewed PWD summary and recommendation.
 
-This must be communicated consistently wherever it appears.
+The seven-day window exists to support an informed decision. It must not be presented as artificial scarcity, same-day pressure, or a countdown mechanic. One respectful reminder is permitted; silence is not consent and does not justify repeated calls.
 
-If deduction conditions change, this document must be updated before public pages are changed.
+This condition must be communicated consistently wherever it appears. If the deduction condition changes, this document must be updated before public pages, forms, messages, or sales materials are changed.
 
 ## Offer ownership
 
