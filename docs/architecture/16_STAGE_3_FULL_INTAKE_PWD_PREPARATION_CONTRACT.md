@@ -1,13 +1,13 @@
 # 16 Stage 3 Full Intake and PWD Preparation Contract
 
-- **Status:** CORRECTIVE ACTIONS IN PROGRESS — INDEPENDENT AUDIT PENDING
+- **Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
 - **Authorization:** fictional contract prototype only
 - **Schema:** `NOT APPROVED`
 - **Provider:** `BLOCKED`
 - **Task ID:** `prepare_trainer_for_pwd`
-- **Task contract version:** `stage3-candidate-v2`
+- **Task contract version:** `stage3-v1`
 
-PRD 003 is permitted by the narrow 2026-08-10 owner exception for an isolated fictional prototype only. Stage 3 and PR #23 remain unaccepted. The earlier browser report was an implementation check, not an independent audit.
+PRD 003 was permitted by the narrow 2026-08-10 owner exception for an isolated fictional prototype only. The earlier browser report remains an implementation check, not an independent audit. A separate read-only audit passed on 2026-08-10 for exact commit `00412a73e8faeb5187d8fa797e768a8bdb7cbb64` and tree `5f30c4392d191bb88bddf8ee49f928f3d9e0c430`; Damian accepted Stage 3 on 2026-08-11 and PR #23 was merged as `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`.
 
 ## Scope
 

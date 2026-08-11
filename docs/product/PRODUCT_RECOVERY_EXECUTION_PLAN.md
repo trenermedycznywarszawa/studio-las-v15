@@ -1,8 +1,8 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGES 0–2 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 3 CORRECTIVE ACTIONS IN PROGRESS; IMPLEMENTATION NOT AUTHORIZED
-**Version:** 2.4
-**Updated:** 2026-08-10
+**Status:** STAGES 0–3 OWNER ACCEPTED, MERGED AND CLOSED; IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.5
+**Updated:** 2026-08-11
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
 
@@ -288,6 +288,8 @@ Requirements:
 
 **Exit gate:** Damian can prepare the PWD from one coherent brief and trace every important claim to its source.
 
+**Closure record:** the separate read-only audit completed with `PASS` on 2026-08-10 for exact commit `00412a73e8faeb5187d8fa797e768a8bdb7cbb64` and tree `5f30c4392d191bb88bddf8ee49f928f3d9e0c430`. Damian accepted Stage 3 on 2026-08-11; PR #23 was marked Ready for review and merged into `product-recovery` as `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`. Controlled source-DOCX archival access remains `OWNER ACTION REQUIRED`.
+
 ### Stage 4 — PWD workspace and decision conversation
 
 Combine in one client context:
@@ -407,14 +409,14 @@ Only after the manual flows work:
 | DIR-01 | DONE | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 merged | PR #20; `62f2366e0c77abf2d1413e437173cc82a7735455`; owner accepted 2026-08-03 |
 | PR-21 | DONE | Stage 1 data, permission, and AI contracts owner accepted 2026-08-03; Execution Plan v2.2 remains contract-only with no implementation permission | Draft PR #21; this acceptance commit (`docs: record Stage 1 owner acceptance`; exact SHA recorded in the PR after publication); 18/18 exit gate PASS; 7/7 tests PASS; `git diff --check` PASS; no implementation authorization |
 | STG-02 | DONE | Inquiry → phone → Damian decision contract and fictional prototype owner accepted and merged | PR #22; merge `040bce6303c9138ba3b1af6366def54c21bd157c`; Chrome audit PASS; 8/8 regression PASS; 18/18 Stage 2 contract PASS; owner accepted 2026-08-10 |
-| STG-03 | CORRECTIVE ACTIONS IN PROGRESS | Adaptive full intake → traceable PWD brief → Damian readiness decision | Stage 3 and PR #23 are not owner accepted; earlier browser PASS was not independent; corrected candidate requires full regression and separate read-only audit before an owner merge decision |
+| STG-03 | DONE | Adaptive full intake → traceable PWD brief → Damian readiness decision | Owner accepted 2026-08-11; PR #23 merge `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`; independent read-only audit PASS 2026-08-10 on exact head `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`; source-DOCX archive remains `OWNER ACTION REQUIRED` |
 
 ---
 
 ## 10. Next action
 
-Stages 0–2 are owner accepted, merged, and closed. On 2026-08-10 Damian recorded a narrow exception allowing PRD 002 and PRD 003 to exist as isolated fictional prototype contracts despite the general PRD entry rule. The exception does not accept Stage 3 or PR #23. The earlier Stage 3 browser check was performed during implementation and is not independent; corrective work, exact-tree regression, and a separate read-only audit are required before any owner merge decision.
+Stages 0–3 are owner accepted, merged, and closed as bounded fictional prototype contracts. The 2026-08-10 narrow exception allowed PRD 002 and PRD 003 to exist without changing the general PRD entry rule; it did not itself accept Stage 3. A separate read-only audit passed later on 2026-08-10, and Damian issued the later explicit Stage 3 acceptance and merge decision on 2026-08-11. The implementation-time browser report remains historical evidence rather than being relabeled as the independent audit.
 
 The Stage 3 task is `Prepare the trainer for PWD from one traceable adaptive-intake brief.` It may organize facts, gaps, conflicts, coaching hypotheses, questions, and candidate observation domains. Damian makes the readiness decision. The prototype does not execute AI and does not choose tests or establish safety.
 
-PR #18 remains frozen. The AI provider/model, schema, SQL, migrations, real client data, public questionnaire implementation, PAR-Q+ reproduction, AI runtime, Supabase, staging, production, integration with `main`, Stage 4, and merge remain unauthorized until their separate gates.
+PR #18 remains frozen. The AI provider/model, schema, SQL, migrations, real client data, public questionnaire implementation, PAR-Q+ reproduction, AI runtime, Supabase, staging, production, integration with `main`, Stage 4, and any further merge remain unauthorized until their separate gates. Stage 4 has not started and requires a separate explicit owner decision.

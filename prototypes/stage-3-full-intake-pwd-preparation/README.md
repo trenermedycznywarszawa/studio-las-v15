@@ -1,6 +1,6 @@
 # Stage 3 — Full Intake to PWD Preparation Prototype
 
-**Status:** CORRECTIVE ACTIONS IN PROGRESS — INDEPENDENT AUDIT PENDING
+**Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE ONLY
 
 This is a fictional, deterministic, offline, session-memory prototype. It demonstrates the Stage 3 contract only.
 
@@ -64,7 +64,13 @@ Confirm:
 - no other-case content appears in case `14`;
 - no client-safe message or send control exists.
 
-## Audit result form
+## Independent audit result
+
+The separate read-only audit completed with `PASS` on 2026-08-10 for exact commit `00412a73e8faeb5187d8fa797e768a8bdb7cbb64` and tree `5f30c4392d191bb88bddf8ee49f928f3d9e0c430`. The reviewer used Microsoft Edge `151.0.4129.72`, desktop and exact 360 × 900 CSS px, found no P0/P1, completed cases 15, 14, and 05, verified keyboard focus and no horizontal overflow, and confirmed local-only requests with empty browser storage and cookies. Damian accepted Stage 3 on 2026-08-11 and PR #23 was merged as `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`.
+
+This is acceptance of the isolated fictional prototype contract only. It does not authorize deployment, production, staging, Supabase, schema, AI runtime, real data, or Stage 4. Controlled source-DOCX archival access remains `OWNER ACTION REQUIRED`.
+
+## Audit result template retained for future rechecks
 
 ```text
 STAGE 3 INDEPENDENT DELEGATED PROTOTYPE AUDIT

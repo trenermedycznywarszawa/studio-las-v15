@@ -242,6 +242,17 @@ This is an exception only for the isolated, fictional contract prototypes descri
 
 The decision does not accept Stage 3, PR #23, a merge, production architecture, real data, Supabase, an AI runtime, publication, or Stage 4. Stage 2 had already been owner accepted and merged; its earlier candidate statuses remain historical records rather than being rewritten as if this exception predated them.
 
+### Stage 3 owner acceptance and merge
+
+**Decision date:** 2026-08-11
+**Decision owner:** Damian
+
+> Zatwierdzam zmianę PR #23 z Draft na Ready for review oraz kontrolowane scalenie dokładnego headu 00412a73e8faeb5187d8fa797e768a8bdb7cbb64 do gałęzi product-recovery.
+
+The separate read-only audit completed with `PASS` on 2026-08-10 for exact commit `00412a73e8faeb5187d8fa797e768a8bdb7cbb64` and tree `5f30c4392d191bb88bddf8ee49f928f3d9e0c430`. On 2026-08-11 PR #23 was marked Ready for review and merged into `product-recovery` as merge commit `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`.
+
+This later decision accepts and closes Stage 3 only as the isolated fictional prototype contract defined by PRD 003. It does not authorize deployment, production, staging, Supabase, Auth, MFA, RLS, Storage, Edge Functions, schema, SQL, migrations, an AI runtime, real client data, PR #18, or Stage 4. Controlled archival access to the source DOCX files remains `OWNER ACTION REQUIRED`. Starting Stage 4 requires a separate explicit owner decision.
+
 ## Production entry rule
 
 Production may not proceed until:

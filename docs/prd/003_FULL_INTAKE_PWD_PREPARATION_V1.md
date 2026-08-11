@@ -1,10 +1,12 @@
 # PRD 003 — Full Intake to PWD Preparation v1
 
-- **Status:** CORRECTIVE ACTIONS IN PROGRESS — NOT OWNER ACCEPTED
+- **Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
 - **Stage:** 3 — contract and fictional workflow prototype only
 - **Base:** `product-recovery@040bce6303c9138ba3b1af6366def54c21bd157c`
+- **Accepted head:** `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`
+- **Merge:** PR #23, `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`, 2026-08-11
 
-The 2026-08-10 owner decision permits PRD 003 to exist only as an isolated fictional prototype contract despite the general PRD entry rule. It does not accept Stage 3 or PR #23. The earlier browser-audit status is preserved in its dated report but is not independent confirmation because it was produced during the implementation pass.
+The 2026-08-10 owner decision first permitted PRD 003 to exist as an isolated fictional prototype contract despite the general PRD entry rule; at that moment it did not accept Stage 3 or PR #23. A separate read-only audit completed with `PASS` on 2026-08-10 for exact commit `00412a73e8faeb5187d8fa797e768a8bdb7cbb64` and tree `5f30c4392d191bb88bddf8ee49f928f3d9e0c430`. On 2026-08-11 Damian accepted Stage 3 and authorized the controlled merge of that exact head. The earlier implementation browser report and corrective statuses remain historical evidence rather than being rewritten.
 
 ## Problem
 
