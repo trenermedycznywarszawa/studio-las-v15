@@ -1,9 +1,10 @@
 # Stage 3 Source Artifact Manifest
 
-- **Status:** VERIFIED METADATA; CONTROLLED ARCHIVE — `OWNER ACTION REQUIRED`
-- **Verified:** 2026-08-10
+- **Status:** ACCEPTED; CONTROLLED ARCHIVE VERIFIED; P2 CLOSED
+- **Source metadata verified:** 2026-08-10
+- **Archive acceptance completed:** 2026-08-11
 - **Source owner:** Damian
-- **Confidentiality:** private owner source; authorized contractors only; do not add the DOCX files to GitHub
+- **Confidentiality:** private owner source; purpose-bound access only; do not add plaintext DOCX files to GitHub
 
 | Full filename | SHA-256 | Interpretation result |
 | --- | --- | --- |
@@ -12,7 +13,7 @@
 
 ## Integrity verification
 
-An authorized contractor recomputes each hash without opening or copying content into Git:
+An authorized contractor recomputes each source hash without copying plaintext content into Git:
 
 ```powershell
 Get-FileHash -Algorithm SHA256 -LiteralPath '<authorized-local-copy.docx>'
@@ -20,14 +21,33 @@ Get-FileHash -Algorithm SHA256 -LiteralPath '<authorized-local-copy.docx>'
 
 Compare the complete lowercase hexadecimal value with this manifest. A mismatch fails closed and requires a new owner verification record; it must not be silently accepted.
 
-## Authorized access procedure
+## Canonical package and access procedure
 
-1. Ask Damian for explicit, purpose-bound access to the named source.
-2. Damian supplies an authorized local copy through a controlled private channel.
-3. Recompute SHA-256 and compare it with this manifest before use.
-4. Work from the minimum necessary content and do not upload the source, extracted health content, or a personal filesystem path to GitHub.
-5. Remove the contractor copy according to Damian's instruction after the bounded task.
+- Canonical encrypted package: private repository `trenermedycznywarszawa/studio-las-controlled-sources`, path `stage-3/encrypted/studio-las-stage-3-controlled-sources_20260811T092136Z.7z`.
+- Controlled-repository package/evidence commit: `8b290cdb2c665077905c77d91cca7500255a3bb2`.
+- Access procedure: `stage-3/ACCESS_PROCEDURE.md` in the same private repository.
+- Access owner: Damian; every transfer requires explicit, purpose-bound authorization.
+- Package password: owner-controlled and stored outside GitHub; transfer separately from the encrypted package.
+- Personal filesystem paths are intentionally not recorded as canonical storage.
 
-No controlled source archive has been identified in repository evidence. Canonical storage location and access owner therefore remain `OWNER ACTION REQUIRED`. This is a provenance/operational continuity gap; it does not invalidate the verified hashes or the 26+4 interpretation, but it blocks any claim that another authorized contractor can independently retrieve the originals today.
+## Archive acceptance record
 
-The personal path used during recovery is intentionally not recorded as canonical storage.
+- encrypted archive SHA-256: `43fbbf8221243049e71e65d8c949437ea68d1c4917d2654917b4279209376a77`
+- creation date/time (UTC): `2026-08-11T09:21:36Z`
+- source-hash verification: `2/2 PASS`
+- package checksum verification: `PASS`
+- wrong-password rejection: `PASS`
+- wrong-password filename privacy: `PASS`
+- clean-directory restore: `PASS`
+- restored source hashes: `2/2 PASS`
+- temporary restore cleanup: `PASS`; zero restored files and directories remain
+- encrypted package/checksum backup: retained in owner-controlled VeraCrypt storage
+- plaintext DOCX in Git history: none
+- password or local source path recorded: no
+
+## Acceptance history and boundary
+
+- `2026-08-10`: source metadata and interpretation were verified; controlled archive evidence remained `OWNER ACTION REQUIRED`.
+- `2026-08-11`: the encrypted package, checksum, filename privacy, clean restore, restored hashes, encrypted backup, and cleanup passed; the Stage 3 archive P2 was closed.
+
+This record closes only the Stage 3 controlled-source archive P2. It does not authorize deployment, production, staging, Supabase, Auth, MFA, RLS, Storage, Edge Functions, schema, SQL, migrations, real data, PR #18 changes, or Stage 4.

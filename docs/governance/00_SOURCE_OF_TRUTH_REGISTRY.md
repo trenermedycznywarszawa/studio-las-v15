@@ -251,7 +251,7 @@ The decision does not accept Stage 3, PR #23, a merge, production architecture, 
 
 The separate read-only audit completed with `PASS` on 2026-08-10 for exact commit `00412a73e8faeb5187d8fa797e768a8bdb7cbb64` and tree `5f30c4392d191bb88bddf8ee49f928f3d9e0c430`. On 2026-08-11 PR #23 was marked Ready for review and merged into `product-recovery` as merge commit `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`.
 
-This later decision accepts and closes Stage 3 only as the isolated fictional prototype contract defined by PRD 003. It does not authorize deployment, production, staging, Supabase, Auth, MFA, RLS, Storage, Edge Functions, schema, SQL, migrations, an AI runtime, real client data, PR #18, or Stage 4. Controlled archival access to the source DOCX files remains `OWNER ACTION REQUIRED`. Starting Stage 4 requires a separate explicit owner decision.
+This later decision accepts and closes Stage 3 only as the isolated fictional prototype contract defined by PRD 003. The controlled source archive P2 was closed on 2026-08-11 by private controlled-repository package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2`; package SHA-256, wrong-password filename privacy, checksum, clean restore, restored hashes, encrypted backup, and cleanup are recorded in `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`, with controlled access governed by the private repository's `stage-3/ACCESS_PROCEDURE.md`. This does not authorize deployment, production, staging, Supabase, Auth, MFA, RLS, Storage, Edge Functions, schema, SQL, migrations, an AI runtime, real client data, PR #18, or Stage 4. Starting Stage 4 requires a separate explicit owner decision.
 
 ## Production entry rule
 
