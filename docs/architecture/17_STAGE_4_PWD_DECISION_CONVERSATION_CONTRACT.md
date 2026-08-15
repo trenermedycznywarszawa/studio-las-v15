@@ -37,6 +37,8 @@ Every persisted-in-session object includes:
 - review and publication state where relevant.
 
 Exact references use `object_id@vN`. Cross-case construction fails before mutation.
+Nested lineage collections, including `derived_from`, are immutable. Corrections to trainer interpretations and decisions append a new version, mark the prior active version `superseded`, and record `supersedes`; no existing version or exact reference is rewritten.
+
 
 ## Entry handoff
 
@@ -49,6 +51,8 @@ The handoff is evidence, not a Stage 4 decision and not safety clearance.
 The optional fictional package contains one immutable `source_artifact` manifest, bounded `extracted_fact` values with exact source locators, fictional measurement context, no original or real PDF, and no parser or runtime ingestion claim.
 
 Damian creates one separate `trainer_interpretation` with comparability `comparable`, `not_comparable`, or `unknown` and a rationale. No value is inferred. Missing Tanita yields no package and no blocker.
+A Tanita fact may enter decision evidence only together with one active comparability interpretation whose immutable lineage names the exact current workspace, package source, and fact version. Omitting Tanita remains a complete non-blocking path.
+
 
 ## Observation records
 
@@ -63,13 +67,15 @@ Both preserve the candidate and handoff lineage. The prototype may not score, di
 
 ## Trainer interpretation
 
-Damian may create one `trainer_interpretation` from selected current evidence. It records meaning and uncertainty separately from observations and client statements. It remains trainer-only and unpublished.
+Damian may create one active `trainer_interpretation` from selected current evidence. A correction appends the next version with distinct content and exact lineage; the former version remains resolvable as `superseded`. It records meaning and uncertainty separately from observations and client statements and remains trainer-only and unpublished.
 
 ## Simulated AI suggestions
 
 The assisted mode creates deterministic `ai_suggestion` objects. They start `needs_review`, are trainer-only and unpublished, retain exact lineage, contain conversation wording only, and cannot contain a decision value, generated condition, diagnostic conclusion, or sales recommendation.
 
 Approval, rejection, and editing append versions. A material edit creates a Damian-authored operational conversation option and does not remain attributed to AI. Rejected and superseded versions remain in history but leave the active set.
+Every preparation is a distinct append-only conversation run. Preparing again supersedes the prior run, invalidates its still-active suggestions, preserves all run and review history, and creates new suggestion identities linked to the new run.
+
 
 The manual mode creates no AI objects and remains a complete path.
 
@@ -78,18 +84,24 @@ The manual mode creates no AI objects and remains a complete path.
 The Stage 4A `trainer_decision` uses exactly one of `START`, `START_CONDITIONAL`, `DEFER_CONSULT`, or `NOT_THIS_PRODUCT`.
 
 No value is preselected. Saving requires Damian, a rationale, the active workspace, and exact current evidence references from the same case.
+The pure domain save also requires the complete conversation record set and rejects while any active `ai_suggestion` remains `needs_review`, regardless of UI button state. Decision corrections append versions; they never replace prior content or lineage.
+
 
 `START_CONDITIONAL` additionally requires one or more Damian-authored conditions. Each condition contains a statement and an explicit verification method. Other decisions reject conditions. The system never creates or suggests conditions.
 
 ## Follow-up draft
 
 An optional follow-up draft is `client_material` with author `damian`, visibility `trainer_only`, review state `needs_review`, publication state `unpublished`, and no send or publication transition in this prototype. It may be created only after a decision and does not change the decision.
+Its `derived_from` contains the exact decision version used at creation. A later decision correction may invalidate the draft but cannot redirect a draft created from decision v1 to decision v2.
+
 
 ## Invalidation
 
 A material Stage 3 handoff change creates a new handoff version and invalidates the active Stage 4A workspace, Tanita comparability interpretation, observation records, conversation suggestions/options, trainer interpretation, the Stage 4A decision, and the follow-up draft.
 
 History remains visible. An invalidated workspace rejects further decisions. A new workspace must be built from the exact current handoff.
+The superseded handoff is rejected. After a material change from handoff v1 to v2, the only permitted replacement workspace is derived from the exact active v2 and explicitly supersedes the invalidated workspace lineage.
+Changing an interpretation or other material dependency invalidates every active transitive suggestion, run, decision, or follow-up that names the changed exact version, while retaining both sides of every transition.
 
 ## Isolation and untrusted content
 

@@ -6,9 +6,15 @@ export const DECISIONS = Object.freeze(["START", "START_CONDITIONAL", "DEFER_CON
 export const COMPARABILITY = Object.freeze(["comparable", "not_comparable", "unknown"]);
 export const OBSERVATION_STATES = Object.freeze(["performed", "skipped", "stopped"]);
 export const REVIEW_ACTIONS = Object.freeze(["approve", "edit", "reject"]);
+export const CONVERSATION_MODES = Object.freeze(["assisted", "manual"]);
 
 const clean = value => String(value ?? "").trim();
-const immutable = value => Object.freeze(value);
+
+function immutable(value) {
+  if (!value || typeof value !== "object" || Object.isFrozen(value)) return value;
+  for (const nested of Object.values(value)) immutable(nested);
+  return Object.freeze(value);
+}
 
 function requireValue(value, message) {
   if (!clean(value)) throw new Error(message);
@@ -38,6 +44,7 @@ export function assertCaseIsolation(caseId, objects) {
 
 function base({ id, caseId, version = 1, informationType = null, operationalRole, author, derivedFrom = [] }) {
   if (informationType) assertInformationType(informationType);
+  if (!Number.isInteger(version) || version < 1) throw new Error("Positive object version required.");
   return {
     id: requireValue(id, "Object id required."),
     caseId: requireValue(caseId, "Case id required."),
@@ -50,6 +57,32 @@ function base({ id, caseId, version = 1, informationType = null, operationalRole
     visibility: "trainer_only",
     publicationState: "unpublished"
   };
+}
+
+function assertAppendable(previous, { id, caseId, operationalRole }) {
+  if (!previous) return;
+  assertCaseIsolation(caseId, [previous]);
+  if (previous.id !== id || previous.operationalRole !== operationalRole) {
+    throw new Error("Previous version does not belong to this record lineage.");
+  }
+  if (!["active", "invalidated"].includes(previous.status)) {
+    throw new Error("Only an active or invalidated lineage tip can receive a new version.");
+  }
+}
+
+function appendTransition(previous, current) {
+  if (!previous) return immutable({ previous: null, current });
+  const priorRef = exactRef(previous);
+  if (current.supersedes !== priorRef || current.version !== previous.version + 1) {
+    throw new Error("Append-only version chain is incomplete.");
+  }
+  if (previous.status === "invalidated") {
+    return immutable({ previous: null, current, lineageFrom: priorRef });
+  }
+  return immutable({
+    previous: immutable({ ...previous, status: "superseded", supersededBy: exactRef(current) }),
+    current
+  });
 }
 
 export function makeHandoff(fixture) {
@@ -65,7 +98,7 @@ export function makeHandoff(fixture) {
     decision: "READY_TO_PREPARE_PWD",
     summary: fixture.handoffSummary,
     sourceStatement: fixture.sourceStatement,
-    candidates: Object.freeze(candidates),
+    candidates,
     reviewState: "approved"
   });
 }
@@ -82,19 +115,32 @@ function assertHandoff(handoff, caseId) {
   }
 }
 
-export function createWorkspace({ fixture, handoff }) {
+export function createWorkspace({ fixture, handoff, previousWorkspace = null }) {
   assertHandoff(handoff, fixture.id);
+  const id = `${fixture.id}-stage4a-workspace`;
+  if (previousWorkspace) {
+    assertCaseIsolation(fixture.id, [previousWorkspace]);
+    if (previousWorkspace.id !== id || previousWorkspace.status !== "invalidated") {
+      throw new Error("A new workspace requires the invalidated previous workspace.");
+    }
+    if (previousWorkspace.invalidatedBy !== exactRef(handoff)) {
+      throw new Error("New workspace must use the exact handoff that invalidated the previous workspace.");
+    }
+  }
+  const version = previousWorkspace ? previousWorkspace.version + 1 : 1;
   return immutable({
     ...base({
-      id: `${fixture.id}-stage4a-workspace`,
+      id,
       caseId: fixture.id,
+      version,
       operationalRole: "pwd_decision_workspace",
       author: "damian",
       derivedFrom: [exactRef(handoff)]
     }),
     taskId: "conduct_pwd_and_record_trainer_decision",
     contractVersion: "stage4-v1",
-    currentHandoffRef: exactRef(handoff)
+    currentHandoffRef: exactRef(handoff),
+    ...(previousWorkspace ? { supersedes: exactRef(previousWorkspace) } : {})
   });
 }
 
@@ -102,10 +148,12 @@ export function makeTanitaPackage({ fixture, handoff }) {
   assertHandoff(handoff, fixture.id);
   if (!fixture.tanita) return null;
   if (!fixture.tanita.fictional) throw new Error("Only a fictional prepared Tanita package is allowed.");
+  const version = handoff.version;
   const source = immutable({
     ...base({
       id: `${fixture.id}-${fixture.tanita.id}-source`,
       caseId: fixture.id,
+      version,
       informationType: "source_artifact",
       operationalRole: "prepared_fictional_tanita_package",
       author: "fictional_fixture",
@@ -121,6 +169,7 @@ export function makeTanitaPackage({ fixture, handoff }) {
     ...base({
       id: `${fixture.id}-tanita-fact-${index + 1}`,
       caseId: fixture.id,
+      version,
       informationType: "extracted_fact",
       operationalRole: "prepared_fictional_tanita_fact",
       author: "fictional_fixture",
@@ -132,27 +181,34 @@ export function makeTanitaPackage({ fixture, handoff }) {
     sourceLocator: field.locator,
     reviewState: "approved"
   }));
-  return immutable({ source, facts: Object.freeze(facts) });
+  return immutable({ source, facts });
 }
 
-export function assessComparability({ workspace, tanitaPackage, value, rationale }) {
+export function assessComparability({ workspace, tanitaPackage, value, rationale, previous = null }) {
   if (!tanitaPackage?.source) throw new Error("No Tanita package to assess.");
   assertCaseIsolation(workspace.caseId, [workspace, tanitaPackage.source, ...tanitaPackage.facts]);
   if (workspace.status !== "active") throw new Error("Active workspace required.");
   oneOf(value, COMPARABILITY, "Explicit Tanita comparability required.");
-  return immutable({
+  const id = `${workspace.caseId}-workspace-${workspace.version}-tanita-comparability`;
+  const operationalRole = "tanita_comparability_assessment";
+  assertAppendable(previous, { id, caseId: workspace.caseId, operationalRole });
+  const version = previous ? previous.version + 1 : 1;
+  const current = immutable({
     ...base({
-      id: `${workspace.caseId}-tanita-comparability`,
+      id,
       caseId: workspace.caseId,
+      version,
       informationType: "trainer_interpretation",
-      operationalRole: "tanita_comparability_assessment",
+      operationalRole,
       author: "damian",
       derivedFrom: [exactRef(workspace), exactRef(tanitaPackage.source), ...tanitaPackage.facts.map(exactRef)]
     }),
     value,
     rationale: requireValue(rationale, "Comparability rationale required."),
-    reviewState: "approved"
+    reviewState: "approved",
+    ...(previous ? { supersedes: exactRef(previous) } : {})
   });
+  return appendTransition(previous, current);
 }
 
 function findCandidate(handoff, candidateId) {
@@ -168,9 +224,10 @@ export function recordObservation({ workspace, handoff, candidateId, executionSt
   oneOf(executionState, OBSERVATION_STATES, "Explicit observation execution state required.");
   const candidate = findCandidate(handoff, candidateId);
   const candidateRef = `${exactRef(handoff)}#candidate:${candidate.id}`;
+  const entityPrefix = `${workspace.caseId}-workspace-${workspace.version}`;
   const observation = immutable({
     ...base({
-      id: `${workspace.caseId}-observation-${candidate.id}`,
+      id: `${entityPrefix}-observation-${candidate.id}`,
       caseId: workspace.caseId,
       informationType: "trainer_observation",
       operationalRole: "selected_pwd_observation",
@@ -186,7 +243,7 @@ export function recordObservation({ workspace, handoff, candidateId, executionSt
   const reactionText = clean(clientReaction);
   const reaction = reactionText ? immutable({
     ...base({
-      id: `${workspace.caseId}-reaction-${candidate.id}`,
+      id: `${entityPrefix}-reaction-${candidate.id}`,
       caseId: workspace.caseId,
       informationType: "source_fact",
       operationalRole: "client_reaction_during_pwd",
@@ -199,46 +256,91 @@ export function recordObservation({ workspace, handoff, candidateId, executionSt
   return immutable({ observation, reaction });
 }
 
-export function saveTrainerInterpretation({ workspace, evidence, content, uncertainty }) {
+export function saveTrainerInterpretation({ workspace, evidence, content, uncertainty, previous = null }) {
   if (workspace.status !== "active") throw new Error("Active workspace required.");
   assertCaseIsolation(workspace.caseId, [workspace, ...evidence]);
   if (!evidence.length) throw new Error("Interpretation requires exact evidence.");
-  return immutable({
+  for (const object of evidence) {
+    if (object.status !== "active") throw new Error("Interpretation evidence must be current and active.");
+  }
+  const id = `${workspace.caseId}-workspace-${workspace.version}-trainer-interpretation`;
+  const operationalRole = "pwd_trainer_interpretation";
+  assertAppendable(previous, { id, caseId: workspace.caseId, operationalRole });
+  const version = previous ? previous.version + 1 : 1;
+  const current = immutable({
     ...base({
-      id: `${workspace.caseId}-trainer-interpretation`,
+      id,
       caseId: workspace.caseId,
+      version,
       informationType: "trainer_interpretation",
-      operationalRole: "pwd_trainer_interpretation",
+      operationalRole,
       author: "damian",
       derivedFrom: [exactRef(workspace), ...evidence.map(exactRef)]
     }),
     content: requireValue(content, "Trainer interpretation required."),
     uncertainty: requireValue(uncertainty, "Uncertainty statement required."),
-    reviewState: "approved"
+    reviewState: "approved",
+    ...(previous ? { supersedes: exactRef(previous) } : {})
   });
+  return appendTransition(previous, current);
 }
 
 const forbiddenSuggestion = /\b(START|START_CONDITIONAL|DEFER_CONSULT|NOT_THIS_PRODUCT)\b|warunek rozpoczęcia|powinien rozpocząć|kwalifikuje|diagnoz|sprzeda|kup/i;
 
-export function makeSimulatedSuggestions({ fixture, workspace, evidence }) {
+export function makeSimulatedSuggestions({ fixture, workspace, evidence, run }) {
   if (workspace.status !== "active") throw new Error("Active workspace required.");
-  assertCaseIsolation(workspace.caseId, [workspace, ...evidence]);
-  return Object.freeze((fixture.suggestions || []).map((content, index) => {
+  assertCaseIsolation(workspace.caseId, [workspace, run, ...evidence]);
+  if (!run || run.status !== "active" || run.mode !== "assisted") {
+    throw new Error("Active assisted conversation run required.");
+  }
+  return immutable((fixture.suggestions || []).map((content, index) => {
     if (forbiddenSuggestion.test(content)) throw new Error("Simulated AI may not suggest a decision, condition, diagnosis, or sale.");
     return immutable({
       ...base({
-        id: `${workspace.caseId}-conversation-suggestion-${index + 1}`,
+        id: `${workspace.caseId}-workspace-${workspace.version}-run-${run.version}-suggestion-${index + 1}`,
         caseId: workspace.caseId,
         informationType: "ai_suggestion",
         operationalRole: "conversation_option",
         author: "fictional_ai",
-        derivedFrom: [exactRef(workspace), ...evidence.map(exactRef)]
+        derivedFrom: [exactRef(workspace), exactRef(run), ...evidence.map(exactRef)]
       }),
       content,
       reviewState: "needs_review",
-      creationMode: "deterministic_fixture"
+      creationMode: "deterministic_fixture",
+      conversationRunRef: exactRef(run)
     });
   }));
+}
+
+export function prepareConversationRun({ fixture, workspace, evidence, mode, previousRun = null, activeSuggestions = [] }) {
+  if (workspace.status !== "active") throw new Error("Active workspace required.");
+  oneOf(mode, CONVERSATION_MODES, "Explicit conversation preparation mode required.");
+  assertCaseIsolation(workspace.caseId, [workspace, previousRun, ...evidence, ...activeSuggestions]);
+  const id = `${workspace.caseId}-workspace-${workspace.version}-conversation-run`;
+  const operationalRole = "conversation_preparation_run";
+  assertAppendable(previousRun, { id, caseId: workspace.caseId, operationalRole });
+  const version = previousRun ? previousRun.version + 1 : 1;
+  const current = immutable({
+    ...base({
+      id,
+      caseId: workspace.caseId,
+      version,
+      operationalRole,
+      author: "damian",
+      derivedFrom: [exactRef(workspace), ...evidence.map(exactRef)]
+    }),
+    mode,
+    reviewState: "approved",
+    ...(previousRun ? { supersedes: exactRef(previousRun) } : {})
+  });
+  const runTransition = appendTransition(previousRun, current);
+  const suggestionTransitions = activeSuggestions
+    .filter(item => item.status === "active")
+    .map(item => transitionInvalidated(item, exactRef(current)));
+  const suggestions = mode === "assisted"
+    ? makeSimulatedSuggestions({ fixture, workspace, evidence, run: current })
+    : immutable([]);
+  return immutable({ runTransition, suggestionTransitions, suggestions });
 }
 
 export function reviewSuggestion(record, action, editedContent = "") {
@@ -273,25 +375,38 @@ export function reviewSuggestion(record, action, editedContent = "") {
   return immutable({ previous, current });
 }
 
-export function addManualConversationOption({ workspace, content }) {
+function deterministicHash(content) {
+  let hash = 2166136261;
+  for (const character of content) {
+    hash ^= character.codePointAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return (hash >>> 0).toString(36);
+}
+
+export function addManualConversationOption({ workspace, content, existingRecords = [] }) {
   if (workspace.status !== "active") throw new Error("Active workspace required.");
+  assertCaseIsolation(workspace.caseId, [workspace, ...existingRecords]);
+  const normalized = requireValue(content, "Manual conversation note required.");
+  const sequence = existingRecords.filter(item => item.operationalRole === "conversation_option" && item.creationMode === "manual").length + 1;
   return immutable({
     ...base({
-      id: `${workspace.caseId}-manual-conversation-${Math.abs(clean(content).length)}`,
+      id: `${workspace.caseId}-workspace-${workspace.version}-manual-${sequence}-${deterministicHash(normalized)}`,
       caseId: workspace.caseId,
       operationalRole: "conversation_option",
       author: "damian",
       derivedFrom: [exactRef(workspace)]
     }),
-    content: requireValue(content, "Manual conversation note required."),
+    content: normalized,
     reviewState: "approved",
-    creationMode: "manual"
+    creationMode: "manual",
+    sequence
   });
 }
 
 export function conversationGate(records) {
   const pending = records.filter(item => item.status === "active" && item.informationType === "ai_suggestion" && item.reviewState === "needs_review");
-  return immutable({ ready: pending.length === 0, pending: Object.freeze(pending.map(exactRef)) });
+  return immutable({ ready: pending.length === 0, pending: pending.map(exactRef) });
 }
 
 function normalizeConditions(value, conditions) {
@@ -307,38 +422,69 @@ function normalizeConditions(value, conditions) {
   } else if (supplied.length) {
     throw new Error("Conditions are allowed only for START_CONDITIONAL.");
   }
-  return Object.freeze(supplied.map(immutable));
+  return immutable(supplied);
 }
 
-export function saveDecision({ workspace, value, rationale, evidence, conditions = [] }) {
+function assertTanitaEvidence(workspace, evidence) {
+  const facts = evidence.filter(item => item.operationalRole === "prepared_fictional_tanita_fact");
+  if (!facts.length) return;
+  const comparisons = evidence.filter(item => item.operationalRole === "tanita_comparability_assessment" && item.status === "active");
+  if (comparisons.length !== 1) {
+    throw new Error("Tanita facts require one active exact-package comparability interpretation.");
+  }
+  const comparison = comparisons[0];
+  if (!comparison.derivedFrom.includes(exactRef(workspace))) {
+    throw new Error("Tanita comparability does not belong to the current workspace.");
+  }
+  for (const fact of facts) {
+    const sourceRef = fact.derivedFrom[0];
+    if (!comparison.derivedFrom.includes(exactRef(fact)) || !comparison.derivedFrom.includes(sourceRef)) {
+      throw new Error("Tanita facts require one active exact-package comparability interpretation.");
+    }
+  }
+}
+
+export function saveDecision({ workspace, value, rationale, evidence, conditions = [], conversationRecords, previous = null }) {
   if (workspace.status !== "active") throw new Error("Active workspace required.");
   oneOf(value, DECISIONS, "Explicit Stage 4A decision required.");
+  if (!Array.isArray(conversationRecords)) throw new Error("Conversation records required for the domain decision gate.");
+  assertCaseIsolation(workspace.caseId, [workspace, ...conversationRecords]);
+  const gate = conversationGate(conversationRecords);
+  if (!gate.ready) throw new Error("Conversation gate blocked by active needs_review suggestions.");
   if (!evidence.length) throw new Error("Decision requires exact current evidence.");
   assertCaseIsolation(workspace.caseId, [workspace, ...evidence]);
   for (const object of evidence) {
     if (object.status !== "active") throw new Error("Decision evidence must be current and active.");
   }
-  return immutable({
+  assertTanitaEvidence(workspace, evidence);
+  const id = `${workspace.caseId}-workspace-${workspace.version}-stage4a-decision`;
+  const operationalRole = "pwd_outcome";
+  assertAppendable(previous, { id, caseId: workspace.caseId, operationalRole });
+  const version = previous ? previous.version + 1 : 1;
+  const current = immutable({
     ...base({
-      id: `${workspace.caseId}-stage4a-decision`,
+      id,
       caseId: workspace.caseId,
+      version,
       informationType: "trainer_decision",
-      operationalRole: "pwd_outcome",
+      operationalRole,
       author: "damian",
       derivedFrom: [exactRef(workspace), ...evidence.map(exactRef)]
     }),
     value,
     rationale: requireValue(rationale, "Decision rationale required."),
     conditions: normalizeConditions(value, conditions),
-    reviewState: "approved"
+    reviewState: "approved",
+    ...(previous ? { supersedes: exactRef(previous) } : {})
   });
+  return appendTransition(previous, current);
 }
 
 export function makeFollowupDraft({ decision, content }) {
   if (decision.status !== "active") throw new Error("Active decision required before a follow-up draft.");
   return immutable({
     ...base({
-      id: `${decision.caseId}-followup-draft`,
+      id: `${decision.id}-v${decision.version}-followup-draft`,
       caseId: decision.caseId,
       informationType: "client_material",
       operationalRole: "unsent_followup_draft",
@@ -354,16 +500,41 @@ export function makeFollowupDraft({ decision, content }) {
 }
 
 function transitionInvalidated(object, invalidatedBy) {
-  if (!object || object.status !== "active") return object ? [object] : [];
+  if (!object || object.status !== "active") return null;
   const nextRef = `${object.id}@v${object.version + 1}`;
-  return [
-    immutable({ ...object, status: "superseded", supersededBy: nextRef }),
-    immutable({ ...object, version: object.version + 1, status: "invalidated", invalidatedBy, supersedes: exactRef(object) })
-  ];
+  return immutable({
+    previous: immutable({ ...object, status: "superseded", supersededBy: nextRef }),
+    current: immutable({ ...object, version: object.version + 1, status: "invalidated", invalidatedBy, supersedes: exactRef(object) })
+  });
+}
+
+export function invalidateDependentRecords({ changedRecords, records, invalidatedBy }) {
+  const roots = new Set(changedRecords.map(item => typeof item === "string" ? item : exactRef(item)));
+  const active = records.filter(item => item?.status === "active");
+  const caseIds = new Set(active.concat(changedRecords.filter(item => typeof item !== "string")).map(item => item.caseId));
+  if (caseIds.size > 1) throw new Error("Cross-case reference denied before mutation.");
+  const transitions = [];
+  let found = true;
+  while (found) {
+    found = false;
+    for (const record of active) {
+      if (transitions.some(item => exactRef(item.previous) === exactRef(record))) continue;
+      if ((record.derivedFrom || []).some(reference => roots.has(reference))) {
+        const transition = transitionInvalidated(record, invalidatedBy);
+        if (transition) {
+          transitions.push(transition);
+          roots.add(exactRef(record));
+          found = true;
+        }
+      }
+    }
+  }
+  return immutable(transitions);
 }
 
 export function materialHandoffChange({ handoff, workspace, downstream = [], summary }) {
   assertCaseIsolation(handoff.caseId, [handoff, workspace, ...downstream]);
+  if (handoff.status !== "active" || workspace.status !== "active") throw new Error("Active handoff and workspace required.");
   const nextHandoff = immutable({
     ...handoff,
     version: handoff.version + 1,
@@ -373,9 +544,13 @@ export function materialHandoffChange({ handoff, workspace, downstream = [], sum
   });
   const previousHandoff = immutable({ ...handoff, status: "superseded", supersededBy: exactRef(nextHandoff) });
   const invalidatedBy = exactRef(nextHandoff);
+  const workspaceTransition = transitionInvalidated(workspace, invalidatedBy);
+  const downstreamTransitions = downstream.filter(item => item.status === "active").map(item => transitionInvalidated(item, invalidatedBy));
   return immutable({
-    handoffs: Object.freeze([previousHandoff, nextHandoff]),
-    workspaces: Object.freeze(transitionInvalidated(workspace, invalidatedBy)),
-    downstream: Object.freeze(downstream.flatMap(item => transitionInvalidated(item, invalidatedBy)))
+    handoffs: [previousHandoff, nextHandoff],
+    workspaceTransition,
+    downstreamTransitions,
+    workspaces: [workspaceTransition.previous, workspaceTransition.current],
+    downstream: downstreamTransitions.flatMap(item => [item.previous, item.current])
   });
 }

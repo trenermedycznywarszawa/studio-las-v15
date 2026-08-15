@@ -52,6 +52,13 @@ The fixture labels describe audit coverage, not an expected system decision. Eve
 9. Confirm `START_CONDITIONAL` rejects empty statement or verification.
 10. Save a follow-up draft and confirm there is no send or publication action.
 11. Trigger the material handoff change after a saved decision and confirm active records become invalidated while both versions remain visible.
+12. Create the replacement workspace and confirm it names exact handoff v2 while the superseded v1 remains rejected and visible.
+13. Save interpretation v1, prepare a run and decision, then save interpretation v2; confirm dependent active records become invalidated without losing history.
+14. Save decision v1 and a follow-up, correct the decision to v2, and confirm the old draft still displays `derived_from` decision v1.
+15. Prepare the conversation twice and confirm distinct run versions plus preserved suggestion/review history.
+16. Attempt a decision while a suggestion is `needs_review` and confirm the domain error is shown.
+17. Attempt to select a Tanita fact without the active exact-package comparability record and confirm save is rejected; repeat without Tanita and continue successfully.
+18. Add two manual notes of equal length and confirm their exact identifiers differ.
 12. Confirm zero external requests after the initial local document/module/style loads and no console errors.
 
 ## Exact mobile audit — 360 × 900 CSS px
@@ -79,7 +86,7 @@ Run:
 
 `node scripts/test_stage4_pwd_decision_conversation.mjs`
 
-The test covers domain behavior, all decision values, optional Tanita, manual fallback, information separation, suggestion review, prompt-injection inertness, cross-case rejection, invalidation/history, fixture privacy, static offline boundaries, accessibility markers, and absence of decision defaults.
+The test covers domain behavior, append-only interpretation/decision lineage, immutable nested references, exact follow-up provenance, versioned conversation runs and preserved suggestion history, domain-level conversation gating, exact-package Tanita evidence gating, manual identifier uniqueness, handoff v2 workspace rebuilding, all decision values, manual fallback, information separation, prompt-injection inertness, cross-case rejection, invalidation/history, fixture privacy, static offline boundaries, accessibility markers, and absence of decision defaults.
 
 ## Technical provenance
 

@@ -6,11 +6,12 @@ import {
   conversationGate,
   createWorkspace,
   exactRef,
+  invalidateDependentRecords,
   makeFollowupDraft,
   makeHandoff,
-  makeSimulatedSuggestions,
   makeTanitaPackage,
   materialHandoffChange,
+  prepareConversationRun,
   recordObservation,
   reviewSuggestion,
   saveDecision,
@@ -36,6 +37,9 @@ const ERROR_MESSAGES = new Map([
   ["Conditions are allowed only for START_CONDITIONAL.", "Warunki są dozwolone wyłącznie dla START CONDITIONAL."],
   ["Follow-up draft content required.", "Wpisz treść niewysłanego szkicu."],
   ["Active workspace required.", "Workspace nie jest aktywny. Utwórz go ponownie z bieżącego handoffu."],
+  ["Conversation records required for the domain decision gate.", "Brakuje pełnej historii rozmowy wymaganej przez bramkę domenową."],
+  ["Conversation gate blocked by active needs_review suggestions.", "Aktywna sugestia needs_review blokuje zapis decyzji."],
+  ["Tanita facts require one active exact-package comparability interpretation.", "Fakty Tanita wymagają aktywnej interpretacji porównywalności dokładnego bieżącego pakietu."],
   ["Cross-case reference denied before mutation.", "Odrzucono referencję do innego fikcyjnego przypadku przed zmianą stanu."]
 ]);
 
@@ -54,14 +58,20 @@ function resetState() {
     workspaceHistory: [],
     tanitaPackage: null,
     tanitaComparison: null,
+    tanitaComparisonHistory: [],
     observations: [],
     reactions: [],
     interpretation: null,
+    interpretationHistory: [],
     mode: null,
+    conversationRun: null,
+    conversationRuns: [],
     suggestions: [],
     manualOptions: [],
     decision: null,
+    decisionHistory: [],
     followup: null,
+    followupHistory: [],
     invalidation: null
   });
 }
@@ -103,7 +113,8 @@ function setScreen(name) {
     if (active) item.setAttribute("aria-current", "step");
     else item.removeAttribute("aria-current");
   });
-  document.querySelector(`#screen-${name} h2`)?.focus?.();
+  const heading = document.querySelector(`#screen-${name} h2`);
+  heading?.focus({ preventScroll: true });
   window.scrollTo(0, 0);
 }
 
@@ -123,6 +134,48 @@ function latestById(records) {
 
 function replaceTransition(records, original, transition) {
   return records.filter(item => exactRef(item) !== exactRef(original)).concat(transition.previous, transition.current);
+}
+
+function appendTransition(records, transition) {
+  return transition.previous
+    ? replaceTransition(records, transition.previous, transition)
+    : records.concat(transition.current);
+}
+
+const HISTORY_KEYS = [
+  "tanitaComparisonHistory", "interpretationHistory", "conversationRuns",
+  "suggestions", "manualOptions", "decisionHistory", "followupHistory",
+  "observations", "reactions"
+];
+
+function applyRecordTransition(transition) {
+  if (!transition) return;
+  for (const key of HISTORY_KEYS) {
+    if (state[key].some(item => exactRef(item) === exactRef(transition.previous))) {
+      state[key] = replaceTransition(state[key], transition.previous, transition);
+    }
+  }
+  for (const key of ["tanitaComparison", "interpretation", "conversationRun", "decision", "followup"]) {
+    if (state[key] && exactRef(state[key]) === exactRef(transition.previous)) state[key] = transition.current;
+  }
+}
+
+function activeConversationRecords() {
+  return latestById(state.suggestions).filter(item => item.status === "active");
+}
+
+function invalidateDependents(changedRecord, invalidatedBy) {
+  if (!changedRecord) return [];
+  const records = [
+    ...state.conversationRuns, ...state.suggestions, ...state.manualOptions,
+    ...state.decisionHistory, ...state.followupHistory
+  ];
+  const transitions = invalidateDependentRecords({
+    changedRecords: [changedRecord], records, invalidatedBy
+  });
+  transitions.forEach(applyRecordTransition);
+  if (state.conversationRun?.status !== "active") state.mode = null;
+  return transitions;
 }
 
 function currentEvidence() {
@@ -180,30 +233,35 @@ function renderTanita() {
       node("p", { text: state.tanitaComparison.rationale }),
       node("p", { className: "source-line", text: `${exactRef(state.tanitaComparison)} · interpretacja Damiana` })
     ]));
-    return;
   }
   const fieldset = node("fieldset", {}, [node("legend", { text: "Damian określa porównywalność" })]);
   for (const [value, label] of [
     ["comparable", "Comparable"], ["not_comparable", "Not comparable"], ["unknown", "Unknown"]
   ]) {
     fieldset.append(node("label", { className: "choice" }, [
-      node("input", { type: "radio", name: "tanita-comparability", value }),
+      node("input", { type: "radio", name: "tanita-comparability", value, checked: state.tanitaComparison?.value === value ? "" : null }),
       document.createTextNode(label)
     ]));
   }
   const rationale = node("textarea", { rows: "3", id: "tanita-rationale" });
+  rationale.value = state.tanitaComparison?.rationale || "";
   root.append(
     fieldset,
     node("label", { text: "Uzasadnienie Damiana" }, rationale),
-    button("Zapisz ocenę porównywalności", () => {
+    button(state.tanitaComparison ? "Zapisz nową wersję oceny" : "Zapisz ocenę porównywalności", () => {
       try {
         const value = document.querySelector('input[name="tanita-comparability"]:checked')?.value;
-        state.tanitaComparison = assessComparability({
+        const previous = state.tanitaComparison?.status === "active" ? state.tanitaComparison : null;
+        const transition = assessComparability({
           workspace: state.workspace,
           tanitaPackage: state.tanitaPackage,
           value,
-          rationale: rationale.value
+          rationale: rationale.value,
+          previous
         });
+        state.tanitaComparisonHistory = appendTransition(state.tanitaComparisonHistory, transition);
+        state.tanitaComparison = transition.current;
+        if (previous) invalidateDependents(previous, exactRef(transition.current));
         renderTanita();
         announce("Zapisano jawną ocenę porównywalności Damiana.");
       } catch (error) { showError("evidence-error", error); }
@@ -215,7 +273,7 @@ function renderCandidates() {
   const root = byId("candidate-list");
   root.replaceChildren();
   for (const candidate of state.handoff.candidates) {
-    const existing = state.observations.find(item => item.candidateId === candidate.id);
+    const existing = state.observations.find(item => item.status === "active" && item.candidateId === candidate.id);
     const card = node("article", { className: "candidate-card" });
     card.append(
       node("h3", { text: candidate.label }),
@@ -227,7 +285,7 @@ function renderCandidates() {
       ])
     );
     if (existing) {
-      const reaction = state.reactions.find(item => item.id.endsWith(candidate.id));
+      const reaction = state.reactions.find(item => item.status === "active" && item.derivedFrom.includes(exactRef(existing)));
       card.append(
         node("span", { className: "badge", text: existing.executionState }),
         node("p", { text: existing.content }),
@@ -282,7 +340,9 @@ function renderSuggestions() {
   const latest = latestById(state.suggestions);
   for (const record of latest) {
     const card = node("article", { className: "suggestion-card" }, [
-      node("span", { className: `badge ${record.reviewState === "needs_review" ? "pending" : ""}`, text: record.reviewState }),
+      node("span", {
+        className: `badge ${record.reviewState === "needs_review" ? "pending" : ""} ${record.status === "invalidated" ? "invalid" : ""}`,
+        text: record.status === "active" ? record.reviewState : `${record.status} · ${record.reviewState}` }),
       node("p", { text: record.content }),
       node("p", { className: "source-line", text: `${exactRef(record)} · ${record.author} · trainer-only` })
     ]);
@@ -316,7 +376,11 @@ function applyReview(record, action, content = "") {
 }
 
 function updateConversationGate() {
-  if (!state.mode) return;
+  if (!state.mode) {
+    byId("conversation-gate").textContent = "Najpierw przygotuj nowy przebieg rozmowy.";
+    byId("open-decision").disabled = true;
+    return;
+  }
   const gate = conversationGate(latestById(state.suggestions));
   byId("conversation-gate").textContent = gate.ready
     ? "Gotowe. Żadna sugestia nie oczekuje na review."
@@ -337,20 +401,18 @@ function renderDecisionEvidence() {
 }
 
 function allHistory() {
-  if (state.invalidation) {
-    return [...state.invalidation.handoffs, ...state.invalidation.workspaces, ...state.invalidation.downstream];
-  }
   return [
     ...state.handoffHistory,
     ...state.workspaceHistory,
+    ...state.tanitaComparisonHistory,
+    ...state.interpretationHistory,
+    ...state.conversationRuns,
     ...state.suggestions,
     ...state.manualOptions,
-    state.tanitaComparison,
     ...state.observations,
     ...state.reactions,
-    state.interpretation,
-    state.decision,
-    state.followup
+    ...state.decisionHistory,
+    ...state.followupHistory
   ].filter(Boolean);
 }
 
@@ -367,6 +429,8 @@ function renderHistory() {
       node("span", { className: `badge ${item.status === "invalidated" ? "invalid" : ""}`, text: item.status }),
       node("strong", { text: `${exactRef(item)} · ${item.operationalRole}` }),
       node("p", { className: "source-line", text: `author: ${item.author} · derived_from: ${(item.derivedFrom || []).join(", ") || "—"}` }),
+      item.supersedes ? node("p", { className: "source-line", text: `supersedes: ${item.supersedes}` }) : null,
+      item.supersededBy ? node("p", { className: "source-line", text: `superseded_by: ${item.supersededBy}` }) : null,
       item.invalidatedBy ? node("p", { text: `Unieważniono przez ${item.invalidatedBy}` }) : null
     ]));
   }
@@ -379,6 +443,40 @@ function initializeFixtureSelect() {
 
 byId("create-workspace").addEventListener("click", () => {
   const fixture = fixtures.find(item => item.id === byId("fixture-select").value);
+  if (state.fixture === fixture && state.handoff?.status === "active" && state.workspace?.status === "invalidated") {
+    const nextWorkspace = createWorkspace({ fixture, handoff: state.handoff, previousWorkspace: state.workspace });
+    state.workspaceHistory.push(nextWorkspace);
+    state.workspace = nextWorkspace;
+    state.tanitaPackage = makeTanitaPackage({ fixture, handoff: state.handoff });
+    state.tanitaComparison = null;
+    state.interpretation = null;
+    state.conversationRun = null;
+    state.mode = null;
+    state.decision = null;
+    state.followup = null;
+    state.invalidation = null;
+    document.querySelectorAll("input[type=radio], input[type=checkbox]").forEach(input => { input.checked = false; });
+    byId("interpretation-content").value = "";
+    byId("interpretation-uncertainty").value = "";
+    byId("decision-rationale").value = "";
+    byId("condition-statement").value = "";
+    byId("condition-verification").value = "";
+    byId("followup-content").value = "";
+    byId("create-workspace").textContent = "Utwórz workspace w sesji";
+    byId("decision-fieldset").disabled = false;
+    byId("save-decision").disabled = false;
+    byId("material-change").disabled = false;
+    byId("followup-panel").hidden = true;
+    unlock("evidence");
+    renderHandoff();
+    renderTanita();
+    renderCandidates();
+    renderSuggestions();
+    renderHistory();
+    announce(`Utworzono nowy workspace wyłącznie z ${exactRef(state.handoff)}.`);
+    setScreen("evidence");
+    return;
+  }
   byId("reset-session").click();
   resetState();
   state.fixture = fixture;
@@ -402,14 +500,19 @@ document.querySelectorAll(".step").forEach(item => item.addEventListener("click"
 byId("save-interpretation").addEventListener("click", () => {
   clearError("evidence-error");
   try {
-    state.interpretation = saveTrainerInterpretation({
+    const previous = state.interpretation?.status === "active" ? state.interpretation : null;
+    const transition = saveTrainerInterpretation({
       workspace: state.workspace,
       evidence: currentEvidence().filter(item => item !== state.interpretation),
       content: byId("interpretation-content").value,
-      uncertainty: byId("interpretation-uncertainty").value
+      uncertainty: byId("interpretation-uncertainty").value,
+      previous
     });
+    state.interpretationHistory = appendTransition(state.interpretationHistory, transition);
+    state.interpretation = transition.current;
+    if (previous) invalidateDependents(previous, exactRef(transition.current));
     unlock("conversation");
-    announce("Zapisano oddzielną interpretację Damiana.");
+    announce(`Zapisano ${exactRef(state.interpretation)}; zależne aktywne rekordy unieważniono.`);
     setScreen("conversation");
   } catch (error) { showError("evidence-error", error); }
 });
@@ -419,20 +522,33 @@ byId("prepare-conversation").addEventListener("click", () => {
   try {
     const mode = document.querySelector('input[name="conversation-mode"]:checked')?.value;
     if (!mode) throw new Error("Wybierz tryb przygotowania rozmowy.");
+    const prepared = prepareConversationRun({
+      fixture: state.fixture,
+      workspace: state.workspace,
+      evidence: currentEvidence(),
+      mode,
+      previousRun: state.conversationRun,
+      activeSuggestions: activeConversationRecords()
+    });
+    state.conversationRuns = appendTransition(state.conversationRuns, prepared.runTransition);
+    prepared.suggestionTransitions.forEach(applyRecordTransition);
+    state.suggestions.push(...prepared.suggestions);
+    state.conversationRun = prepared.runTransition.current;
     state.mode = mode;
-    state.suggestions = mode === "assisted"
-      ? [...makeSimulatedSuggestions({ fixture: state.fixture, workspace: state.workspace, evidence: currentEvidence() })]
-      : [];
     byId("manual-option").hidden = mode !== "manual";
     renderSuggestions();
-    announce(mode === "manual" ? "Uruchomiono pełną ścieżkę ręczną bez AI." : "Utworzono deterministyczne sugestie needs_review.");
+    announce(mode === "manual" ? `Uruchomiono ręczny ${exactRef(state.conversationRun)} bez AI.` : `Utworzono ${exactRef(state.conversationRun)} z sugestiami needs_review.`);
   } catch (error) { showError("conversation-error", error); }
 });
 
 byId("add-manual-option").addEventListener("click", () => {
   clearError("conversation-error");
   try {
-    const option = addManualConversationOption({ workspace: state.workspace, content: byId("manual-option-content").value });
+    const option = addManualConversationOption({
+      workspace: state.workspace,
+      content: byId("manual-option-content").value,
+      existingRecords: state.manualOptions
+    });
     state.manualOptions.push(option);
     byId("manual-option-content").value = "";
     renderSuggestions();
@@ -460,13 +576,19 @@ byId("save-decision").addEventListener("click", () => {
       statement: byId("condition-statement").value,
       verification: byId("condition-verification").value
     }] : [];
-    state.decision = saveDecision({
+    const previous = state.decision;
+    const transition = saveDecision({
       workspace: state.workspace,
       value,
       rationale: byId("decision-rationale").value,
       evidence,
-      conditions
+      conditions,
+      conversationRecords: activeConversationRecords(),
+      previous
     });
+    state.decisionHistory = appendTransition(state.decisionHistory, transition);
+    state.decision = transition.current;
+    if (previous) invalidateDependents(previous, exactRef(transition.current));
     byId("decision-result").className = "panel";
     byId("decision-result").replaceChildren(
       node("span", { className: "badge", text: state.decision.value }),
@@ -475,8 +597,12 @@ byId("save-decision").addEventListener("click", () => {
       node("p", { className: "source-line", text: `${exactRef(state.decision)} · ${state.decision.derivedFrom.length - 1} dowodów · bez automatycznej kwalifikacji` })
     );
     byId("followup-panel").hidden = false;
+    byId("followup-content").disabled = false;
+    byId("save-followup").disabled = false;
+    byId("followup-content").value = "";
+    byId("followup-error").textContent = "";
     renderHistory();
-    announce("Zapisano jawną decyzję Stage 4A.");
+    announce(`Zapisano ${exactRef(state.decision)} jako append-only decyzję Damiana.`);
   } catch (error) { showError("decision-error", error); }
 });
 
@@ -484,6 +610,7 @@ byId("save-followup").addEventListener("click", () => {
   clearError("followup-error");
   try {
     state.followup = makeFollowupDraft({ decision: state.decision, content: byId("followup-content").value });
+    state.followupHistory.push(state.followup);
     byId("followup-content").disabled = true;
     byId("save-followup").disabled = true;
     byId("followup-error").textContent = `${exactRef(state.followup)} · trainer-only · unpublished · zachowany wyłącznie w tej sesji`;
@@ -494,28 +621,36 @@ byId("save-followup").addEventListener("click", () => {
 byId("material-change").addEventListener("click", () => {
   if (!state.workspace || state.invalidation) return;
   const downstream = [
+    ...state.conversationRuns,
+    ...state.decisionHistory,
+    ...state.followupHistory,
     state.tanitaComparison,
     ...state.observations,
     ...state.reactions,
     state.interpretation,
     ...state.suggestions,
     ...state.manualOptions,
-    state.decision,
-    state.followup
   ].filter(Boolean);
+  const uniqueActive = [...new Map(downstream.filter(item => item.status === "active").map(item => [exactRef(item), item])).values()];
   state.invalidation = materialHandoffChange({
     handoff: state.handoff,
     workspace: state.workspace,
-    downstream,
+    downstream: uniqueActive,
     summary: "Materialnie skorygowany fikcyjny handoff wymaga nowego workspace."
   });
+  state.handoffHistory = replaceTransition(state.handoffHistory, state.handoff, {
+    previous: state.invalidation.handoffs[0], current: state.invalidation.handoffs[1]
+  });
+  state.workspaceHistory = replaceTransition(state.workspaceHistory, state.workspace, state.invalidation.workspaceTransition);
+  state.invalidation.downstreamTransitions.forEach(applyRecordTransition);
   state.handoff = state.invalidation.handoffs.at(-1);
-  state.workspace = state.invalidation.workspaces.at(-1);
+  state.workspace = state.invalidation.workspaceTransition.current;
   byId("decision-fieldset").disabled = true;
   byId("save-decision").disabled = true;
   byId("material-change").disabled = true;
+  byId("create-workspace").textContent = `Utwórz workspace z ${exactRef(state.handoff)}`;
   renderHistory();
-  announce("Workspace i decyzja zostały unieważnione; historia pozostała widoczna.");
+  announce(`Workspace unieważniono. Nowy może powstać wyłącznie z ${exactRef(state.handoff)}; historia pozostała widoczna.`);
 });
 
 byId("reset-session").addEventListener("click", () => {
@@ -534,6 +669,7 @@ byId("reset-session").addEventListener("click", () => {
   byId("decision-fieldset").disabled = false;
   byId("save-decision").disabled = false;
   byId("material-change").disabled = false;
+  byId("create-workspace").textContent = "Utwórz workspace w sesji";
   byId("followup-content").disabled = false;
   byId("save-followup").disabled = false;
   byId("decision-result").className = "panel empty-state";

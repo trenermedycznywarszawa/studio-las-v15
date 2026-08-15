@@ -19,6 +19,7 @@ The workspace reduces searching and accidental conflation. It does not replace D
 ## Entry contract
 
 Stage 4A accepts one current, exact-version Stage 3 handoff. The handoff must belong to the same fictional case, remain active, and carry Damian's `READY_TO_PREPARE_PWD` decision. A material handoff change invalidates the active workspace and downstream decision while preserving history.
+After handoff v1 is superseded by v2, v1 cannot create a workspace. The replacement workspace must derive from exact active v2 and preserve the visible invalidation lineage.
 
 The prototype does not claim that every real PWD must begin from an application workflow. It demonstrates the information and decision boundary only.
 
@@ -47,6 +48,7 @@ For a provided fictional package Damian explicitly records one of:
 - `unknown` — comparability cannot currently be established.
 
 No value is inferred or preselected. The prototype does not upload, parse, OCR, quarantine, store, interpret, diagnose from, or publish a PDF. It uses a pre-prepared fictional package only.
+Visible Tanita facts do not become decision evidence by themselves: Damian's active comparability interpretation must refer to the exact current fictional package and fact versions. The workflow remains complete when Tanita is unused.
 
 ## Observation boundary
 
@@ -61,6 +63,8 @@ A recorded observation states what Damian noticed. A client reaction states what
 The assisted path contains deterministic fictional `ai_suggestion` records. Every suggestion starts `needs_review` and requires `approve`, `edit`, or `reject`. Suggestions may help Damian phrase a question, explain uncertainty, or prepare a calm conversation. They may not generate a decision, generate start conditions, select a default result, diagnose, or pressure a sale.
 
 The full manual path works with no AI suggestions at all. Damian may write his own conversation notes and proceed.
+Every preparation is a separate versioned run. Re-preparing never deletes earlier suggestions or reviews; it closes active records from the prior run and creates distinct identities for the new run. The decision gate is enforced by pure domain logic, not only by UI disabled state.
+
 
 ## Decision contract
 
@@ -72,10 +76,14 @@ The four values are equal and unselected by default:
 - `NOT_THIS_PRODUCT` — the client's current need does not match the Studio Las method or scope.
 
 Only Damian creates the decision, rationale, evidence selection, and any `START_CONDITIONAL` conditions. Conditions require both a statement and a verification method. The system never proposes them.
+Corrections to trainer interpretation and decision are append-only. Prior versions remain readable with their original immutable `derived_from`; dependent active records are explicitly invalidated when their exact source version changes.
+
 
 ## Follow-up boundary
 
 When an immediate start decision is inappropriate, Damian may prepare a draft for later use. It remains trainer-only, `draft`, `unpublished`, not sendable by the prototype, and separate from the trainer decision and private reasoning.
+
+A follow-up draft permanently derives from the exact decision version used to create it. Correcting the decision cannot retarget an existing draft.
 
 No send, publish, email, SMS, booking, payment, or client-portal action exists.
 
