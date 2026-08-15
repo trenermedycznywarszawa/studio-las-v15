@@ -98,3 +98,11 @@ On fictional cases Damian can review one exact Stage 3 handoff, work with or wit
 The interface supports a calm professional conversation, does not pressure a sale, does not turn measurements or tests into diagnosis, works at desktop and 360 × 900 CSS px with keyboard and visible focus, and passes an independent read-only audit with no P0/P1.
 
 Passing this gate does not close the full Stage 4 ingestion/runtime problem and does not authorize merge, real ingestion, runtime, schema, real data, staging, production, or deployment.
+
+## Canonical session safeguards
+
+The immutable session aggregate, rather than a caller-supplied status field, determines current exact references and lineage tips. A later handoff requires the exact invalidated workspace predecessor and records `supersedes`; preserved stale objects and disconnected chains fail closed.
+The package source is bound to the exact current handoff and workspace. Earlier package/fact versions fail closed after a v1→v2 handoff transition.
+A client reaction is a `source_fact needs_review`. Damian explicitly reviews its exact version; no automatic approval occurs. An unreviewed source fact cannot reach an interpretation or decision directly or through another record.
+Every manual option belongs to one exact run. Starting a new run closes prior-run options and invalidates its active dependent decision/follow-up while keeping their lineage visible.
+Decision save resolves the complete record set for the exact active run from the aggregate. Empty or partial assisted sets, pending suggestions, and missing runs reject; a genuine zero-AI manual run passes.

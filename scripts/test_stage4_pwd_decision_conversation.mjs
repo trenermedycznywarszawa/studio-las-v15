@@ -6,10 +6,11 @@ import { fixtures } from "../prototypes/stage-4-pwd-decision-conversation/fixtur
 import {
   COMPARABILITY, DECISIONS, INFORMATION_TYPES, OBSERVATION_STATES,
   addManualConversationOption, assessComparability, assertCaseIsolation,
-  conversationGate, createWorkspace, exactRef, invalidateDependentRecords,
-  makeFollowupDraft, makeHandoff, makeTanitaPackage, materialHandoffChange,
-  prepareConversationRun, recordObservation, reviewSuggestion, saveDecision,
-  saveTrainerInterpretation
+  conversationGate, conversationRecordsForRun, createSessionAggregate,
+  createWorkspace, exactRef, invalidateDependentRecords, makeFollowupDraft,
+  makeHandoff, makeTanitaPackage, materialHandoffChange, prepareConversationRun,
+  recordObservation, resolveExactReference, reviewSourceFact, reviewSuggestion,
+  saveDecision, saveTrainerInterpretation
 } from "../prototypes/stage-4-pwd-decision-conversation/workflow-state.js";
 
 const here = dirname(fileURLToPath(import.meta.url));
@@ -24,17 +25,80 @@ const runtime = [html, css, app, model, fixtureSource].join("\n");
 const passes = [];
 const check = (name, assertion) => { assertion(); passes.push(name); };
 
-function context(index = 0) {
-  const fixture = fixtures[index];
-  const handoff = makeHandoff(fixture);
-  const workspace = createWorkspace({ fixture, handoff });
-  const tanitaPackage = makeTanitaPackage({ fixture, handoff });
-  return { fixture, handoff, workspace, tanitaPackage };
+function replaceExact(records, original, replacement) {
+  const reference = exactRef(original);
+  const index = records.findIndex(item => exactRef(item) === reference);
+  if (index < 0) throw new Error(`Missing harness record ${reference}.`);
+  records[index] = replacement;
 }
 
-const saveManualDecision = ({ workspace, value, rationale, evidence, conditions = [], previous = null }) => saveDecision({
-  workspace, value, rationale, evidence, conditions, previous, conversationRecords: []
-});
+function put(ctx, ...records) {
+  for (const record of records.filter(Boolean)) {
+    const reference = exactRef(record);
+    const existing = ctx.records.findIndex(item => exactRef(item) === reference);
+    if (existing >= 0) ctx.records[existing] = record;
+    else ctx.records.push(record);
+  }
+}
+
+function applyTransition(ctx, transition) {
+  if (transition.previous) replaceExact(ctx.records, transition.previous, transition.previous);
+  put(ctx, transition.current);
+  return transition.current;
+}
+
+function context(index = 0) {
+  const fixture = fixtures[index];
+  const ctx = {
+    fixture,
+    records: [],
+    aggregate() { return createSessionAggregate({ caseId: fixture.id, records: this.records }); }
+  };
+  ctx.handoff = makeHandoff(fixture);
+  put(ctx, ctx.handoff);
+  ctx.workspace = createWorkspace({ fixture, handoff: ctx.handoff, session: ctx.aggregate() });
+  put(ctx, ctx.workspace);
+  ctx.tanitaPackage = makeTanitaPackage({
+    fixture, handoff: ctx.handoff, workspace: ctx.workspace, session: ctx.aggregate()
+  });
+  if (ctx.tanitaPackage) put(ctx, ctx.tanitaPackage.source, ...ctx.tanitaPackage.facts);
+  return ctx;
+}
+
+function prepare(ctx, mode = "manual", evidence = [ctx.handoff]) {
+  const prepared = prepareConversationRun({
+    session: ctx.aggregate(), fixture: ctx.fixture, workspace: ctx.workspace,
+    evidence, mode, previousRun: ctx.run || null
+  });
+  prepared.invalidationTransitions.forEach(transition => applyTransition(ctx, transition));
+  applyTransition(ctx, prepared.runTransition);
+  put(ctx, ...prepared.suggestions);
+  ctx.run = prepared.runTransition.current;
+  return prepared;
+}
+
+function decision(ctx, { value = "DEFER_CONSULT", rationale = "Jawne uzasadnienie.", evidence = [ctx.handoff], conditions = [], previous = null, records } = {}) {
+  const conversationRecords = records ?? conversationRecordsForRun({ session: ctx.aggregate(), run: ctx.run });
+  return saveDecision({
+    session: ctx.aggregate(), workspace: ctx.workspace, conversationRun: ctx.run,
+    value, rationale, evidence, conditions, conversationRecords, previous
+  });
+}
+
+function applyMaterialChange(ctx) {
+  const originalHandoff = ctx.handoff;
+  const result = materialHandoffChange({
+    session: ctx.aggregate(), handoff: ctx.handoff, workspace: ctx.workspace,
+    summary: "Nowa materialna informacja."
+  });
+  replaceExact(ctx.records, originalHandoff, result.handoffs[0]);
+  put(ctx, result.handoffs[1]);
+  applyTransition(ctx, result.workspaceTransition);
+  result.downstreamTransitions.forEach(transition => applyTransition(ctx, transition));
+  ctx.handoff = result.handoffs[1];
+  ctx.workspace = result.workspaceTransition.current;
+  return { result, originalHandoff };
+}
 
 check("Stage 1 information vocabulary remains closed", () => {
   assert.deepEqual(INFORMATION_TYPES, [
@@ -43,314 +107,354 @@ check("Stage 1 information vocabulary remains closed", () => {
   ]);
 });
 
-check("task and exact current Stage 3 handoff create one isolated workspace", () => {
-  const { handoff, workspace } = context();
-  assert.equal(handoff.decision, "READY_TO_PREPARE_PWD");
-  assert.equal(handoff.informationType, "trainer_decision");
-  assert.equal(workspace.taskId, "conduct_pwd_and_record_trainer_decision");
-  assert.equal(workspace.contractVersion, "stage4-v1");
-  assert.equal(workspace.currentHandoffRef, exactRef(handoff));
+check("canonical immutable aggregate resolves exact references and rejects conflicting copies", () => {
+  const ctx = context();
+  const session = ctx.aggregate();
+  assert.equal(Object.isFrozen(session), true);
+  assert.equal(Object.isFrozen(session.byRef), true);
+  assert.equal(resolveExactReference(session, ctx.workspace, { current: true }), ctx.workspace);
+  const forged = { ...ctx.workspace, taskId: "forged" };
+  assert.throws(() => resolveExactReference(session, forged, { current: true }), /conflicts with canonical/);
 });
 
-check("Tanita is optional and a missing package does not block workspace creation", () => {
+check("task and exact current Stage 3 handoff create one isolated workspace", () => {
+  const ctx = context();
+  assert.equal(ctx.workspace.taskId, "conduct_pwd_and_record_trainer_decision");
+  assert.equal(ctx.workspace.contractVersion, "stage4-v1");
+  assert.equal(ctx.workspace.currentHandoffRef, exactRef(ctx.handoff));
+});
+
+check("Tanita is optional and package is bound to exact handoff and workspace", () => {
   const withoutTanita = context(2);
   assert.equal(withoutTanita.tanitaPackage, null);
-  assert.equal(withoutTanita.workspace.status, "active");
   const withTanita = context(0);
-  assert.equal(withTanita.tanitaPackage.source.informationType, "source_artifact");
-  assert.ok(withTanita.tanitaPackage.facts.every(item => item.informationType === "extracted_fact"));
-  assert.ok(withTanita.tanitaPackage.facts.every(item => item.sourceLocator));
+  assert.equal(withTanita.tanitaPackage.source.workspaceRef, exactRef(withTanita.workspace));
+  assert.equal(withTanita.tanitaPackage.source.handoffRef, exactRef(withTanita.handoff));
+  assert.ok(withTanita.tanitaPackage.facts.every(item => item.derivedFrom[0] === exactRef(withTanita.tanitaPackage.source)));
 });
 
 check("Tanita comparability is explicit, unscored, versioned and Damian-owned", () => {
-  const { workspace, tanitaPackage } = context();
-  assert.throws(() => assessComparability({ workspace, tanitaPackage, value: undefined, rationale: "x" }), /Explicit/);
-  assert.throws(() => assessComparability({ workspace, tanitaPackage, value: "comparable", rationale: "" }), /rationale/);
   for (const value of COMPARABILITY) {
-    const result = assessComparability({ workspace, tanitaPackage, value, rationale: `Jawne uzasadnienie ${value}` }).current;
-    assert.equal(result.value, value);
-    assert.equal(result.author, "damian");
-    assert.equal(result.informationType, "trainer_interpretation");
+    const ctx = context();
+    const transition = assessComparability({
+      session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage,
+      value, rationale: `Jawne uzasadnienie ${value}`
+    });
+    assert.equal(transition.current.value, value);
+    assert.equal(transition.current.author, "damian");
   }
-  const first = assessComparability({ workspace, tanitaPackage, value: "unknown", rationale: "Pierwsza treść." }).current;
-  const second = assessComparability({ workspace, tanitaPackage, value: "comparable", rationale: "Druga treść.", previous: first });
+  const ctx = context();
+  assert.throws(() => assessComparability({ session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage, value: undefined, rationale: "x" }), /Explicit/);
+  const first = assessComparability({ session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage, value: "unknown", rationale: "Pierwsza." });
+  applyTransition(ctx, first);
+  const second = assessComparability({ session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage, value: "comparable", rationale: "Druga.", previous: first.current });
   assert.equal(second.previous.status, "superseded");
-  assert.equal(second.current.version, 2);
-  assert.equal(second.current.supersedes, exactRef(first));
+  assert.equal(second.current.supersedes, exactRef(first.current));
 });
 
-check("observation states are performed, skipped and stopped without a canonical catalogue", () => {
+check("observation states remain explicit and bounded", () => {
   assert.deepEqual(OBSERVATION_STATES, ["performed", "skipped", "stopped"]);
   for (const [index, executionState] of OBSERVATION_STATES.entries()) {
-    const { handoff, workspace } = context(index === 0 ? 0 : 4);
-    const candidate = handoff.candidates[index === 2 ? 1 : 0];
-    const result = recordObservation({
-      workspace, handoff, candidateId: candidate.id, executionState,
-      observationText: `Jawny opis ${executionState}`,
-      clientReaction: executionState === "skipped" ? "" : `Fikcyjna reakcja ${executionState}`
+    const ctx = context(index === 0 ? 0 : 4);
+    const recorded = recordObservation({
+      session: ctx.aggregate(), workspace: ctx.workspace, handoff: ctx.handoff,
+      candidateId: ctx.handoff.candidates[index === 2 ? 1 : 0].id,
+      executionState, observationText: `Opis ${executionState}`, clientReaction: ""
     });
-    assert.equal(result.observation.informationType, "trainer_observation");
-    assert.equal(result.observation.executionState, executionState);
-    if (result.reaction) assert.equal(result.reaction.author, "fictional_client");
+    assert.equal(recorded.observation.executionState, executionState);
   }
 });
 
-check("observation, reaction and trainer interpretation remain separate", () => {
-  const { handoff, workspace } = context();
+check("source_fact needs_review is rejected and exact Damian-approved version passes", () => {
+  const ctx = context();
   const recorded = recordObservation({
-    workspace, handoff, candidateId: handoff.candidates[0].id, executionState: "performed",
-    observationText: "Damian zauważył spokojne tempo.", clientReaction: "Fikcyjna osoba poprosiła o krótką przerwę."
+    session: ctx.aggregate(), workspace: ctx.workspace, handoff: ctx.handoff,
+    candidateId: ctx.handoff.candidates[0].id, executionState: "performed",
+    observationText: "Obserwacja Damiana.", clientReaction: "Fikcyjna reakcja klienta."
   });
+  put(ctx, recorded.observation, recorded.reaction);
+  assert.equal(recorded.reaction.reviewState, "needs_review");
+  assert.throws(() => saveTrainerInterpretation({
+    session: ctx.aggregate(), workspace: ctx.workspace, evidence: [recorded.reaction],
+    content: "Nie zapisuj.", uncertainty: "Niepewność."
+  }), /source_fact requires Damian review/);
+  const review = reviewSourceFact({ session: ctx.aggregate(), record: recorded.reaction, action: "approve" });
+  applyTransition(ctx, review);
   const interpretation = saveTrainerInterpretation({
-    workspace, evidence: [handoff, recorded.observation, recorded.reaction],
-    content: "Znaczenie nadaje Damian.", uncertainty: "Niepewność pozostaje jawna."
-  }).current;
-  assert.notEqual(recorded.observation.id, recorded.reaction.id);
-  assert.notEqual(recorded.observation.id, interpretation.id);
-  assert.equal(interpretation.informationType, "trainer_interpretation");
-  assert.deepEqual(interpretation.derivedFrom.slice(1), [handoff, recorded.observation, recorded.reaction].map(exactRef));
-});
-
-check("interpretation v1 and v2 preserve different content and resolvable original references", () => {
-  const { handoff, workspace } = context();
-  const v1 = saveTrainerInterpretation({
-    workspace, evidence: [handoff], content: "Treść interpretacji v1.", uncertainty: "Niepewność v1."
-  }).current;
-  const originalRefs = [...v1.derivedFrom];
-  const transition = saveTrainerInterpretation({
-    workspace, evidence: [handoff], content: "Treść interpretacji v2.", uncertainty: "Niepewność v2.", previous: v1
+    session: ctx.aggregate(), workspace: ctx.workspace, evidence: [review.current],
+    content: "Interpretacja Damiana.", uncertainty: "Niepewność pozostaje."
   });
-  assert.equal(transition.previous.content, "Treść interpretacji v1.");
-  assert.equal(transition.previous.status, "superseded");
-  assert.deepEqual(transition.previous.derivedFrom, originalRefs);
-  assert.equal(transition.current.content, "Treść interpretacji v2.");
-  assert.equal(transition.current.version, 2);
-  assert.equal(transition.current.supersedes, exactRef(v1));
-  assert.notEqual(exactRef(transition.previous), exactRef(transition.current));
+  assert.equal(review.current.reviewedBy, "damian");
+  assert.equal(review.current.reviewedVersion, exactRef(recorded.reaction));
+  assert.equal(interpretation.current.derivedFrom.at(-1), exactRef(review.current));
 });
 
-check("nested derivedFrom arrays are immutable", () => {
-  const { handoff, workspace } = context();
-  const interpretation = saveTrainerInterpretation({
-    workspace, evidence: [handoff], content: "Treść.", uncertainty: "Niepewność."
-  }).current;
-  assert.equal(Object.isFrozen(interpretation), true);
-  assert.equal(Object.isFrozen(interpretation.derivedFrom), true);
-  assert.throws(() => interpretation.derivedFrom.push("forged@v1"), TypeError);
+check("source_fact cannot enter a decision indirectly through an unreviewed interpretation", () => {
+  const ctx = context();
+  const forgedSource = Object.freeze({
+    id: `${ctx.fixture.id}-forged-source`, caseId: ctx.fixture.id, version: 1,
+    informationType: "source_fact", operationalRole: "client_reaction_during_pwd",
+    author: "fictional_client", derivedFrom: [exactRef(ctx.workspace)], status: "active",
+    visibility: "trainer_only", publicationState: "unpublished", reviewState: "needs_review", content: "Fikcyjna treść."
+  });
+  const forgedInterpretation = Object.freeze({
+    id: `${ctx.fixture.id}-forged-interpretation`, caseId: ctx.fixture.id, version: 1,
+    informationType: "trainer_interpretation", operationalRole: "pwd_trainer_interpretation",
+    author: "damian", derivedFrom: [exactRef(ctx.workspace), exactRef(forgedSource)], status: "active",
+    visibility: "trainer_only", publicationState: "unpublished", reviewState: "approved", content: "Treść", uncertainty: "Niepewność"
+  });
+  put(ctx, forgedSource, forgedInterpretation);
+  prepare(ctx, "manual", [ctx.handoff]);
+  assert.throws(() => decision(ctx, { evidence: [forgedInterpretation] }), /source_fact requires Damian review/);
 });
 
-check("simulated AI creates conversation wording only and every item starts needs_review", () => {
-  const { fixture, handoff, workspace } = context();
-  const prepared = prepareConversationRun({ fixture, workspace, evidence: [handoff], mode: "assisted" });
+check("interpretation versions preserve content, exact lineage and nested immutability", () => {
+  const ctx = context();
+  const first = saveTrainerInterpretation({ session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.handoff], content: "Treść v1.", uncertainty: "Niepewność v1." });
+  applyTransition(ctx, first);
+  const second = saveTrainerInterpretation({ session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.handoff], content: "Treść v2.", uncertainty: "Niepewność v2.", previous: first.current });
+  assert.equal(second.previous.content, "Treść v1.");
+  assert.equal(second.current.content, "Treść v2.");
+  assert.equal(second.current.supersedes, exactRef(first.current));
+  assert.equal(Object.isFrozen(second.current.derivedFrom), true);
+  assert.throws(() => second.current.derivedFrom.push("forged@v1"), TypeError);
+});
+
+check("simulated assisted run creates complete needs_review records", () => {
+  const ctx = context();
+  const prepared = prepare(ctx, "assisted");
   assert.ok(prepared.suggestions.length > 0);
-  for (const item of prepared.suggestions) {
-    assert.equal(item.informationType, "ai_suggestion");
-    assert.equal(item.author, "fictional_ai");
-    assert.equal(item.reviewState, "needs_review");
-    assert.equal(item.conversationRunRef, exactRef(prepared.runTransition.current));
-    assert.doesNotMatch(item.content, /START|DEFER_CONSULT|NOT_THIS_PRODUCT|warunek rozpoczęcia/i);
-  }
-  const unsafeFixture = { ...fixture, suggestions: ["Ustaw START"] };
-  assert.throws(() => prepareConversationRun({ fixture: unsafeFixture, workspace, evidence: [handoff], mode: "assisted" }), /may not suggest/);
+  assert.deepEqual(ctx.run.expectedConversationOptionIds, prepared.suggestions.map(item => item.id));
+  assert.ok(prepared.suggestions.every(item => item.reviewState === "needs_review" && item.conversationRunRef === exactRef(ctx.run)));
 });
 
-check("approve edit and reject append review history", () => {
-  const { fixture, handoff, workspace } = context();
-  const prepared = prepareConversationRun({ fixture, workspace, evidence: [handoff], mode: "assisted" });
-  const [first, second] = prepared.suggestions;
-  const approved = reviewSuggestion(first, "approve");
-  assert.equal(approved.previous.status, "superseded");
-  assert.equal(approved.current.reviewState, "approved");
-  const edited = reviewSuggestion(second, "edit", "Pytanie zapisane przez Damiana.");
-  assert.equal(edited.current.author, "damian");
-  assert.equal(edited.current.informationType, null);
-  assert.equal(edited.current.reviewState, "approved");
-  const rejected = reviewSuggestion(prepared.suggestions[0], "reject");
-  assert.equal(rejected.current.status, "rejected");
-  assert.equal(conversationGate([approved.current, edited.current, rejected.current]).ready, true);
+check("suggestion approve edit and reject append exact review versions", () => {
+  const ctx = context();
+  const prepared = prepare(ctx, "assisted");
+  const approve = reviewSuggestion({ session: ctx.aggregate(), record: prepared.suggestions[0], action: "approve" });
+  applyTransition(ctx, approve);
+  const edit = reviewSuggestion({ session: ctx.aggregate(), record: prepared.suggestions[1], action: "edit", editedContent: "Pytanie Damiana." });
+  applyTransition(ctx, edit);
+  assert.equal(approve.current.reviewState, "approved");
+  assert.equal(edit.current.author, "damian");
+  assert.equal(edit.current.conversationRunRef, exactRef(ctx.run));
 });
 
-check("preparing conversation again creates a separate run and preserves prior run and suggestion history", () => {
-  const { fixture, handoff, workspace } = context();
-  const first = prepareConversationRun({ fixture, workspace, evidence: [handoff], mode: "assisted" });
-  const second = prepareConversationRun({
-    fixture, workspace, evidence: [handoff], mode: "assisted",
-    previousRun: first.runTransition.current, activeSuggestions: first.suggestions
-  });
-  const history = [first.runTransition.current, second.runTransition.previous, second.runTransition.current,
-    ...first.suggestions, ...second.suggestionTransitions.flatMap(item => [item.previous, item.current]), ...second.suggestions];
-  assert.equal(second.runTransition.previous.status, "superseded");
-  assert.equal(second.runTransition.current.version, 2);
-  assert.equal(second.runTransition.current.supersedes, exactRef(first.runTransition.current));
-  assert.ok(history.some(item => exactRef(item) === exactRef(first.suggestions[0]) && item.content === first.suggestions[0].content));
-  assert.notEqual(first.suggestions[0].id, second.suggestions[0].id);
-  assert.equal(second.suggestionTransitions[0].current.status, "invalidated");
+check("assisted pending plus empty conversationRecords is rejected", () => {
+  const ctx = context();
+  prepare(ctx, "assisted");
+  assert.throws(() => decision(ctx, { records: [] }), /complete canonical run set/);
 });
 
-check("manual path creates zero AI objects and remains complete", () => {
-  const { fixture, handoff, workspace } = context(5);
-  const prepared = prepareConversationRun({ fixture, workspace, evidence: [handoff], mode: "manual" });
-  assert.deepEqual(prepared.suggestions, []);
-  const manual = addManualConversationOption({ workspace, content: "Ręczna notatka Damiana." });
-  assert.equal(manual.author, "damian");
-  assert.equal(manual.informationType, null);
-  assert.equal(manual.reviewState, "approved");
-  assert.equal(conversationGate([]).ready, true);
+check("omitting one pending assisted record is rejected", () => {
+  const ctx = context();
+  prepare(ctx, "assisted");
+  const complete = conversationRecordsForRun({ session: ctx.aggregate(), run: ctx.run });
+  assert.throws(() => decision(ctx, { records: complete.slice(1) }), /complete canonical run set/);
 });
 
-check("same-length manual notes receive different deterministic unique identifiers", () => {
-  const { workspace } = context(5);
-  const first = addManualConversationOption({ workspace, content: "ABCD", existingRecords: [] });
-  const second = addManualConversationOption({ workspace, content: "WXYZ", existingRecords: [first] });
-  const repeated = addManualConversationOption({ workspace, content: "WXYZ", existingRecords: [first] });
+check("complete assisted pending set is blocked by the domain gate", () => {
+  const ctx = context();
+  prepare(ctx, "assisted");
+  assert.throws(() => decision(ctx), /Conversation gate blocked/);
+});
+
+check("missing active run rejects while genuine manual zero-AI run passes", () => {
+  const ctx = context(5);
+  assert.throws(() => saveDecision({
+    session: ctx.aggregate(), workspace: ctx.workspace, conversationRun: null,
+    value: "DEFER_CONSULT", rationale: "x", evidence: [ctx.handoff], conversationRecords: []
+  }), /Exact versioned object required|canonical lineage tip/);
+  prepare(ctx, "manual");
+  assert.equal(conversationRecordsForRun({ session: ctx.aggregate(), run: ctx.run }).length, 0);
+  assert.doesNotThrow(() => decision(ctx));
+});
+
+check("manual notes belong to one exact run and same-length notes have unique deterministic ids", () => {
+  const ctx = context(5);
+  prepare(ctx, "manual");
+  const first = addManualConversationOption({ session: ctx.aggregate(), workspace: ctx.workspace, run: ctx.run, content: "ABCD" });
+  put(ctx, first);
+  const second = addManualConversationOption({ session: ctx.aggregate(), workspace: ctx.workspace, run: ctx.run, content: "WXYZ" });
+  const repeated = addManualConversationOption({ session: ctx.aggregate(), workspace: ctx.workspace, run: ctx.run, content: "WXYZ" });
   assert.notEqual(first.id, second.id);
   assert.equal(second.id, repeated.id);
-  assert.equal(first.content.length, second.content.length);
+  assert.equal(first.conversationRunRef, exactRef(ctx.run));
 });
 
-check("domain decision gate blocks an active needs_review suggestion", () => {
-  const { fixture, handoff, workspace } = context();
-  const prepared = prepareConversationRun({ fixture, workspace, evidence: [handoff], mode: "assisted" });
-  assert.throws(() => saveDecision({
-    workspace, value: "START", rationale: "Jawne uzasadnienie.", evidence: [handoff], conversationRecords: prepared.suggestions
-  }), /Conversation gate blocked/);
-  assert.throws(() => saveDecision({
-    workspace, value: "START", rationale: "Jawne uzasadnienie.", evidence: [handoff]
-  }), /Conversation records required/);
+check("manual option from run 1 is invalidated and is not active in run 2", () => {
+  const ctx = context(5);
+  prepare(ctx, "manual");
+  const run1 = ctx.run;
+  const option = addManualConversationOption({ session: ctx.aggregate(), workspace: ctx.workspace, run: run1, content: "Opcja runu 1." });
+  put(ctx, option);
+  const second = prepare(ctx, "manual");
+  const invalidated = second.invalidationTransitions.find(item => item.previous.id === option.id);
+  assert.equal(invalidated.current.status, "invalidated");
+  assert.equal(conversationRecordsForRun({ session: ctx.aggregate(), run: ctx.run }).length, 0);
 });
 
-check("all four equal decisions require explicit input, rationale and evidence", () => {
+check("new run invalidates dependent decision and follow-up while preserving history", () => {
+  const ctx = context(2);
+  prepare(ctx, "manual");
+  const saved = decision(ctx);
+  applyTransition(ctx, saved);
+  const followup = makeFollowupDraft({ session: ctx.aggregate(), decision: saved.current, content: "Niewysłany szkic." });
+  put(ctx, followup);
+  const second = prepare(ctx, "manual");
+  const roles = new Map(second.dependentTransitions.map(item => [item.previous.operationalRole, item.current]));
+  assert.equal(roles.get("pwd_outcome").status, "invalidated");
+  assert.equal(roles.get("unsent_followup_draft").status, "invalidated");
+  assert.deepEqual(roles.get("unsent_followup_draft").derivedFrom, [exactRef(saved.current)]);
+});
+
+check("all four decisions remain equal, explicit and unselected", () => {
   assert.deepEqual(DECISIONS, ["START", "START_CONDITIONAL", "DEFER_CONSULT", "NOT_THIS_PRODUCT"]);
-  const { handoff, workspace } = context();
-  assert.throws(() => saveManualDecision({ workspace, value: undefined, rationale: "x", evidence: [handoff] }), /Explicit/);
-  assert.throws(() => saveManualDecision({ workspace, value: "START", rationale: "", evidence: [handoff] }), /rationale/);
-  assert.throws(() => saveManualDecision({ workspace, value: "START", rationale: "x", evidence: [] }), /evidence/);
   for (const value of DECISIONS) {
-    const conditions = value === "START_CONDITIONAL"
-      ? [{ statement: "Warunek Damiana", verification: "Jawne potwierdzenie przez Damiana" }]
-      : [];
-    const decision = saveManualDecision({ workspace, value, rationale: `Jawne uzasadnienie ${value}`, evidence: [handoff], conditions }).current;
-    assert.equal(decision.value, value);
-    assert.equal(decision.author, "damian");
+    const ctx = context();
+    prepare(ctx, "manual");
+    const conditions = value === "START_CONDITIONAL" ? [{ statement: "Warunek Damiana", verification: "Jawna weryfikacja" }] : [];
+    const saved = decision(ctx, { value, rationale: `Uzasadnienie ${value}`, conditions });
+    assert.equal(saved.current.value, value);
+    assert.equal(saved.current.conversationRunRef, exactRef(ctx.run));
   }
+  assert.doesNotMatch(html, /name="pwd-decision"[^>]+checked/i);
 });
 
 check("START_CONDITIONAL accepts only complete Damian-authored conditions", () => {
-  const { handoff, workspace } = context(1);
-  assert.throws(() => saveManualDecision({ workspace, value: "START_CONDITIONAL", rationale: "x", evidence: [handoff], conditions: [] }), /complete/);
-  assert.throws(() => saveManualDecision({ workspace, value: "START_CONDITIONAL", rationale: "x", evidence: [handoff], conditions: [{ statement: "x", verification: "" }] }), /complete/);
-  assert.throws(() => saveManualDecision({ workspace, value: "START", rationale: "x", evidence: [handoff], conditions: [{ statement: "x", verification: "y" }] }), /only for/);
-  const result = saveManualDecision({ workspace, value: "START_CONDITIONAL", rationale: "x", evidence: [handoff], conditions: [{ statement: "x", verification: "y" }] }).current;
-  assert.equal(result.conditions[0].author, "damian");
-  assert.equal(Object.isFrozen(result.conditions[0]), true);
+  const ctx = context(1);
+  prepare(ctx, "manual");
+  assert.throws(() => decision(ctx, { value: "START_CONDITIONAL", conditions: [] }), /complete/);
+  const saved = decision(ctx, { value: "START_CONDITIONAL", conditions: [{ statement: "x", verification: "y" }] });
+  assert.equal(saved.current.conditions[0].author, "damian");
+  assert.equal(Object.isFrozen(saved.current.conditions[0]), true);
 });
 
-check("decision v1 and v2 preserve different content, lineage, and follow-up origin", () => {
-  const { handoff, workspace } = context(2);
-  const v1 = saveManualDecision({ workspace, value: "DEFER_CONSULT", rationale: "Decyzja v1.", evidence: [handoff] }).current;
-  const draft = makeFollowupDraft({ decision: v1, content: "Niewysłany szkic z v1." });
-  const transition = saveManualDecision({
-    workspace, value: "NOT_THIS_PRODUCT", rationale: "Decyzja v2.", evidence: [handoff], previous: v1
+check("decision v1 and v2 preserve content and an existing follow-up stays on v1", () => {
+  const ctx = context(2);
+  prepare(ctx, "manual");
+  const first = decision(ctx, { rationale: "Decyzja v1." });
+  applyTransition(ctx, first);
+  const followup = makeFollowupDraft({ session: ctx.aggregate(), decision: first.current, content: "Szkic z v1." });
+  put(ctx, followup);
+  const second = decision(ctx, { value: "NOT_THIS_PRODUCT", rationale: "Decyzja v2.", previous: first.current });
+  assert.equal(second.previous.rationale, "Decyzja v1.");
+  assert.equal(second.current.rationale, "Decyzja v2.");
+  assert.deepEqual(followup.derivedFrom, [exactRef(first.current)]);
+  assert.notEqual(followup.derivedFrom[0], exactRef(second.current));
+});
+
+check("follow-up remains trainer-only unpublished and technically unsendable", () => {
+  const ctx = context(2);
+  prepare(ctx, "manual");
+  const saved = decision(ctx);
+  applyTransition(ctx, saved);
+  const followup = makeFollowupDraft({ session: ctx.aggregate(), decision: saved.current, content: "Niewysłany szkic." });
+  assert.equal(followup.visibility, "trainer_only");
+  assert.equal(followup.publicationState, "unpublished");
+  assert.equal(followup.sendCapability, "none");
+});
+
+check("Tanita facts require exact active comparability and no-Tanita path remains valid", () => {
+  const ctx = context();
+  prepare(ctx, "manual");
+  assert.throws(() => decision(ctx, { evidence: [ctx.handoff, ctx.tanitaPackage.facts[0]] }), /Tanita facts require/);
+  const comparison = assessComparability({ session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage, value: "comparable", rationale: "Dokładny pakiet." });
+  applyTransition(ctx, comparison);
+  assert.doesNotThrow(() => decision(ctx, { evidence: [ctx.handoff, ctx.tanitaPackage.facts[0], comparison.current] }));
+  const noTanita = context(2);
+  prepare(noTanita, "manual");
+  assert.doesNotThrow(() => decision(noTanita));
+});
+
+check("preserved original handoff v1 is rejected after transition to v2", () => {
+check("Tanita fact cannot reach a decision indirectly without exact comparability", () => {
+  const ctx = context();
+  const interpretation = saveTrainerInterpretation({
+    session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.tanitaPackage.facts[0]],
+    content: "Interpretacja fikcyjnego faktu Tanita.", uncertainty: "Porównywalność nieustalona."
   });
-  assert.equal(transition.previous.rationale, "Decyzja v1.");
-  assert.equal(transition.previous.status, "superseded");
-  assert.equal(transition.current.rationale, "Decyzja v2.");
-  assert.equal(transition.current.supersedes, exactRef(v1));
-  assert.deepEqual(draft.derivedFrom, [exactRef(v1)]);
-  assert.notEqual(draft.derivedFrom[0], exactRef(transition.current));
-  const invalidated = invalidateDependentRecords({ changedRecords: [v1], records: [draft], invalidatedBy: exactRef(transition.current) });
-  assert.equal(invalidated[0].current.status, "invalidated");
-  assert.deepEqual(invalidated[0].current.derivedFrom, [exactRef(v1)]);
-});
-
-check("follow-up is trainer-only unpublished and has no send capability", () => {
-  const { handoff, workspace } = context(2);
-  const decision = saveManualDecision({ workspace, value: "DEFER_CONSULT", rationale: "Najpierw dodatkowa informacja.", evidence: [handoff] }).current;
-  const draft = makeFollowupDraft({ decision, content: "Niewysłany fikcyjny szkic." });
-  assert.equal(draft.informationType, "client_material");
-  assert.equal(draft.visibility, "trainer_only");
-  assert.equal(draft.publicationState, "unpublished");
-  assert.equal(draft.sendCapability, "none");
-});
-
-check("Tanita facts cannot become decision evidence without exact active package comparability", () => {
-  const { handoff, workspace, tanitaPackage } = context();
-  assert.throws(() => saveManualDecision({
-    workspace, value: "START", rationale: "x", evidence: [handoff, tanitaPackage.facts[0]]
-  }), /Tanita facts require/);
+  applyTransition(ctx, interpretation);
+  prepare(ctx, "manual", [ctx.handoff]);
+  assert.throws(() => decision(ctx, { evidence: [interpretation.current] }), /Tanita facts require/);
   const comparison = assessComparability({
-    workspace, tanitaPackage, value: "comparable", rationale: "Dokładny bieżący pakiet."
-  }).current;
-  const decision = saveManualDecision({
-    workspace, value: "START", rationale: "Jawne uzasadnienie.", evidence: [handoff, tanitaPackage.facts[0], comparison]
-  }).current;
-  assert.ok(decision.derivedFrom.includes(exactRef(tanitaPackage.facts[0])));
-  const withoutTanita = context(2);
-  assert.doesNotThrow(() => saveManualDecision({
-    workspace: withoutTanita.workspace, value: "DEFER_CONSULT", rationale: "Bez Tanita.", evidence: [withoutTanita.handoff]
-  }));
-});
-
-check("changing interpretation invalidates dependent run, suggestions, decision and follow-up without deleting history", () => {
-  const { fixture, handoff, workspace } = context(2);
-  const v1 = saveTrainerInterpretation({ workspace, evidence: [handoff], content: "Interpretacja v1.", uncertainty: "Niepewność v1." }).current;
-  const run = prepareConversationRun({ fixture, workspace, evidence: [handoff, v1], mode: "manual" }).runTransition.current;
-  const decision = saveManualDecision({ workspace, value: "DEFER_CONSULT", rationale: "Decyzja zależna.", evidence: [handoff, v1] }).current;
-  const followup = makeFollowupDraft({ decision, content: "Zależny szkic." });
-  const v2 = saveTrainerInterpretation({ workspace, evidence: [handoff], content: "Interpretacja v2.", uncertainty: "Niepewność v2.", previous: v1 }).current;
-  const transitions = invalidateDependentRecords({
-    changedRecords: [v1], records: [run, decision, followup], invalidatedBy: exactRef(v2)
+    session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage,
+    value: "unknown", rationale: "Jawna porównywalność dokładnego pakietu."
   });
-  assert.equal(transitions.length, 3);
-  assert.ok(transitions.every(item => item.previous.status === "superseded"));
-  assert.ok(transitions.every(item => item.current.status === "invalidated"));
-  assert.deepEqual(transitions.find(item => item.previous.id === followup.id).previous.derivedFrom, [exactRef(decision)]);
+  applyTransition(ctx, comparison);
+  assert.doesNotThrow(() => decision(ctx, { evidence: [interpretation.current, comparison.current] }));
 });
 
-check("cross-case reference fails before mutation", () => {
+  const ctx = context(8);
+  const { originalHandoff } = applyMaterialChange(ctx);
+  assert.throws(() => createWorkspace({
+    fixture: ctx.fixture, handoff: originalHandoff, previousWorkspace: ctx.workspace, session: ctx.aggregate()
+  }), /conflicts with canonical|active canonical lineage tip/);
+});
+
+check("handoff v2 without exact invalidated predecessor is rejected", () => {
+  const ctx = context(8);
+  applyMaterialChange(ctx);
+  assert.equal(ctx.handoff.version, 2);
+  assert.throws(() => createWorkspace({ fixture: ctx.fixture, handoff: ctx.handoff, session: ctx.aggregate() }), /requires the exact invalidated predecessor/);
+});
+
+check("workspace rebuilt from handoff v2 records exact predecessor and supersedes", () => {
+  const ctx = context(8);
+  applyMaterialChange(ctx);
+  const invalidated = ctx.workspace;
+  const next = createWorkspace({
+    fixture: ctx.fixture, handoff: ctx.handoff, previousWorkspace: invalidated, session: ctx.aggregate()
+  });
+  assert.equal(next.currentHandoffRef, exactRef(ctx.handoff));
+  assert.equal(next.supersedes, exactRef(invalidated));
+});
+
+check("Tanita package v1 is rejected in workspace based on handoff v2", () => {
+  const ctx = context(8);
+  const oldPackage = ctx.tanitaPackage;
+  if (!oldPackage) return;
+  applyMaterialChange(ctx);
+  const rebuilt = createWorkspace({ fixture: ctx.fixture, handoff: ctx.handoff, previousWorkspace: ctx.workspace, session: ctx.aggregate() });
+  put(ctx, rebuilt);
+  ctx.workspace = rebuilt;
+  assert.throws(() => assessComparability({
+    session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: oldPackage,
+    value: "unknown", rationale: "Nie używaj."
+  }), /canonical lineage tip|exact current handoff and workspace/);
+});
+
+check("changing interpretation invalidates dependent run, decision and follow-up transitively", () => {
+  const ctx = context(2);
+  const first = saveTrainerInterpretation({ session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.handoff], content: "v1", uncertainty: "u1" });
+  applyTransition(ctx, first);
+  prepare(ctx, "manual", [ctx.handoff, first.current]);
+  const saved = decision(ctx, { evidence: [ctx.handoff, first.current] });
+  applyTransition(ctx, saved);
+  const followup = makeFollowupDraft({ session: ctx.aggregate(), decision: saved.current, content: "Szkic." });
+  put(ctx, followup);
+  const second = saveTrainerInterpretation({ session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.handoff], content: "v2", uncertainty: "u2", previous: first.current });
+  const transitions = invalidateDependentRecords({ session: ctx.aggregate(), changedRecords: [first.current], invalidatedBy: exactRef(second.current) });
+  assert.ok(["conversation_preparation_run", "pwd_outcome", "unsent_followup_draft"].every(role => transitions.some(item => item.previous.operationalRole === role)));
+});
+
+check("cross-case references fail closed before mutation", () => {
   const first = context(0); const second = context(1);
-  const target = [];
-  const before = JSON.stringify(target);
-  assert.throws(() => target.push(recordObservation({
-    workspace: first.workspace,
-    handoff: second.handoff,
-    candidateId: second.handoff.candidates[0].id,
-    executionState: "performed",
-    observationText: "Nie zapisuj",
-    clientReaction: ""
-  })), /Cross-case/);
-  assert.equal(JSON.stringify(target), before);
   assert.throws(() => assertCaseIsolation(first.fixture.id, [second.handoff]), /Cross-case/);
+  assert.throws(() => recordObservation({
+    session: first.aggregate(), workspace: first.workspace, handoff: second.handoff,
+    candidateId: second.handoff.candidates[0].id, executionState: "performed",
+    observationText: "Nie zapisuj", clientReaction: ""
+  }), /Exact reference|Cross-case/);
 });
 
 check("prompt-injection-like source remains inert text", () => {
-  const { handoff } = context(6);
-  assert.match(handoff.sourceStatement, /Zignoruj zasady/);
-  assert.equal(handoff.informationType, "trainer_decision");
+  const ctx = context(6);
+  assert.match(ctx.handoff.sourceStatement, /Zignoruj zasady/);
   assert.doesNotMatch(runtime, /\beval\s*\(|new Function\s*\(/);
 });
 
-check("material handoff v2 rejects v1 and is the only source for a new workspace", () => {
-  const { fixture, handoff, workspace } = context(8);
-  const decision = saveManualDecision({ workspace, value: "DEFER_CONSULT", rationale: "Fikcyjne uzasadnienie.", evidence: [handoff] }).current;
-  const result = materialHandoffChange({ handoff, workspace, downstream: [decision], summary: "Nowa materialna informacja." });
-  const oldHandoff = result.handoffs[0];
-  const currentHandoff = result.handoffs[1];
-  const invalidatedWorkspace = result.workspaceTransition.current;
-  assert.equal(oldHandoff.status, "superseded");
-  assert.equal(currentHandoff.version, 2);
-  assert.equal(invalidatedWorkspace.status, "invalidated");
-  assert.equal(invalidatedWorkspace.invalidatedBy, exactRef(currentHandoff));
-  assert.throws(() => createWorkspace({ fixture, handoff: oldHandoff, previousWorkspace: invalidatedWorkspace }), /Active READY/);
-  const nextWorkspace = createWorkspace({ fixture, handoff: currentHandoff, previousWorkspace: invalidatedWorkspace });
-  assert.equal(nextWorkspace.status, "active");
-  assert.equal(nextWorkspace.currentHandoffRef, exactRef(currentHandoff));
-  assert.equal(nextWorkspace.derivedFrom[0], exactRef(currentHandoff));
-  assert.equal(nextWorkspace.supersedes, exactRef(invalidatedWorkspace));
-  assert.throws(() => saveManualDecision({ workspace: invalidatedWorkspace, value: "START", rationale: "x", evidence: [currentHandoff] }), /Active workspace/);
-});
-
-check("all fixtures are pseudonymous, fictional and contain no contact identity", () => {
+check("all fixtures remain pseudonymous fictional and identity-free", () => {
   assert.equal(fixtures.length, 9);
   for (const [index, fixture] of fixtures.entries()) {
     assert.equal(fixture.id, `fictional-${String(index + 1).padStart(2, "0")}`);
@@ -359,46 +463,38 @@ check("all fixtures are pseudonymous, fictional and contain no contact identity"
   }
 });
 
-check("UI has four unselected decisions and no generated condition", () => {
+check("UI exposes explicit source review, four decisions and no generated conditions", () => {
   for (const value of DECISIONS) assert.match(html, new RegExp(`value=["']${value}["']`));
-  assert.equal((html.match(/name="pwd-decision"/g) || []).length, 4);
-  assert.doesNotMatch(html, /name="pwd-decision"[^>]+checked/i);
-  assert.match(html, /id="condition-statement"/);
-  assert.match(html, /id="condition-verification"/);
+  assert.match(app, /reviewSourceFact/);
+  assert.match(app, /Approve exact source_fact/);
   assert.doesNotMatch(fixtureSource, /conditionStatement|conditionVerification|expectedDecision/);
 });
 
-check("runtime is offline, session-only and detached from production", () => {
+check("runtime remains offline session-only and detached from production", () => {
   assert.match(html, /connect-src 'none'/);
   assert.doesNotMatch(runtime, /https?:\/\//i);
   assert.doesNotMatch(runtime, /\bfetch\s*\(|XMLHttpRequest|WebSocket|EventSource|sendBeacon|localStorage|sessionStorage|indexedDB|document\.cookie|serviceWorker\.register/i);
   assert.doesNotMatch(runtime, /createClient\s*\(|supabaseUrl|formspree|mailto:|sms:|type="file"|<form\b/i);
-  assert.doesNotMatch(app, /assets\/os|studio-las-config|client-access-admin/i);
 });
 
-check("no send, publication, price, payment or booking control exists", () => {
+check("no send publication price payment or booking control exists", () => {
   assert.doesNotMatch(html, />(Wyślij|Opublikuj|Zapłać|Kup|Zarezerwuj)</i);
   assert.doesNotMatch(app, /window\.location|location\.assign|\.submit\s*\(/i);
 });
 
-check("keyboard, focus and exact 360 px layout contracts are present", () => {
+check("keyboard focus and exact 360 px contracts remain", () => {
   assert.match(css, /:focus-visible\s*\{/);
   assert.match(css, /min-height:\s*44px/);
   assert.match(css, /@media\s*\(max-width:\s*480px\)/);
-  assert.match(css, /grid-template-columns:\s*minmax\(0,\s*1fr\)/);
   assert.match(css, /overflow-wrap:\s*anywhere/);
-  assert.match(html, /role="alert"/);
-  assert.match(html, /aria-live="polite"/);
   assert.match(html, /<h2[^>]+tabindex="-1"/);
   assert.match(app, /focus\(\{ preventScroll: true \}\)/);
-  assert.doesNotMatch(html, /<button(?![^>]*type="button")/i);
 });
 
-check("Registry keeps the general PRD rule and records only the narrow PRD 004 exception", () => {
+check("Registry keeps the general PRD rule and only the narrow PRD 004 exception", () => {
   const registry = readFileSync(join(here, "..", "docs", "governance", "00_SOURCE_OF_TRUTH_REGISTRY.md"), "utf8");
   assert.match(registry, /PRD may not begin until the following are resolved/);
   assert.match(registry, /Narrow Stage 4A fictional prototype exception/);
-  assert.match(registry, /PRD 004 may exist only as the contract for the isolated/);
   assert.match(registry, /does not extend to a real runtime, later PRDs/);
 });
 

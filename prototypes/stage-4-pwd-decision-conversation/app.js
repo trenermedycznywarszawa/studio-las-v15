@@ -4,6 +4,8 @@ import {
   addManualConversationOption,
   assessComparability,
   conversationGate,
+  conversationRecordsForRun,
+  createSessionAggregate,
   createWorkspace,
   exactRef,
   invalidateDependentRecords,
@@ -13,6 +15,7 @@ import {
   materialHandoffChange,
   prepareConversationRun,
   recordObservation,
+  reviewSourceFact,
   reviewSuggestion,
   saveDecision,
   saveTrainerInterpretation
@@ -57,6 +60,7 @@ function resetState() {
     workspace: null,
     workspaceHistory: [],
     tanitaPackage: null,
+    tanitaPackageHistory: [],
     tanitaComparison: null,
     tanitaComparisonHistory: [],
     observations: [],
@@ -143,7 +147,7 @@ function appendTransition(records, transition) {
 }
 
 const HISTORY_KEYS = [
-  "tanitaComparisonHistory", "interpretationHistory", "conversationRuns",
+  "tanitaPackageHistory", "tanitaComparisonHistory", "interpretationHistory", "conversationRuns",
   "suggestions", "manualOptions", "decisionHistory", "followupHistory",
   "observations", "reactions"
 ];
@@ -160,18 +164,19 @@ function applyRecordTransition(transition) {
   }
 }
 
-function activeConversationRecords() {
-  return latestById(state.suggestions).filter(item => item.status === "active");
+function sessionAggregate() {
+  return createSessionAggregate({ caseId: state.fixture.id, records: allHistory() });
 }
 
-function invalidateDependents(changedRecord, invalidatedBy) {
+function currentConversationRecords() {
+  if (!state.conversationRun) return [];
+  return conversationRecordsForRun({ session: sessionAggregate(), run: state.conversationRun });
+}
+
+function invalidateDependents(changedRecord, invalidatedBy, session = sessionAggregate()) {
   if (!changedRecord) return [];
-  const records = [
-    ...state.conversationRuns, ...state.suggestions, ...state.manualOptions,
-    ...state.decisionHistory, ...state.followupHistory
-  ];
   const transitions = invalidateDependentRecords({
-    changedRecords: [changedRecord], records, invalidatedBy
+    session, changedRecords: [changedRecord], invalidatedBy
   });
   transitions.forEach(applyRecordTransition);
   if (state.conversationRun?.status !== "active") state.mode = null;
@@ -252,16 +257,18 @@ function renderTanita() {
       try {
         const value = document.querySelector('input[name="tanita-comparability"]:checked')?.value;
         const previous = state.tanitaComparison?.status === "active" ? state.tanitaComparison : null;
+        const session = sessionAggregate();
         const transition = assessComparability({
+          session,
           workspace: state.workspace,
           tanitaPackage: state.tanitaPackage,
           value,
           rationale: rationale.value,
           previous
         });
+        if (previous) invalidateDependents(previous, exactRef(transition.current), session);
         state.tanitaComparisonHistory = appendTransition(state.tanitaComparisonHistory, transition);
         state.tanitaComparison = transition.current;
-        if (previous) invalidateDependents(previous, exactRef(transition.current));
         renderTanita();
         announce("Zapisano jawną ocenę porównywalności Damiana.");
       } catch (error) { showError("evidence-error", error); }
@@ -291,6 +298,13 @@ function renderCandidates() {
         node("p", { text: existing.content }),
         node("p", { className: "source-line", text: reaction ? `Reakcja klienta: ${reaction.content}` : "Brak zapisanej wypowiedzi klienta." })
       );
+      if (reaction?.reviewState === "needs_review") {
+        card.append(
+          node("span", { className: "badge pending", text: "source_fact · needs_review" }),
+          button("Approve exact source_fact", () => applySourceReview(reaction, "approve")),
+          button("Reject source_fact", () => applySourceReview(reaction, "reject"), "button danger")
+        );
+      }
       root.append(card);
       continue;
     }
@@ -312,6 +326,7 @@ function renderCandidates() {
       button("Zapisz odrębne rekordy", () => {
         try {
           const result = recordObservation({
+            session: sessionAggregate(),
             workspace: state.workspace,
             handoff: state.handoff,
             candidateId: candidate.id,
@@ -332,6 +347,19 @@ function renderCandidates() {
     );
     root.append(card);
   }
+}
+
+function applySourceReview(record, action) {
+  try {
+    const session = sessionAggregate();
+    const transition = reviewSourceFact({ session, record, action });
+    if (action === "reject") invalidateDependents(record, exactRef(transition.current), session);
+    state.reactions = replaceTransition(state.reactions, record, transition);
+    renderCandidates();
+    announce(action === "approve"
+      ? `Damian zatwierdził dokładną wersję ${transition.current.reviewedVersion}.`
+      : `Damian odrzucił dokładną wersję ${transition.current.reviewedVersion}.`);
+  } catch (error) { showError("evidence-error", error); }
 }
 
 function renderSuggestions() {
@@ -358,7 +386,10 @@ function renderSuggestions() {
   }
   for (const record of state.manualOptions) {
     root.append(node("article", { className: "suggestion-card" }, [
-      node("span", { className: "badge", text: "manual · approved" }),
+      node("span", {
+        className: `badge ${record.status === "invalidated" ? "invalid" : ""}`,
+        text: `${record.status} · manual · ${record.reviewState}`
+      }),
       node("p", { text: record.content }),
       node("p", { className: "source-line", text: `${exactRef(record)} · Damian` })
     ]));
@@ -368,7 +399,7 @@ function renderSuggestions() {
 
 function applyReview(record, action, content = "") {
   try {
-    const transition = reviewSuggestion(record, action, content);
+    const transition = reviewSuggestion({ session: sessionAggregate(), record, action, editedContent: content });
     state.suggestions = replaceTransition(state.suggestions, record, transition);
     renderSuggestions();
     announce("Zapisano jawną decyzję review dla sugestii.");
@@ -376,12 +407,14 @@ function applyReview(record, action, content = "") {
 }
 
 function updateConversationGate() {
-  if (!state.mode) {
+  if (!state.mode || state.conversationRun?.status !== "active") {
     byId("conversation-gate").textContent = "Najpierw przygotuj nowy przebieg rozmowy.";
     byId("open-decision").disabled = true;
     return;
   }
-  const gate = conversationGate(latestById(state.suggestions));
+  const session = sessionAggregate();
+  const records = currentConversationRecords();
+  const gate = conversationGate({ session, workspace: state.workspace, run: state.conversationRun, conversationRecords: records });
   byId("conversation-gate").textContent = gate.ready
     ? "Gotowe. Żadna sugestia nie oczekuje na review."
     : `Do decyzji pozostało ${gate.pending.length} review.`;
@@ -404,6 +437,7 @@ function allHistory() {
   return [
     ...state.handoffHistory,
     ...state.workspaceHistory,
+    ...state.tanitaPackageHistory,
     ...state.tanitaComparisonHistory,
     ...state.interpretationHistory,
     ...state.conversationRuns,
@@ -444,10 +478,13 @@ function initializeFixtureSelect() {
 byId("create-workspace").addEventListener("click", () => {
   const fixture = fixtures.find(item => item.id === byId("fixture-select").value);
   if (state.fixture === fixture && state.handoff?.status === "active" && state.workspace?.status === "invalidated") {
-    const nextWorkspace = createWorkspace({ fixture, handoff: state.handoff, previousWorkspace: state.workspace });
+    const nextWorkspace = createWorkspace({
+      fixture, handoff: state.handoff, previousWorkspace: state.workspace, session: sessionAggregate()
+    });
     state.workspaceHistory.push(nextWorkspace);
     state.workspace = nextWorkspace;
-    state.tanitaPackage = makeTanitaPackage({ fixture, handoff: state.handoff });
+    state.tanitaPackage = makeTanitaPackage({ fixture, handoff: state.handoff, workspace: state.workspace, session: sessionAggregate() });
+    if (state.tanitaPackage) state.tanitaPackageHistory.push(state.tanitaPackage.source, ...state.tanitaPackage.facts);
     state.tanitaComparison = null;
     state.interpretation = null;
     state.conversationRun = null;
@@ -481,10 +518,13 @@ byId("create-workspace").addEventListener("click", () => {
   resetState();
   state.fixture = fixture;
   state.handoff = makeHandoff(fixture);
-  state.workspace = createWorkspace({ fixture, handoff: state.handoff });
   state.handoffHistory = [state.handoff];
+  state.workspace = createWorkspace({ fixture, handoff: state.handoff, session: sessionAggregate() });
   state.workspaceHistory = [state.workspace];
-  state.tanitaPackage = makeTanitaPackage({ fixture, handoff: state.handoff });
+  state.tanitaPackage = makeTanitaPackage({ fixture, handoff: state.handoff, workspace: state.workspace, session: sessionAggregate() });
+  if (state.tanitaPackage) {
+    state.tanitaPackageHistory = [state.tanitaPackage.source, ...state.tanitaPackage.facts];
+  }
   unlock("evidence");
   renderHandoff();
   renderTanita();
@@ -501,16 +541,18 @@ byId("save-interpretation").addEventListener("click", () => {
   clearError("evidence-error");
   try {
     const previous = state.interpretation?.status === "active" ? state.interpretation : null;
+    const session = sessionAggregate();
     const transition = saveTrainerInterpretation({
+      session,
       workspace: state.workspace,
       evidence: currentEvidence().filter(item => item !== state.interpretation),
       content: byId("interpretation-content").value,
       uncertainty: byId("interpretation-uncertainty").value,
       previous
     });
+    if (previous) invalidateDependents(previous, exactRef(transition.current), session);
     state.interpretationHistory = appendTransition(state.interpretationHistory, transition);
     state.interpretation = transition.current;
-    if (previous) invalidateDependents(previous, exactRef(transition.current));
     unlock("conversation");
     announce(`Zapisano ${exactRef(state.interpretation)}; zależne aktywne rekordy unieważniono.`);
     setScreen("conversation");
@@ -523,15 +565,15 @@ byId("prepare-conversation").addEventListener("click", () => {
     const mode = document.querySelector('input[name="conversation-mode"]:checked')?.value;
     if (!mode) throw new Error("Wybierz tryb przygotowania rozmowy.");
     const prepared = prepareConversationRun({
+      session: sessionAggregate(),
       fixture: state.fixture,
       workspace: state.workspace,
       evidence: currentEvidence(),
       mode,
-      previousRun: state.conversationRun,
-      activeSuggestions: activeConversationRecords()
+      previousRun: state.conversationRun
     });
+    prepared.invalidationTransitions.forEach(applyRecordTransition);
     state.conversationRuns = appendTransition(state.conversationRuns, prepared.runTransition);
-    prepared.suggestionTransitions.forEach(applyRecordTransition);
     state.suggestions.push(...prepared.suggestions);
     state.conversationRun = prepared.runTransition.current;
     state.mode = mode;
@@ -545,9 +587,10 @@ byId("add-manual-option").addEventListener("click", () => {
   clearError("conversation-error");
   try {
     const option = addManualConversationOption({
+      session: sessionAggregate(),
       workspace: state.workspace,
-      content: byId("manual-option-content").value,
-      existingRecords: state.manualOptions
+      run: state.conversationRun,
+      content: byId("manual-option-content").value
     });
     state.manualOptions.push(option);
     byId("manual-option-content").value = "";
@@ -577,18 +620,21 @@ byId("save-decision").addEventListener("click", () => {
       verification: byId("condition-verification").value
     }] : [];
     const previous = state.decision;
+    const session = sessionAggregate();
     const transition = saveDecision({
+      session,
       workspace: state.workspace,
+      conversationRun: state.conversationRun,
       value,
       rationale: byId("decision-rationale").value,
       evidence,
       conditions,
-      conversationRecords: activeConversationRecords(),
+      conversationRecords: currentConversationRecords(),
       previous
     });
     state.decisionHistory = appendTransition(state.decisionHistory, transition);
+    if (previous?.status === "active") invalidateDependents(previous, exactRef(transition.current), session);
     state.decision = transition.current;
-    if (previous) invalidateDependents(previous, exactRef(transition.current));
     byId("decision-result").className = "panel";
     byId("decision-result").replaceChildren(
       node("span", { className: "badge", text: state.decision.value }),
@@ -609,7 +655,11 @@ byId("save-decision").addEventListener("click", () => {
 byId("save-followup").addEventListener("click", () => {
   clearError("followup-error");
   try {
-    state.followup = makeFollowupDraft({ decision: state.decision, content: byId("followup-content").value });
+    state.followup = makeFollowupDraft({
+      session: sessionAggregate(),
+      decision: state.decision,
+      content: byId("followup-content").value
+    });
     state.followupHistory.push(state.followup);
     byId("followup-content").disabled = true;
     byId("save-followup").disabled = true;
@@ -620,22 +670,10 @@ byId("save-followup").addEventListener("click", () => {
 
 byId("material-change").addEventListener("click", () => {
   if (!state.workspace || state.invalidation) return;
-  const downstream = [
-    ...state.conversationRuns,
-    ...state.decisionHistory,
-    ...state.followupHistory,
-    state.tanitaComparison,
-    ...state.observations,
-    ...state.reactions,
-    state.interpretation,
-    ...state.suggestions,
-    ...state.manualOptions,
-  ].filter(Boolean);
-  const uniqueActive = [...new Map(downstream.filter(item => item.status === "active").map(item => [exactRef(item), item])).values()];
   state.invalidation = materialHandoffChange({
+    session: sessionAggregate(),
     handoff: state.handoff,
     workspace: state.workspace,
-    downstream: uniqueActive,
     summary: "Materialnie skorygowany fikcyjny handoff wymaga nowego workspace."
   });
   state.handoffHistory = replaceTransition(state.handoffHistory, state.handoff, {
@@ -645,6 +683,7 @@ byId("material-change").addEventListener("click", () => {
   state.invalidation.downstreamTransitions.forEach(applyRecordTransition);
   state.handoff = state.invalidation.handoffs.at(-1);
   state.workspace = state.invalidation.workspaceTransition.current;
+  state.tanitaPackage = null;
   byId("decision-fieldset").disabled = true;
   byId("save-decision").disabled = true;
   byId("material-change").disabled = true;

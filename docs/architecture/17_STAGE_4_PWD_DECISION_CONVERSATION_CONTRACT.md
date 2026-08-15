@@ -101,6 +101,7 @@ A material Stage 3 handoff change creates a new handoff version and invalidates 
 
 History remains visible. An invalidated workspace rejects further decisions. A new workspace must be built from the exact current handoff.
 The superseded handoff is rejected. After a material change from handoff v1 to v2, the only permitted replacement workspace is derived from the exact active v2 and explicitly supersedes the invalidated workspace lineage.
+For every handoff later than v1, workspace creation requires the exact canonical invalidated predecessor. The new workspace records `supersedes`; an omitted predecessor, a forged predecessor, or a preserved stale-active copy of v1 is rejected instead of starting a disconnected chain.
 Changing an interpretation or other material dependency invalidates every active transitive suggestion, run, decision, or follow-up that names the changed exact version, while retaining both sides of every transition.
 
 ## Isolation and untrusted content
@@ -151,3 +152,22 @@ The fictional prototype must demonstrate at least:
 `PASS` requires all behavioral and static tests, a real-browser desktop and exact 360 × 900 CSS px check, keyboard and visible-focus evidence, no external requests or browser persistence, complete fictional acceptance cases, and a separate read-only reviewer who finds no P0/P1 on the frozen commit/tree.
 
 A pass does not authorize merge, real Tanita ingestion, AI runtime, schema, Supabase, real data, staging, production, deployment, publication, sending, pricing, payment, booking, or a later PRD.
+
+## Canonical session and exact-run addendum
+
+The immutable in-memory session aggregate is the only authority for exact references and lineage tips. Every domain command resolves its inputs from the aggregate. A detached or preserved object is not current merely because its local `status` is `active`; a conflicting representation of `object_id@vN` is rejected.
+
+The decision gate requires:
+
+1. one exact active conversation run belonging to the exact active workspace;
+2. the complete aggregate-resolved current record set for that run;
+3. every expected assisted suggestion lineage to be present;
+4. zero active `ai_suggestion needs_review` records.
+
+Passing an empty or partial record array cannot hide an assisted suggestion. A genuine manual run with zero AI records remains valid. Manual notes name their exact run. Starting a new run closes every active prior-run option and transitively invalidates its active decision and follow-up while retaining history.
+
+A client reaction is a `source_fact needs_review`. Damian must explicitly review the exact version. Only the resulting exact Damian-approved version may enter interpretation or decision provenance, directly or transitively; approval is never automatic.
+
+A fictional Tanita package source names the exact handoff and workspace. Its facts name that source. Comparability and decision save reject a package or fact from handoff/workspace v1 in a workspace derived from v2.
+
+After handoff v1→v2, the canonical v1 record is superseded and every preserved stale-active v1 object is rejected. Workspace creation for any handoff later than v1 requires the exact canonical invalidated predecessor and records `supersedes`; a missing or forged predecessor cannot start a disconnected lineage.

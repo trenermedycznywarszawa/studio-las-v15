@@ -99,3 +99,19 @@ PR #18 was independently reviewed only as historical technical evidence. No PR #
 The Draft PR must remain Draft. A separate read-only reviewer must inspect one frozen commit and tree, repeat desktop, exact 360 × 900, and keyboard checks, and report zero P0/P1 before Damian is asked for a separate merge decision.
 
 An audit pass does not authorize merge, real ingestion, runtime, real data, staging, production, or deployment.
+Every domain action resolves exact references through an immutable in-memory session aggregate. Do not treat a displayed or copied `status` field as authority.
+Client reactions require an explicit exact-version Damian review before use in interpretation or decision evidence.
+It also covers canonical aggregate conflict rejection, complete run-set resolution, manual run ownership, run-triggered transitive invalidation, handoff predecessor continuity, handoff/workspace-bound Tanita, and explicit exact-version client `source_fact` review.
+
+## P1 re-audit procedure
+
+1. In assisted mode, leave all suggestions pending and attempt domain save with an empty set and then with one omitted record; both must reject.
+2. Attempt save without an active run; it must reject. Start a manual run with no AI records; it must pass.
+3. Add a manual option in run 1, prepare run 2, and confirm the old option is visibly invalidated and absent from the active run 2 set.
+4. Save a decision and follow-up, prepare another run, and confirm both dependent active records are invalidated while their original provenance remains visible.
+5. Record a fictional client reaction. Interpretation must reject while it is `needs_review`. Use the explicit Damian approval control for that exact version, then retry successfully.
+6. Trigger handoff v1→v2. Confirm a preserved original v1 object and v2 without the exact invalidated predecessor both reject. Confirm the valid replacement workspace names v2 and `supersedes` the predecessor.
+7. Attempt to assess or use the old Tanita package/fact in the replacement workspace; it must reject.
+8. Repeat the standard desktop, exact 360 × 900 CSS px, keyboard, focus, error, empty-state, storage, cookie, console, and local-request checks.
+
+All steps use fictional fixtures only. Do not enter real data or introduce network, persistence, upload, parser, AI runtime, Supabase, deployment, send, publish, payment, or booking capability.

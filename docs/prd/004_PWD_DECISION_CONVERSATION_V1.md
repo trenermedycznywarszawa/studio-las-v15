@@ -136,3 +136,31 @@ Real data, real AI, PDF upload/parser/OCR, network, persistence, Supabase, Auth,
 - the PR remains Draft;
 - the README records validation and the independent-audit procedure;
 - merge remains a separate Damian decision.
+
+## P1 re-audit contract addendum
+
+### FR-12 — Canonical session authority
+
+An immutable session aggregate resolves every exact reference and current lineage tip. Domain functions reject absent, conflicting, stale, detached, cross-case, or wrong-role records even when the caller supplies `status: active`.
+
+### FR-13 — Exact conversation run completeness
+
+A decision names one exact active run. Its supplied record set must equal the complete current set resolved from the aggregate. Empty or incomplete assisted sets, missing expected suggestions, pending review, and no active run reject. A real manual run with zero AI records passes. Manual options name one exact run, and a new run invalidates prior-run options plus dependent active decision/follow-up without deleting history.
+
+### FR-14 — Continuous handoff, workspace, and Tanita lineage
+
+A later handoff requires the exact invalidated predecessor workspace and the replacement records `supersedes`. Preserved stale-active handoff objects and disconnected chains reject. Tanita package source and facts are bound to the exact current handoff/workspace; v1 material rejects in a v2-derived workspace at comparability and decision save.
+
+### FR-15 — Explicit client source review
+
+Client `source_fact` begins `needs_review`. Damian explicitly approves or rejects the exact version. Only the exact approved version may enter an interpretation or decision directly or transitively; no capture path auto-approves it.
+
+### Required regressions
+
+- empty or partial assisted `conversationRecords` rejects;
+- no active run rejects and genuine zero-AI manual run passes;
+- run 1 manual options are not active in run 2;
+- a new run invalidates dependent active decision/follow-up;
+- preserved handoff v1 and handoff v2 without predecessor reject;
+- v1 Tanita package/fact rejects in the v2 workspace;
+- unreviewed client `source_fact` rejects and its exact Damian-approved version passes.
