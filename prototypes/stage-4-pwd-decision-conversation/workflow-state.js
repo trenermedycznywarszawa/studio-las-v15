@@ -44,20 +44,56 @@ export function createSessionAggregate({ caseId, records }) {
   if (!Array.isArray(records)) throw new Error("Session aggregate records required.");
   assertCaseIsolation(caseId, records);
   const byRef = Object.create(null);
-  const currentById = Object.create(null);
   for (const record of records.filter(Boolean)) {
     const reference = exactRef(record);
     if (byRef[reference] && stableSerialize(byRef[reference]) !== stableSerialize(record)) {
       throw new Error(`Conflicting canonical record for ${reference}.`);
     }
     byRef[reference] = record;
-    const current = currentById[record.id];
-    if (!current || record.version > current.version) currentById[record.id] = record;
+  }
+  const canonicalRecords = Object.values(byRef);
+  const lineages = new Map();
+  for (const record of canonicalRecords) {
+    if (!lineages.has(record.id)) lineages.set(record.id, []);
+    lineages.get(record.id).push(record);
+  }
+  const currentById = Object.create(null);
+  for (const [id, lineage] of lineages) {
+    lineage.sort((left, right) => left.version - right.version);
+    for (let index = 0; index < lineage.length; index += 1) {
+      const record = lineage[index];
+      const expectedVersion = index + 1;
+      if (record.version !== expectedVersion) {
+        throw new Error(`Canonical lineage must be continuous for ${id}: expected v${expectedVersion}, received v${record.version}.`);
+      }
+      if (index === 0) {
+        if (record.supersedes) throw new Error(`First canonical version cannot supersede another record: ${exactRef(record)}.`);
+      } else {
+        const previous = lineage[index - 1];
+        const expectedPrevious = exactRef(previous);
+        if (record.supersedes !== expectedPrevious) {
+          throw new Error(`Canonical lineage has invalid supersedes for ${exactRef(record)}; expected ${expectedPrevious}.`);
+        }
+        if (!["superseded", "invalidated"].includes(previous.status)) {
+          throw new Error(`Canonical predecessor must be superseded or invalidated before ${exactRef(record)}.`);
+        }
+        if (previous.status === "superseded" && previous.supersededBy !== exactRef(record)) {
+          throw new Error(`Canonical lineage has inconsistent supersededBy for ${exactRef(previous)}.`);
+        }
+        if (previous.status === "invalidated" && previous.supersededBy && previous.supersededBy !== exactRef(record)) {
+          throw new Error(`Invalidated predecessor has inconsistent supersededBy for ${exactRef(previous)}.`);
+        }
+      }
+      if (record.status === "superseded" && !lineage[index + 1]) {
+        throw new Error(`Superseded canonical record has no next version: ${exactRef(record)}.`);
+      }
+    }
+    currentById[id] = lineage[lineage.length - 1];
   }
   return immutable({
     kind: "stage4a_session_aggregate",
     caseId,
-    records: Object.values(byRef),
+    records: canonicalRecords,
     byRef,
     currentById
   });
@@ -124,8 +160,8 @@ function assertAppendable(previous, { id, caseId, operationalRole }) {
   if (previous.id !== id || previous.operationalRole !== operationalRole) {
     throw new Error("Previous version does not belong to this record lineage.");
   }
-  if (!["active", "invalidated"].includes(previous.status)) {
-    throw new Error("Only an active or invalidated lineage tip can receive a new version.");
+  if (!["active", "invalidated", "rejected"].includes(previous.status)) {
+    throw new Error("Only an active, invalidated, or rejected lineage tip can receive a new version.");
   }
 }
 
@@ -166,9 +202,22 @@ function appendTransition(previous, current) {
   });
 }
 
-export function makeHandoff(fixture) {
+function resolveImmutableIdentitySet(session, records, label) {
+  if (session?.kind !== "stage4a_session_aggregate") throw new Error("Canonical session aggregate required.");
+  const existing = records.map(record => session.byRef[exactRef(record)] || null);
+  if (!existing.some(Boolean)) return records;
+  if (!existing.every(Boolean)) throw new Error(`${label} identity is incomplete in the canonical session.`);
+  return records.map((record, index) => {
+    if (stableSerialize(existing[index]) !== stableSerialize(record)) {
+      throw new Error(`${label} identity already exists with different immutable content: ${exactRef(record)}.`);
+    }
+    return existing[index];
+  });
+}
+
+export function makeHandoff(fixture, session) {
   const candidates = fixture.candidates.map(item => immutable({ ...item }));
-  return immutable({
+  const proposed = immutable({
     ...base({
       id: `${fixture.id}-stage3-handoff`,
       caseId: fixture.id,
@@ -182,6 +231,7 @@ export function makeHandoff(fixture) {
     candidates,
     reviewState: "approved"
   });
+  return resolveImmutableIdentitySet(session, [proposed], "Stage 3 handoff")[0];
 }
 
 function assertHandoff(handoff, caseId) {
@@ -281,7 +331,10 @@ export function makeTanitaPackage({ fixture, handoff, workspace, session }) {
     sourceLocator: field.locator,
     reviewState: "approved"
   }));
-  return immutable({ source, facts });
+  const canonical = resolveImmutableIdentitySet(
+    session, [source, ...facts], "Prepared fictional Tanita package"
+  );
+  return immutable({ source: canonical[0], facts: canonical.slice(1) });
 }
 
 export function assessComparability({ workspace, tanitaPackage, value, rationale, previous = null, session }) {
@@ -303,7 +356,7 @@ export function assessComparability({ workspace, tanitaPackage, value, rationale
   const id = `${canonicalWorkspace.caseId}-workspace-${canonicalWorkspace.version}-tanita-comparability`;
   const operationalRole = "tanita_comparability_assessment";
   previous = resolveAppendLineageTip(session, previous, {
-    id, caseId: canonicalWorkspace.caseId, operationalRole
+    id, caseId: canonicalWorkspace.caseId, operationalRole, statuses: ["active", "invalidated"]
   });
   const version = previous ? previous.version + 1 : 1;
   const current = immutable({
@@ -343,12 +396,19 @@ export function recordObservation({ workspace, handoff, candidateId, executionSt
   const candidate = findCandidate(canonicalHandoff, candidateId);
   const candidateRef = `${exactRef(canonicalHandoff)}#candidate:${candidate.id}`;
   const entityPrefix = `${canonicalWorkspace.caseId}-workspace-${canonicalWorkspace.version}`;
+  const observationId = `${entityPrefix}-observation-${candidate.id}`;
+  const observationRole = "selected_pwd_observation";
+  const previousObservation = resolveAppendLineageTip(session, null, {
+    id: observationId, caseId: canonicalWorkspace.caseId, operationalRole: observationRole,
+    statuses: ["active", "invalidated"]
+  });
   const observation = immutable({
     ...base({
-      id: `${entityPrefix}-observation-${candidate.id}`,
+      id: observationId,
       caseId: canonicalWorkspace.caseId,
+      version: previousObservation ? previousObservation.version + 1 : 1,
       informationType: "trainer_observation",
-      operationalRole: "selected_pwd_observation",
+      operationalRole: observationRole,
       author: "damian",
       derivedFrom: [exactRef(canonicalWorkspace), exactRef(canonicalHandoff), candidateRef]
     }),
@@ -356,22 +416,33 @@ export function recordObservation({ workspace, handoff, candidateId, executionSt
     candidateLabel: candidate.label,
     executionState,
     content: requireValue(observationText, "Observation or skip/stop reason required."),
-    reviewState: "approved"
+    reviewState: "approved",
+    ...(previousObservation ? { supersedes: exactRef(previousObservation) } : {})
   });
+  const observationTransition = appendTransition(previousObservation, observation);
   const reactionText = clean(clientReaction);
+  const reactionId = `${entityPrefix}-reaction-${candidate.id}`;
+  const reactionRole = "client_reaction_during_pwd";
+  const previousReaction = reactionText ? resolveAppendLineageTip(session, null, {
+    id: reactionId, caseId: canonicalWorkspace.caseId, operationalRole: reactionRole,
+    statuses: ["active", "invalidated", "rejected"]
+  }) : null;
   const reaction = reactionText ? immutable({
     ...base({
-      id: `${entityPrefix}-reaction-${candidate.id}`,
+      id: reactionId,
       caseId: canonicalWorkspace.caseId,
+      version: previousReaction ? previousReaction.version + 1 : 1,
       informationType: "source_fact",
-      operationalRole: "client_reaction_during_pwd",
+      operationalRole: reactionRole,
       author: "fictional_client",
       derivedFrom: [exactRef(canonicalWorkspace), exactRef(observation)]
     }),
     content: reactionText,
-    reviewState: "needs_review"
+    reviewState: "needs_review",
+    ...(previousReaction ? { supersedes: exactRef(previousReaction) } : {})
   }) : null;
-  return immutable({ observation, reaction });
+  const reactionTransition = reaction ? appendTransition(previousReaction, reaction) : null;
+  return immutable({ observationTransition, reactionTransition, observation, reaction });
 }
 
 export function reviewSourceFact({ session, record, action }) {
@@ -450,7 +521,7 @@ export function saveTrainerInterpretation({ workspace, evidence, content, uncert
   const id = `${canonicalWorkspace.caseId}-workspace-${canonicalWorkspace.version}-trainer-interpretation`;
   const operationalRole = "pwd_trainer_interpretation";
   previous = resolveAppendLineageTip(session, previous, {
-    id, caseId: canonicalWorkspace.caseId, operationalRole
+    id, caseId: canonicalWorkspace.caseId, operationalRole, statuses: ["active", "invalidated"]
   });
   const version = previous ? previous.version + 1 : 1;
   const current = immutable({
@@ -509,7 +580,7 @@ export function prepareConversationRun({ fixture, workspace, evidence, mode, pre
   const id = `${canonicalWorkspace.caseId}-workspace-${canonicalWorkspace.version}-conversation-run`;
   const operationalRole = "conversation_preparation_run";
   previousRun = resolveAppendLineageTip(session, previousRun, {
-    id, caseId: canonicalWorkspace.caseId, operationalRole
+    id, caseId: canonicalWorkspace.caseId, operationalRole, statuses: ["active", "invalidated"]
   });
   const version = previousRun ? previousRun.version + 1 : 1;
   const provisionalRun = immutable({
@@ -749,12 +820,18 @@ export function saveDecision({ session, workspace, conversationRun, value, ratio
 
 export function makeFollowupDraft({ session, decision, content }) {
   decision = resolveLineageTip(session, decision, { statuses: ["active"], role: "pwd_outcome" });
-  return immutable({
+  const id = `${decision.id}-v${decision.version}-followup-draft`;
+  const operationalRole = "unsent_followup_draft";
+  const previous = resolveAppendLineageTip(session, null, {
+    id, caseId: decision.caseId, operationalRole, statuses: ["active", "invalidated", "rejected"]
+  });
+  const current = immutable({
     ...base({
-      id: `${decision.id}-v${decision.version}-followup-draft`,
+      id,
       caseId: decision.caseId,
+      version: previous ? previous.version + 1 : 1,
       informationType: "client_material",
-      operationalRole: "unsent_followup_draft",
+      operationalRole,
       author: "damian",
       derivedFrom: [exactRef(decision)]
     }),
@@ -762,8 +839,10 @@ export function makeFollowupDraft({ session, decision, content }) {
     reviewState: "needs_review",
     publicationState: "unpublished",
     visibility: "trainer_only",
-    sendCapability: "none"
+    sendCapability: "none",
+    ...(previous ? { supersedes: exactRef(previous) } : {})
   });
+  return appendTransition(previous, current);
 }
 
 function transitionInvalidated(object, invalidatedBy) {

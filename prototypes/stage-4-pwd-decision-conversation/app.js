@@ -281,6 +281,9 @@ function renderCandidates() {
   root.replaceChildren();
   for (const candidate of state.handoff.candidates) {
     const existing = state.observations.find(item => item.status === "active" && item.candidateId === candidate.id);
+    const existingReaction = existing
+      ? state.reactions.find(item => item.status === "active" && item.derivedFrom.includes(exactRef(existing)))
+      : null;
     const card = node("article", { className: "candidate-card" });
     card.append(
       node("h3", { text: candidate.label }),
@@ -292,21 +295,18 @@ function renderCandidates() {
       ])
     );
     if (existing) {
-      const reaction = state.reactions.find(item => item.status === "active" && item.derivedFrom.includes(exactRef(existing)));
       card.append(
         node("span", { className: "badge", text: existing.executionState }),
         node("p", { text: existing.content }),
-        node("p", { className: "source-line", text: reaction ? `Reakcja klienta: ${reaction.content}` : "Brak zapisanej wypowiedzi klienta." })
+        node("p", { className: "source-line", text: existingReaction ? `Reakcja klienta: ${existingReaction.content}` : "Brak zapisanej wypowiedzi klienta." })
       );
-      if (reaction?.reviewState === "needs_review") {
+      if (existingReaction?.reviewState === "needs_review") {
         card.append(
           node("span", { className: "badge pending", text: "source_fact · needs_review" }),
-          button("Approve exact source_fact", () => applySourceReview(reaction, "approve")),
-          button("Reject source_fact", () => applySourceReview(reaction, "reject"), "button danger")
+          button("Approve exact source_fact", () => applySourceReview(existingReaction, "approve")),
+          button("Reject source_fact", () => applySourceReview(existingReaction, "reject"), "button danger")
         );
       }
-      root.append(card);
-      continue;
     }
     const selected = node("input", { type: "checkbox" });
     const entry = node("div", { className: "candidate-entry", hidden: "" });
@@ -319,14 +319,18 @@ function renderCandidates() {
     ]);
     const observation = node("textarea", { rows: "3" });
     const reaction = node("textarea", { rows: "2" });
+    execution.value = existing?.executionState || "";
+    observation.value = existing?.content || "";
+    reaction.value = existingReaction?.content || "";
     entry.append(
       node("label", { text: "Stan wykonania" }, execution),
       node("label", { text: "Obserwacja Damiana albo powód pominięcia/przerwania" }, observation),
       node("label", { text: "Wypowiedź lub reakcja fikcyjnego klienta — opcjonalnie" }, reaction),
-      button("Zapisz odrębne rekordy", () => {
+      button(existing ? "Zapisz korektę append-only" : "Zapisz odrębne rekordy", () => {
         try {
+          const session = sessionAggregate();
           const result = recordObservation({
-            session: sessionAggregate(),
+            session,
             workspace: state.workspace,
             handoff: state.handoff,
             candidateId: candidate.id,
@@ -334,15 +338,29 @@ function renderCandidates() {
             observationText: observation.value,
             clientReaction: reaction.value
           });
-          state.observations.push(result.observation);
-          if (result.reaction) state.reactions.push(result.reaction);
+          state.observations = appendTransition(state.observations, result.observationTransition);
+          if (result.reactionTransition) {
+            state.reactions = appendTransition(state.reactions, result.reactionTransition);
+          }
+          const changedRecords = [
+            result.observationTransition.previous,
+            result.reactionTransition?.previous
+          ].filter(Boolean);
+          if (changedRecords.length) {
+            const transitions = invalidateDependentRecords({
+              session: sessionAggregate(), changedRecords, invalidatedBy: exactRef(result.observation)
+            });
+            transitions.forEach(applyRecordTransition);
+            if (state.conversationRun?.status !== "active") state.mode = null;
+          }
           renderCandidates();
-          announce("Zapisano oddzielnie obserwację i reakcję klienta.");
+          renderHistory();
+          announce(`Zapisano ${exactRef(result.observation)} jako append-only obserwację Damiana.`);
         } catch (error) { showError("evidence-error", error); }
       })
     );
     card.append(
-      node("label", { className: "choice" }, [selected, document.createTextNode("Damian wybiera tę obserwację")]),
+      node("label", { className: "choice" }, [selected, document.createTextNode(existing ? "Damian koryguje tę obserwację" : "Damian wybiera tę obserwację")]),
       entry
     );
     root.append(card);
@@ -517,7 +535,7 @@ byId("create-workspace").addEventListener("click", () => {
   byId("reset-session").click();
   resetState();
   state.fixture = fixture;
-  state.handoff = makeHandoff(fixture);
+  state.handoff = makeHandoff(fixture, sessionAggregate());
   state.handoffHistory = [state.handoff];
   state.workspace = createWorkspace({ fixture, handoff: state.handoff, session: sessionAggregate() });
   state.workspaceHistory = [state.workspace];
@@ -655,12 +673,13 @@ byId("save-decision").addEventListener("click", () => {
 byId("save-followup").addEventListener("click", () => {
   clearError("followup-error");
   try {
-    state.followup = makeFollowupDraft({
+    const transition = makeFollowupDraft({
       session: sessionAggregate(),
       decision: state.decision,
       content: byId("followup-content").value
     });
-    state.followupHistory.push(state.followup);
+    state.followupHistory = appendTransition(state.followupHistory, transition);
+    state.followup = transition.current;
     byId("followup-content").disabled = true;
     byId("save-followup").disabled = true;
     byId("followup-error").textContent = `${exactRef(state.followup)} · trainer-only · unpublished · zachowany wyłącznie w tej sesji`;

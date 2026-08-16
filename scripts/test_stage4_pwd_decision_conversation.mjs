@@ -50,6 +50,12 @@ function applyTransition(ctx, transition) {
   return transition.current;
 }
 
+function applyObservation(ctx, recorded) {
+  applyTransition(ctx, recorded.observationTransition);
+  if (recorded.reactionTransition) applyTransition(ctx, recorded.reactionTransition);
+  return recorded;
+}
+
 function context(index = 0) {
   const fixture = fixtures[index];
   const ctx = {
@@ -57,7 +63,7 @@ function context(index = 0) {
     records: [],
     aggregate() { return createSessionAggregate({ caseId: fixture.id, records: this.records }); }
   };
-  ctx.handoff = makeHandoff(fixture);
+  ctx.handoff = makeHandoff(fixture, ctx.aggregate());
   put(ctx, ctx.handoff);
   ctx.workspace = createWorkspace({ fixture, handoff: ctx.handoff, session: ctx.aggregate() });
   put(ctx, ctx.workspace);
@@ -127,6 +133,44 @@ check("test harness refuses divergent content under an existing exact reference"
   assert.equal(ctx.workspace.taskId, "conduct_pwd_and_record_trainer_decision");
 });
 
+check("aggregate rejects gaps, wrong supersedes and inconsistent supersededBy before selecting current", () => {
+  const caseId = "fictional-lineage";
+  const id = `${caseId}-record`;
+  const record = (version, status, extra = {}) => Object.freeze({ id, caseId, version, status, ...extra });
+  const ref = version => `${id}@v${version}`;
+
+  assert.throws(() => createSessionAggregate({ caseId, records: [
+    record(1, "superseded", { supersededBy: ref(2) }),
+    record(3, "active", { supersedes: ref(2) })
+  ] }), /continuous.*expected.*v2/i);
+
+  assert.throws(() => createSessionAggregate({ caseId, records: [
+    record(1, "superseded", { supersededBy: ref(2) }),
+    record(2, "active", { supersedes: `${caseId}-other@v1` })
+  ] }), /invalid supersedes.*expected.*@v1/i);
+
+  assert.throws(() => createSessionAggregate({ caseId, records: [
+    record(1, "superseded", { supersededBy: `${caseId}-other@v2` }),
+    record(2, "active", { supersedes: ref(1) })
+  ] }), /inconsistent supersededBy.*@v1/i);
+});
+
+check("aggregate accepts canonical contiguous lines including invalidated to next", () => {
+  const caseId = "fictional-valid-lineage";
+  const id = `${caseId}-record`;
+  const v1 = Object.freeze({ id, caseId, version: 1, status: "invalidated" });
+  const v2 = Object.freeze({ id, caseId, version: 2, status: "active", supersedes: exactRef(v1) });
+  const aggregate = createSessionAggregate({ caseId, records: [v1, v2] });
+  assert.equal(aggregate.currentById[id], v2);
+});
+
+check("immutable handoff identity cannot be regenerated with changed content", () => {
+  const ctx = context(2);
+  assert.equal(makeHandoff(ctx.fixture, ctx.aggregate()), ctx.handoff);
+  const changedFixture = Object.freeze({ ...ctx.fixture, sourceStatement: "Zmieniona treść pod tą samą tożsamością." });
+  assert.throws(() => makeHandoff(changedFixture, ctx.aggregate()), /immutable content/i);
+});
+
 check("task and exact current Stage 3 handoff create one isolated workspace", () => {
   const ctx = context();
   assert.equal(ctx.workspace.taskId, "conduct_pwd_and_record_trainer_decision");
@@ -188,6 +232,22 @@ check("Tanita comparability derives vN+1 from the aggregate when previous is omi
   assert.equal(ctx.records.find(item => exactRef(item) === exactRef(second.current)).rationale, "Porównanie v2.");
 });
 
+check("immutable Tanita package rejects changed content under existing exact references", () => {
+  const ctx = context();
+  const changedFixture = Object.freeze({
+    ...ctx.fixture,
+    tanita: Object.freeze({ ...ctx.fixture.tanita, context: "Zmieniony fikcyjny kontekst." })
+  });
+  assert.throws(() => makeTanitaPackage({
+    fixture: changedFixture, handoff: ctx.handoff, workspace: ctx.workspace, session: ctx.aggregate()
+  }), /already exists with different immutable content/i);
+  const repeated = makeTanitaPackage({
+    fixture: ctx.fixture, handoff: ctx.handoff, workspace: ctx.workspace, session: ctx.aggregate()
+  });
+  assert.equal(repeated.source, ctx.tanitaPackage.source);
+  assert.deepEqual(repeated.facts, ctx.tanitaPackage.facts);
+});
+
 check("observation states remain explicit and bounded", () => {
   assert.deepEqual(OBSERVATION_STATES, ["performed", "skipped", "stopped"]);
   for (const [index, executionState] of OBSERVATION_STATES.entries()) {
@@ -199,6 +259,37 @@ check("observation states remain explicit and bounded", () => {
     });
     assert.equal(recorded.observation.executionState, executionState);
   }
+});
+
+check("observation and reaction corrections append vN+1 and preserve a usable session", () => {
+  const ctx = context(2);
+  const candidateId = ctx.handoff.candidates[0].id;
+  const first = applyObservation(ctx, recordObservation({
+    session: ctx.aggregate(), workspace: ctx.workspace, handoff: ctx.handoff,
+    candidateId, executionState: "performed", observationText: "Obserwacja v1.",
+    clientReaction: "Reakcja v1."
+  }));
+  const second = applyObservation(ctx, recordObservation({
+    session: ctx.aggregate(), workspace: ctx.workspace, handoff: ctx.handoff,
+    candidateId, executionState: "performed", observationText: "Obserwacja v2.",
+    clientReaction: "Reakcja v2."
+  }));
+
+  assert.equal(first.observation.version, 1);
+  assert.equal(second.observation.version, 2);
+  assert.equal(second.observation.supersedes, exactRef(first.observation));
+  assert.equal(first.reaction.version, 1);
+  assert.equal(second.reaction.version, 2);
+  assert.equal(second.reaction.supersedes, exactRef(first.reaction));
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(first.observation)).content, "Obserwacja v1.");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(second.observation)).content, "Obserwacja v2.");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(first.reaction)).content, "Reakcja v1.");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(second.reaction)).content, "Reakcja v2.");
+
+  prepare(ctx, "manual", [ctx.handoff, second.observation]);
+  const saved = decision(ctx, { evidence: [ctx.handoff, second.observation] });
+  applyTransition(ctx, saved);
+  assert.equal(ctx.aggregate().currentById[saved.current.id], saved.current);
 });
 
 check("source_fact needs_review is rejected and exact Damian-approved version passes", () => {
@@ -425,8 +516,9 @@ check("new run invalidates dependent decision and follow-up while preserving his
   prepare(ctx, "manual");
   const saved = decision(ctx);
   applyTransition(ctx, saved);
-  const followup = makeFollowupDraft({ session: ctx.aggregate(), decision: saved.current, content: "Niewysłany szkic." });
-  put(ctx, followup);
+  const followup = applyTransition(ctx, makeFollowupDraft({
+    session: ctx.aggregate(), decision: saved.current, content: "Niewysłany szkic."
+  }));
   const second = prepare(ctx, "manual");
   const roles = new Map(second.dependentTransitions.map(item => [item.previous.operationalRole, item.current]));
   assert.equal(roles.get("pwd_outcome").status, "invalidated");
@@ -461,8 +553,9 @@ check("decision v1 and v2 preserve content and an existing follow-up stays on v1
   prepare(ctx, "manual");
   const first = decision(ctx, { rationale: "Decyzja v1." });
   applyTransition(ctx, first);
-  const followup = makeFollowupDraft({ session: ctx.aggregate(), decision: first.current, content: "Szkic z v1." });
-  put(ctx, followup);
+  const followup = applyTransition(ctx, makeFollowupDraft({
+    session: ctx.aggregate(), decision: first.current, content: "Szkic z v1."
+  }));
   const second = decision(ctx, { value: "NOT_THIS_PRODUCT", rationale: "Decyzja v2.", previous: first.current });
   assert.equal(second.previous.rationale, "Decyzja v1.");
   assert.equal(second.current.rationale, "Decyzja v2.");
@@ -486,12 +579,30 @@ check("decision derives vN+1 from the aggregate when previous is omitted", () =>
   }), /does not match the exact current canonical lineage tip/);
 });
 
+check("follow-up corrections append vN+1 without rewriting v1", () => {
+  const ctx = context(2);
+  prepare(ctx, "manual");
+  const saved = decision(ctx);
+  applyTransition(ctx, saved);
+  const first = makeFollowupDraft({ session: ctx.aggregate(), decision: saved.current, content: "Szkic v1." });
+  applyTransition(ctx, first);
+  const second = makeFollowupDraft({ session: ctx.aggregate(), decision: saved.current, content: "Szkic v2." });
+  applyTransition(ctx, second);
+  assert.equal(first.current.version, 1);
+  assert.equal(second.current.version, 2);
+  assert.equal(second.current.supersedes, exactRef(first.current));
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(first.current)).content, "Szkic v1.");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(second.current)).content, "Szkic v2.");
+});
+
 check("follow-up remains trainer-only unpublished and technically unsendable", () => {
   const ctx = context(2);
   prepare(ctx, "manual");
   const saved = decision(ctx);
   applyTransition(ctx, saved);
-  const followup = makeFollowupDraft({ session: ctx.aggregate(), decision: saved.current, content: "Niewysłany szkic." });
+  const followup = makeFollowupDraft({
+    session: ctx.aggregate(), decision: saved.current, content: "Niewysłany szkic."
+  }).current;
   assert.equal(followup.visibility, "trainer_only");
   assert.equal(followup.publicationState, "unpublished");
   assert.equal(followup.sendCapability, "none");
@@ -573,8 +684,9 @@ check("changing interpretation invalidates dependent run, decision and follow-up
   prepare(ctx, "manual", [ctx.handoff, first.current]);
   const saved = decision(ctx, { evidence: [ctx.handoff, first.current] });
   applyTransition(ctx, saved);
-  const followup = makeFollowupDraft({ session: ctx.aggregate(), decision: saved.current, content: "Szkic." });
-  put(ctx, followup);
+  const followup = applyTransition(ctx, makeFollowupDraft({
+    session: ctx.aggregate(), decision: saved.current, content: "Szkic."
+  }));
   const second = saveTrainerInterpretation({ session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.handoff], content: "v2", uncertainty: "u2", previous: first.current });
   const transitions = invalidateDependentRecords({ session: ctx.aggregate(), changedRecords: [first.current], invalidatedBy: exactRef(second.current) });
   assert.ok(["conversation_preparation_run", "pwd_outcome", "unsent_followup_draft"].every(role => transitions.some(item => item.previous.operationalRole === role)));
