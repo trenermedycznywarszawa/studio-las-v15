@@ -279,6 +279,21 @@ Current Stage 4A status is `OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE C
 
 Neither the audit, acceptance, nor merge authorizes runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, or Stage 5. The canonical plan defines no Stage 4B. Any next stage requires a separate explicit owner decision.
 
+### Stage 4 completion decision
+
+**Decision date:** 2026-08-16
+**Decision owner:** Damian
+
+The owner directed completion of the Stage 4 Completion Gate and autonomous recording of its evidence-based result. The gate maps the complete roadmap Stage 4 scope and exit gate to the accepted Stage 4A contract, prototype, audit, and `52/52 PASS` regression evidence.
+
+Stage 4A demonstrates the exact Stage 3 interview handoff, optional Tanita comparability context, selected performed/skipped/stopped observations, separate client reaction and trainer interpretation, reviewed conversation support with a complete manual fallback, all four explicit trainer decisions, and an unpublished unsendable follow-up. The interface passed the independent professional-conversation, no-sales-pressure, no-diagnosis, responsive, keyboard, provenance, and fail-closed checks.
+
+The only literal ambiguity is the earlier phrase `Tanita PDF ingestion`. It is not a missing Stage 4 product capability: the Execution Plan assigns approved document-ingestion automation and Tanita import-reliability evaluation to Stage 8, only after manual flows work. Requiring real upload, parser, OCR, Storage, or runtime in Stage 4 would reverse the canonical sequence and expand risk before product value is proven.
+
+Therefore Stage 4 is `OWNER ACCEPTED, MERGED AND CLOSED — BOUNDED FICTIONAL PROTOTYPE CONTRACT ONLY`. Stage 4A remains the delivery-slice and evidence name; it satisfies the whole Stage 4 product contract. No Stage 4B exists or is required.
+
+This decision does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, or Stage 5. Starting Stage 5 requires a separate explicit owner decision.
+
 ## Production entry rule
 
 Production may not proceed until:

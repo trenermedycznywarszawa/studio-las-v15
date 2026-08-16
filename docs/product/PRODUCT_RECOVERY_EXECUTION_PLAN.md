@@ -1,7 +1,7 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGES 0–4A OWNER ACCEPTED, MERGED AND CLOSED; IMPLEMENTATION NOT AUTHORIZED
-**Version:** 2.6
+**Status:** STAGES 0–4 OWNER ACCEPTED, MERGED AND CLOSED AS BOUNDED FICTIONAL PROTOTYPE CONTRACTS; IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.7
 **Updated:** 2026-08-16
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
@@ -295,7 +295,7 @@ Requirements:
 Combine in one client context:
 
 - interview,
-- Tanita PDF ingestion and comparable-measurement context,
+- optional Tanita evidence from a prepared package and comparable-measurement context; real PDF upload, parsing, OCR, and import-reliability automation remain Stage 8 concerns,
 - selected functional tests,
 - observation, client reaction, trainer interpretation, and decision,
 - AI-prepared conversation options,
@@ -304,9 +304,11 @@ Combine in one client context:
 
 **Exit gate:** the workspace supports a good professional decision and conversation; it does not pressure a sale or turn a test result into a diagnosis.
 
-**Stage 4A closure record:** `OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY`. Damian accepted Stage 4A on 2026-08-16 after an independent read-only audit reported `0 P0 / 0 P1` and the Stage 4A suite reached `52/52 PASS`. Exact accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca` were merged through PR #25 as merge commit `149fb9538a2491bed5cbf71c6885fe789247d541`.
+**Stage 4 completion record:** `OWNER ACCEPTED, MERGED AND CLOSED — BOUNDED FICTIONAL PROTOTYPE CONTRACT ONLY`. Stage 4A is the delivery slice that proves the complete Stage 4 product contract and exit gate. Damian accepted Stage 4A on 2026-08-16 after an independent read-only audit reported `0 P0 / 0 P1` and the suite reached `52/52 PASS`. Exact accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca` were merged through PR #25 as merge commit `149fb9538a2491bed5cbf71c6885fe789247d541`.
 
-This closes only the bounded, offline, session-memory, fictitious Stage 4A prototype contract. It does not start or accept the remainder of Stage 4 or Stage 5. The canonical plan does not define a Stage 4B. Any next stage requires a separate explicit owner decision.
+The subsequent read-only Stage 4 Completion Gate mapped every Stage 4 scope item and the roadmap exit gate to that accepted evidence. Interview context arrives through the exact Stage 3 handoff; Tanita comparability, selected observations, client reaction, trainer interpretation, reviewed conversation options, all four decisions, and the unsendable follow-up are demonstrated. The phrase `Tanita PDF ingestion` does not require real upload/parser/OCR in Stage 4: Stage 8 assigns approved document-ingestion automation and Tanita import-reliability evaluation to the period after manual flows work. No product-contract gap remains, and no Stage 4B is required.
+
+This closes Stage 4 only as a bounded fictional product-contract prototype. It does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, or Stage 5. Stage 5 requires a separate explicit owner decision.
 
 ### Stage 5 — Twelve-week program and client portal
 
@@ -415,13 +417,14 @@ Only after the manual flows work:
 | STG-02 | DONE | Inquiry → phone → Damian decision contract and fictional prototype owner accepted and merged | PR #22; merge `040bce6303c9138ba3b1af6366def54c21bd157c`; Chrome audit PASS; 8/8 regression PASS; 18/18 Stage 2 contract PASS; owner accepted 2026-08-10 |
 | STG-03 | DONE | Adaptive full intake → traceable PWD brief → Damian readiness decision | Owner accepted 2026-08-11; PR #23 merge `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`; independent read-only audit PASS 2026-08-10 on exact head `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`; controlled source archive P2 closed 2026-08-11 at private package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2` |
 | STG-04A | DONE | Fictitious PWD decision-conversation prototype contract owner accepted, merged, and closed | Owner accepted 2026-08-16; PR #25; accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b`; tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca`; merge `149fb9538a2491bed5cbf71c6885fe789247d541`; independent audit `0 P0 / 0 P1`; Stage 4A `52/52 PASS`; implementation not authorized |
+| STG-04 | DONE | PWD workspace and decision-conversation product contract completed by Stage 4A evidence; full roadmap Stage 4 closed | Stage 4 Completion Gate 2026-08-16; all scope/exit-gate requirements mapped; real document ingestion and Tanita import automation remain Stage 8; no Stage 4B; implementation not authorized |
 
 ---
 
 ## 10. Next action
 
-Stages 0–4A are owner accepted, merged, and closed as bounded fictional prototype contracts. The narrow PRD exceptions remain historical entry decisions and do not replace the later, separate owner acceptance decisions. Stage 4A was accepted and merged on 2026-08-16 only for exact head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca`, after an independent audit reported `0 P0 / 0 P1` and the suite reached `52/52 PASS`.
+Stages 0–4 are owner accepted, merged, and closed as bounded fictional prototype contracts. The narrow PRD exceptions remain historical entry decisions and do not replace the later, separate owner acceptance decisions. Stage 4A was accepted and merged on 2026-08-16 for exact head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca`, after an independent audit reported `0 P0 / 0 P1` and the suite reached `52/52 PASS`.
 
-The accepted Stage 4A task is `conduct_pwd_and_record_trainer_decision`, contract `stage4-v1`. Its merge closes only the fictitious offline prototype contract; it does not create runtime authority or begin another stage.
+The Stage 4 Completion Gate confirms that the accepted Stage 4A task `conduct_pwd_and_record_trainer_decision`, contract `stage4-v1`, demonstrates the full Stage 4 product scope and exit gate. Stage 4A remains the delivery-slice name; it is not evidence of an undefined remaining Stage 4 segment. Real document ingestion and Tanita import reliability belong to Stage 8 and do not keep Stage 4 open.
 
-PR #18 remains frozen. Runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, and Stage 5 remain unauthorized. The remainder of Stage 4 has not been started or accepted automatically, the canonical plan defines no Stage 4B, and any next stage requires a separate explicit owner decision.
+PR #18 remains frozen. Runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, and Stage 5 remain unauthorized. Stage 4 is closed; beginning Stage 5 requires a separate explicit owner decision.

@@ -109,7 +109,9 @@ Passing this gate alone did not authorize merge. The later, separate owner decis
 
 Stage 4A was owner accepted and merged on 2026-08-16 as `OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY`. The independent audit of accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca` reported `0 P0 / 0 P1`; the Stage 4A suite reached `52/52 PASS`; PR #25 merged as `149fb9538a2491bed5cbf71c6885fe789247d541`.
 
-This merge does not close or authorize the full Stage 4 ingestion/runtime problem. It does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, or Stage 5. The canonical plan defines no Stage 4B. Any next stage requires a separate explicit owner decision.
+This Stage 4A closure did not by itself authorize runtime or another stage. The later read-only Stage 4 Completion Gate on 2026-08-16 mapped every Stage 4 roadmap requirement and the exit gate to the accepted prototype evidence and found no remaining product-contract gap. The earlier phrase `Tanita PDF ingestion` is resolved by the canonical Stage 8 rule: approved document-ingestion automation and Tanita import-reliability evaluation occur only after manual flows work. Stage 4 is therefore `OWNER ACCEPTED, MERGED AND CLOSED — BOUNDED FICTIONAL PROTOTYPE CONTRACT ONLY`; Stage 4A remains its delivery-slice and evidence name, and no Stage 4B is required.
+
+This decision does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, or Stage 5. Starting Stage 5 requires a separate explicit owner decision.
 
 ## Canonical session safeguards
 
