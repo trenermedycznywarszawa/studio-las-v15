@@ -36,8 +36,11 @@ function put(ctx, ...records) {
   for (const record of records.filter(Boolean)) {
     const reference = exactRef(record);
     const existing = ctx.records.findIndex(item => exactRef(item) === reference);
-    if (existing >= 0) ctx.records[existing] = record;
-    else ctx.records.push(record);
+    if (existing >= 0) {
+      assert.deepEqual(ctx.records[existing], record, `Harness refuses divergent exact-ref upsert for ${reference}.`);
+    } else {
+      ctx.records.push(record);
+    }
   }
 }
 
@@ -117,11 +120,26 @@ check("canonical immutable aggregate resolves exact references and rejects confl
   assert.throws(() => resolveExactReference(session, forged, { current: true }), /conflicts with canonical/);
 });
 
+check("test harness refuses divergent content under an existing exact reference", () => {
+  const ctx = context();
+  const rewrite = Object.freeze({ ...ctx.workspace, taskId: "rewritten-under-same-ref" });
+  assert.throws(() => put(ctx, rewrite), /Harness refuses divergent exact-ref upsert/);
+  assert.equal(ctx.workspace.taskId, "conduct_pwd_and_record_trainer_decision");
+});
+
 check("task and exact current Stage 3 handoff create one isolated workspace", () => {
   const ctx = context();
   assert.equal(ctx.workspace.taskId, "conduct_pwd_and_record_trainer_decision");
   assert.equal(ctx.workspace.contractVersion, "stage4-v1");
   assert.equal(ctx.workspace.currentHandoffRef, exactRef(ctx.handoff));
+});
+
+check("existing workspace lineage cannot be rewritten as another v1", () => {
+  const ctx = context();
+  assert.throws(() => createWorkspace({
+    fixture: ctx.fixture, handoff: ctx.handoff, session: ctx.aggregate()
+  }), /allowed canonical lineage tip|previous canonical lineage tip/);
+  assert.equal(ctx.workspace.version, 1);
 });
 
 check("Tanita is optional and package is bound to exact handoff and workspace", () => {
@@ -150,6 +168,24 @@ check("Tanita comparability is explicit, unscored, versioned and Damian-owned", 
   const second = assessComparability({ session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage, value: "comparable", rationale: "Druga.", previous: first.current });
   assert.equal(second.previous.status, "superseded");
   assert.equal(second.current.supersedes, exactRef(first.current));
+});
+
+check("Tanita comparability derives vN+1 from the aggregate when previous is omitted", () => {
+  const ctx = context();
+  const first = assessComparability({
+    session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage,
+    value: "unknown", rationale: "Porównanie v1."
+  });
+  applyTransition(ctx, first);
+  const second = assessComparability({
+    session: ctx.aggregate(), workspace: ctx.workspace, tanitaPackage: ctx.tanitaPackage,
+    value: "comparable", rationale: "Porównanie v2."
+  });
+  applyTransition(ctx, second);
+  assert.equal(second.current.version, 2);
+  assert.equal(second.current.supersedes, exactRef(first.current));
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(first.current)).rationale, "Porównanie v1.");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(second.current)).rationale, "Porównanie v2.");
 });
 
 check("observation states remain explicit and bounded", () => {
@@ -208,6 +244,62 @@ check("source_fact cannot enter a decision indirectly through an unreviewed inte
   assert.throws(() => decision(ctx, { evidence: [forgedInterpretation] }), /source_fact requires Damian review/);
 });
 
+check("interpretation with an unresolved source_fact provenance blocks decision", () => {
+  const ctx = context(2);
+  const interpretation = Object.freeze({
+    id: `${ctx.fixture.id}-unresolved-source-interpretation`, caseId: ctx.fixture.id, version: 1,
+    informationType: "trainer_interpretation", operationalRole: "pwd_trainer_interpretation",
+    author: "damian", derivedFrom: [exactRef(ctx.workspace), `${ctx.fixture.id}-missing-source-fact@v1`],
+    status: "active", visibility: "trainer_only", publicationState: "unpublished",
+    reviewState: "approved", content: "Niekompletny graf.", uncertainty: "Brak źródła."
+  });
+  put(ctx, interpretation);
+  prepare(ctx, "manual", [ctx.handoff]);
+  assert.throws(() => decision(ctx, { evidence: [interpretation] }), /Exact reference is not present.*missing-source-fact/);
+});
+
+check("unresolved exact object reference in derivedFrom is rejected", () => {
+  const ctx = context(2);
+  const observation = Object.freeze({
+    id: `${ctx.fixture.id}-unresolved-observation`, caseId: ctx.fixture.id, version: 1,
+    informationType: "trainer_observation", operationalRole: "selected_pwd_observation",
+    author: "damian", derivedFrom: [`${ctx.fixture.id}-missing-object@v1`], status: "active",
+    visibility: "trainer_only", publicationState: "unpublished", reviewState: "approved", content: "Niekompletny graf."
+  });
+  put(ctx, observation);
+  prepare(ctx, "manual", [ctx.handoff]);
+  assert.throws(() => decision(ctx, { evidence: [observation] }), /Exact reference is not present.*missing-object/);
+});
+
+check("missing Tanita package, fact, or comparison blocks decision", () => {
+  const missingPackage = context();
+  const orphanFact = Object.freeze({
+    id: `${missingPackage.fixture.id}-orphan-tanita-fact`, caseId: missingPackage.fixture.id, version: 1,
+    informationType: "extracted_fact", operationalRole: "prepared_fictional_tanita_fact",
+    author: "fictional_fixture", derivedFrom: [`${missingPackage.fixture.id}-missing-package@v1`],
+    status: "active", visibility: "trainer_only", publicationState: "unpublished", reviewState: "approved"
+  });
+  put(missingPackage, orphanFact);
+  prepare(missingPackage, "manual", [missingPackage.handoff]);
+  assert.throws(() => decision(missingPackage, { evidence: [orphanFact] }), /Exact reference is not present.*missing-package/);
+
+  const missingFact = context();
+  const incompleteComparison = Object.freeze({
+    id: `${missingFact.fixture.id}-incomplete-comparison`, caseId: missingFact.fixture.id, version: 1,
+    informationType: "trainer_interpretation", operationalRole: "tanita_comparability_assessment",
+    author: "damian", derivedFrom: [exactRef(missingFact.workspace), exactRef(missingFact.tanitaPackage.source), `${missingFact.fixture.id}-missing-tanita-fact@v1`],
+    status: "active", visibility: "trainer_only", publicationState: "unpublished", reviewState: "approved",
+    value: "unknown", rationale: "Niekompletne porównanie."
+  });
+  put(missingFact, incompleteComparison);
+  prepare(missingFact, "manual", [missingFact.handoff]);
+  assert.throws(() => decision(missingFact, { evidence: [incompleteComparison] }), /Exact reference is not present.*missing-tanita-fact/);
+
+  const missingComparison = context();
+  prepare(missingComparison, "manual", [missingComparison.handoff]);
+  assert.throws(() => decision(missingComparison, { evidence: [missingComparison.tanitaPackage.facts[0]] }), /Tanita facts require/);
+});
+
 check("interpretation versions preserve content, exact lineage and nested immutability", () => {
   const ctx = context();
   const first = saveTrainerInterpretation({ session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.handoff], content: "Treść v1.", uncertainty: "Niepewność v1." });
@@ -220,12 +312,46 @@ check("interpretation versions preserve content, exact lineage and nested immuta
   assert.throws(() => second.current.derivedFrom.push("forged@v1"), TypeError);
 });
 
+check("interpretation derives vN+1 from the aggregate when previous is omitted", () => {
+  const ctx = context(2);
+  const first = saveTrainerInterpretation({
+    session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.handoff], content: "Treść v1.", uncertainty: "U1."
+  });
+  applyTransition(ctx, first);
+  const second = saveTrainerInterpretation({
+    session: ctx.aggregate(), workspace: ctx.workspace, evidence: [ctx.handoff], content: "Treść v2.", uncertainty: "U2."
+  });
+  applyTransition(ctx, second);
+  assert.equal(second.current.version, 2);
+  assert.equal(second.current.supersedes, exactRef(first.current));
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(first.current)).content, "Treść v1.");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(second.current)).content, "Treść v2.");
+});
+
 check("simulated assisted run creates complete needs_review records", () => {
   const ctx = context();
   const prepared = prepare(ctx, "assisted");
   assert.ok(prepared.suggestions.length > 0);
   assert.deepEqual(ctx.run.expectedConversationOptionIds, prepared.suggestions.map(item => item.id));
   assert.ok(prepared.suggestions.every(item => item.reviewState === "needs_review" && item.conversationRunRef === exactRef(ctx.run)));
+});
+
+check("conversation run derives vN+1 from the aggregate when previousRun is omitted", () => {
+  const ctx = context(2);
+  prepare(ctx, "manual");
+  const firstRun = ctx.run;
+  const second = prepareConversationRun({
+    session: ctx.aggregate(), fixture: ctx.fixture, workspace: ctx.workspace,
+    evidence: [ctx.handoff], mode: "assisted"
+  });
+  second.invalidationTransitions.forEach(transition => applyTransition(ctx, transition));
+  applyTransition(ctx, second.runTransition);
+  put(ctx, ...second.suggestions);
+  assert.equal(second.runTransition.current.version, 2);
+  assert.equal(second.runTransition.current.supersedes, exactRef(firstRun));
+  assert.equal(second.runTransition.previous.mode, "manual");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(firstRun)).mode, "manual");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(second.runTransition.current)).mode, "assisted");
 });
 
 check("suggestion approve edit and reject append exact review versions", () => {
@@ -342,6 +468,22 @@ check("decision v1 and v2 preserve content and an existing follow-up stays on v1
   assert.equal(second.current.rationale, "Decyzja v2.");
   assert.deepEqual(followup.derivedFrom, [exactRef(first.current)]);
   assert.notEqual(followup.derivedFrom[0], exactRef(second.current));
+});
+
+check("decision derives vN+1 from the aggregate when previous is omitted", () => {
+  const ctx = context(2);
+  prepare(ctx, "manual");
+  const first = decision(ctx, { rationale: "Decyzja v1." });
+  applyTransition(ctx, first);
+  const second = decision(ctx, { value: "NOT_THIS_PRODUCT", rationale: "Decyzja v2." });
+  applyTransition(ctx, second);
+  assert.equal(second.current.version, 2);
+  assert.equal(second.current.supersedes, exactRef(first.current));
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(first.current)).rationale, "Decyzja v1.");
+  assert.equal(ctx.records.find(item => exactRef(item) === exactRef(second.current)).rationale, "Decyzja v2.");
+  assert.throws(() => decision(ctx, {
+    value: "DEFER_CONSULT", rationale: "Nie zapisuj.", previous: exactRef(first.current)
+  }), /does not match the exact current canonical lineage tip/);
 });
 
 check("follow-up remains trainer-only unpublished and technically unsendable", () => {

@@ -129,6 +129,28 @@ function assertAppendable(previous, { id, caseId, operationalRole }) {
   }
 }
 
+function resolveAppendLineageTip(session, suppliedPrevious, {
+  id, caseId, operationalRole, statuses = ["active"], requirePreviousWhenExisting = false
+}) {
+  if (session?.kind !== "stage4a_session_aggregate") throw new Error("Canonical session aggregate required.");
+  const aggregateTip = session.currentById[id] || null;
+  if (!aggregateTip) {
+    if (suppliedPrevious) throw new Error("Previous version does not match an existing canonical lineage.");
+    return null;
+  }
+  const canonicalTip = resolveLineageTip(session, aggregateTip, { statuses, role: operationalRole });
+  assertAppendable(canonicalTip, { id, caseId, operationalRole });
+  if (!suppliedPrevious) {
+    if (requirePreviousWhenExisting) throw new Error("Exact previous canonical lineage tip required.");
+    return canonicalTip;
+  }
+  const supplied = resolveExactReference(session, suppliedPrevious, { role: operationalRole });
+  if (exactRef(supplied) !== exactRef(canonicalTip)) {
+    throw new Error("Previous version does not match the exact current canonical lineage tip.");
+  }
+  return canonicalTip;
+}
+
 function appendTransition(previous, current) {
   if (!previous) return immutable({ previous: null, current });
   const priorRef = exactRef(previous);
@@ -175,6 +197,7 @@ function assertHandoff(handoff, caseId) {
 }
 
 export function createWorkspace({ fixture, handoff, previousWorkspace = null, session }) {
+  const operationalRole = "pwd_decision_workspace";
   const canonicalHandoff = resolveLineageTip(session, handoff, {
     statuses: ["active"], role: "stage3_pwd_readiness_handoff"
   });
@@ -187,15 +210,13 @@ export function createWorkspace({ fixture, handoff, previousWorkspace = null, se
       throw new Error("Later handoff chain is incomplete in the canonical session.");
     }
   }
+  previousWorkspace = resolveAppendLineageTip(session, previousWorkspace, {
+    id, caseId: fixture.id, operationalRole, statuses: ["invalidated"], requirePreviousWhenExisting: true
+  });
   if (previousWorkspace) {
-    const canonicalPrevious = resolveLineageTip(session, previousWorkspace, { statuses: ["invalidated"] });
-    if (canonicalPrevious.id !== id) {
-      throw new Error("A new workspace requires the invalidated previous workspace.");
-    }
-    if (canonicalPrevious.invalidatedBy !== exactRef(canonicalHandoff)) {
+    if (previousWorkspace.invalidatedBy !== exactRef(canonicalHandoff)) {
       throw new Error("New workspace must use the exact handoff that invalidated the previous workspace.");
     }
-    previousWorkspace = canonicalPrevious;
   }
   const version = previousWorkspace ? previousWorkspace.version + 1 : 1;
   return immutable({
@@ -203,7 +224,7 @@ export function createWorkspace({ fixture, handoff, previousWorkspace = null, se
       id,
       caseId: fixture.id,
       version,
-      operationalRole: "pwd_decision_workspace",
+      operationalRole,
       author: "damian",
       derivedFrom: [exactRef(canonicalHandoff)]
     }),
@@ -281,8 +302,9 @@ export function assessComparability({ workspace, tanitaPackage, value, rationale
   oneOf(value, COMPARABILITY, "Explicit Tanita comparability required.");
   const id = `${canonicalWorkspace.caseId}-workspace-${canonicalWorkspace.version}-tanita-comparability`;
   const operationalRole = "tanita_comparability_assessment";
-  if (previous) previous = resolveLineageTip(session, previous, { statuses: ["active"], role: operationalRole });
-  assertAppendable(previous, { id, caseId: canonicalWorkspace.caseId, operationalRole });
+  previous = resolveAppendLineageTip(session, previous, {
+    id, caseId: canonicalWorkspace.caseId, operationalRole
+  });
   const version = previous ? previous.version + 1 : 1;
   const current = immutable({
     ...base({
@@ -372,21 +394,47 @@ export function reviewSourceFact({ session, record, action }) {
   return immutable({ previous, current });
 }
 
-function assertReviewedSourceFactGraph(session, evidence) {
-  const pending = [...evidence.map(exactRef)];
+const EXACT_OBJECT_REFERENCE = /^.+@v[1-9]\d*$/;
+const CANDIDATE_LOCATOR = /^(.+@v[1-9]\d*)#candidate:([^#]+)$/;
+
+function resolveProvenanceObject(session, reference) {
+  if (typeof reference !== "string") throw new Error("Provenance reference must be a string.");
+  const candidate = reference.match(CANDIDATE_LOCATOR);
+  if (candidate) {
+    const handoff = resolveExactReference(session, candidate[1], { role: "stage3_pwd_readiness_handoff" });
+    if (!(handoff.candidates || []).some(item => item.id === candidate[2])) {
+      throw new Error(`Candidate locator is not present in the exact handoff: ${reference}.`);
+    }
+    return handoff;
+  }
+  if (!EXACT_OBJECT_REFERENCE.test(reference)) {
+    throw new Error(`Unsupported provenance reference: ${reference}.`);
+  }
+  return resolveExactReference(session, reference);
+}
+
+function completeProvenanceGraph(session, roots) {
+  const pending = [...roots.map(exactRef)];
   const visited = new Set();
+  const graph = [];
   while (pending.length) {
     const reference = pending.pop();
     if (visited.has(reference)) continue;
     visited.add(reference);
     const object = resolveExactReference(session, reference);
-    if (object.informationType === "source_fact") {
-      if (object.status !== "active" || object.reviewState !== "approved" || object.reviewedBy !== "damian") {
-        throw new Error(`source_fact requires Damian review of the exact version: ${reference}.`);
-      }
-    }
+    graph.push(object);
     for (const derivedReference of object.derivedFrom || []) {
-      if (!derivedReference.includes("#") && session.byRef[derivedReference]) pending.push(derivedReference);
+      pending.push(exactRef(resolveProvenanceObject(session, derivedReference)));
+    }
+  }
+  return graph;
+}
+
+function assertReviewedSourceFactGraph(session, evidence) {
+  for (const object of completeProvenanceGraph(session, evidence)) {
+    if (object.informationType === "source_fact" &&
+      (object.status !== "active" || object.reviewState !== "approved" || object.reviewedBy !== "damian")) {
+      throw new Error(`source_fact requires Damian review of the exact version: ${exactRef(object)}.`);
     }
   }
 }
@@ -398,11 +446,12 @@ export function saveTrainerInterpretation({ workspace, evidence, content, uncert
   const canonicalEvidence = evidence.map(object => resolveLineageTip(session, object, { statuses: ["active"] }));
   assertCaseIsolation(canonicalWorkspace.caseId, [canonicalWorkspace, ...canonicalEvidence]);
   if (!evidence.length) throw new Error("Interpretation requires exact evidence.");
-  assertReviewedSourceFactGraph(session, canonicalEvidence);
+  assertReviewedSourceFactGraph(session, [canonicalWorkspace, ...canonicalEvidence]);
   const id = `${canonicalWorkspace.caseId}-workspace-${canonicalWorkspace.version}-trainer-interpretation`;
   const operationalRole = "pwd_trainer_interpretation";
-  if (previous) previous = resolveLineageTip(session, previous, { statuses: ["active"], role: operationalRole });
-  assertAppendable(previous, { id, caseId: canonicalWorkspace.caseId, operationalRole });
+  previous = resolveAppendLineageTip(session, previous, {
+    id, caseId: canonicalWorkspace.caseId, operationalRole
+  });
   const version = previous ? previous.version + 1 : 1;
   const current = immutable({
     ...base({
@@ -456,11 +505,12 @@ export function prepareConversationRun({ fixture, workspace, evidence, mode, pre
   const canonicalEvidence = evidence.map(object => resolveLineageTip(session, object, { statuses: ["active"] }));
   oneOf(mode, CONVERSATION_MODES, "Explicit conversation preparation mode required.");
   assertCaseIsolation(canonicalWorkspace.caseId, [canonicalWorkspace, ...canonicalEvidence]);
-  assertReviewedSourceFactGraph(session, canonicalEvidence);
+  assertReviewedSourceFactGraph(session, [canonicalWorkspace, ...canonicalEvidence]);
   const id = `${canonicalWorkspace.caseId}-workspace-${canonicalWorkspace.version}-conversation-run`;
   const operationalRole = "conversation_preparation_run";
-  if (previousRun) previousRun = resolveLineageTip(session, previousRun, { statuses: ["active"], role: operationalRole });
-  assertAppendable(previousRun, { id, caseId: canonicalWorkspace.caseId, operationalRole });
+  previousRun = resolveAppendLineageTip(session, previousRun, {
+    id, caseId: canonicalWorkspace.caseId, operationalRole
+  });
   const version = previousRun ? previousRun.version + 1 : 1;
   const provisionalRun = immutable({
     ...base({
@@ -623,19 +673,7 @@ function normalizeConditions(value, conditions) {
 }
 
 function assertTanitaEvidence(session, workspace, evidence) {
-  const graph = [];
-  const pending = evidence.map(exactRef);
-  const visited = new Set();
-  while (pending.length) {
-    const reference = pending.pop();
-    if (visited.has(reference)) continue;
-    visited.add(reference);
-    const object = resolveExactReference(session, reference);
-    graph.push(object);
-    for (const derivedReference of object.derivedFrom || []) {
-      if (!derivedReference.includes("#") && session.byRef[derivedReference]) pending.push(derivedReference);
-    }
-  }
+  const graph = completeProvenanceGraph(session, evidence);
   const facts = graph.filter(item => item.operationalRole === "prepared_fictional_tanita_fact");
   if (!facts.length) return;
   const comparisons = graph.filter(item => item.operationalRole === "tanita_comparability_assessment" && item.status === "active");
@@ -676,12 +714,14 @@ export function saveDecision({ session, workspace, conversationRun, value, ratio
   const canonicalEvidence = evidence.map(object => resolveLineageTip(session, object, { statuses: ["active"] }));
   const canonicalConversationRecords = conversationRecordsForRun({ session, run: canonicalRun });
   assertCaseIsolation(canonicalWorkspace.caseId, [canonicalWorkspace, canonicalRun, ...canonicalConversationRecords, ...canonicalEvidence]);
-  assertReviewedSourceFactGraph(session, canonicalEvidence);
-  assertTanitaEvidence(session, canonicalWorkspace, canonicalEvidence);
+  const decisionRoots = [canonicalWorkspace, canonicalRun, ...canonicalConversationRecords, ...canonicalEvidence];
+  assertReviewedSourceFactGraph(session, decisionRoots);
+  assertTanitaEvidence(session, canonicalWorkspace, decisionRoots);
   const id = `${canonicalWorkspace.caseId}-workspace-${canonicalWorkspace.version}-stage4a-decision`;
   const operationalRole = "pwd_outcome";
-  if (previous) previous = resolveLineageTip(session, previous, { statuses: ["active", "invalidated"], role: operationalRole });
-  assertAppendable(previous, { id, caseId: canonicalWorkspace.caseId, operationalRole });
+  previous = resolveAppendLineageTip(session, previous, {
+    id, caseId: canonicalWorkspace.caseId, operationalRole, statuses: ["active", "invalidated"]
+  });
   const version = previous ? previous.version + 1 : 1;
   const provenance = [...new Set([
     exactRef(canonicalWorkspace), exactRef(canonicalRun),
