@@ -253,6 +253,19 @@ The separate read-only audit completed with `PASS` on 2026-08-10 for exact commi
 
 This later decision accepts and closes Stage 3 only as the isolated fictional prototype contract defined by PRD 003. The controlled source archive P2 was closed on 2026-08-11 by private controlled-repository package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2`; package SHA-256, wrong-password filename privacy, checksum, clean restore, restored hashes, encrypted backup, and cleanup are recorded in `docs/product/STAGE_3_SOURCE_ARTIFACT_MANIFEST.md`, with controlled access governed by the private repository's `stage-3/ACCESS_PROCEDURE.md`. This does not authorize deployment, production, staging, Supabase, Auth, MFA, RLS, Storage, Edge Functions, schema, SQL, migrations, an AI runtime, real client data, PR #18, or Stage 4. Starting Stage 4 requires a separate explicit owner decision.
 
+### Narrow Stage 4A fictional prototype exception
+
+**Decision date:** 2026-08-11
+**Decision owner:** Damian
+
+> Zatwierdzam rozpoczęcie Etapu 4 wyłącznie jako odizolowany fikcyjny prototyp: Stage 4A — fictional PWD decision conversation. Akceptuję task `conduct_pwd_and_record_trainer_decision`, wersja `stage4-v1`.
+
+PRD 004 may exist only as the contract for the isolated, deterministic, fictional Stage 4A prototype. This is a narrow exception to the general PRD entry rule; it does not change that rule and does not extend to a real runtime, later PRDs, a canonical test catalogue, production architecture, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, a real AI provider or model, real Tanita ingestion, real client data, staging, production, deployment, publication, sending, pricing, payment, or booking.
+
+Stage 4A may use only pseudonymous fictional fixtures, a pre-prepared fictional Tanita package, deterministic simulated AI suggestions marked `needs_review`, and session-memory state without network or persistence. Tanita is optional. Its absence and AI unavailability must not block the manual workflow. The four decisions are equal and unselected by default: `START`, `START_CONDITIONAL`, `DEFER_CONSULT`, and `NOT_THIS_PRODUCT`. Only Damian may create the decision and any conditions.
+
+The implementation must start directly from `product-recovery@65a65f192225fb4f30dc658dd02aa750ec8eab69` in a clean separate worktree. PR #18 and its branch are not an implementation base and remain untouched. The Stage 4A pull request stays Draft until an independent read-only audit and a separate owner merge decision.
+
 ## Production entry rule
 
 Production may not proceed until:
