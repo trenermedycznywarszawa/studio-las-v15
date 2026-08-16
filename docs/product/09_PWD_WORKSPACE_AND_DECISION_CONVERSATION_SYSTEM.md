@@ -1,10 +1,16 @@
 # 09 PWD Workspace and Decision Conversation System
 
-- **Status:** OWNER AUTHORIZED FOR DRAFT FICTITIOUS PROTOTYPE ONLY
+- **Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
 - **Owner:** Damian
 - **Stage:** 4A
 - **Task:** `conduct_pwd_and_record_trainer_decision`
 - **Contract version:** `stage4-v1`
+- **Owner acceptance and merge date:** 2026-08-16
+- **Accepted head:** `ad101c87e4eca13ce18517ec9cc8b9277392756b`
+- **Accepted tree:** `41747abd450c60e6f9a2b8c85fb41dae04a1efca`
+- **Merge commit:** `149fb9538a2491bed5cbf71c6885fe789247d541`
+- **Pull request:** PR #25
+- **Independent audit / regression:** `0 P0 / 0 P1`; `52/52 PASS`
 
 ## Purpose
 
@@ -97,7 +103,13 @@ On fictional cases Damian can review one exact Stage 3 handoff, work with or wit
 
 The interface supports a calm professional conversation, does not pressure a sale, does not turn measurements or tests into diagnosis, works at desktop and 360 × 900 CSS px with keyboard and visible focus, and passes an independent read-only audit with no P0/P1.
 
-Passing this gate does not close the full Stage 4 ingestion/runtime problem and does not authorize merge, real ingestion, runtime, schema, real data, staging, production, or deployment.
+Passing this gate alone did not authorize merge. The later, separate owner decision authorized only the controlled merge of the exact accepted Stage 4A head/tree.
+
+## Governance closure
+
+Stage 4A was owner accepted and merged on 2026-08-16 as `OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY`. The independent audit of accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca` reported `0 P0 / 0 P1`; the Stage 4A suite reached `52/52 PASS`; PR #25 merged as `149fb9538a2491bed5cbf71c6885fe789247d541`.
+
+This merge does not close or authorize the full Stage 4 ingestion/runtime problem. It does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, or Stage 5. The canonical plan defines no Stage 4B. Any next stage requires a separate explicit owner decision.
 
 ## Canonical session safeguards
 

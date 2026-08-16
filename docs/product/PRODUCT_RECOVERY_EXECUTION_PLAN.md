@@ -1,8 +1,8 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGES 0–3 OWNER ACCEPTED, MERGED AND CLOSED; IMPLEMENTATION NOT AUTHORIZED
-**Version:** 2.5
-**Updated:** 2026-08-11
+**Status:** STAGES 0–4A OWNER ACCEPTED, MERGED AND CLOSED; IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.6
+**Updated:** 2026-08-16
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
 
@@ -304,6 +304,10 @@ Combine in one client context:
 
 **Exit gate:** the workspace supports a good professional decision and conversation; it does not pressure a sale or turn a test result into a diagnosis.
 
+**Stage 4A closure record:** `OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY`. Damian accepted Stage 4A on 2026-08-16 after an independent read-only audit reported `0 P0 / 0 P1` and the Stage 4A suite reached `52/52 PASS`. Exact accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca` were merged through PR #25 as merge commit `149fb9538a2491bed5cbf71c6885fe789247d541`.
+
+This closes only the bounded, offline, session-memory, fictitious Stage 4A prototype contract. It does not start or accept the remainder of Stage 4 or Stage 5. The canonical plan does not define a Stage 4B. Any next stage requires a separate explicit owner decision.
+
 ### Stage 5 — Twelve-week program and client portal
 
 Build only after Stages 2–4 prove the upstream model.
@@ -409,14 +413,15 @@ Only after the manual flows work:
 | DIR-01 | DONE | Constitution v1.1, Home Guidance v2.0, AI/channel alignment, and Execution Plan v2.1 merged | PR #20; `62f2366e0c77abf2d1413e437173cc82a7735455`; owner accepted 2026-08-03 |
 | PR-21 | DONE | Stage 1 data, permission, and AI contracts owner accepted 2026-08-03; Execution Plan v2.2 remains contract-only with no implementation permission | Draft PR #21; this acceptance commit (`docs: record Stage 1 owner acceptance`; exact SHA recorded in the PR after publication); 18/18 exit gate PASS; 7/7 tests PASS; `git diff --check` PASS; no implementation authorization |
 | STG-02 | DONE | Inquiry → phone → Damian decision contract and fictional prototype owner accepted and merged | PR #22; merge `040bce6303c9138ba3b1af6366def54c21bd157c`; Chrome audit PASS; 8/8 regression PASS; 18/18 Stage 2 contract PASS; owner accepted 2026-08-10 |
-| STG-03 | DONE | Adaptive full intake → traceable PWD brief → Damian readiness decision | Owner accepted 2026-08-11; PR #23 merge `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`; independent read-only audit PASS 2026-08-10 on exact head `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`; controlled source archive P2 closed 2026-08-11 at private package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2`; Stage 4 not started |
+| STG-03 | DONE | Adaptive full intake → traceable PWD brief → Damian readiness decision | Owner accepted 2026-08-11; PR #23 merge `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`; independent read-only audit PASS 2026-08-10 on exact head `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`; controlled source archive P2 closed 2026-08-11 at private package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2` |
+| STG-04A | DONE | Fictitious PWD decision-conversation prototype contract owner accepted, merged, and closed | Owner accepted 2026-08-16; PR #25; accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b`; tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca`; merge `149fb9538a2491bed5cbf71c6885fe789247d541`; independent audit `0 P0 / 0 P1`; Stage 4A `52/52 PASS`; implementation not authorized |
 
 ---
 
 ## 10. Next action
 
-Stages 0–3 are owner accepted, merged, and closed as bounded fictional prototype contracts. The 2026-08-10 narrow exception allowed PRD 002 and PRD 003 to exist without changing the general PRD entry rule; it did not itself accept Stage 3. A separate read-only audit passed later on 2026-08-10, and Damian issued the later explicit Stage 3 acceptance and merge decision on 2026-08-11. The implementation-time browser report remains historical evidence rather than being relabeled as the independent audit.
+Stages 0–4A are owner accepted, merged, and closed as bounded fictional prototype contracts. The narrow PRD exceptions remain historical entry decisions and do not replace the later, separate owner acceptance decisions. Stage 4A was accepted and merged on 2026-08-16 only for exact head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca`, after an independent audit reported `0 P0 / 0 P1` and the suite reached `52/52 PASS`.
 
-The Stage 3 task is `Prepare the trainer for PWD from one traceable adaptive-intake brief.` It may organize facts, gaps, conflicts, coaching hypotheses, questions, and candidate observation domains. Damian makes the readiness decision. The prototype does not execute AI and does not choose tests or establish safety.
+The accepted Stage 4A task is `conduct_pwd_and_record_trainer_decision`, contract `stage4-v1`. Its merge closes only the fictitious offline prototype contract; it does not create runtime authority or begin another stage.
 
-PR #18 remains frozen. The AI provider/model, schema, SQL, migrations, real client data, public questionnaire implementation, PAR-Q+ reproduction, AI runtime, Supabase, staging, production, integration with `main`, Stage 4, and any further merge remain unauthorized until their separate gates. Stage 4 has not started and requires a separate explicit owner decision.
+PR #18 remains frozen. Runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, and Stage 5 remain unauthorized. The remainder of Stage 4 has not been started or accepted automatically, the canonical plan defines no Stage 4B, and any next stage requires a separate explicit owner decision.

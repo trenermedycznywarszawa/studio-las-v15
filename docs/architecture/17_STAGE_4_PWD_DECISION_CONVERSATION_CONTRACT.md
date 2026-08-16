@@ -1,11 +1,17 @@
 # 17 Stage 4A PWD Decision Conversation Contract
 
-- **Status:** OWNER AUTHORIZED FOR DRAFT FICTITIOUS PROTOTYPE ONLY
+- **Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
 - **Authorization:** isolated deterministic fictional prototype
 - **Schema:** `NOT APPROVED`
 - **Provider:** `BLOCKED`
 - **Task ID:** `conduct_pwd_and_record_trainer_decision`
 - **Task contract version:** `stage4-v1`
+- **Owner acceptance and merge date:** 2026-08-16
+- **Accepted head:** `ad101c87e4eca13ce18517ec9cc8b9277392756b`
+- **Accepted tree:** `41747abd450c60e6f9a2b8c85fb41dae04a1efca`
+- **Merge commit:** `149fb9538a2491bed5cbf71c6885fe789247d541`
+- **Pull request:** PR #25
+- **Independent audit / regression:** `0 P0 / 0 P1`; `52/52 PASS`
 
 ## Scope
 
@@ -151,7 +157,13 @@ The fictional prototype must demonstrate at least:
 
 `PASS` requires all behavioral and static tests, a real-browser desktop and exact 360 × 900 CSS px check, keyboard and visible-focus evidence, no external requests or browser persistence, complete fictional acceptance cases, and a separate read-only reviewer who finds no P0/P1 on the frozen commit/tree.
 
-A pass does not authorize merge, real Tanita ingestion, AI runtime, schema, Supabase, real data, staging, production, deployment, publication, sending, pricing, payment, booking, or a later PRD.
+Passing the exit gate alone did not authorize merge. The later, separate owner decision authorized only the controlled merge of the exact accepted Stage 4A head/tree.
+
+## Governance closure
+
+Stage 4A was owner accepted and merged on 2026-08-16 as `OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY`. Independent audit of accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca` reported `0 P0 / 0 P1`; the suite reached `52/52 PASS`; PR #25 merged as `149fb9538a2491bed5cbf71c6885fe789247d541`.
+
+The merge does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, or Stage 5. It does not automatically start or accept the remainder of Stage 4. The canonical plan defines no Stage 4B, and any next stage requires a separate explicit owner decision.
 
 ## Canonical session and exact-run addendum
 

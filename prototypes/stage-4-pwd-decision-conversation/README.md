@@ -1,6 +1,14 @@
 # Stage 4A — Fictional PWD Decision Conversation
 
-**Status:** DRAFT FICTITIOUS PROTOTYPE ONLY
+**Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
+
+- **Owner acceptance and merge date:** 2026-08-16
+- **Accepted head:** `ad101c87e4eca13ce18517ec9cc8b9277392756b`
+- **Accepted tree:** `41747abd450c60e6f9a2b8c85fb41dae04a1efca`
+- **Merge commit:** `149fb9538a2491bed5cbf71c6885fe789247d541`
+- **Pull request:** PR #25
+- **Independent audit:** `0 P0 / 0 P1`
+- **Stage 4A regression:** `52/52 PASS`
 
 This isolated, deterministic, offline, session-memory prototype demonstrates task `conduct_pwd_and_record_trainer_decision` under contract `stage4-v1`.
 
@@ -86,6 +94,8 @@ Run:
 
 `node scripts/test_stage4_pwd_decision_conversation.mjs`
 
+The accepted and merged Stage 4A head completed this suite with `52/52 PASS`.
+
 The test covers domain behavior, append-only interpretation/decision lineage, immutable nested references, exact follow-up provenance, versioned conversation runs and preserved suggestion history, domain-level conversation gating, exact-package Tanita evidence gating, manual identifier uniqueness, handoff v2 workspace rebuilding, all decision values, manual fallback, information separation, prompt-injection inertness, cross-case rejection, invalidation/history, fixture privacy, static offline boundaries, accessibility markers, and absence of decision defaults.
 
 ## Technical provenance
@@ -94,11 +104,11 @@ The implementation starts from exact `product-recovery@65a65f192225fb4f30dc658dd
 
 PR #18 was independently reviewed only as historical technical evidence. No PR #18 file or branch was copied, imported, rebased, or used as the implementation base. The prototype independently uses general techniques—semantic fieldsets, visible focus, responsive single-column layout, exact source labels, and small domain/UI modules—that are also ordinary platform patterns and already present in the accepted prototype line. The fixed `Dzisiaj → Brief → Sesja` information architecture, PR #18 runtime/Supabase coupling, its measurement form, and its product hierarchy were not inherited.
 
-## Independent audit gate
+## Independent audit gate — completed
 
-The Draft PR must remain Draft. A separate read-only reviewer must inspect one frozen commit and tree, repeat desktop, exact 360 × 900, and keyboard checks, and report zero P0/P1 before Damian is asked for a separate merge decision.
+PR #25 remained Draft through the separate read-only audit of exact accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca`. The audit reported `0 P0 / 0 P1`; Damian then issued the separate acceptance and merge decision, and PR #25 merged on 2026-08-16 as `149fb9538a2491bed5cbf71c6885fe789247d541`.
 
-An audit pass does not authorize merge, real ingestion, runtime, real data, staging, production, or deployment.
+The audit pass did not by itself authorize merge. The later owner decision authorized only the controlled merge. Neither the audit nor merge authorizes runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, or Stage 5. The canonical plan defines no Stage 4B, and any next stage requires a separate explicit owner decision.
 Every domain action resolves exact references through an immutable in-memory session aggregate. Do not treat a displayed or copied `status` field as authority.
 Client reactions require an explicit exact-version Damian review before use in interpretation or decision evidence.
 It also covers canonical aggregate conflict rejection, complete run-set resolution, manual run ownership, run-triggered transitive invalidation, handoff predecessor continuity, handoff/workspace-bound Tanita, and explicit exact-version client `source_fact` review.

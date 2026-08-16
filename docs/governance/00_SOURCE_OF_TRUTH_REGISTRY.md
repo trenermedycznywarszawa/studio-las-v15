@@ -264,7 +264,20 @@ PRD 004 may exist only as the contract for the isolated, deterministic, fictiona
 
 Stage 4A may use only pseudonymous fictional fixtures, a pre-prepared fictional Tanita package, deterministic simulated AI suggestions marked `needs_review`, and session-memory state without network or persistence. Tanita is optional. Its absence and AI unavailability must not block the manual workflow. The four decisions are equal and unselected by default: `START`, `START_CONDITIONAL`, `DEFER_CONSULT`, and `NOT_THIS_PRODUCT`. Only Damian may create the decision and any conditions.
 
-The implementation must start directly from `product-recovery@65a65f192225fb4f30dc658dd02aa750ec8eab69` in a clean separate worktree. PR #18 and its branch are not an implementation base and remain untouched. The Stage 4A pull request stays Draft until an independent read-only audit and a separate owner merge decision.
+The implementation was required to start directly from `product-recovery@65a65f192225fb4f30dc658dd02aa750ec8eab69` in a clean separate worktree. PR #18 and its branch were not an implementation base and remained untouched. The Stage 4A pull request was required to stay Draft until an independent read-only audit and a separate owner merge decision.
+
+### Stage 4A owner acceptance and merge
+
+**Decision date:** 2026-08-16
+**Decision owner:** Damian
+
+> Zatwierdzam Stage 4A wyłącznie jako scalony kontrakt odizolowanego fikcyjnego prototypu. Akceptuję dokładny head `ad101c87e4eca13ce18517ec9cc8b9277392756b`, tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca` oraz kontrolowany merge PR #25 do `product-recovery`.
+
+The independent read-only audit reported `0 P0 / 0 P1`, and the Stage 4A suite completed with `52/52 PASS`. On 2026-08-16 PR #25 was marked Ready for review as a technical merge step and merged through merge commit `149fb9538a2491bed5cbf71c6885fe789247d541`.
+
+Current Stage 4A status is `OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY`. This later, separate decision accepts and closes only the isolated Stage 4A contract; it preserves the earlier decision that authorized its start without rewriting that history.
+
+Neither the audit, acceptance, nor merge authorizes runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, or Stage 5. The canonical plan defines no Stage 4B. Any next stage requires a separate explicit owner decision.
 
 ## Production entry rule
 

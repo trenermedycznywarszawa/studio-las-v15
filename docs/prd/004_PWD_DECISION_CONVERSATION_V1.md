@@ -1,11 +1,17 @@
 # PRD 004 — PWD Decision Conversation v1
 
-- **Status:** DRAFT CANDIDATE — OWNER AUTHORIZED FICTITIOUS PROTOTYPE ONLY
+- **Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
 - **Stage:** 4A
 - **Task ID:** `conduct_pwd_and_record_trainer_decision`
 - **Contract version:** `stage4-v1`
 - **User:** Damian, trainer and decision owner
 - **Runtime authorization:** none
+- **Owner acceptance and merge date:** 2026-08-16
+- **Accepted head:** `ad101c87e4eca13ce18517ec9cc8b9277392756b`
+- **Accepted tree:** `41747abd450c60e6f9a2b8c85fb41dae04a1efca`
+- **Merge commit:** `149fb9538a2491bed5cbf71c6885fe789247d541`
+- **Pull request:** PR #25
+- **Independent audit / regression:** `0 P0 / 0 P1`; `52/52 PASS`
 
 ## Job to be done
 
@@ -127,15 +133,21 @@ Cases do not encode an expected automatic decision. Their purpose labels help an
 
 Real data, real AI, PDF upload/parser/OCR, network, persistence, Supabase, Auth, MFA, RLS, Storage, Edge Functions, schema, SQL, migrations, staging, production, deployment, sending, publication, pricing, payment, booking, automatic diagnosis, automatic qualification, automatic test choice, PR #18 code, and PR #18 as a base.
 
-## Definition of Done for the Draft
+## Definition of Done for the audited Draft — historical gate
 
 - documents and prototype agree on `stage4-v1`;
 - tests and browser checks pass on one exact head/tree;
 - all fixtures are fictional and pseudonymous;
 - the diff contains only the approved files;
-- the PR remains Draft;
+- the PR remained Draft through the independent audit;
 - the README records validation and the independent-audit procedure;
-- merge remains a separate Damian decision.
+- merge required a later, separate Damian decision.
+
+## Governance closure
+
+On 2026-08-16 Damian accepted Stage 4A as `OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY`. The independent audit of exact accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b` and tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca` reported `0 P0 / 0 P1`; Stage 4A reached `52/52 PASS`; PR #25 merged as commit `149fb9538a2491bed5cbf71c6885fe789247d541`.
+
+This closure does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, or Stage 5. It does not start or accept the remainder of Stage 4. The canonical plan defines no Stage 4B, and any next stage requires a separate explicit owner decision.
 
 ## P1 re-audit contract addendum
 
