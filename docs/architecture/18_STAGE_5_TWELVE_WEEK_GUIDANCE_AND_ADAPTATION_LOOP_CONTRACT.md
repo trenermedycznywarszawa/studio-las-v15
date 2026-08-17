@@ -142,7 +142,7 @@ An active cycle has exactly one current focus expressed as an exact Damian `trai
 
 A focus correction or material change creates a new version or new decision with explicit lineage. The prior focus remains history and ceases to be current. A client-safe focus statement is a separate `client_material`; it cannot expose the trainer-only rationale by changing visibility.
 
-Guidance bound to a superseded or invalidated focus cannot remain current silently. Damian must explicitly revalidate it against the new focus or publish a replacement. Revalidation is a recorded trainer decision; it never changes old provenance.
+Every guidance release and every guidance item names the exact current focus version that gives it purpose. Each client-facing item carries a client-safe purpose or focus expression without exposing Damian's private rationale. Guidance bound to a superseded, invalidated, missing, or different focus cannot remain current silently. Damian must explicitly revalidate it against the new exact focus or publish a replacement. Revalidation is a recorded trainer decision; it never changes old provenance.
 
 ## Authoritative guidance release
 
@@ -152,17 +152,25 @@ Before activation, all conditions must be true:
 
 1. the exact qualifying Stage 4 entry binding remains current;
 2. the cycle and exact focus remain current;
-3. every client-facing item is the exact intended version;
-4. every item is `approved` by Damian for the recorded client and use;
-5. publication is a separate deliberate action under Architecture 10;
-6. the channel authority and stale-material retirement rule are explicit;
-7. dose or completion condition and relevant stop/reduction criteria are complete;
-8. any signal request names its decision purpose and exact guidance context;
-9. no competing current release exists.
+3. the release and every guidance item reference that exact current focus version;
+4. every client-facing item is the exact intended version and contains a client-safe purpose or focus expression;
+5. every item is `approved` by Damian for the recorded client and use;
+6. before activation completes, every exact item has `publication_state: published` for that same client and use through a separate deliberate Architecture 10 publication action;
+7. every item declares either a validity boundary or one exact next review point, and the selected boundary is present, unambiguous, and not already passed;
+8. the channel authority and stale-material retirement rule are explicit;
+9. dose or completion condition and relevant stop/reduction criteria are complete;
+10. any signal request names its decision purpose and exact guidance context;
+11. no competing current release exists.
+
+Partial approval, publication, focus binding, or validity resolution leaves the successor non-current. A failed transition does not partially withdraw the predecessor or redirect any exact reference.
 
 At every observable moment, there is at most one current authoritative release. Whenever the client is expected to act, there is exactly one. Zero current releases are allowed only before first publication or after an explicit pause, invalidation, referral, or closure, and the client-safe projection must not imply that any guidance remains actionable. Preparing v2 does not change v1. Activating v2 must retire v1 as part of one controlled replacement transition; if the transition cannot complete, v2 does not become current.
 
-`Retired release` is an operational condition, not a combined semantic state. The referenced `client_material` versions retain independent Architecture 10 axes: a replaced version becomes `superseded` where applicable, and any previously published version becomes `withdrawn` through its own deliberate withdrawal event. Retirement never changes `information_type` or rewrites the prior approval/publication history.
+For a successor release, every exact predecessor item has one explicit operational outcome: retained unchanged, replaced, or removed. These outcomes are not new state vocabularies. A retained item is referenced by the successor as the same exact approved and published `client_material`; it is neither superseded nor withdrawn. A replaced item receives a new exact version and the old version moves separately to `review_state: superseded` and `publication_state: withdrawn`. A removed item is withdrawn but is not forced to `superseded` unless a replacement actually supersedes it. New items complete their own approval and publication gates.
+
+`Retired release` is an operational condition, not a combined semantic state. Release retirement occurs only after the complete successor mapping and all required material transitions can succeed as one controlled change. An incomplete mapping, publication, or withdrawal leaves the successor non-current and fails closed. Retirement never changes `information_type`, republishes a withdrawn version, forces a duplicate version of retained content, or rewrites prior approval/publication history.
+
+Reaching an exact next review point creates a review gate only; it never selects progress, regression, continuation, or closure. Guidance may not continue beyond that gate until Damian explicitly continues, replaces, pauses, refers, or closes and records the next validity boundary or review point. An expired validity boundary makes the affected item and release non-actionable. Client-safe projections must show no current instruction until Damian completes an explicit valid continuation or replacement.
 
 A material edit to content, dose, stop criteria, signal request, validity, focus expression, or delivery authority creates a new exact `client_material` and/or release version. Approval of v1 never approves v2. Published content is never edited in place.
 
@@ -284,8 +292,11 @@ No manual fallback may silently weaken wrong-client protection, publication appr
 | Missing, conditional, deferred, rejected, stale, or invalid Stage 4 entry | Reject cycle opening; no guidance activation |
 | Bound `START` later superseded or invalidated | Fail cycle closed; retire actionable guidance; require a new explicit Damian decision and binding |
 | Missing or conflicting current focus | Block guidance activation or revision |
+| Release or item lacks the exact current-focus reference or client-safe purpose | Block activation and continuation; never infer purpose from position or prior content |
+| Validity or exact next review point is missing, conflicting, expired, or passed without a Damian decision | Block activation or continuation; show no current guidance; do not auto-progress |
 | Two releases appear current | Treat as an invariant breach; fail closed instead of choosing by timestamp or channel |
 | v2 activation cannot retire v1 | Keep v2 non-current; pause or use the controlled human resolution path |
+| Successor item mapping, publication, or withdrawal is partial | Keep the successor non-current and the predecessor unchanged; fail closed without mixed release state |
 | Paper retirement cannot be confirmed | Do not claim successful replacement; pause affected guidance when ambiguity or risk is material |
 | Hybrid authority is missing or duplicated | Reject the hybrid |
 | Unapproved, rejected, superseded, or wrong-use client material | Block publication and activation |
@@ -323,6 +334,8 @@ All future acceptance evidence uses pseudonymous fictional cases and no network,
 | `deliberate-hybrid` | One named authoritative channel and one bounded secondary role; no duplicate mutable instruction | Authority is ambiguous or two plans require maintenance |
 | `stopped-or-uncertain` | `stopped` and question remain separate, non-shaming sources; Damian records the next decision | State is scored, diagnosed, or automatically changes guidance |
 | `version-change` | v2 has new approval and lineage, v1 is retired from action, history remains resolvable | v1 remains active or v2 inherits approval silently |
+| `partial-release-revision` | One unchanged item remains the same exact published version, one replaced item receives new approval/publication, removed items withdraw separately, and the release switch succeeds only as a complete transition | A retained item is withdrawn or cloned, a withdrawn version is republished, or a mixed successor becomes current |
+| `focus-validity-boundary` | Every release/item names the exact current focus and client-safe purpose plus a validity boundary or exact next review point; expiry or a passed review gate blocks continuation until Damian decides | Guidance activates against another focus or remains actionable beyond its unresolved boundary |
 | `no-signal-required` | Guidance remains complete and does not create a missing-data state | Client is shown incomplete, late, or non-compliant |
 | `week-4-adjustment` | Anchor creates review only; Damian explicitly changes focus, dose, channel, or signal and versions the affected material | Calendar position changes the plan automatically |
 | `week-8-independence` | Damian may reduce support or change channel because the client can carry more alone | Product pushes more app use or continuation by default |
