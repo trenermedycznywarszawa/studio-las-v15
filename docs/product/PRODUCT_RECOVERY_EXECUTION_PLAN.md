@@ -1,8 +1,8 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGES 0–4 OWNER ACCEPTED, MERGED AND CLOSED AS BOUNDED FICTIONAL PROTOTYPE CONTRACTS; IMPLEMENTATION NOT AUTHORIZED
-**Version:** 2.7
-**Updated:** 2026-08-16
+**Status:** STAGES 0–3 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 4 OWNER ACCEPTED, MERGED AND CLOSED — BOUNDED FICTIONAL PROTOTYPE CONTRACT ONLY; STAGE 5 PRODUCT DECISION BRIEF PLANNING OWNER AUTHORIZED; IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.8
+**Updated:** 2026-08-17
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
 
@@ -310,23 +310,31 @@ The subsequent read-only Stage 4 Completion Gate mapped every Stage 4 scope item
 
 This closes Stage 4 only as a bounded fictional product-contract prototype. It does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, or Stage 5. Stage 5 requires a separate explicit owner decision.
 
-### Stage 5 — Twelve-week program and client portal
+### Stage 5 — Twelve-week guidance and adaptation loop
 
-Build only after Stages 2–4 prove the upstream model.
+The currently authorized Stage 5 slice is limited to preparing and independently auditing the Product Decision Brief. It defines the product truth for a manual loop beginning from an exact current qualifying Stage 4 `START`; it does not prove runtime behavior or authorize Architecture, PRD, prototype, AI, schema, or runtime.
 
-Scope:
+The full future Stage 5 may later include one Architecture Contract, a scoped PRD, and an isolated fictional prototype. Each layer requires a separate explicit owner decision after the preceding gate passes. PRD remains subject to the general PRD entry rule, and no prototype evidence is required before drafting the Architecture Contract.
 
-- week-by-week process structure,
-- 90-minute studio session plan,
-- home plan from the curated exercise atlas,
-- trainer-selected paper/app/hybrid channel,
-- digital checklist where useful,
-- task-specific repetitions, duration, load, RPE, or response,
-- client notes and questions tied to the task,
-- plan versioning and publication,
-- client portal focused on Today, Plan, and Progress.
+Future Stage 5 scope, not currently authorized beyond the Product Decision Brief:
 
-**Exit gate:** the client knows what to do and how to ask; Damian sees only information that can improve the next conversation or decision; no duplicate plan or gamification exists.
+- twelve weeks as a commercial and review envelope, not a fixed curriculum;
+- start, approximately week-4, approximately week-8, and week-12 review anchors without automatic progression;
+- one current trainer-owned focus;
+- one authoritative current guidance version;
+- trainer-selected paper, app, or deliberate-hybrid channel with a stale-instruction retirement rule;
+- minimum-effective guidance with explicit dose and stop/reduction criteria;
+- optional task-specific result, response, note, or contextual question only when it can change a decision;
+- non-judgmental done-as-planned, changed/partial, stopped, and not-done states, with question as a separate axis;
+- explicit trainer review and versioned continue, simplify, progress, regress, replace, pause, channel-change, refer, or close decision;
+- selected report-ready evidence without building the Stage 7 report;
+- a quiet client-safe projection of Now, Respond or ask, and Published summaries when the app is the selected channel.
+
+**Product Decision Brief exit gate — currently authorized planning slice:** one frozen product-document commit completely and consistently defines the Stage 5 product truth, maps it to accepted higher-layer authority, contains no Architecture, PRD, prototype, schema, runtime, or AI decision, and passes independent read-only semantic review with `0 P0 / 0 P1`. Passing this gate permits only a separate owner acceptance decision; it does not authorize Architecture.
+
+**Downstream fictional prototype exit gate — not currently authorized:** from one exact current qualifying Stage 4 `START`, the complete manual loop works through paper, app, and deliberate hybrid without duplicate truth, AI, integration, or automation; only requested decision-relevant signals return; old guidance cannot remain actionable; selected evidence becomes report-ready without adherence scoring, automatic progression, gamification, or Stage 7 report generation. The fictional prototype must also complete moderated tests with 5–7 representative target users and test the provisional client and trainer time budgets, with Damian explicitly approving or revising the later operational criteria. This gate may be attempted only after separately authorized Architecture and PRD layers.
+
+**Planning authorization:** on 2026-08-17 Damian accepted the strategic direction and authorized autonomous preparation of the Stage 5 Product Decision Brief only. `docs/product/10_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP.md` is a Draft product artifact. This authorization does not accept the Draft, authorize Architecture, create a PRD exception, or permit prototype or implementation work.
 
 ### Stage 6 — Weekly trainer preparation and session support
 
@@ -418,6 +426,7 @@ Only after the manual flows work:
 | STG-03 | DONE | Adaptive full intake → traceable PWD brief → Damian readiness decision | Owner accepted 2026-08-11; PR #23 merge `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`; independent read-only audit PASS 2026-08-10 on exact head `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`; controlled source archive P2 closed 2026-08-11 at private package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2` |
 | STG-04A | DONE | Fictitious PWD decision-conversation prototype contract owner accepted, merged, and closed | Owner accepted 2026-08-16; PR #25; accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b`; tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca`; merge `149fb9538a2491bed5cbf71c6885fe789247d541`; independent audit `0 P0 / 0 P1`; Stage 4A `52/52 PASS`; implementation not authorized |
 | STG-04 | DONE | PWD workspace and decision-conversation product contract completed by Stage 4A evidence; full roadmap Stage 4 closed | Stage 4 Completion Gate 2026-08-16; all scope/exit-gate requirements mapped; real document ingestion and Tanita import automation remain Stage 8; no Stage 4B; implementation not authorized |
+| STG-05-PLAN | AUTHORIZED | Product planning for the twelve-week guidance and adaptation loop; Draft brief only | Owner authorization 2026-08-17; product decision brief; no Architecture, PRD, prototype, schema, runtime, real data, Stage 6, or implementation permission |
 
 ---
 
@@ -427,4 +436,6 @@ Stages 0–4 are owner accepted, merged, and closed as bounded fictional prototy
 
 The Stage 4 Completion Gate confirms that the accepted Stage 4A task `conduct_pwd_and_record_trainer_decision`, contract `stage4-v1`, demonstrates the full Stage 4 product scope and exit gate. Stage 4A remains the delivery-slice name; it is not evidence of an undefined remaining Stage 4 segment. Real document ingestion and Tanita import reliability belong to Stage 8 and do not keep Stage 4 open.
 
-PR #18 remains frozen. Runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, and Stage 5 remain unauthorized. Stage 4 is closed; beginning Stage 5 requires a separate explicit owner decision.
+PR #18 remains frozen. Stage 4 is closed. Damian authorized Stage 5 product planning on 2026-08-17 only to prepare and audit `docs/product/10_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP.md`. The Draft must be independently reviewed and separately owner accepted before any Stage 5 Architecture Contract may begin.
+
+Runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, PRD 005, prototype work, Stage 6, and implementation remain unauthorized.

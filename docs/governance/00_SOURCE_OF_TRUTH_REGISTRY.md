@@ -294,6 +294,23 @@ Therefore Stage 4 is `OWNER ACCEPTED, MERGED AND CLOSED — BOUNDED FICTIONAL PR
 
 This decision does not authorize runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, or Stage 5. Starting Stage 5 requires a separate explicit owner decision.
 
+### Stage 5 product-planning authorization
+
+**Decision date:** 2026-08-17
+**Decision owner:** Damian
+
+Damian agreed with the recommended Stage 5 direction and authorized autonomous preparation of the Stage 5 Product Decision Brief.
+
+The authorized product-planning problem is the twelve-week guidance and adaptation loop: exact eligible Stage 4 decision → current trainer focus → one authoritative trainer-approved guidance version → client action → optional minimum decision-relevant signal or contextual question → trainer interpretation and explicit next decision → versioned guidance change → selected report-ready evidence.
+
+The portal is subordinate to this loop and is not mandatory for every client. Twelve weeks is a commercial and review envelope, not a fixed curriculum. Paper, app, and deliberate hybrid remain equal trainer-selected channels, with exactly one authoritative instruction source. Stage 5 must prove the complete manual path before AI or automation; weekly AI preparation remains Stage 6.
+
+This decision authorizes only the Draft product document `docs/product/10_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP.md` and the minimum Registry, Product index, and Execution Plan projections required to keep canonical truth consistent.
+
+It does not accept the resulting Draft, authorize a Stage 5 Architecture Contract, create an exception for PRD 005, or permit a prototype, HTML, CSS, JavaScript, tests, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real AI, simulated AI, real client data, staging, production, deployment, publication, integration with `main`, Stage 6, Stage 7, or Stage 8 implementation. Each later layer requires a separate owner decision after the higher layer passes review.
+
+PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
+
 ## Production entry rule
 
 Production may not proceed until:

@@ -26,7 +26,9 @@ This heuristic protects the trainer-led method; it does not require paper for ev
 7. `06_HOME_GUIDANCE_SYSTEM.md` — how the trainer selects paper, app, or hybrid guidance without creating duplicate truth or engagement pressure.
 8. `07_INQUIRY_TO_PHONE_DECISION_SYSTEM.md` — how an inquiry becomes a trainer-owned phone decision without automatic qualification.
 9. `08_FULL_INTAKE_AND_PWD_PREPARATION_SYSTEM.md` — how the adaptive full intake becomes a traceable trainer brief and explicit PWD-readiness decision.
-10. `STAGE_3_SOURCE_ARTIFACT_MANIFEST.md` — private-source filenames, SHA-256 verification, bounded access procedure, and the unresolved controlled-archive owner action.
+10. `09_PWD_WORKSPACE_AND_DECISION_CONVERSATION_SYSTEM.md` — how PWD evidence becomes Damian's explicit decision and calm client conversation without diagnosis or sales pressure.
+11. `10_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP.md` — the Stage 5 product decision brief for one authoritative twelve-week guidance, signal, adaptation, and report-ready loop.
+12. `STAGE_3_SOURCE_ARTIFACT_MANIFEST.md` — controlled-source filenames, SHA-256 verification, archive evidence, and bounded access procedure.
 
 ## Boundary
 
