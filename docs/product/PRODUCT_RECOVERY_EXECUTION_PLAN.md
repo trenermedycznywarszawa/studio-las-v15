@@ -1,6 +1,6 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGES 0–4 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 5 PRODUCT PLANNING OWNER AUTHORIZED; IMPLEMENTATION NOT AUTHORIZED
+**Status:** STAGES 0–3 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 4 OWNER ACCEPTED, MERGED AND CLOSED — BOUNDED FICTIONAL PROTOTYPE CONTRACT ONLY; STAGE 5 PRODUCT DECISION BRIEF PLANNING OWNER AUTHORIZED; IMPLEMENTATION NOT AUTHORIZED
 **Version:** 2.8
 **Updated:** 2026-08-17
 **Canonical integration line:** `product-recovery`
@@ -312,9 +312,11 @@ This closes Stage 4 only as a bounded fictional product-contract prototype. It d
 
 ### Stage 5 — Twelve-week guidance and adaptation loop
 
-Stage 5 is product planning only. It begins from an exact eligible Stage 4 trainer decision and proves the manual loop before Architecture, PRD, prototype, AI, schema, or runtime.
+The currently authorized Stage 5 slice is limited to preparing and independently auditing the Product Decision Brief. It defines the product truth for a manual loop beginning from an exact current qualifying Stage 4 `START`; it does not prove runtime behavior or authorize Architecture, PRD, prototype, AI, schema, or runtime.
 
-Scope:
+The full future Stage 5 may later include one Architecture Contract, a scoped PRD, and an isolated fictional prototype. Each layer requires a separate explicit owner decision after the preceding gate passes. PRD remains subject to the general PRD entry rule, and no prototype evidence is required before drafting the Architecture Contract.
+
+Future Stage 5 scope, not currently authorized beyond the Product Decision Brief:
 
 - twelve weeks as a commercial and review envelope, not a fixed curriculum;
 - start, approximately week-4, approximately week-8, and week-12 review anchors without automatic progression;
@@ -328,7 +330,9 @@ Scope:
 - selected report-ready evidence without building the Stage 7 report;
 - a quiet client-safe projection of Now, Respond or ask, and Published summaries when the app is the selected channel.
 
-**Exit gate:** from one exact eligible Stage 4 decision, Damian can publish and revise one authoritative guidance version through paper, app, or deliberate hybrid; the client knows what matters, what to do, when to reduce or stop, and how to ask; only requested decision-relevant signals return; old guidance cannot remain actionable; selected evidence becomes report-ready without adherence scoring, duplicate truth, automatic progression, gamification, or AI.
+**Product Decision Brief exit gate — currently authorized planning slice:** one frozen product-document commit completely and consistently defines the Stage 5 product truth, maps it to accepted higher-layer authority, contains no Architecture, PRD, prototype, schema, runtime, or AI decision, and passes independent read-only semantic review with `0 P0 / 0 P1`. Passing this gate permits only a separate owner acceptance decision; it does not authorize Architecture.
+
+**Downstream fictional prototype exit gate — not currently authorized:** from one exact current qualifying Stage 4 `START`, the complete manual loop works through paper, app, and deliberate hybrid without duplicate truth, AI, integration, or automation; only requested decision-relevant signals return; old guidance cannot remain actionable; selected evidence becomes report-ready without adherence scoring, automatic progression, gamification, or Stage 7 report generation. The fictional prototype must also complete moderated tests with 5–7 representative target users and test the provisional client and trainer time budgets, with Damian explicitly approving or revising the later operational criteria. This gate may be attempted only after separately authorized Architecture and PRD layers.
 
 **Planning authorization:** on 2026-08-17 Damian accepted the strategic direction and authorized autonomous preparation of the Stage 5 Product Decision Brief only. `docs/product/10_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP.md` is a Draft product artifact. This authorization does not accept the Draft, authorize Architecture, create a PRD exception, or permit prototype or implementation work.
 

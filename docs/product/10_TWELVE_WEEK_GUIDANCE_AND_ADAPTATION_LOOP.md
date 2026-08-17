@@ -40,20 +40,20 @@ Premium value comes from prepared clarity, calm continuity, and personal interpr
 
 ## Entry gate from Stage 4
 
-Stage 5 may start only from one exact current Stage 4 trainer decision for the same client process.
+Stage 5 may start only from one exact current Stage 4 `trainer_decision` version for the same client process whose value is `START`.
 
-- `START` may enter Stage 5.
-- `START_CONDITIONAL` may enter only after Damian explicitly verifies every recorded condition and makes the start decision current.
+- An exact current `START` may enter Stage 5, and the Stage 5 cycle is bound to that exact decision version.
+- `START_CONDITIONAL` never enters Stage 5 directly. After Damian explicitly verifies every recorded condition, he creates a new exact current `START` version that explicitly supersedes the exact `START_CONDITIONAL` version. Both versions and their exact-version lineage remain preserved.
 - `DEFER_CONSULT` may not enter until a later eligible Stage 4 decision exists.
 - `NOT_THIS_PRODUCT` may not enter Stage 5.
 
-A UI flag, payment, booking, elapsed time, or system suggestion cannot substitute for the eligible trainer decision.
+If the qualifying `START` version is later superseded or invalidated, no Stage 5 guidance may continue silently. The cycle fails closed until Damian makes an explicit decision and binds the cycle to the exact current qualifying `START` version.
+
+A UI flag, payment, booking, elapsed time, or system suggestion cannot substitute for the exact qualifying trainer decision.
 
 ## Twelve-week boundary
 
 Twelve weeks is the standard commercial and review envelope. It is not a fixed clinical sequence and not twelve pre-authored content modules.
-
-The common offer may include one 90-minute studio session and one independent home assignment per week. That cadence is a product-package default, not a universal domain invariant. Damian may reduce, replace, pause, or change guidance when the person and evidence require it.
 
 Stage 5 uses four review anchors:
 
@@ -189,8 +189,11 @@ This brief adds no new Stage 1 `information_type`.
 | Structured normalized result | `extracted_fact` derived from the exact client source version |
 | Session or guidance observation by Damian | `trainer_observation` |
 | Damian's contextual meaning | `trainer_interpretation` |
+| Damian's current-focus decision | `trainer_decision` |
+| Client-safe expression of the current focus | exact-version `client_material` |
 | Continue, simplify, progress, regress, pause, refer, or close | `trainer_decision` |
 | Client-facing instruction or review summary | exact-version `client_material` |
+| Focus activation, retirement, or validity change | operational record, not a new information type |
 | Plan-version activation, retirement, review due, or access event | operational record, not a new information type |
 
 Every client-facing guidance version defaults to `needs_review` and `unpublished` until the existing publication gate passes. Editing an approved or published plan creates a new version and requires new approval. Published content is never changed silently.
@@ -234,7 +237,7 @@ External evidence is calibration only:
 - WHO warns that digital interventions do not replace functioning human services and that maintaining paper and digital systems can increase worker burden;
 - systematic reviews of mobile-health design support simple hierarchy, readability, and direct usability testing with older adults;
 - digital self-monitoring and prompts can change adherence, which is why Studio Las must not deploy them without proving that adherence is the right target for the current client and decision;
-- WCAG 2.2 provides the accessibility floor; Stage 5 should aim for practical touch targets of at least 44 × 44 CSS px in the prototype.
+- WCAG 2.2 Level AA is the baseline conformance level. The 44 × 44 CSS px target comes from SC 2.5.5 Target Size (Enhanced), Level AAA, and is a deliberate usability goal for the future fictional prototype rather than a general minimum WCAG threshold.
 
 External calibration references:
 
@@ -257,7 +260,17 @@ The later fictional prototype must test these assumptions with 5–7 representat
 ## Validation severity
 
 - **P0** — wrong-client exposure, unsafe or missing required stop boundary, unauthorized publication, automatic trainer decision, diagnosis, or cross-client mutation.
-- **P1** — the client cannot identify the current authoritative instruction, a stale version remains actionable, paper/app truth conflicts, a required signal cannot be submitted, client language creates shame or pressure, or the complete manual loop cannot reach a trainer decision.
+- **P1** — a non-P0 failure that does one or more of the following:
+  - allows Stage 5 entry from anything other than the exact current qualifying `START` version;
+  - prevents the client from identifying the current authoritative instruction or leaves a stale version actionable;
+  - creates conflicting paper/app truth;
+  - introduces a fixed curriculum or automatic progression;
+  - makes a required signal impossible to submit or uses language that creates shame or pressure;
+  - makes the complete manual loop depend on a portal, AI, integration, or automation;
+  - prevents the complete manual loop from reaching an explicit trainer decision;
+  - violates Architecture 10 provenance or collapses `information_type`, `review_state`, and `publication_state`, unless the consequence is already P0;
+  - blurs a stage or authorization boundary in a way that could permit unapproved downstream work;
+  - makes the complete manual loop materially infeasible against the operational criteria later approved for the downstream prototype gate.
 - **P2** — non-blocking clarity, polish, efficiency, or consistency weakness that does not compromise the method or task completion.
 
 Owner acceptance requires `0 P0 / 0 P1` on one frozen product-document commit after independent read-only review.
@@ -275,7 +288,7 @@ These are binding downstream acceptance scenarios for the future Architecture Co
 7. `week-4-adjustment` — an early review changes focus, dose, channel, or requested signal.
 8. `week-8-independence` — support is reduced or the channel changes because the client can carry more alone.
 9. `week-12-handoff` — selected evidence becomes a trainer-only report-ready package without generating the report.
-10. `ineligible-stage-4-decision` — conditional, deferred, or not-this-product states fail closed until an eligible trainer decision exists.
+10. `ineligible-stage-4-decision` — `START_CONDITIONAL`, `DEFER_CONSULT`, `NOT_THIS_PRODUCT`, and a missing, stale, superseded, or invalidated `START` fail closed until an exact current qualifying `START` version exists.
 
 ## Product Decision Brief exit gate
 
@@ -294,7 +307,7 @@ Passing this brief gate does not automatically authorize Architecture. The next 
 
 The future Architecture Contract, PRD, and fictional prototype must eventually prove:
 
-- the exact eligible Stage 4 decision is enforced;
+- the exact current qualifying Stage 4 `START` version and its invalidation behavior are enforced;
 - Damian can establish one current focus and publish one authoritative guidance version;
 - paper, app, and deliberate hybrid each work without duplicate truth;
 - the client can understand the current instruction and stop/reduction criteria;
@@ -306,7 +319,8 @@ The future Architecture Contract, PRD, and fictional prototype must eventually p
 - review anchors produce selected report-ready evidence rather than adherence metrics;
 - trainer-only content never reaches a client-safe projection;
 - the complete manual path works without AI, notifications, integrations, or automation;
-- moderated target-user tests find no P0/P1 orientation, comprehension, accessibility, or dignity failure;
+- moderated tests with 5–7 representative target users find no P0/P1 orientation, comprehension, accessibility, or dignity failure;
+- the provisional client and trainer time budgets are tested, then either approved or deliberately revised by Damian; failure requires simplification rather than premature automation;
 - Damian confirms that the loop reduces rather than adds cognitive and administrative burden.
 
 Passing the later prototype gate does not authorize schema, Supabase, real client data, staging, production, deployment, or publication.
