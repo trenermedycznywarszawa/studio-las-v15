@@ -58,7 +58,7 @@ Damian is the sole authority for:
 The client may:
 
 - act entirely offline when the selected channel allows it;
-- access only deliberately published client-safe material;
+- access only deliberately authorized same-client projections; Studio Las-authored `client_material` requires exact approval and publication, while an allowed projection of the client's own source, signal, or access state preserves its original information type and may remain `unpublished`;
 - provide the exact requested response when one exists;
 - ask a contextual question bound to the relevant guidance;
 - stop or modify action without shame or automatic judgment.
@@ -162,7 +162,7 @@ If the bound `START` later becomes ineligible, actionable guidance fails closed 
 
 ### Paper primary
 
-The complete authoritative instruction exists on paper. The app is not required. A replacement cannot become current until the old paper has a real bounded handover or retirement outcome. A database flag never pretends to remove a physical copy.
+The complete authoritative instruction exists on paper. The app is not required. A replacement cannot become current until the old paper has a real bounded handover or retirement outcome. If retirement cannot be confirmed and creates material ambiguity or risk, the successor remains non-current, Damian makes the affected guidance paused and non-actionable, and he contacts the client through the approved human path until explicit resolution. A database flag never pretends to remove a physical copy.
 
 ### App primary
 
@@ -210,7 +210,7 @@ The client receives the established non-emergency boundary and direction to appr
 - **FR-04:** Treat twelve weeks as a commercial and review envelope, not a curriculum or automatic lifecycle.
 - **FR-05:** Treat start, approximately week 4, approximately week 8, and week 12 as review anchors only.
 - **FR-06:** Require an explicit Damian decision for early finish, pause, referral, extension, or closure.
-- **FR-06a:** If week 12 arrives without a decision, mark review due, apply the independently declared hard-validity boundary, and neither auto-extend nor auto-close the cycle.
+- **FR-06a:** If week 12 arrives without a decision, mark review due only and neither auto-extend nor auto-close the cycle. A separately declared hard-validity boundary acts only under its own exact terms in FR-25–FR-27; the week-12 anchor neither creates nor implies one.
 
 ### Current focus
 
@@ -248,7 +248,7 @@ The client receives the established non-emergency boundary and direction to appr
 - **FR-29:** Let Damian deliberately select `paper`, `app`, or `deliberate_hybrid` for the exact release.
 - **FR-30:** Require paper primary to remain completely usable without the app.
 - **FR-31:** Require a real bounded handover/retirement outcome before a replacement paper release becomes current.
-- **FR-32:** If stale paper cannot be retired and creates material ambiguity or risk, fail the replacement closed and use the approved human path.
+- **FR-32:** If stale paper cannot be retired and creates material ambiguity or risk, keep the successor non-current, make the affected guidance paused and non-actionable, and require Damian to contact the client through the approved human path until he explicitly resolves the ambiguity.
 - **FR-33:** Remove a withdrawn app version from actionable projection while preserving history.
 - **FR-34:** Never infer a channel switch from device availability, client age, account status, prior habit, or novelty.
 - **FR-35:** Require a hybrid to name one authoritative channel, one bounded secondary role, permitted secondary content, retirement behavior, and a review point.
@@ -257,12 +257,12 @@ The client receives the established non-emergency boundary and direction to appr
 ### Client response and question
 
 - **FR-37:** Support the exact common execution values `done_as_planned`, `changed_or_partial`, `stopped`, and `not_done` only when a response was requested.
-- **FR-38:** Preserve a contextual question or uncertainty as a separate axis from execution response.
-- **FR-39:** Bind every request and response to the exact client, cycle, release, guidance item, and request version.
+- **FR-38:** Preserve a contextual question or uncertainty as a separate axis from execution response, bind it to the exact same client, cycle, release, guidance item, and question-context version, and preserve its operational `unresolved` or `resolved` state without turning that state into semantic meaning.
+- **FR-39:** Bind every response request and response to the exact client, cycle, release, guidance item, and request version; never redirect a response or question to another or newer context.
 - **FR-40:** Preserve original client source separately from normalized `extracted_fact`; normalization never approves meaning.
 - **FR-41:** Make a reason or note optional unless an explicit safety contract requires it.
 - **FR-42:** Apply no score, streak, adherence percentage, colour judgment, shame, pressure, or automatic interpretation.
-- **FR-43:** State the non-emergency boundary and approved response path for contextual questions.
+- **FR-43:** State the bounded non-emergency response path for contextual questions, make no promise of an immediate response, and direct urgent situations to appropriate external help without automated advice.
 - **FR-44:** Keep ordinary completion and silence out of Damian's review queue by default.
 
 ### Trainer review and decision
@@ -285,7 +285,7 @@ The client receives the established non-emergency boundary and direction to appr
 ### Failure, isolation, and audit
 
 - **FR-56:** Reject missing, ambiguous, cross-client, detached, stale, or conflicting exact references before mutation or publication.
-- **FR-57:** Preserve audit metadata for actor, time, exact primary/related versions, reason, and outcome without copying sensitive content into the audit record.
+- **FR-57:** Preserve the conceptual audit minimum: action, actor identifier and actor type, event time, same-client/process scope, source channel, exact primary and related object versions, reason, outcome, and correlation identifier, without copying sensitive semantic content into the audit record.
 - **FR-58:** Make the complete workflow executable manually without portal, AI, notification, integration, wearable, automated import, or production runtime.
 - **FR-59:** Treat AI, integration, and automation unavailability as irrelevant to manual completion.
 - **FR-60:** Preserve PR #18 only as frozen evidence; never use it as product truth or the implementation base.
@@ -304,7 +304,7 @@ The client receives the established non-emergency boundary and direction to appr
 
 - **PR-01:** All downstream PRD acceptance evidence uses fictional pseudonymous cases only.
 - **PR-02:** Wrong-client read, write, publication, response attachment, or evidence selection is a P0 failure.
-- **PR-03:** Client-safe access includes only exact approved and published material intended for that client and use.
+- **PR-03:** Studio Las-authored `client_material` enters client-safe access only as the exact approved and published version intended for that client and use. A separately authorized same-client projection may show the client their own allowed source, signal, or access state while preserving its original information type and `unpublished` publication state; access never converts it into `client_material` or changes review/publication axes.
 - **PR-04:** Trainer-only meaning and audit metadata never enter the client-safe projection.
 - **PR-05:** No network, persistence, real account, real client data, analytics, external library, or remote asset is authorized by this PRD.
 - **PR-06:** Retention, deletion, backup, provider, legal basis, region, and production access remain governed by higher contracts and later explicit decisions.
@@ -322,10 +322,10 @@ The client receives the established non-emergency boundary and direction to appr
 
 | Case | Required result | P1 failure example |
 | --- | --- | --- |
-| `app-primary` | One exact current release is client-actionable; response and question remain bounded | Old or unapproved guidance appears actionable |
+| `app-primary` | One exact current release is client-actionable; every response and question preserves exact same-client cycle/release/item context, question resolution state, and the no-immediate-response/non-emergency boundary | Old or unapproved guidance appears actionable, or a question loses lineage or implies immediate support |
 | `paper-primary` | Complete guidance works without the app and old paper has a real retirement outcome | A database withdrawal pretends to remove paper |
 | `deliberate-hybrid` | One named authority and one bounded secondary role | Both channels independently maintain guidance |
-| `stopped-or-uncertain` | Stop/change and question remain separate, non-shaming sources; Damian decides next | Automatic regression, warning, or compliance judgment |
+| `stopped-or-uncertain` | Stop/change and question remain separate, non-shaming exact-context sources; the question remains `unresolved` or `resolved` operationally and Damian decides next | Automatic regression, warning, compliance judgment, or detached question |
 | `version-change` | v2 has new approval/publication, v1 is retired, history remains exact | Approval is inherited or v1 stays actionable |
 | `partial-release-revision` | Retained/replaced/removed outcomes complete atomically | A mixed successor becomes current |
 | `focus-validity-boundary` | Exact focus, soft review, and hard validity behave independently | Review time auto-pauses or hard-expired guidance remains active |
@@ -334,8 +334,11 @@ The client receives the established non-emergency boundary and direction to appr
 | `week-8-independence` | Damian may reduce support or change channel | Product pushes more app use or engagement |
 | `week-12-handoff` | Exact evidence becomes trainer-only report-ready selection | A report or renewal is generated automatically |
 | `ineligible-stage-4-decision` | Every non-current or non-`START` entry rejects | Payment, time, or UI state opens Stage 5 |
+| `entry-invalidated-mid-cycle` | Loss of the bound qualifying `START` makes the current release non-actionable and requires a new explicit Damian decision and exact binding | Guidance continues from a stale, superseded, invalidated, or detached entry |
+| `manual-no-portal` | The full entry → focus → guidance → client action → review → Damian decision → evidence-selection path completes through the selected manual channel without a portal | Any essential step requires an app, AI, integration, or runtime |
+| `client-safe-boundary` | Trainer-only focus rationale, observation, interpretation, draft, audit detail, and report candidates never enter client-safe projection; allowed client-owned source/signal projection preserves type and `unpublished` | Trainer-only or unpublished Studio Las material is exposed, or a client-owned signal is falsely converted/published |
 | `late-response` | Response stays on retired exact context and cannot alter current guidance | Late data attaches to v2 automatically |
-| `paper-retirement-failure` | Risky ambiguity fails replacement closed and invokes human resolution | v2 activates while v1 paper looks current |
+| `paper-retirement-failure` | Risky ambiguity keeps v2 non-current, makes affected guidance paused/non-actionable, and requires Damian's approved human contact until explicit resolution | v1 remains actionable or v2 activates while both can look current |
 | `wrong-client-reference` | Read, write, response, publication, and selection reject before mutation | Any foreign content or state is exposed or changed |
 
 ## Later moderated validation contract
@@ -349,6 +352,9 @@ The protocol must test:
 - distinction between changed/partial, stopped, not done, and question;
 - comprehension of paper/app/hybrid authority;
 - ability to complete a requested response or ask a contextual question;
+- ability to recognize retired or invalid material as non-actionable;
+- completion of the full selected manual-channel path without a portal;
+- preservation of exact question context, resolution state, no immediate-response promise, and urgent external-help boundary;
 - absence of shame, pressure, scoring, and screen-dependence cues;
 - Damian's ability to publish/revise and review without administrative overload.
 
@@ -376,7 +382,7 @@ The later test must measure rather than assume these budgets. Damian must explic
 - **AC-11:** The complete manual path works without portal, AI, integration, notification, import, or runtime.
 - **AC-12:** Client-safe projection contains no trainer-only or unpublished content.
 - **AC-13:** Report-ready selection does not generate, interpret, or publish the Stage 7 report.
-- **AC-14:** All fifteen fictional cases have an unambiguous expected result and failure condition.
+- **AC-14:** All eighteen fictional cases have an unambiguous expected result and failure condition.
 - **AC-15:** The later moderated test and time-budget protocol is executable without real data.
 - **AC-16:** The PRD contains no table/field/API/UI/provider/runtime decision.
 - **AC-17:** One frozen HEAD/tree passes independent read-only review with `0 P0 / 0 P1`.
