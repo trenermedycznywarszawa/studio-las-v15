@@ -1,7 +1,7 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGES 0–4 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 5 PRODUCT DECISION BRIEF OWNER ACCEPTED, MERGED AND CLOSED; STAGE 5 ARCHITECTURE AND IMPLEMENTATION NOT AUTHORIZED
-**Version:** 2.9
+**Status:** STAGES 0–4 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 5 PRODUCT DECISION BRIEF OWNER ACCEPTED, MERGED AND CLOSED; ONE STAGE 5 ARCHITECTURE CONTRACT DRAFT OWNER AUTHORIZED; PRD AND IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.10
 **Updated:** 2026-08-17
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
@@ -312,11 +312,11 @@ This closes Stage 4 only as a bounded fictional product-contract prototype. It d
 
 ### Stage 5 — Twelve-week guidance and adaptation loop
 
-The accepted Stage 5 Product Decision Brief defines the product truth for a manual loop beginning from an exact current qualifying Stage 4 `START`. Damian accepted exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` after an independent read-only audit reported `READY FOR OWNER ACCEPTANCE DECISION` with `0 P0 / 0 P1 / 1 P2`; PR #27 merged it through `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. This evidence does not prove runtime behavior or authorize Architecture, PRD, prototype, AI, schema, or runtime.
+The accepted Stage 5 Product Decision Brief defines the product truth for a manual loop beginning from an exact current qualifying Stage 4 `START`. Damian accepted exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` after an independent read-only audit reported `READY FOR OWNER ACCEPTANCE DECISION` with `0 P0 / 0 P1 / 1 P2`; PR #27 merged it through `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. That Brief evidence did not itself authorize Architecture, PRD, prototype, AI, schema, or runtime.
 
-The next eligible Stage 5 artifact is one Architecture Contract, but this status-only closure does not authorize it. Architecture, a later scoped PRD, and a later isolated fictional prototype each require a separate explicit owner decision after the preceding gate passes. PRD remains subject to the general PRD entry rule, and no prototype evidence is required before drafting the Architecture Contract.
+On 2026-08-17 Damian separately authorized autonomous preparation and independent audit of one Stage 5 Architecture Contract from exact base `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`. The resulting contract must remain Draft. It may translate the accepted Product truth into responsibilities, lineage, failure behavior, and fictional acceptance cases; it may not create PRD, prototype, UI, schema, Supabase, runtime, real-data, AI, or implementation decisions.
 
-Future Stage 5 scope, not currently authorized beyond the Product Decision Brief:
+The currently authorized Architecture Draft must translate this accepted Stage 5 scope without changing Product truth:
 
 - twelve weeks as a commercial and review envelope, not a fixed curriculum;
 - start, approximately week-4, approximately week-8, and week-12 review anchors without automatic progression;
@@ -330,11 +330,15 @@ Future Stage 5 scope, not currently authorized beyond the Product Decision Brief
 - selected report-ready evidence without building the Stage 7 report;
 - a quiet client-safe projection of Now, Respond or ask, and Published summaries when the app is the selected channel.
 
-**Product Decision Brief exit gate — completed:** exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` completely and consistently define the Stage 5 product truth, map it to accepted higher-layer authority, contain no Architecture, PRD, prototype, schema, runtime, or AI decision, and passed independent read-only semantic review with `0 P0 / 0 P1 / 1 P2`. Damian separately accepted that exact artifact; PR #27 merged it through `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. Completion does not authorize Architecture.
+**Product Decision Brief exit gate — completed:** exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` completely and consistently define the Stage 5 product truth, map it to accepted higher-layer authority, contain no Architecture, PRD, prototype, schema, runtime, or AI decision, and passed independent read-only semantic review with `0 P0 / 0 P1 / 1 P2`. Damian separately accepted that exact artifact; PR #27 merged it through `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. Completion did not itself authorize Architecture; the later authorization below is separate.
+
+**Architecture Contract exit gate — currently authorized planning slice:** one frozen architecture-contract commit must translate the accepted Stage 5 Product truth into exact responsibilities, lineage, channel authority, client-safe publication and withdrawal, failure states, complete manual fallback, and a bounded fictional acceptance model without creating UI, schema, provider, runtime, or implementation decisions. It must pass an independent read-only adversarial review with `0 P0 / 0 P1`. Passing permits only a separate owner acceptance decision; it does not authorize Ready, merge, PRD 005, a prototype, or implementation.
 
 **Downstream fictional prototype exit gate — not currently authorized:** from one exact current qualifying Stage 4 `START`, the complete manual loop works through paper, app, and deliberate hybrid without duplicate truth, AI, integration, or automation; only requested decision-relevant signals return; old guidance cannot remain actionable; selected evidence becomes report-ready without adherence scoring, automatic progression, gamification, or Stage 7 report generation. The fictional prototype must also complete moderated tests with 5–7 representative target users and test the provisional client and trainer time budgets, with Damian explicitly approving or revising the later operational criteria. This gate may be attempted only after separately authorized Architecture and PRD layers.
 
-**Product Decision Brief closure:** on 2026-08-17 Damian separately owner accepted exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` after the independent audit result `0 P0 / 0 P1 / 1 P2`. PR #27 merged the accepted Brief through `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. Status is `OWNER ACCEPTED, MERGED AND CLOSED — PRODUCT DECISION BRIEF ONLY`; Architecture, a PRD exception, prototype work, and implementation remain unauthorized.
+**Product Decision Brief closure:** on 2026-08-17 Damian separately owner accepted exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` after the independent audit result `0 P0 / 0 P1 / 1 P2`. PR #27 merged the accepted Brief through `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. Status is `OWNER ACCEPTED, MERGED AND CLOSED — PRODUCT DECISION BRIEF ONLY`.
+
+**Architecture authorization:** on 2026-08-17 Damian authorized one Draft Stage 5 Architecture Contract from exact base `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`, to remain Draft through independent audit and a separate owner decision. This authorization permits only the contract and minimum Architecture index, Registry, and Execution Plan projections. It does not authorize Ready, merge, PRD 005, prototype work, UI, schema, Supabase, runtime, real data, AI, Stage 6–8, or implementation.
 
 ### Stage 6 — Weekly trainer preparation and session support
 
@@ -426,7 +430,8 @@ Only after the manual flows work:
 | STG-03 | DONE | Adaptive full intake → traceable PWD brief → Damian readiness decision | Owner accepted 2026-08-11; PR #23 merge `0d9a8e89623ebc7cc9db3edf53fa9550c31f4de3`; independent read-only audit PASS 2026-08-10 on exact head `00412a73e8faeb5187d8fa797e768a8bdb7cbb64`; controlled source archive P2 closed 2026-08-11 at private package/evidence commit `8b290cdb2c665077905c77d91cca7500255a3bb2` |
 | STG-04A | DONE | Fictitious PWD decision-conversation prototype contract owner accepted, merged, and closed | Owner accepted 2026-08-16; PR #25; accepted head `ad101c87e4eca13ce18517ec9cc8b9277392756b`; tree `41747abd450c60e6f9a2b8c85fb41dae04a1efca`; merge `149fb9538a2491bed5cbf71c6885fe789247d541`; independent audit `0 P0 / 0 P1`; Stage 4A `52/52 PASS`; implementation not authorized |
 | STG-04 | DONE | PWD workspace and decision-conversation product contract completed by Stage 4A evidence; full roadmap Stage 4 closed | Stage 4 Completion Gate 2026-08-16; all scope/exit-gate requirements mapped; real document ingestion and Tanita import automation remain Stage 8; no Stage 4B; implementation not authorized |
-| STG-05-PLAN | DONE | Twelve-week guidance and adaptation loop Product Decision Brief owner accepted, merged, and closed | Owner accepted 2026-08-17; PR #27; head `c16ac756af35b3977fc344babcb374fb29e2afe5`; tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780`; audit `0 P0 / 0 P1 / 1 P2`; merge `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`; no Architecture, PRD, prototype, schema, runtime, real data, Stage 6, or implementation permission |
+| STG-05-PLAN | DONE | Twelve-week guidance and adaptation loop Product Decision Brief owner accepted, merged, and closed | Owner accepted 2026-08-17; PR #27; head `c16ac756af35b3977fc344babcb374fb29e2afe5`; tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780`; audit `0 P0 / 0 P1 / 1 P2`; merge `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`; no downstream permission |
+| STG-05-ARCH | AUTHORIZED | One Draft Stage 5 Architecture Contract for independent audit only | Owner authorization 2026-08-17; exact base `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`; no Ready, merge, PRD, prototype, UI, schema, Supabase, runtime, real data, AI, or implementation permission |
 
 ---
 
@@ -436,6 +441,6 @@ Stages 0–4 are owner accepted, merged, and closed as bounded fictional prototy
 
 The Stage 4 Completion Gate confirms that the accepted Stage 4A task `conduct_pwd_and_record_trainer_decision`, contract `stage4-v1`, demonstrates the full Stage 4 product scope and exit gate. Stage 4A remains the delivery-slice name; it is not evidence of an undefined remaining Stage 4 segment. Real document ingestion and Tanita import reliability belong to Stage 8 and do not keep Stage 4 open.
 
-PR #18 remains frozen. Stage 4 is closed. On 2026-08-17 Damian separately owner accepted the Stage 5 Product Decision Brief at exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` after the independent audit result `0 P0 / 0 P1 / 1 P2`; PR #27 merged it through `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. The next permitted artifact is one Stage 5 Architecture Contract only after a separate explicit owner authorization; it is not authorized by this status-only closure.
+PR #18 remains frozen. Stage 4 is closed. The Stage 5 Product Decision Brief is owner accepted, merged, and closed at the exact evidence above. Damian has now separately authorized one Draft Stage 5 Architecture Contract from `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`; the immediate action is to prepare that single contract, freeze its exact HEAD/tree, and obtain an independent read-only audit before any owner acceptance decision.
 
-A Stage 5 Architecture Contract, runtime, real AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, PRD 005, prototype work, Stage 6, and implementation remain unauthorized.
+Marking the Architecture Draft Ready, merging it, PRD 005, prototype work, UI, runtime, real or simulated AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, Stage 6, and implementation remain unauthorized.

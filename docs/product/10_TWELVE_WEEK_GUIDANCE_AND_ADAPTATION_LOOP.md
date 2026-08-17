@@ -8,7 +8,7 @@
 - **Accepted Product Decision Brief:** PR #27; head `c16ac756af35b3977fc344babcb374fb29e2afe5`; tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780`
 - **Independent audit:** `READY FOR OWNER ACCEPTANCE DECISION`; `0 P0 / 0 P1 / 1 P2`
 - **Merge:** PR #27 merged to `product-recovery` as `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`
-- **Next-layer permission:** none; one Stage 5 Architecture Contract requires a separate explicit owner decision
+- **Next-layer permission:** one Draft Stage 5 Architecture Contract authorized separately on 2026-08-17 from `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`; no PRD, prototype, runtime, real-data, or implementation permission
 - **Entry point:** closed Stage 4 product contract on `product-recovery@f16840a6300c9cf396af172df9d053497c2dd774`
 - **Implementation permission:** none
 - **Architecture, PRD, schema, runtime, real-data, and deployment permission:** none
