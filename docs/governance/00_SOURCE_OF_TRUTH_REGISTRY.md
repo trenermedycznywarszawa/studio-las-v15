@@ -324,6 +324,21 @@ This decision accepts and closes only the Product Decision Brief. It changes no 
 
 PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
 
+### Stage 5 Architecture Contract authorization
+
+**Decision date:** 2026-08-17
+**Decision owner:** Damian
+
+> Autoryzuję autonomiczne przygotowanie jednego Stage 5 Architecture Contract na bazie `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`. Bez PRD, prototypu, UI, schematu, Supabase, runtime’u, realnych danych i implementacji. Dokument ma pozostać Draftem do niezależnego audytu i mojej osobnej decyzji.
+
+This decision authorizes exactly one Draft architecture contract at `docs/architecture/18_STAGE_5_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP_CONTRACT.md` plus the minimum Architecture index, Registry, and Execution Plan projections required to preserve canonical status. The contract may define domain responsibilities, exact-version lineage, publication and withdrawal behavior, channel authority, client-safe projections, trainer decisions, failure states, and a bounded fictional acceptance model.
+
+The Draft must start from exact base `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`, remain Draft, and undergo an independent read-only audit on one frozen HEAD/tree before any later owner acceptance decision.
+
+This authorization does not accept the resulting Draft, mark it Ready, authorize merge, create PRD 005 or an exception to the general PRD entry rule, or permit a prototype, UI, HTML, CSS, JavaScript, tests, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, runtime, real or simulated AI, real client data, staging, production, deployment, publication, integration with `main`, Stage 6, Stage 7, Stage 8, or implementation.
+
+PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
+
 ## Production entry rule
 
 Production may not proceed until:

@@ -49,6 +49,8 @@ The heuristic is not a fixed interface sequence. Architecture may support paper,
 15. `14_STAGE_1_DOMAIN_MAPPING_AND_ACCEPTANCE.md` — domain mapping and Stage 1 acceptance cases.
 16. `15_STAGE_2_INQUIRY_PHONE_DECISION_CONTRACT.md` — first inquiry, phone notes, client reaction, and trainer decision.
 17. `16_STAGE_3_FULL_INTAKE_PWD_PREPARATION_CONTRACT.md` — adaptive intake, traceable PWD brief, observation candidates, and trainer readiness decision.
+18. `17_STAGE_4_PWD_DECISION_CONVERSATION_CONTRACT.md` — PWD evidence, reviewed conversation support, and Damian's exact Stage 4 decision.
+19. `18_STAGE_5_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP_CONTRACT.md` — exact Stage 4 entry, one authoritative guidance release, minimum client input, trainer adaptation, and report-ready evidence.
 
 ## Architecture rule
 
