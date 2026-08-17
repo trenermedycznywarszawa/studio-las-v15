@@ -311,6 +311,19 @@ It does not accept the resulting Draft, authorize a Stage 5 Architecture Contrac
 
 PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
 
+### Stage 5 Product Decision Brief owner acceptance and merge
+
+**Decision date:** 2026-08-17
+**Decision owner:** Damian
+
+Damian explicitly owner accepted the Stage 5 Product Decision Brief at exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` after the independent read-only audit returned `READY FOR OWNER ACCEPTANCE DECISION` with `0 P0 / 0 P1 / 1 P2`. The single P2 concerned the stale commit count in the PR description and was corrected before merge without changing the accepted head or tree.
+
+PR #27 was marked Ready for review and merged into `product-recovery` as merge commit `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. Current status is `OWNER ACCEPTED, MERGED AND CLOSED — PRODUCT DECISION BRIEF ONLY`.
+
+This decision accepts and closes only the Product Decision Brief. It changes no Stage 5 product truth and does not authorize a Stage 5 Architecture Contract, PRD 005, a prototype, HTML, CSS, JavaScript, tests, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real or simulated AI, real client data, staging, production, deployment, publication, integration with `main`, Stage 6, Stage 7, Stage 8, or implementation. Every later layer requires a separate explicit owner decision.
+
+PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
+
 ## Production entry rule
 
 Production may not proceed until:
