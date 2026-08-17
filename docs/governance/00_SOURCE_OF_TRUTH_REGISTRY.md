@@ -354,6 +354,21 @@ This decision accepts and closes only the Stage 5 Architecture Contract. It chan
 
 PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
 
+### Stage 5 PRD 005 authorization
+
+**Decision date:** 2026-08-17
+**Decision owner:** Damian
+
+> autoryzuj Stage 5 PRD 005.
+
+Under the accepted Stage 5 Product Brief, Architecture Contract, and current downstream gates, this directive authorizes autonomous preparation of exactly one Draft PRD at `docs/prd/005_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP_V1.md` plus the minimum Registry and Execution Plan projections required to preserve canonical status.
+
+The Draft must start from exact base `product-recovery@03757a7402baa3f288ae31c46452efd354731862`, translate accepted Product and Architecture truth into testable behavioral requirements, remain Draft, and undergo independent read-only audit on one frozen HEAD/tree before any later owner acceptance decision.
+
+This authorization does not accept the resulting Draft, mark it Ready, authorize merge, or permit a prototype, UI, HTML, CSS, JavaScript, tests, fixtures, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, runtime, real or simulated AI, real client data, staging, production, deployment, publication, integration with `main`, Stage 6, Stage 7, Stage 8, or implementation.
+
+PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
+
 ## Production entry rule
 
 Production may not proceed until:

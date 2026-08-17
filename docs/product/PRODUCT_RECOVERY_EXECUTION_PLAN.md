@@ -1,7 +1,7 @@
 # Studio Las OS — Product Recovery Execution Plan
 
-**Status:** STAGES 0–4 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 5 PRODUCT DECISION BRIEF AND ARCHITECTURE CONTRACT OWNER ACCEPTED, MERGED AND CLOSED; PRD AND IMPLEMENTATION NOT AUTHORIZED
-**Version:** 2.11
+**Status:** STAGES 0–4 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 5 PRODUCT DECISION BRIEF AND ARCHITECTURE CONTRACT OWNER ACCEPTED, MERGED AND CLOSED; ONE STAGE 5 PRD 005 DRAFT OWNER AUTHORIZED; PROTOTYPE AND IMPLEMENTATION NOT AUTHORIZED
+**Version:** 2.12
 **Updated:** 2026-08-17
 **Canonical integration line:** `product-recovery`
 **No implementation permission:** this document does not authorize runtime, Supabase, production, or real-client-data changes
@@ -338,7 +338,11 @@ The accepted Architecture Contract translates this Stage 5 scope without changin
 
 **Product Decision Brief closure:** on 2026-08-17 Damian separately owner accepted exact head `c16ac756af35b3977fc344babcb374fb29e2afe5` and tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780` after the independent audit result `0 P0 / 0 P1 / 1 P2`. PR #27 merged the accepted Brief through `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`. Status is `OWNER ACCEPTED, MERGED AND CLOSED — PRODUCT DECISION BRIEF ONLY`.
 
-**Architecture authorization and closure:** on 2026-08-17 Damian authorized one Draft Stage 5 Architecture Contract from exact base `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`, to remain Draft through independent audit and a separate owner decision. After two final audits each reported `0 P0 / 0 P1 / 0 P2`, Damian accepted exact head `02fcb175460b340d13cf4fc0833081a0ae071706` and tree `34c24a4880ca7543550cd51d912250a28e0b691d`; PR #28 merged it through `37613418cc25ba46bb1f31237d54cc6c113750bd`. Status is `OWNER ACCEPTED, MERGED AND CLOSED — ARCHITECTURE CONTRACT ONLY`. PRD 005, prototype work, UI, schema, Supabase, runtime, real data, AI, Stage 6–8, and implementation remain unauthorized.
+**Architecture authorization and closure:** on 2026-08-17 Damian authorized one Draft Stage 5 Architecture Contract from exact base `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`, to remain Draft through independent audit and a separate owner decision. After two final audits each reported `0 P0 / 0 P1 / 0 P2`, Damian accepted exact head `02fcb175460b340d13cf4fc0833081a0ae071706` and tree `34c24a4880ca7543550cd51d912250a28e0b691d`; PR #28 merged it through `37613418cc25ba46bb1f31237d54cc6c113750bd`. Status is `OWNER ACCEPTED, MERGED AND CLOSED — ARCHITECTURE CONTRACT ONLY`. That closure did not itself authorize PRD 005 or any downstream work; the later PRD authorization below is separate.
+
+**PRD 005 authorization:** on 2026-08-17 Damian directed `autoryzuj Stage 5 PRD 005`. Under the accepted Product Brief, Architecture Contract, and existing gates, this authorizes exactly one Draft PRD 005 from `product-recovery@03757a7402baa3f288ae31c46452efd354731862` plus minimum Registry and Execution Plan projections. The PRD may define testable behavioral requirements, failure behavior, fictional acceptance cases, and the later moderated-validation contract. It must remain Draft through independent audit and a separate owner decision.
+
+This authorization does not accept the Draft, mark it Ready, authorize merge, or permit prototype work, UI, HTML, CSS, JavaScript, tests, fixtures, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, runtime, real or simulated AI, real data, staging, production, deployment, publication, Stage 6–8, or implementation.
 
 ### Stage 6 — Weekly trainer preparation and session support
 
@@ -432,6 +436,7 @@ Only after the manual flows work:
 | STG-04 | DONE | PWD workspace and decision-conversation product contract completed by Stage 4A evidence; full roadmap Stage 4 closed | Stage 4 Completion Gate 2026-08-16; all scope/exit-gate requirements mapped; real document ingestion and Tanita import automation remain Stage 8; no Stage 4B; implementation not authorized |
 | STG-05-PLAN | DONE | Twelve-week guidance and adaptation loop Product Decision Brief owner accepted, merged, and closed | Owner accepted 2026-08-17; PR #27; head `c16ac756af35b3977fc344babcb374fb29e2afe5`; tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780`; audit `0 P0 / 0 P1 / 1 P2`; merge `f2ef7c9d07c7e8b9fb88eff723ebc5b74f56c145`; no downstream permission |
 | STG-05-ARCH | DONE | Stage 5 Architecture Contract owner accepted, merged, and closed | Owner accepted 2026-08-17; PR #28; accepted head `02fcb175460b340d13cf4fc0833081a0ae071706`; tree `34c24a4880ca7543550cd51d912250a28e0b691d`; two final audits each `0 P0 / 0 P1 / 0 P2`; merge `37613418cc25ba46bb1f31237d54cc6c113750bd`; no downstream permission |
+| STG-05-PRD | AUTHORIZED | One Draft Stage 5 PRD 005 for independent audit only | Owner authorization 2026-08-17; exact base `product-recovery@03757a7402baa3f288ae31c46452efd354731862`; no Ready, merge, prototype, UI, schema, Supabase, runtime, real data, AI, or implementation permission |
 
 ---
 
@@ -441,6 +446,6 @@ Stages 0–4 are owner accepted, merged, and closed as bounded fictional prototy
 
 The Stage 4 Completion Gate confirms that the accepted Stage 4A task `conduct_pwd_and_record_trainer_decision`, contract `stage4-v1`, demonstrates the full Stage 4 product scope and exit gate. Stage 4A remains the delivery-slice name; it is not evidence of an undefined remaining Stage 4 segment. Real document ingestion and Tanita import reliability belong to Stage 8 and do not keep Stage 4 open.
 
-PR #18 remains frozen. Stage 4 is closed. The Stage 5 Product Decision Brief and Architecture Contract are owner accepted, merged, and closed at the exact evidence above. The next permissible Stage 5 layer is PRD 005, but it remains unauthorized and requires a separate explicit owner decision.
+PR #18 remains frozen. Stage 4 is closed. The Stage 5 Product Decision Brief and Architecture Contract are owner accepted, merged, and closed at the exact evidence above. Damian has separately authorized one Stage 5 PRD 005 Draft from `product-recovery@03757a7402baa3f288ae31c46452efd354731862`; the immediate action is to freeze its exact HEAD/tree and complete an independent read-only audit before any owner acceptance decision.
 
-PRD 005, prototype work, UI, runtime, real or simulated AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, Stage 6, and implementation remain unauthorized.
+Marking the PRD Draft Ready, merging it, prototype work, UI, runtime, real or simulated AI, real Tanita ingestion, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, real data, staging, production, deployment, publication, integration with `main`, Stage 6, and implementation remain unauthorized.
