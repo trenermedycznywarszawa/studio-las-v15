@@ -1,9 +1,14 @@
 # 18 Stage 5 Twelve-Week Guidance and Adaptation Loop Architecture Contract
 
-- **Status:** DRAFT ARCHITECTURE CONTRACT — OWNER AUTHORIZED FOR INDEPENDENT AUDIT ONLY
+- **Status:** OWNER ACCEPTED, MERGED AND CLOSED — ARCHITECTURE CONTRACT ONLY
 - **Owner:** Damian
 - **Stage:** 5
 - **Architecture authorization date:** 2026-08-17
+- **Owner acceptance date:** 2026-08-17
+- **Accepted HEAD:** `02fcb175460b340d13cf4fc0833081a0ae071706`
+- **Accepted tree:** `34c24a4880ca7543550cd51d912250a28e0b691d`
+- **Independent audits:** two final read-only audits, each `0 P0 / 0 P1 / 0 P2`
+- **PR / merge:** PR #28; merge `37613418cc25ba46bb1f31237d54cc6c113750bd`
 - **Exact base:** `product-recovery@3298cbf45ad38f5789b93381bb308c5a46fc3329`
 - **Base tree:** `0452df3e4ff330785af9f57b1307e59d34db2774`
 - **Product authority:** owner-accepted Stage 5 Product Decision Brief at head `c16ac756af35b3977fc344babcb374fb29e2afe5`, tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780`
@@ -369,9 +374,9 @@ Age alone is not a channel-selection proxy. A P0 or P1 finding blocks the protot
 
 Architecture is eligible for owner acceptance only at `0 P0 / 0 P1` on one frozen commit and tree after independent read-only review.
 
-## Architecture exit gate
+## Architecture acceptance record
 
-This Draft is ready for an owner acceptance decision only when:
+The frozen Architecture Contract satisfied all acceptance conditions:
 
 - it maps every accepted Stage 5 product invariant to one explicit architectural responsibility;
 - entry, focus, release, channel, signal, review, decision, withdrawal, and report-selection lineage are exact and fail closed;
@@ -381,13 +386,13 @@ This Draft is ready for an owner acceptance decision only when:
 - the complete manual path needs no AI, integration, runtime, or real data;
 - the fictional cases and later user/time validation are testable without designing UI or schema;
 - one frozen commit/tree passes independent adversarial review with `0 P0 / 0 P1`;
-- Damian separately accepts or rejects that exact artifact.
+- Damian separately accepted that exact artifact on 2026-08-17.
 
-Passing this gate does not authorize PRD 005, a prototype, tests, schema, Supabase, runtime, real data, deployment, publication, or implementation.
+Acceptance and merge do not authorize PRD 005, a prototype, tests, schema, Supabase, runtime, real data, deployment, publication, or implementation.
 
 ## Forbidden scope
 
-Do not add in this Architecture Draft:
+This accepted Architecture Contract does not add or authorize:
 
 - PRD 005 or a PRD exception;
 - screens, wireframes, components, routes, UI copy, HTML, CSS, JavaScript, or prototype code;
@@ -402,6 +407,6 @@ Do not add in this Architecture Draft:
 
 ## Next gate
 
-Publish this contract only as a Draft PR from the exact authorized base. Independent review must verify the frozen HEAD and tree and report P0/P1/P2 findings.
+PR #28 was published as a Draft from the exact authorized base. Two independent final read-only audits verified HEAD `02fcb175460b340d13cf4fc0833081a0ae071706` and tree `34c24a4880ca7543550cd51d912250a28e0b691d`; each reported `0 P0 / 0 P1 / 0 P2`. Damian separately accepted that exact artifact and authorized Ready and merge.
 
-Do not mark the PR Ready, merge it, create PRD 005, prepare a prototype, or begin implementation without Damian's later separate explicit decision covering the exact audited artifact.
+PR #28 was marked Ready and merged only under that separate owner decision. The Architecture layer is closed; PRD 005, prototype work, and implementation remain unauthorized pending a separate owner decision.

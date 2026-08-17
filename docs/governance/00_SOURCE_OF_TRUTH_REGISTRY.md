@@ -339,6 +339,21 @@ This authorization does not accept the resulting Draft, mark it Ready, authorize
 
 PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
 
+### Stage 5 Architecture Contract owner acceptance and merge
+
+**Decision date:** 2026-08-17
+**Decision owner:** Damian
+
+> Akceptuję Stage 5 Architecture Contract na HEAD `02fcb175460b340d13cf4fc0833081a0ae071706`, tree `34c24a4880ca7543550cd51d912250a28e0b691d`, po dwóch audytach `0 P0 / 0 P1 / 0 P2`. Autoryzuję Ready, merge PR #28 do `product-recovery` oraz jeden status-only governance commit zapisujący akceptację i merge. Bez PRD, prototypu, UI, schematu, Supabase, runtime’u, realnych danych i implementacji.
+
+Damian explicitly owner accepted the Stage 5 Architecture Contract at exact head `02fcb175460b340d13cf4fc0833081a0ae071706` and tree `34c24a4880ca7543550cd51d912250a28e0b691d` after two independent final read-only audits each reported `READY FOR OWNER ACCEPTANCE DECISION` with `0 P0 / 0 P1 / 0 P2`.
+
+PR #28 was marked Ready for review and merged into `product-recovery` as merge commit `37613418cc25ba46bb1f31237d54cc6c113750bd`. Current status is `OWNER ACCEPTED, MERGED AND CLOSED — ARCHITECTURE CONTRACT ONLY`.
+
+This decision accepts and closes only the Stage 5 Architecture Contract. It changes no Stage 5 product truth and does not authorize PRD 005, a prototype, UI, HTML, CSS, JavaScript, tests, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, runtime, real or simulated AI, real client data, staging, production, deployment, publication, integration with `main`, Stage 6, Stage 7, Stage 8, or implementation. Every later layer requires a separate explicit owner decision.
+
+PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
+
 ## Production entry rule
 
 Production may not proceed until:
