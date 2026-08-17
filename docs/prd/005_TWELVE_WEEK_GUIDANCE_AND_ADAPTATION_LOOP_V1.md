@@ -144,7 +144,7 @@ If the bound `START` later becomes ineligible, actionable guidance fails closed 
 2. He establishes one exact current focus.
 3. He chooses paper, app, or deliberate hybrid and names the authoritative channel.
 4. He prepares the minimum-effective guidance and any optional decision-relevant response request.
-5. Every client-facing item begins unapproved and unpublished.
+5. Every Studio Las-authored guidance `client_material` intended for the client begins unapproved and unpublished.
 6. Damian reviews and approves each exact intended `client_material` version for the same client and use.
 7. Each intended item is deliberately published.
 8. The complete release activates atomically only after all entry, focus, approval, publication, channel, dose, stop, validity/review, and single-release conditions pass.
@@ -224,7 +224,7 @@ The client receives the established non-emergency boundary and direction to appr
 
 - **FR-12:** Require every guidance item to contain a clear client-safe instruction, purpose, dose or completion condition, relevant stop/reduction criteria, channel authority, validity or exact review point, and signal decision.
 - **FR-13:** Permit no requested signal unless Damian records what decision or conversation it may change.
-- **FR-14:** Keep every client-facing item `needs_review` and `unpublished` until Damian separately approves and publishes that exact version for the same client and use.
+- **FR-14:** Keep every Studio Las-authored guidance `client_material` intended for the client `needs_review` and `unpublished` until Damian separately approves and publishes that exact version for the same client and use. This requirement does not reclassify an allowed same-client projection of the client's own source, signal, or access state.
 - **FR-15:** Activate a release only when every exact intended item and all entry, focus, channel, validity/review, and single-release conditions pass.
 - **FR-16:** Make release activation and replacement atomic: partial success never becomes current.
 - **FR-17:** Maintain at most one current authoritative release; maintain exactly one whenever the client is expected to act.
@@ -276,7 +276,7 @@ The client receives the established non-emergency boundary and direction to appr
 ### Client-safe responsibilities and report-ready evidence
 
 - **FR-50:** Provide only three client-safe responsibilities: current guidance or paper-authority statement; requested response/contextual question; and separately approved/published summaries.
-- **FR-51:** Exclude trainer rationale, observation, interpretation, draft, unpublished material, audit data, and report candidates from the client-safe projection.
+- **FR-51:** Exclude trainer-only rationale, observation, interpretation, draft, audit detail, report candidates, and every Studio Las `client_material` version that is not the exact approved and published version intended for that client and use. A separately authorized same-client projection of the client's own allowed source, signal, or access state preserves its original type and may remain `unpublished`.
 - **FR-52:** Interpret `Plan` only as current authoritative guidance, never as a speculative twelve-week calendar.
 - **FR-53:** Interpret `Progress` only as Damian-approved pattern meaning, never raw completion or adherence charts.
 - **FR-54:** Let Damian select exact evidence references, purpose, time, and reason for later reporting without copying full content or generating a report.
@@ -285,7 +285,7 @@ The client receives the established non-emergency boundary and direction to appr
 ### Failure, isolation, and audit
 
 - **FR-56:** Reject missing, ambiguous, cross-client, detached, stale, or conflicting exact references before mutation or publication.
-- **FR-57:** Preserve the conceptual audit minimum: action, actor identifier and actor type, event time, same-client/process scope, source channel, exact primary and related object versions, reason, outcome, and correlation identifier, without copying sensitive semantic content into the audit record.
+- **FR-57:** Preserve the conceptual audit minimum: action, actor identifier and actor type, event time, same-client/process scope, source channel, exact primary and related object versions, reason and authority when required, outcome, and correlation identifier, without copying sensitive semantic content into the audit record.
 - **FR-58:** Make the complete workflow executable manually without portal, AI, notification, integration, wearable, automated import, or production runtime.
 - **FR-59:** Treat AI, integration, and automation unavailability as irrelevant to manual completion.
 - **FR-60:** Preserve PR #18 only as frozen evidence; never use it as product truth or the implementation base.
@@ -380,7 +380,7 @@ The later test must measure rather than assume these budgets. Damian must explic
 - **AC-09:** Ordinary completion and silence create no default trainer queue.
 - **AC-10:** Damian remains the only source of adaptation meaning and decision.
 - **AC-11:** The complete manual path works without portal, AI, integration, notification, import, or runtime.
-- **AC-12:** Client-safe projection contains no trainer-only or unpublished content.
+- **AC-12:** Client-safe projection contains no trainer-only content and no Studio Las `client_material` other than the exact approved and published version intended for that client and use. Any separately permitted projection of the client's own source, signal, or access state preserves its original type and may remain `unpublished`.
 - **AC-13:** Report-ready selection does not generate, interpret, or publish the Stage 7 report.
 - **AC-14:** All eighteen fictional cases have an unambiguous expected result and failure condition.
 - **AC-15:** The later moderated test and time-budget protocol is executable without real data.
