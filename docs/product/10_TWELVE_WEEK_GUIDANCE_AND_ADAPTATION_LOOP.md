@@ -193,7 +193,7 @@ This brief adds no new Stage 1 `information_type`.
 | Client-facing instruction or review summary | exact-version `client_material` |
 | Plan-version activation, retirement, review due, or access event | operational record, not a new information type |
 
-Every client-facing guidance version defaults to `needs_review` and `unpublished` until the existing publication gate passes. A plan edit creates a new version and new approval; it never silently changes published content.
+Every client-facing guidance version defaults to `needs_review` and `unpublished` until the existing publication gate passes. Editing an approved or published plan creates a new version and requires new approval. Published content is never changed silently.
 
 ## Report-ready boundary
 
@@ -252,7 +252,7 @@ Important assumptions remain unverified:
 - whether clients understand `stopped`, `changed`, and `not done` without judgment;
 - whether a contextual question flow creates a manageable service expectation.
 
-These assumptions must be tested with fictional scenarios and 5–7 representative target users before production architecture. Tests use fictional, non-sensitive scenarios only. This is qualitative risk discovery, not statistical validation.
+The later fictional prototype must test these assumptions with 5–7 representative target users before any production implementation or runtime authorization. Tests use fictional, non-sensitive scenarios only. This is qualitative risk discovery, not statistical validation. The Stage 5 Architecture Contract must define how the future prototype will test them; the tests are not a prerequisite for drafting that contract.
 
 ## Validation severity
 
@@ -263,6 +263,8 @@ These assumptions must be tested with fictional scenarios and 5–7 representati
 Owner acceptance requires `0 P0 / 0 P1` on one frozen product-document commit after independent read-only review.
 
 ## Required fictional cases
+
+These are binding downstream acceptance scenarios for the future Architecture Contract, PRD, and fictional prototype. They are not claimed as completed evidence for this Product Decision Brief.
 
 1. `app-primary` — current guidance, one requested response, and a contextual question.
 2. `paper-primary` — complete client guidance works without the app; any later signal is optional and separately defined.
@@ -275,9 +277,22 @@ Owner acceptance requires `0 P0 / 0 P1` on one frozen product-document commit af
 9. `week-12-handoff` — selected evidence becomes a trainer-only report-ready package without generating the report.
 10. `ineligible-stage-4-decision` — conditional, deferred, or not-this-product states fail closed until an eligible trainer decision exists.
 
-## Stage 5 product exit gate
+## Product Decision Brief exit gate
 
-Stage 5 product truth is ready for Architecture only when, on fictional cases:
+This Draft is ready for a separate owner acceptance decision only when:
+
+- it maps Stage 5 to the accepted Constitution, Product, Architecture, and Stage 4 entry truth;
+- the real trainer and client jobs, product boundaries, channel authority, minimum signal, report-ready boundary, operating economics, and rejected alternatives are explicit;
+- no screen, schema, PRD, AI, or implementation decision is smuggled into the Product layer;
+- the required future fictional cases and downstream prototype exit gate are testable without real data;
+- one frozen commit/tree passes independent read-only semantic review with `0 P0 / 0 P1`;
+- Damian confirms that the product direction is useful enough to authorize one Architecture Contract.
+
+Passing this brief gate does not automatically authorize Architecture. The next layer still requires a separate explicit owner decision.
+
+## Downstream Stage 5 prototype exit gate
+
+The future Architecture Contract, PRD, and fictional prototype must eventually prove:
 
 - the exact eligible Stage 4 decision is enforced;
 - Damian can establish one current focus and publish one authoritative guidance version;
@@ -294,7 +309,7 @@ Stage 5 product truth is ready for Architecture only when, on fictional cases:
 - moderated target-user tests find no P0/P1 orientation, comprehension, accessibility, or dignity failure;
 - Damian confirms that the loop reduces rather than adds cognitive and administrative burden.
 
-Passing this product gate does not authorize Architecture, PRD 005, prototype, schema, Supabase, real client data, staging, production, deployment, or publication.
+Passing the later prototype gate does not authorize schema, Supabase, real client data, staging, production, deployment, or publication.
 
 ## Forbidden scope
 
