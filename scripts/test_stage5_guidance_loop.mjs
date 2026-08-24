@@ -359,6 +359,17 @@ const app = read("app.js");
 const model = read("workflow-state.js");
 const fixtureSource = read("fixtures.js");
 const runtime = [html, css, app, model, fixtureSource].join("\n");
+check("cold start initializes the visible default scenario without interaction", () => {
+  const defaultFixture = fixtures[0];
+  assert.equal(defaultFixture.id, "app-primary");
+  assert.match(app, /scenario\.innerHTML\s*=\s*fixtures\.map[\s\S]*?startScenario\(\{ announce: false \}\);/);
+  for (let attempt = 0; attempt < 3; attempt += 1) {
+    const fresh = setup(defaultFixture.id);
+    assert.equal(fresh.fixture.id, defaultFixture.id);
+    assert.equal(fresh.loop.clientProjection().currentReleaseRef, exactRef(fresh.release));
+    assert.equal(fresh.release.status, "active");
+  }
+});
 
 check("prototype is deterministic, offline and persistence-free", () => {
   assert.doesNotMatch(runtime, /fetch\s*\(|XMLHttpRequest|WebSocket|localStorage|sessionStorage|indexedDB|serviceWorker/i);

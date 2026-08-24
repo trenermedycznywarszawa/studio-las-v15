@@ -117,6 +117,7 @@ The suite covers all eighteen required fictional cases, exact same-client refere
 3. Navigate every control with keyboard only.
 4. Confirm visible focus and at least 44 CSS px interactive targets.
 5. Confirm no radio is preselected for Damian.
+6. cold start: widoczny scenariusz i pierwszy stan muszą być semantycznie zgodne.
 
 ## Moderated validation procedure — not yet completed
 

@@ -119,7 +119,7 @@ function clearForms() {
   $("#decision-form").reset();
 }
 
-function startScenario() {
+function startScenario({ announce = true } = {}) {
   clearForms();
   fixture = fixtureById(scenario.value);
   loop = new GuidanceLoop({ caseId: fixture.id });
@@ -138,7 +138,7 @@ function startScenario() {
       responseRequest: fixture.responseRequest
     });
     activeRelease = loop.activate(loop.approveAndPublish(draft));
-    setStatus("Ścieżka została uruchomiona ręcznie. Żaden wynik ani następna decyzja nie zostały wybrane automatycznie.");
+    if (announce) setStatus("Ścieżka została uruchomiona ręcznie. Żaden wynik ani następna decyzja nie zostały wybrane automatycznie.");
   } catch (error) {
     setStatus(`Kontrolowane odrzucenie: ${error.message}`, true);
   }
@@ -242,4 +242,4 @@ $("#replace-guidance").addEventListener("click", () => {
   render();
 });
 
-render();
+startScenario({ announce: false });
