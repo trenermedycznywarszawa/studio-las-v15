@@ -118,18 +118,57 @@ The suite covers all eighteen required fictional cases, exact same-client refere
 4. Confirm visible focus and at least 44 CSS px interactive targets.
 5. Confirm no radio is preselected for Damian.
 
-## Moderated validation gate — not yet completed
+## Moderated validation procedure — not yet completed
 
-The final prototype gate requires 5–7 representative target users. The protocol must measure:
+### Purpose
 
-- time to identify the one current instruction;
-- comprehension of dose and stop/reduction criteria;
-- recognition of channel authority and stale material;
-- ability to respond or ask a contextual question without inferring immediate support;
-- absence of shame, scoring, pressure, and screen-dependence cues;
-- Damian's publication, review, and revision effort.
+Test understanding, decision safety, and error handling; do not try to prove product success. This is a moderated test of a fictional, offline Stage 5 prototype, not a medical service, diagnosis, or test using client data.
 
-Formal independent audits must occur only after moderated findings are consolidated, one correction pass is complete, and one final HEAD/tree is frozen.
+### Participants and organisation
+
+- Include 5–7 people close to Studio Las's intended users. Use no real client data and do not recruit or contact anyone on the owner's behalf.
+- Reserve 30–40 minutes per person.
+- Before each task, the moderator does not explain the interface. Ask the participant to say aloud what they understand and expect.
+- State that the prototype is fictional and offline, and that the participant may stop at any time without giving a reason.
+
+### Fixed tasks
+
+1. Identify the current guidance and its purpose.
+2. Explain what to do at its stop or reduction boundary.
+3. Distinguish an execution response from a question or important context.
+4. Complete the `manual-no-portal` path.
+5. Respond to an outdated or risky paper guidance situation.
+6. State when to contact a human rather than acting alone.
+
+### Short questions after the tasks
+
+Ask no more than these six questions:
+
+1. What do you understand to be the one current instruction?
+2. What would make you shorten, stop, or seek help outside Studio Las?
+3. Which part, if any, felt uncertain?
+4. What did you expect to happen after recording a response or question?
+5. Did anything imply judgment, pressure, or a score?
+6. At which point would you contact a person instead of continuing alone?
+
+### Moderator observation sheet
+
+Use pseudonymous participant identifiers only. Record observations; do not calculate a score or imply clinical validation.
+
+| Pseudonymous participant | Task | Result | Observed difficulty | Verbatim quote | Potential risk | P0 / P1 / P2 | Recommendation |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+|  |  |  |  |  |  |  |  |
+
+### Stop and decision rules
+
+- **P0:** stop further tests and do not use the artifact for a merge decision.
+- **Recurring P1 in at least two participants:** finish the full round, then make one consolidated correction.
+- **Single P2:** record it and consider it only during consolidation.
+- No observed issue does not establish market success or production readiness.
+
+### Close the round
+
+After all 5–7 tests, create one synthetic findings register. Only then perform one correction round, freeze one HEAD/tree, and conduct two independent read-only audits. Do not record test results here and do not claim that tests with people have occurred.
 
 ## Exit gate
 
