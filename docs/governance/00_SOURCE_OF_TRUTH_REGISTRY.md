@@ -369,6 +369,23 @@ This authorization does not accept the resulting Draft, mark it Ready, authorize
 
 PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
 
+### Stage 5 PRD 005 owner acceptance and merge
+
+**Decision date:** 2026-08-24
+**Decision owner:** Damian
+
+> działaj
+
+In the immediate context of the verified Stage 5 PRD 005 acceptance gate, Damian's directive accepts the exact audited artifact and authorizes Ready, controlled merge, and one status-only governance commit.
+
+Damian owner accepted exact head `df0ef4661ebf5ca0ac356eba7ee3bddca743802c` and tree `1853cbcdabdb482c1180753db1c45379b55328d5` after two independent final read-only audits each reported `READY FOR OWNER ACCEPTANCE DECISION` with `0 P0 / 0 P1 / 0 P2`.
+
+PR #29 was marked Ready and merged into `product-recovery` as merge commit `5026507aa0c2f7f3a0f36a0a78350b8bc5e5d556`. Current status is `OWNER ACCEPTED, MERGED AND CLOSED — PRD 005 ONLY`.
+
+This decision accepts and closes only PRD 005. It changes no Product, Architecture, or PRD behavioral truth and does not authorize prototype, UI, HTML, CSS, JavaScript, tests, fixtures, schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, runtime, AI, real data, staging, production, deployment, publication, integration with `main`, Stage 6–8, or implementation. Any later layer requires a separate explicit owner decision.
+
+PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
+
 ## Production entry rule
 
 Production may not proceed until:

@@ -1,9 +1,14 @@
 # PRD 005 — Twelve-Week Guidance and Adaptation Loop v1
 
-- **Status:** DRAFT PRD — OWNER AUTHORIZED FOR INDEPENDENT AUDIT ONLY
+- **Status:** OWNER ACCEPTED, MERGED AND CLOSED — PRD 005 ONLY
 - **Owner:** Damian
 - **Stage:** 5
 - **PRD authorization date:** 2026-08-17
+- **Owner acceptance date:** 2026-08-24
+- **Accepted HEAD:** `df0ef4661ebf5ca0ac356eba7ee3bddca743802c`
+- **Accepted tree:** `1853cbcdabdb482c1180753db1c45379b55328d5`
+- **Independent audits:** two final read-only audits, each `0 P0 / 0 P1 / 0 P2`
+- **PR and merge:** PR #29; merge commit `5026507aa0c2f7f3a0f36a0a78350b8bc5e5d556`
 - **Exact base:** `product-recovery@03757a7402baa3f288ae31c46452efd354731862`
 - **Base tree:** `462a773bff75e597191977bf48b0c14e7a23ee1e`
 - **Product authority:** accepted Stage 5 Product Decision Brief at head `c16ac756af35b3977fc344babcb374fb29e2afe5`, tree `5d51ce05a9945f67eb259419d0f69ea4e6caa780`
@@ -396,7 +401,7 @@ The later test must measure rather than assume these budgets. Damian must explic
 
 ## Forbidden scope
 
-Do not add in this Draft PRD:
+This accepted PRD does not add or authorize:
 
 - prototype files, HTML, CSS, JavaScript, tests, fixtures, screenshots, or deployment;
 - screens, wireframes, routes, navigation, components, or final copy;
@@ -424,22 +429,22 @@ The following remain blocked until separately authorized layers:
 - integrations and automated ingestion;
 - real data, staging, production, deployment, and implementation.
 
-## PRD exit gate
+## PRD acceptance record
 
-This Draft becomes eligible for an owner acceptance decision only when:
+The frozen PRD satisfied all acceptance conditions:
 
 - the exact Product Brief and Architecture Contract are fully represented without contradiction;
 - requirements are testable without selecting UI, schema, provider, or runtime;
 - manual paper, app, and hybrid cases preserve one authority and fail closed;
 - every required fictional case is complete;
 - downstream prototype and moderated-test boundaries are explicit;
-- one frozen commit/tree passes independent adversarial read-only review with `0 P0 / 0 P1`;
-- Damian separately accepts that exact artifact.
+- exact HEAD `df0ef4661ebf5ca0ac356eba7ee3bddca743802c` and tree `1853cbcdabdb482c1180753db1c45379b55328d5` passed two independent final read-only audits, each with `0 P0 / 0 P1 / 0 P2`;
+- Damian separately accepted that exact artifact on 2026-08-24.
 
-Passing this PRD gate does not authorize a prototype, UI, tests, schema, Supabase, runtime, AI, real data, staging, production, deployment, publication, or implementation.
+Acceptance and merge do not authorize a prototype, UI, tests, schema, Supabase, runtime, AI, real data, staging, production, deployment, publication, or implementation.
 
 ## Next gate
 
-Publish this PRD only as a Draft PR from the exact authorized base. Independent review must verify the frozen HEAD and tree and report P0/P1/P2 findings.
+PR #29 was prepared as a Draft from the exact authorized base. Two independent final read-only audits verified the same frozen HEAD and tree and each reported `0 P0 / 0 P1 / 0 P2`. Damian then accepted that exact artifact; PR #29 was marked Ready and merged into `product-recovery` as `5026507aa0c2f7f3a0f36a0a78350b8bc5e5d556`.
 
-Do not mark the PR Ready, merge it, prepare a prototype, or begin implementation without Damian's later separate explicit decision covering the exact audited artifact.
+The PRD layer is closed only. Prototype, UI, tests, schema, Supabase, runtime, AI, real data, staging, production, deployment, publication, and implementation remain unauthorized pending a separate explicit owner decision.
