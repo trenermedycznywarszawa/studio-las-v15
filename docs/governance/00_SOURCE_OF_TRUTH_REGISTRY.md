@@ -386,6 +386,23 @@ This decision accepts and closes only PRD 005. It changes no Product, Architectu
 
 PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
 
+### Stage 5 fictional prototype validation sprint authorization
+
+**Decision date:** 2026-08-24
+**Decision owner:** Damian
+
+> wyrażam zgode na kolejny etap zatwierdzam wszystkie decyzje. działaj i bierz sie do roboty
+
+In the immediate context of the accepted Stage 5 Product Brief, Architecture Contract, PRD 005, and the proposed bounded validation sequence, Damian's directive authorizes autonomous preparation of exactly one Draft Stage 5 Prototype & Validation Sprint from `product-recovery@13a654bab02e72c5f0f8a09cad9dc9d117debf05`.
+
+The authorized Draft may contain one isolated fictional prototype at `prototypes/stage-5-guidance-loop/`, fictional fixtures, one deterministic behavioral test, its audit README, and the minimum Registry and Execution Plan projections needed to preserve canonical status. It may validate all eighteen PRD 005 cases, exact lineage, one current focus, one authoritative release, paper/app/hybrid authority, response and question separation, trainer review, explicit adaptation, stale-instruction retirement, manual fallback, client-safe projection, and later moderated-test readiness.
+
+The Draft may be prepared, corrected, tested, and opened as a Draft PR autonomously. It must remain Draft through moderated validation with 5–7 representative target users, one consolidated correction pass, two independent final read-only audits on one frozen HEAD/tree, and a later separate exact-artifact owner acceptance decision.
+
+This authorization does not accept the resulting prototype, mark it Ready, authorize merge, change Product, Architecture, or PRD truth, or permit schema, SQL, migrations, Supabase, Auth, MFA, RLS, Storage, Edge Functions, provider, runtime, real or simulated AI, real client data, real contact, staging, production, deployment, publication, integration with `main`, Stage 6–8, or production implementation.
+
+PR #18 remains frozen implementation evidence and is not a product or implementation base for Stage 5.
+
 ## Production entry rule
 
 Production may not proceed until:

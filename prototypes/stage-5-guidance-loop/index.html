@@ -1,0 +1,138 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="light">
+  <title>Stage 5 · Guidance Loop · fikcyjny prototyp</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <a class="skip-link" href="#workspace">Przejdź do obszaru roboczego</a>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">Studio Las · Stage 5</p>
+      <h1>Jedna aktualna wskazówka</h1>
+    </div>
+    <div class="boundary" role="note">
+      <strong>Prototyp lokalny</strong>
+      <span>Wyłącznie dane fikcyjne · bez zapisu, wysyłki, AI i produkcji</span>
+    </div>
+  </header>
+
+  <main id="workspace" class="shell">
+    <section class="control-panel" aria-labelledby="scenario-title">
+      <div>
+        <p class="eyebrow">Kontrolowany scenariusz</p>
+        <h2 id="scenario-title">Sprawdź ryzyko, nie ekran</h2>
+      </div>
+      <label for="scenario">Przypadek akceptacyjny</label>
+      <select id="scenario"></select>
+      <p id="risk" class="risk"></p>
+      <div class="button-row">
+        <button id="start" type="button">Uruchom ścieżkę ręczną</button>
+        <button id="reset" class="secondary" type="button">Wyczyść pamięć sesji</button>
+      </div>
+    </section>
+
+    <div class="two-column">
+      <section aria-labelledby="client-title" class="surface client-surface">
+        <div class="surface-heading">
+          <div>
+            <p class="eyebrow">Odpowiedzialność klienta</p>
+            <h2 id="client-title">Co obowiązuje teraz</h2>
+          </div>
+          <span id="channel-badge" class="badge">Brak aktywnej instrukcji</span>
+        </div>
+        <div id="client-empty" class="empty-state">
+          Damian nie opublikował jeszcze aktualnej wskazówki. Stary materiał nie jest tutaj pokazywany.
+        </div>
+        <article id="guidance" class="guidance" hidden>
+          <p id="release-ref" class="exact-ref"></p>
+          <h3 id="instruction"></h3>
+          <dl>
+            <div><dt>Po co</dt><dd id="purpose"></dd></div>
+            <div><dt>Ile</dt><dd id="dose"></dd></div>
+            <div class="stop"><dt>Kiedy skrócić lub przerwać</dt><dd id="stop-criteria"></dd></div>
+          </dl>
+          <p id="authority-note" class="authority-note"></p>
+        </article>
+
+        <form id="client-response" hidden>
+          <fieldset>
+            <legend>Opcjonalna odpowiedź</legend>
+            <label><input type="radio" name="execution" value="done_as_planned"> Zrobione zgodnie z ustaleniem</label>
+            <label><input type="radio" name="execution" value="changed_or_partial"> Zmienione lub częściowe</label>
+            <label><input type="radio" name="execution" value="stopped"> Przerwane</label>
+            <label><input type="radio" name="execution" value="not_done"> Niewykonane</label>
+          </fieldset>
+          <label for="question">Pytanie albo ważny kontekst <span class="optional">(opcjonalnie)</span></label>
+          <textarea id="question" rows="3" placeholder="To nie jest kanał pomocy w nagłej sytuacji."></textarea>
+          <button type="submit">Zapisz fikcyjną odpowiedź</button>
+          <p class="service-boundary">Studio Las nie obiecuje natychmiastowej odpowiedzi. W pilnej sytuacji skorzystaj z odpowiedniej pomocy poza Studio Las.</p>
+        </form>
+      </section>
+
+      <section aria-labelledby="trainer-title" class="surface trainer-surface">
+        <div class="surface-heading">
+          <div>
+            <p class="eyebrow">Obszar Damiana</p>
+            <h2 id="trainer-title">Przejrzyj tylko to, co może zmienić decyzję</h2>
+          </div>
+          <span id="queue-count" class="badge quiet">0 zdarzeń</span>
+        </div>
+
+        <div id="trainer-empty" class="empty-state">Najpierw uruchom wybrany scenariusz.</div>
+        <div id="trainer-work" hidden>
+          <section class="trainer-block" aria-labelledby="focus-title">
+            <p class="eyebrow">Jeden aktualny cel</p>
+            <h3 id="focus-title"></h3>
+            <p id="focus-ref" class="exact-ref"></p>
+          </section>
+
+          <section class="trainer-block" aria-labelledby="events-title">
+            <h3 id="events-title">Do przeglądu</h3>
+            <ul id="events" class="event-list"><li class="muted">Brak zdarzeń wymagających decyzji.</li></ul>
+            <button id="review-events" class="secondary" type="button">Potwierdź jawny przegląd zdarzeń</button>
+          </section>
+
+          <form id="decision-form">
+            <fieldset>
+              <legend>Damian podejmuje decyzję</legend>
+              <div class="decision-grid">
+                <label><input type="radio" name="trainer-decision" value="continue"> Kontynuuj</label>
+                <label><input type="radio" name="trainer-decision" value="simplify"> Uprość</label>
+                <label><input type="radio" name="trainer-decision" value="progress"> Rozwiń</label>
+                <label><input type="radio" name="trainer-decision" value="regress"> Cofnij poziom</label>
+                <label><input type="radio" name="trainer-decision" value="replace"> Zastąp</label>
+                <label><input type="radio" name="trainer-decision" value="pause"> Wstrzymaj</label>
+                <label><input type="radio" name="trainer-decision" value="change_channel"> Zmień kanał</label>
+                <label><input type="radio" name="trainer-decision" value="refer"> Skieruj dalej</label>
+                <label><input type="radio" name="trainer-decision" value="close"> Zamknij</label>
+              </div>
+            </fieldset>
+            <label for="rationale">Uzasadnienie Damiana</label>
+            <textarea id="rationale" rows="3" required></textarea>
+            <div class="button-row">
+              <button type="submit">Zapisz jawną decyzję</button>
+              <button id="replace-guidance" class="secondary" type="button">Przygotuj wersję v2</button>
+            </div>
+          </form>
+        </div>
+      </section>
+    </div>
+
+    <section class="audit-panel" aria-labelledby="audit-title">
+      <div>
+        <p class="eyebrow">Dowód działania</p>
+        <h2 id="audit-title">Historia pozostaje, stara instrukcja nie</h2>
+      </div>
+      <ol id="timeline" class="timeline"><li>Brak operacji w pamięci sesji.</li></ol>
+    </section>
+
+    <p id="status" class="status" aria-live="polite"></p>
+  </main>
+
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
