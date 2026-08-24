@@ -27,8 +27,17 @@ export function submitClientEvent(state, event) {
   if (!event || !["execution", "question", "concern"].includes(event.type)) throw new Error("Dozwolony jest wyłącznie sygnał wykonania, pytanie albo niepokój.");
   if (event.type === "execution" && !["done", "partial", "not_done"].includes(event.value)) throw new Error("Sygnał wykonania wymaga jednej z trzech wartości.");
   if ((event.type === "question" || event.type === "concern") && !String(event.text || "").trim()) throw new Error("Wiadomość wymaga treści.");
+
   next.latestEvent = { ...event, guidanceVersion: next.guidance.version };
-  next.clientMessage = "Przekazano Damianowi. To zgłoszenie nie zmienia automatycznie aktualnej wskazówki.";
+
+  if (event.type === "question") {
+    next.clientMessage = "Przekazano Damianowi. To pytanie nie zmienia automatycznie aktualnej wskazówki; Damian odpowie uzgodnionym kanałem.";
+  } else if (event.type === "concern") {
+    next.clientMessage = "Nie podejmuj decyzji w aplikacji. Skontaktuj się z Damianem telefonicznie, przez WhatsApp albo podczas sesji; zgłoszenie nie zmienia automatycznie aktualnej wskazówki.";
+  } else {
+    next.clientMessage = "Przekazano Damianowi. Ten sygnał nie zmienia automatycznie aktualnej wskazówki.";
+  }
+
   return next;
 }
 
