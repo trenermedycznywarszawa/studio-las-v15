@@ -20,12 +20,15 @@ JS_FILES = [
     ROOT / "assets/os/trainer-mfa.js",
     ROOT / "assets/os/decision-support.js",
     ROOT / "assets/os/session-brief.js",
+    ROOT / "assets/os/trainer-workspace.js",
     ROOT / "assets/os/password-auth.js",
     ROOT / "assets/os/app.js",
     ROOT / "assets/os/ui/common.js",
     ROOT / "assets/os/ui/trainer-mfa.js",
     ROOT / "assets/os/ui/forms.js",
     ROOT / "assets/os/ui/trainer.js",
+    ROOT / "assets/os/ui/trainer-navigation.js",
+    ROOT / "assets/os/ui/trainer-views.js",
     ROOT / "assets/os/ui/client.js",
     ROOT / "demo/studio-las-os-demo.js",
     ROOT / "tools/export-legacy-browser-data.js",
@@ -36,12 +39,15 @@ PRODUCTION_RUNTIME_FILES = [
     ROOT / "assets/os/trainer-mfa.js",
     ROOT / "assets/os/decision-support.js",
     ROOT / "assets/os/session-brief.js",
+    ROOT / "assets/os/trainer-workspace.js",
     ROOT / "assets/os/password-auth.js",
     ROOT / "assets/os/app.js",
     ROOT / "assets/os/ui/common.js",
     ROOT / "assets/os/ui/trainer-mfa.js",
     ROOT / "assets/os/ui/forms.js",
     ROOT / "assets/os/ui/trainer.js",
+    ROOT / "assets/os/ui/trainer-navigation.js",
+    ROOT / "assets/os/ui/trainer-views.js",
     ROOT / "assets/os/ui/client.js",
 ]
 
@@ -233,12 +239,15 @@ def check_modularity() -> None:
         "assets/os/app.js": 420,
         "assets/os/decision-support.js": 220,
         "assets/os/session-brief.js": 220,
+        "assets/os/trainer-workspace.js": 200,
         "assets/os/password-auth.js": 260,
         "assets/os/runtime.js": 280,
         "assets/os/ui/common.js": 260,
         "assets/os/ui/trainer-mfa.js": 180,
         "assets/os/ui/forms.js": 320,
         "assets/os/ui/trainer.js": 300,
+        "assets/os/ui/trainer-navigation.js": 220,
+        "assets/os/ui/trainer-views.js": 200,
         "assets/os/ui/client.js": 180,
     }
     for relative, limit in limits.items():
@@ -283,18 +292,20 @@ def check_security_migration_contract() -> None:
 def check_session_brief_contract() -> None:
     data = read(ROOT / "assets/os/data.js")
     brief = read(ROOT / "assets/os/session-brief.js")
-    trainer = read(ROOT / "assets/os/ui/trainer.js")
+    workspace = read(ROOT / "assets/os/trainer-workspace.js")
+    trainer_views = read(ROOT / "assets/os/ui/trainer-views.js")
+    trainer_navigation = read(ROOT / "assets/os/ui/trainer-navigation.js")
     styles = read(ROOT / "assets/os/styles.css")
 
     require('this.rest("guidance_events"' in data, "session brief does not read client check-ins")
     require('kind: "eq.client_checkin"' in data, "session brief read is not limited to client check-ins")
     require('limit: 1' in data, "session brief client check-in read is not bounded")
     require("guidanceEvents" in data, "session brief data is absent from workspace")
-    require("buildTrainerSessionBrief" in trainer, "trainer UI does not compose the session brief")
-    require("sessionBriefPanel(workspace)" in trainer, "trainer UI does not render the session brief")
+    require("buildTrainerSessionBrief" in workspace, "trainer workspace does not compose the session brief")
+    require("buildTrainerWorkspace" in trainer_views, "trainer UI does not compose the decision workspace")
     require(
-        trainer.find("sessionBriefPanel(workspace)") < trainer.find('panel("Sygnały do przeglądu"'),
-        "session brief is not rendered before the existing workspace sections",
+        all(label in trainer_navigation for label in ['["today", "Dzisiaj"', '["brief", "Brief"', '["session", "Sesja"']),
+        "mobile-first trainer navigation is incomplete",
     )
     for fragment in [
         "buildSafetyFacts",
@@ -307,8 +318,11 @@ def check_session_brief_contract() -> None:
     ]:
         require(fragment in brief, f"session brief contract missing: {fragment}")
     require("recommend" not in brief.lower(), "session brief contains automatic recommendation language")
-    require(".brief-grid" in styles, "session brief responsive grid missing")
-    require(".brief-card.wide { grid-column: auto; }" in styles, "session brief mobile override missing")
+    require("collectAttentionSignals" not in trainer_views, "trainer UI restores automatic recommendations")
+    require(".brief-facts" in styles, "session brief responsive facts missing")
+    require(".bottom-navigation" in styles, "mobile bottom navigation styles missing")
+    require("min-height: 44px" in styles, "minimum touch target contract missing")
+    require(":focus-visible" in styles, "visible focus contract missing")
 
 
 def main() -> int:

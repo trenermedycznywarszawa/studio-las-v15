@@ -38,19 +38,30 @@ export function newClientForm(onSubmit) {
 export function sessionForm(onSubmit) {
   return submitForm([
     field("Data", "date", "date", { value: today(), required: true }),
-    field("Gotowość 1–10", "readiness", "number", { min: 1, max: 10 }),
-    field("Dolegliwość przed 0–10", "vasBefore", "number", { min: 0, max: 10 }),
-    field("Dolegliwość po 0–10", "vasAfter", "number", { min: 0, max: 10 }),
-    field("Sen", "sleepQuality", "select", {
-      options: ["Bardzo słaby", "Słaby", "Przeciętny", "Dobry", "Bardzo dobry"].map(value => ({ value, label: value }))
+    field("Co zaobserwowałem", "observation", "textarea", {
+      rows: 4,
+      required: true,
+      maxlength: 6000,
+      placeholder: "Fakty z rozmowy i pracy podczas sesji."
     }),
-    field("Ćwiczenia — po jednym w linii", "exercises", "textarea", { maxlength: 8000 }),
-    field("Obserwacja trenera", "trainerObservation", "textarea", { maxlength: 12000 }),
-    field("Decyzja trenera", "trainerDecision", "textarea", { maxlength: 8000 }),
-    field("Podsumowanie dla klienta", "clientSummary", "textarea", { maxlength: 8000 }),
-    field("Następny krok dla klienta", "clientNextStep", "textarea", { maxlength: 4000 }),
-    checkbox("Opublikuj klientowi", "clientVisible")
-  ], "Zapisz sesję w Supabase", onSubmit);
+    field("Jak to interpretuję", "interpretation", "textarea", {
+      rows: 4,
+      required: true,
+      maxlength: 6000,
+      placeholder: "Interpretacja trenera — bez automatycznej oceny systemu."
+    }),
+    field("Moja decyzja", "trainerDecision", "textarea", {
+      rows: 3,
+      required: true,
+      maxlength: 8000,
+      placeholder: "Jawna decyzja, którą podejmuje trener."
+    }),
+    field("Następny krok", "clientNextStep", "textarea", {
+      rows: 3,
+      maxlength: 4000,
+      placeholder: "Krok zapisany przez trenera; pole może pozostać puste."
+    })
+  ], "Zapisz sesję", onSubmit, "form-grid session-form");
 }
 
 export function measurementForm(onSubmit) {

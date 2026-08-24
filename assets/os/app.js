@@ -9,7 +9,7 @@ import {
   StudioLasRepository,
   SupabaseAuth
 } from "./data.js";
-import { collectAttentionSignals } from "./decision-support.js";
+import { prepareSessionInput } from "./trainer-workspace.js";
 import {
   consumePasswordCallback,
   renderPasswordSetup,
@@ -38,6 +38,8 @@ const state = {
   clients: [],
   activeClientId: "",
   workspace: null,
+  activeTrainerView: "today",
+  workspaceRequestId: 0,
   snapshot: null
 };
 
@@ -60,7 +62,7 @@ async function withWrite(label, operation) {
   announce(`${label}…`);
   try {
     const result = await operation();
-    announce(`${label}: zapisano w Supabase.`, "ok");
+    announce(`${label}: zapis potwierdzony.`, "ok");
     return result;
   } catch (error) {
     announce(userSafeError(error), "error");
@@ -76,6 +78,8 @@ async function logout() {
   state.clients = [];
   state.activeClientId = "";
   state.workspace = null;
+  state.activeTrainerView = "today";
+  state.workspaceRequestId += 1;
   state.snapshot = null;
   state.mfaView = null;
   showLogin();
@@ -226,52 +230,70 @@ async function removeMfaFactor(index) {
 }
 
 async function loadTrainer(preferredClientId = state.activeClientId) {
+  const requestId = ++state.workspaceRequestId;
   renderLoading(root, "Ładowanie panelu trenera…");
   const mfaView = await state.mfa.prepare();
+  if (requestId !== state.workspaceRequestId) return;
   if (mfaView.status !== "verified") {
     renderMfaView(mfaView);
     return;
   }
   state.mfaView = null;
-  state.clients = await state.repository.listClients();
-  state.activeClientId = preferredClientId && state.clients.some(client => client.id === preferredClientId)
+  const clients = await state.repository.listClients();
+  const activeClientId = preferredClientId && clients.some(client => client.id === preferredClientId)
     ? preferredClientId
     : "";
-  state.workspace = state.activeClientId
-    ? await state.repository.getClientWorkspace(state.activeClientId)
+  const workspace = activeClientId
+    ? await state.repository.getClientWorkspace(activeClientId)
     : null;
+  if (requestId !== state.workspaceRequestId) return;
+  state.clients = clients;
+  state.activeClientId = activeClientId;
+  state.workspace = workspace;
   renderTrainerState();
 }
 
 async function selectClient(clientId) {
-  state.activeClientId = clientId || "";
-  if (!state.activeClientId) {
+  const nextClientId = clientId || "";
+  const requestId = ++state.workspaceRequestId;
+  if (!nextClientId) {
+    state.activeClientId = "";
     state.workspace = null;
+    state.activeTrainerView = "today";
     renderTrainerState();
     return;
   }
 
   renderLoading(root, "Ładowanie procesu klienta…");
-  state.workspace = await state.repository.getClientWorkspace(state.activeClientId);
+  try {
+    const workspace = await state.repository.getClientWorkspace(nextClientId);
+    if (requestId !== state.workspaceRequestId) return;
+    state.activeClientId = nextClientId;
+    state.workspace = workspace;
+    state.activeTrainerView = "today";
+  } catch (error) {
+    if (requestId === state.workspaceRequestId) {
+      state.activeClientId = "";
+      state.workspace = null;
+      state.activeTrainerView = "today";
+      renderTrainerState();
+    }
+    throw error;
+  }
   renderTrainerState();
 }
 
 function renderTrainerState() {
-  const latestSession = state.workspace?.sessions?.[0] || null;
-  const latestTrainingLoad = state.workspace?.trainingLoad?.[0] || null;
-  const latestPreSessionCheck = state.workspace?.preSessionChecks?.[0] || null;
-  const attentionSignals = collectAttentionSignals({
-    client: state.workspace?.client,
-    session: latestSession,
-    trainingLoad: latestTrainingLoad,
-    preSessionCheck: latestPreSessionCheck
-  });
-
   const reloadWorkspace = async () => {
-    if (state.activeClientId) {
-      state.workspace = await state.repository.getClientWorkspace(state.activeClientId);
-    }
-    state.clients = await state.repository.listClients();
+    const clientId = state.activeClientId;
+    const requestId = ++state.workspaceRequestId;
+    const [workspace, clients] = await Promise.all([
+      clientId ? state.repository.getClientWorkspace(clientId) : null,
+      state.repository.listClients()
+    ]);
+    if (requestId !== state.workspaceRequestId || clientId !== state.activeClientId) return;
+    state.workspace = workspace;
+    state.clients = clients;
     renderTrainerState();
   };
 
@@ -280,48 +302,25 @@ function renderTrainerState() {
     clients: state.clients,
     activeClientId: state.activeClientId,
     workspace: state.workspace,
-    attentionSignals,
+    activeView: state.activeTrainerView,
     onSelectClient: clientId => selectClient(clientId).catch(handleRuntimeError),
+    onNavigate: view => {
+      if (!["today", "brief", "session"].includes(view)) return;
+      state.activeTrainerView = view;
+      renderTrainerState();
+    },
     onReload: () => loadTrainer(state.activeClientId).catch(handleRuntimeError),
     onLogout: () => logout().catch(handleRuntimeError),
     onManageMfa: () => showMfaManagement(),
-    onCreateClient: async values => {
-      const client = await withWrite("Dodawanie klienta", () =>
-        state.repository.createClient(state.profile.id, values)
-      );
-      await loadTrainer(client.id);
-    },
     onSaveSession: async values => {
-      await withWrite("Zapisywanie sesji", () => state.repository.saveSession(state.activeClientId, values));
-      await reloadWorkspace();
-    },
-    onSaveMeasurement: async values => {
-      await withWrite("Zapisywanie pomiaru", () => state.repository.saveMeasurement(state.activeClientId, values));
-      await reloadWorkspace();
-    },
-    onSaveTrainingLoad: async values => {
-      await withWrite("Zapisywanie odczytu", () => state.repository.saveTrainingLoad(state.activeClientId, values));
-      await reloadWorkspace();
-    },
-    onSaveAssessment: async values => {
-      await withWrite("Zapisywanie obserwacji", () => state.repository.saveAssessment(state.activeClientId, values));
-      await reloadWorkspace();
-    },
-    onSaveHomePlan: async values => {
-      await withWrite("Zapisywanie planu", () => state.repository.saveHomePlan(state.activeClientId, values));
-      await reloadWorkspace();
-    },
-    onSaveHomePlanItem: async (homePlanId, values) => {
-      await withWrite("Zapisywanie zadania", () =>
-        state.repository.saveHomePlanItem(state.activeClientId, homePlanId, values)
+      const clientId = state.activeClientId;
+      if (!clientId) throw new Error("Wybierz klienta przed zapisem sesji.");
+      const input = prepareSessionInput(values);
+      await withWrite(
+        "Zapisywanie sesji",
+        () => state.repository.saveSession(clientId, input)
       );
-      await reloadWorkspace();
-    },
-    onSaveReport: async values => {
-      await withWrite("Zapisywanie raportu", () =>
-        state.repository.saveReport(state.profile.id, state.activeClientId, values)
-      );
-      await reloadWorkspace();
+      if (state.activeClientId === clientId) await reloadWorkspace();
     }
   });
 }
