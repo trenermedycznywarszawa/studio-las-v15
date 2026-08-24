@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Studio Las · Moja wskazówka</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="#client-view">Studio Las <span>· prowadzenie</span></a>
+    <nav aria-label="Widok prototypu">
+      <button class="nav-button active" id="show-client" type="button" aria-pressed="true">Moja wskazówka</button>
+      <button class="nav-button" id="show-trainer" type="button" aria-pressed="false">Widok Damiana</button>
+    </nav>
+  </header>
+
+  <main>
+    <section id="client-view" class="view" aria-labelledby="client-title">
+      <p class="eyebrow">Dla Anny · fikcyjny przykład</p>
+      <h1 id="client-title">Twoja aktualna wskazówka</h1>
+      <p class="lead">Jedna rzecz na teraz. Nie musisz nic odsyłać, żeby plan nadal obowiązywał.</p>
+      <article class="guidance-card" aria-live="polite">
+        <p class="overline">Co zrobić</p><h2 id="guidance-action"></h2>
+        <dl>
+          <div><dt>Po co</dt><dd id="guidance-purpose"></dd></div>
+          <div><dt>Ile / jak długo</dt><dd id="guidance-dose"></dd></div>
+          <div class="boundary"><dt>Kiedy zwolnić lub przerwać</dt><dd id="guidance-boundary"></dd></div>
+        </dl>
+        <p id="guidance-channel" class="channel-note"></p>
+      </article>
+
+      <section class="response-card" aria-labelledby="response-title">
+        <h2 id="response-title">Jeśli chcesz coś przekazać</h2>
+        <p>To opcjonalne. Brak wiadomości nie oznacza problemu ani nie tworzy zadania dla Ciebie.</p>
+        <div class="choice-row" aria-label="Sygnał wykonania">
+          <button data-execution="done" type="button">Wykonane</button>
+          <button data-execution="partial" type="button">Częściowo</button>
+          <button data-execution="not_done" type="button">Niewykonane</button>
+        </div>
+        <label for="question">Pytanie do Damiana</label>
+        <textarea id="question" rows="3" placeholder="Napisz tylko to, co chcesz przekazać."></textarea>
+        <button class="quiet-button" id="send-question" type="button">Przekaż pytanie</button>
+      </section>
+
+      <section class="contact-card" aria-labelledby="contact-title">
+        <h2 id="contact-title">Nie wiem, czy mogę kontynuować</h2>
+        <p>Nie próbuj rozstrzygać tego samodzielnie w aplikacji. Skontaktuj się z Damianem: telefon, WhatsApp albo podczas sesji.</p>
+        <button class="contact-button" id="send-concern" type="button">Potrzebuję kontaktu z Damianem</button>
+      </section>
+      <p id="client-message" class="message" aria-live="polite"></p>
+    </section>
+
+    <section id="trainer-view" class="view" hidden aria-labelledby="trainer-title">
+      <p class="eyebrow">Widok Damiana · tylko fikcyjny prototyp</p>
+      <h1 id="trainer-title">Prowadzenie klientki</h1>
+      <article class="trainer-card">
+        <p class="overline">Aktualna wskazówka</p>
+        <h2 id="trainer-guidance"></h2>
+        <p id="trainer-guidance-meta"></p>
+      </article>
+      <article class="trainer-card">
+        <p class="overline">Ostatnie zgłoszenie lub pytanie</p>
+        <p id="latest-event">Brak zgłoszenia. Plan nadal obowiązuje.</p>
+      </article>
+      <section class="decision-card" aria-labelledby="decision-title">
+        <h2 id="decision-title">Decyzja Damiana</h2>
+        <p>System nie wybiera decyzji ani nie zmienia wskazówki samodzielnie.</p>
+        <label for="guidance-channel-choice">Kanał prowadzenia przy publikacji</label>
+        <select id="guidance-channel-choice">
+          <option value="app">Aplikacja</option>
+          <option value="paper">Papier + uzgodniona komunikacja</option>
+        </select>
+        <div class="decision-row">
+          <button data-decision="confirm" type="button">Potwierdź plan bez zmian</button>
+          <button data-decision="publish" type="button">Opublikuj nową wskazówkę</button>
+          <button data-decision="contact" type="button">Skontaktuj się z klientką</button>
+        </div>
+      </section>
+      <p id="trainer-message" class="message" aria-live="polite"></p>
+    </section>
+  </main>
+  <script type="module" src="./app.js"></script>
+</body>
+</html>
