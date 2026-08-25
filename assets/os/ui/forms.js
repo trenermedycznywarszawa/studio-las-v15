@@ -133,7 +133,7 @@ export function reportForm(onSubmit) {
 export function homePlanForm(onSubmit) {
   return submitForm([
     field("Tytuł", "title", "text", { required: true, maxlength: 240 }),
-    field("Główny kierunek", "focus", "textarea", { maxlength: 4000 }),
+    field("Cel wskazówki — po co", "focus", "textarea", { required: true, maxlength: 4000 }),
     field("Częstotliwość", "frequency", "text", { maxlength: 160 }),
     field("Czas", "duration", "text", { maxlength: 160 }),
     field("Instrukcja ogólna", "instructions", "textarea", { maxlength: 8000 }),

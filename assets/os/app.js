@@ -325,6 +325,12 @@ function renderTrainerState() {
       await withWrite("Wycofywanie wskazówki", () => state.repository.withdrawHomePlanGuidance(homePlanId));
       await reloadWorkspace();
     },
+    onConfirmHomePlanPaperRetirement: async homePlanId => {
+      await withWrite("Potwierdzanie wycofania poprzedniej kopii papierowej", () =>
+        state.repository.confirmHomePlanPaperRetirement(homePlanId)
+      );
+      await reloadWorkspace();
+    },
     onRecordGuidanceDelivery: async (homePlanId, deliveryStatus) => {
       await withWrite("Zapisywanie dostarczenia", () =>
         state.repository.recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus)

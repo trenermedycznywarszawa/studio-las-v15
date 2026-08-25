@@ -7,11 +7,13 @@ const schema = await read("supabase/migrations/001_initial_schema.sql");
 const audit = await read("supabase/migrations/013_access_lifecycle_and_audit.sql");
 const repository = await read("assets/os/data.js");
 const trainer = await read("assets/os/ui/trainer.js");
+const forms = await read("assets/os/ui/forms.js");
 
 for (const fragment of [
   "publish_home_plan_guidance",
   "withdraw_home_plan_guidance",
   "record_home_plan_guidance_delivery",
+  "confirm_home_plan_paper_retirement",
   "for update",
   "trainer AAL2 required",
   "guidance_channel",
@@ -23,6 +25,10 @@ assert.match(migration, /set status = 'archived', superseded_by_home_plan_id/);
 assert.match(migration, /set status = 'active',[\s\S]*published_at = now\(\)/);
 assert.match(migration, /set status = 'archived', withdrawn_at = now\(\)/);
 assert.match(migration, /set delivery_status = p_delivery_status/);
+assert.ok(migration.includes("nullif(trim(v_draft.focus), '') is null"));
+assert.match(migration, /guidance purpose is required/);
+assert.ok(migration.includes("guidance_channel in ('paper', 'hybrid')"));
+assert.match(migration, /delivery_status is distinct from 'paper_retirement_confirmed'/);
 assert.match(migration, /update public\.home_plan_items[\s\S]*set published_at = now\(\)/);
 assert.match(audit, /security_audit_events/);
 assert.doesNotMatch(audit, /guidance_content text/);
@@ -30,7 +36,11 @@ assert.doesNotMatch(audit, /guidance_content text/);
 assert.match(repository, /publishHomePlanGuidance/);
 assert.match(repository, /withdrawHomePlanGuidance/);
 assert.match(repository, /recordHomePlanGuidanceDelivery/);
+assert.match(repository, /confirmHomePlanPaperRetirement/);
 assert.doesNotMatch(repository.slice(repository.indexOf("async saveHomePlan"), repository.indexOf("async saveHomePlanItem")), /status:\s*published \? "active"/);
 assert.match(trainer, /Damian podejmuje decyzję/);
 assert.match(trainer, /Wycofaj wskazówkę/);
-console.log("GUIDANCE_RELEASE_WORKFLOW_SUCCESS invariants PASS");
+assert.match(trainer, /Potwierdź wycofanie poprzedniej kopii papierowej/);
+assert.match(forms, /Cel wskazówki — po co/);
+assert.match(forms, /required: true/);
+console.log("GUIDANCE_RELEASE_WORKFLOW_SUCCESS static contract invariants PASS (does not execute SQL)");

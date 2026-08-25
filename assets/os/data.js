@@ -383,7 +383,8 @@ export class StudioLasRepository {
       "save_client_checkin",
       "publish_home_plan_guidance",
       "withdraw_home_plan_guidance",
-      "record_home_plan_guidance_delivery"
+      "record_home_plan_guidance_delivery",
+      "confirm_home_plan_paper_retirement"
     ]);
     if (!allowed.has(name)) throw new Error(`RPC is not allowed: ${name}`);
     return this.auth.request(`/rest/v1/rpc/${name}`, {
@@ -788,6 +789,10 @@ export class StudioLasRepository {
     return Array.isArray(rows) ? rows[0] : rows;
   }
 
+  async confirmHomePlanPaperRetirement(homePlanId) {
+    const rows = await this.rpc("confirm_home_plan_paper_retirement", { p_home_plan_id: homePlanId });
+    return Array.isArray(rows) ? rows[0] : rows;
+  }
   async recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus) {
     const rows = await this.rpc("record_home_plan_guidance_delivery", {
       p_home_plan_id: homePlanId,

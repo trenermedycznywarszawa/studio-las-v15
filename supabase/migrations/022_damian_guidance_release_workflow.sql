@@ -18,7 +18,7 @@ alter table public.home_plans
     check (guidance_channel is null or guidance_channel in ('app', 'paper', 'hybrid')),
   drop constraint if exists home_plans_delivery_status_check,
   add constraint home_plans_delivery_status_check
-    check (delivery_status in ('pending', 'recorded', 'paper_retirement_unresolved')),
+    check (delivery_status in ('pending', 'recorded', 'paper_retirement_unresolved', 'paper_retirement_confirmed')),
   drop constraint if exists home_plans_release_version_check,
   add constraint home_plans_release_version_check check (release_version >= 1);
 
@@ -70,6 +70,9 @@ begin
   if v_draft.guidance_channel is null then
     raise exception 'guidance channel is required' using errcode = '23514';
   end if;
+  if nullif(trim(v_draft.focus), '') is null then
+    raise exception 'guidance purpose is required' using errcode = '23514';
+  end if;
   if not exists (
     select 1 from public.home_plan_items item
     where item.home_plan_id = v_draft.id
@@ -92,6 +95,13 @@ begin
   for update;
   v_has_previous := found;
 
+  if v_has_previous
+     and v_previous.guidance_channel in ('paper', 'hybrid')
+     and v_previous.delivery_status is distinct from 'paper_retirement_confirmed' then
+    raise exception 'paper or hybrid guidance retirement must be confirmed before replacement'
+      using errcode = '23514';
+  end if;
+
   select coalesce(max(release_version), 0) + 1 into v_next_version
   from public.home_plans where client_id = v_draft.client_id;
 
@@ -106,7 +116,7 @@ begin
       published_at = now(),
       release_version = v_next_version,
       supersedes_home_plan_id = v_previous.id,
-      delivery_status = case when guidance_channel = 'paper' then 'paper_retirement_unresolved' else 'pending' end,
+      delivery_status = case when guidance_channel in ('paper', 'hybrid') then 'paper_retirement_unresolved' else 'pending' end,
       delivery_recorded_at = null,
       withdrawn_at = null
   where id = v_draft.id
@@ -169,12 +179,40 @@ begin
 end;
 $$;
 
+
+create or replace function public.confirm_home_plan_paper_retirement(
+  p_home_plan_id uuid
+)
+returns public.home_plans
+language plpgsql
+security definer
+set search_path = pg_catalog, public, private, auth
+as $$
+declare v_result public.home_plans%rowtype;
+begin
+  select * into v_result from public.home_plans
+  where id = p_home_plan_id and deleted_at is null for update;
+  if not found then raise exception 'guidance not found' using errcode = 'P0002'; end if;
+  perform private.require_trainer_aal2_for_guidance(v_result.client_id);
+  if v_result.status <> 'active' then raise exception 'paper retirement can be confirmed only for active guidance' using errcode = '23514'; end if;
+  if v_result.guidance_channel not in ('paper', 'hybrid') then
+    raise exception 'paper retirement applies only to active paper or hybrid guidance' using errcode = '23514';
+  end if;
+  update public.home_plans
+  set delivery_status = 'paper_retirement_confirmed',
+      delivery_recorded_at = now()
+  where id = v_result.id returning * into v_result;
+  return v_result;
+end;
+$$;
 revoke all on function public.publish_home_plan_guidance(uuid) from public, anon;
 revoke all on function public.withdraw_home_plan_guidance(uuid) from public, anon;
 revoke all on function public.record_home_plan_guidance_delivery(uuid, text) from public, anon;
+revoke all on function public.confirm_home_plan_paper_retirement(uuid) from public, anon;
 grant execute on function public.publish_home_plan_guidance(uuid) to authenticated;
 grant execute on function public.withdraw_home_plan_guidance(uuid) to authenticated;
 grant execute on function public.record_home_plan_guidance_delivery(uuid, text) to authenticated;
+grant execute on function public.confirm_home_plan_paper_retirement(uuid) to authenticated;
 
 comment on column public.home_plans.guidance_channel is
   'Damian-selected guidance channel: app, paper, or hybrid. Not a client-delivery claim.';

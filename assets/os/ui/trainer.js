@@ -164,25 +164,33 @@ function assessmentsSection(workspace, model) {
 }
 
 function guidancePlanCard(plan, model) {
+  const paperChannel = ["paper", "hybrid"].includes(plan.guidance_channel);
+  const retirementConfirmed = plan.delivery_status === "paper_retirement_confirmed";
+  const retirementRequired = paperChannel && !retirementConfirmed;
   const delivery = create("select", { "aria-label": "Status dostarczenia wskazówki" }, [
     { value: "pending", text: "Dostarczenie oczekuje" },
     { value: "recorded", text: "Dostarczenie zapisane" },
-    { value: "paper_retirement_unresolved", text: "Papier: wycofanie poprzedniej kopii niepotwierdzone" }
+    { value: "paper_retirement_unresolved", text: "Papier: wycofanie kopii przed następcą niepotwierdzone" }
   ].map(option => create("option", option)));
-  delivery.value = plan.delivery_status || "pending";
+  delivery.value = retirementConfirmed ? "recorded" : (plan.delivery_status || "pending");
   const actions = [];
   if (plan.status === "draft") actions.push(button("Opublikuj jako aktualną wskazówkę", { className: "button primary", onclick: () => model.onPublishHomePlan(plan.id) }));
-  if (plan.status === "active") actions.push(button("Zapisz dostarczenie", { onclick: () => model.onRecordGuidanceDelivery(plan.id, delivery.value) }), button("Wycofaj wskazówkę", { className: "button danger", onclick: () => model.onWithdrawHomePlan(plan.id) }));
+  if (plan.status === "active") {
+    if (retirementRequired) actions.push(button("Potwierdź wycofanie poprzedniej kopii papierowej", { onclick: () => model.onConfirmHomePlanPaperRetirement(plan.id) }));
+    if (!retirementConfirmed) actions.push(button("Zapisz dostarczenie", { onclick: () => model.onRecordGuidanceDelivery(plan.id, delivery.value) }));
+    actions.push(button("Wycofaj wskazówkę", { className: "button danger", onclick: () => model.onWithdrawHomePlan(plan.id) }));
+  }
   return create("article", { className: "record" }, [
     create("strong", { text: plan.title || "Wskazówka" }),
     create("p", { text: plan.focus || "Brak celu wskazówki" }),
     create("p", { className: "muted", text: `Wersja ${plan.release_version || 1} · ${plan.status} · kanał: ${plan.guidance_channel || "brak"}` }),
     create("p", { className: "muted", text: `Dostarczenie: ${plan.delivery_status || "oczekuje"}` }),
-    plan.status === "active" ? delivery : null,
+    retirementRequired ? create("p", { className: "muted", text: "Przed publikacją następcy Damian musi potwierdzić wycofanie poprzedniej kopii papierowej." }) : null,
+    paperChannel && retirementConfirmed ? create("p", { className: "muted", text: "Wycofanie poprzedniej kopii papierowej: potwierdzone." }) : null,
+    plan.status === "active" && !retirementConfirmed ? delivery : null,
     actions.length ? create("div", { className: "form-actions" }, actions) : null
   ]);
 }
-
 function plansSection(workspace, model) {
   const plans = [...(workspace.homePlans || [])].sort((left, right) => {
     if (left.status === "active") return -1;
