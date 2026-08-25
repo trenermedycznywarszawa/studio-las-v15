@@ -317,6 +317,20 @@ function renderTrainerState() {
       );
       await reloadWorkspace();
     },
+    onPublishHomePlan: async homePlanId => {
+      await withWrite("Publikowanie wskazówki", () => state.repository.publishHomePlanGuidance(homePlanId));
+      await reloadWorkspace();
+    },
+    onWithdrawHomePlan: async homePlanId => {
+      await withWrite("Wycofywanie wskazówki", () => state.repository.withdrawHomePlanGuidance(homePlanId));
+      await reloadWorkspace();
+    },
+    onRecordGuidanceDelivery: async (homePlanId, deliveryStatus) => {
+      await withWrite("Zapisywanie dostarczenia", () =>
+        state.repository.recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus)
+      );
+      await reloadWorkspace();
+    },
     onSaveReport: async values => {
       await withWrite("Zapisywanie raportu", () =>
         state.repository.saveReport(state.profile.id, state.activeClientId, values)
