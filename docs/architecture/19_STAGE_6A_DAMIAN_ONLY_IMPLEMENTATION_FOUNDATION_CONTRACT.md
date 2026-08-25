@@ -70,24 +70,47 @@ For one synthetic client, Damian must be able to perform this exact sequence:
 
 Every action above must either complete as a durable, traceable transition or leave the prior valid state unchanged.
 
-## 6. Reuse audit before implementation
+## 6. Bounded reuse decision before implementation
 
-Before choosing storage, authentication, or runtime mechanisms, inspect and record the suitability of the existing repository evidence:
+The reuse decision is not a broad audit of historical branches or prototypes. It answers only these questions against the current `product-recovery` tree:
 
-- existing trainer authentication and MFA implementation;
-- existing security audit event mechanism;
-- existing client, home-plan, home-plan-item, session, and guidance-event structures;
-- existing access controls and their test evidence;
-- existing backup/deletion assumptions.
+1. Does the current tree contain a reachable, tested trainer AAL2/MFA foundation?
+2. Does the current tree contain a metadata-minimised security-audit foundation?
+3. Can the Stage 6A synthetic workspace use that foundation without production configuration, real data, client access, or a weaker parallel authentication path?
+4. Can candidate domain structures preserve the Stage 6A invariants without collapsing trainer-only and future client-safe data?
 
-For each candidate, record exactly one outcome:
+The verified PR #13 MFA commit is reachable from `product-recovery`; this makes it a **reuse candidate**, not a production approval. PR #9 remaining Draft against `main` does not by itself make a reachable, merged security commit unusable for this synthetic Stage 6A branch.
+
+For every examined candidate, record exactly one outcome:
 
 - `reuse candidate — requires scoped design`;
 - `not suitable for Stage 6A`;
 - `requires adaptation`;
 - `blocked by privacy, security, or owner decision`.
 
+## 6.1 Selection rule
+
+Stage 6A may use the existing trainer-security foundation only if all of the following are demonstrated on the current branch:
+
+- the trainer AAL2 boundary is present and passes its existing regression checks;
+- no production endpoint, secret, real account, or real data is required;
+- the synthetic workspace does not weaken or bypass the existing boundary;
+- the selected persistence path can make publish, replace, withdraw, channel, and delivery events durable and auditable.
+
+Otherwise implementation stops for a scoped security decision. It must **not** create a throwaway SQLite, frontend-only login, simulated MFA, or weaker parallel authentication layer merely to continue.
+
 No existing artifact becomes an implementation dependency merely because its name appears compatible.
+
+## 6.2 Synthetic-data boundary
+
+Synthetic data permits implementation and critical-path testing. It does not permit claims that any of the following are complete:
+
+- RODO rights, retention, deletion, export, or processor compliance;
+- client authentication, client isolation, or client-safe access;
+- production backup, incident response, deployment, or release readiness;
+- delivery in the real world.
+
+A recorded delivery outcome is valid in Stage 6A only as a durable, actor-attributed audit event in the selected synthetic persistence layer. A frontend checkbox, browser memory, or local-storage flag is not delivery evidence.
 
 ## 7. Quality gates
 
