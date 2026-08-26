@@ -29,6 +29,9 @@ begin
   if position('paper_retirement_confirmed' in pg_get_functiondef('public.publish_home_plan_guidance(uuid)'::regprocedure)) = 0 then
     raise exception 'FAIL: publish RPC does not fail closed for paper or hybrid replacement';
   end if;
+  if position('and published_at is not null' in pg_get_functiondef('public.publish_home_plan_guidance(uuid)'::regprocedure)) = 0 then
+    raise exception 'FAIL: drafts affect guidance release numbering';
+  end if;
   if has_table_privilege('authenticated', 'public.security_audit_events', 'SELECT') then
     raise exception 'FAIL: authenticated can read raw security audit events';
   end if;
