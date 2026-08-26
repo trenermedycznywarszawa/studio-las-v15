@@ -133,6 +133,181 @@ Potential trainer-side evidence:
 - requested actual values only;
 - client question/context, kept separate from execution status.
 
+## Existing Studio Las Atlas changes the opportunity
+
+Studio Las should **not** treat the future Guidance Player as a reason to create a new exercise library from scratch.
+
+Earlier Studio Las OS work already established a substantial Atlas foundation sourced from the existing spreadsheets and video links. Historical working material records:
+
+- `10.2024-Atlas-cwiczen-byd797p.xlsx` with 1107 hyperlinks / 1107 recognized video links;
+- `ATLAS-ĆWICZEŃ.xlsx` with 879 hyperlinks / 878 recognized video links;
+- 1985 recognized source video links in total;
+- an Atlas layer that previously contained 108 exercises plus fields for muscle mapping, client-facing naming, dosage, instructions, stop criteria, regressions, progressions, contraindications, source and quality status;
+- video-link infrastructure such as `STUDIO_LAS_EXERCISE_VIDEO_LINKS`, `isValidVideoUrl()` and `mergeExerciseVideoLinks()`;
+- a prior product rule that the **Atlas is for the trainer, while the client sees only assigned guidance/tasks**.
+
+This means the strategic problem is no longer “build a video exercise library.” The problem is **curation, confidence and workflow**.
+
+### Source warehouse versus reviewed Studio Las exercise
+
+The source spreadsheets and their video links should be treated as a **content warehouse**, not as a client-facing catalog.
+
+A future reviewed Studio Las exercise may reference an exact source video only when the mapping is sufficiently confident. The previous safety rule remains valuable:
+
+> **A wrong video is worse than no video.**
+
+Therefore matching must not guess among similar variants. Exact normalized names and obvious aliases may support high-confidence mapping; ambiguous variants remain unresolved until Damian reviews them.
+
+The useful future distinction is:
+
+```text
+SOURCE ATLAS / VIDEO WAREHOUSE
+        ↓ reviewed mapping
+STUDIO LAS EXERCISE
+  client-safe name
+  exact demonstration/video
+  instruction
+  planned dose defaults
+  stop/reduction criteria
+  optional regression/progression knowledge
+  quality status
+        ↓ Damian selects for current purpose
+GUIDANCE ITEM
+        ↓ client execution
+GUIDANCE PLAYER
+```
+
+The client never needs to browse or manage the warehouse.
+
+## Atlas → Guidance → Execution → Signal → Brief → Decision
+
+The strongest future Studio Las pattern is the following end-to-end chain:
+
+> **Atlas → Guidance → Execution → Signal → Brief → Decision**
+
+Each layer has a different responsibility.
+
+### Atlas = knowledge about an exercise
+
+The Atlas is trainer-side reusable content and metadata. It may contain:
+
+- technical/internal name;
+- client-safe name;
+- exact reviewed video URL;
+- default dosage suggestion;
+- tempo or breathing note where useful;
+- client instruction;
+- common mistakes;
+- stop/reduction criteria;
+- regressions/progressions as trainer knowledge;
+- contraindication/context notes;
+- muscle/pattern metadata;
+- source and quality status.
+
+Atlas content is not automatically a client prescription.
+
+### Guidance = Damian's current decision
+
+A Guidance item is created only when Damian deliberately selects/adapts Atlas content for one exact client, current focus and current period.
+
+The Guidance item owns the **current prescription**, for example:
+
+- `Goblet squat`
+- `3 × 8`
+- `easy/moderate effort`
+- `2 times before the next meeting`
+- exact client-safe cue;
+- exact stop/reduction rule;
+- exact reviewed demonstration link when useful.
+
+Defaults from the Atlas may reduce typing, but they never bypass Damian's approval or turn reusable content into an automatic prescription.
+
+### Execution = simple mobile doing
+
+The future Guidance Player should consume the approved Guidance item rather than expose Atlas complexity.
+
+A client should see something closer to:
+
+```text
+Goblet squat
+[video]
+
+Today: 3 × 8
+
+Remember:
+Knees follow the direction of the feet.
+
+Stop/reduce if:
+Knee discomfort clearly increases.
+
+[Start]
+```
+
+During execution, the player may guide one set/action at a time, preserve planned versus actual values, provide a timer where relevant, and permit partial/stopped/not-done outcomes without forcing fake completion.
+
+### Signal = what actually happened
+
+Execution produces only bounded evidence that may help the next decision.
+
+Examples:
+
+- done as planned;
+- changed or partial;
+- stopped;
+- not done;
+- actual repetitions or elapsed time when explicitly requested;
+- separate client question or contextual note.
+
+The signal is not an adherence grade and does not automatically trigger progression, regression, diagnosis, praise, warning or plan change.
+
+### Brief = decision preparation for Damian
+
+Before the next contact/session, relevant execution evidence can be summarized into the trainer's short Session Brief.
+
+The purpose is not to produce an exercise diary. It is to answer:
+
+> **What happened since the last decision that Damian should know before making the next one?**
+
+Only bounded, decision-relevant evidence should surface. Full execution history should remain available only when genuinely needed.
+
+### Decision = trainer interpretation and next step
+
+Damian interprets the signal in context and decides whether to:
+
+- continue;
+- simplify;
+- progress;
+- regress;
+- replace;
+- pause;
+- change channel;
+- refer;
+- close.
+
+No execution state or Atlas metadata can make this decision automatically.
+
+## Why this is stronger than copying a workout app
+
+Conventional workout products often optimize for:
+
+```text
+exercise library → program → sets/reps → completion → history/progress
+```
+
+Studio Las should optimize for:
+
+```text
+trainer knowledge → current decision → clear client action → real-world evidence → trainer interpretation → next decision
+```
+
+The difference is important: **the exercise is a tool inside a decision loop, not the product's organizing principle.**
+
+The practical consequence is that Studio Las does not need thousands of client-ready exercises. A smaller reviewed set of high-use Studio Las exercises can be far more valuable if every item has a correct demonstration, client-safe instruction, usable stop criteria and reliable mapping. The wider source Atlas can remain available as a warehouse for deliberate expansion when a real client need appears.
+
+This reinforces the earlier Studio Las rule:
+
+> **Do not add more exercises without a strong reason. Improve confidence, quality and workflow first.**
+
 ## State model to remember
 
 This is a conceptual pattern only, not an approved schema.
@@ -224,7 +399,12 @@ Before any client execution engine is considered ready, it should be possible to
 7. stale/replaced guidance cannot silently remain the active actionable instruction;
 8. the trainer can see only the bounded evidence needed for review;
 9. the surface remains usable without exposing trainer-only rationale;
-10. the flow works well on a phone with large tap targets and minimal typing.
+10. the flow works well on a phone with large tap targets and minimal typing;
+11. a reviewed Atlas exercise can prefill client-safe content into a draft Guidance item without publishing it automatically;
+12. an ambiguous Atlas/video mapping remains unresolved rather than guessing a variant;
+13. changing Atlas defaults never mutates an already published Guidance release;
+14. the client cannot browse trainer-only Atlas metadata through the Guidance Player;
+15. execution evidence can appear in the Session Brief without being converted into an automatic interpretation or progression decision.
 
 ## Decision for future Studio Las work
 
@@ -235,3 +415,7 @@ When the project reaches an authorized client execution implementation, start fr
 The most valuable extracted principle is:
 
 > **Do not ask the client to manage a training database. Give them one clear current action, capture what actually happened with minimum friction, and return the evidence to Damian for interpretation.**
+
+The Studio Las-specific extension is:
+
+> **Use the existing Atlas as reusable trainer knowledge, not as the client product. Damian turns reviewed Atlas content into one current Guidance instruction; the client executes it simply; the resulting evidence returns to Damian for the next decision.**
