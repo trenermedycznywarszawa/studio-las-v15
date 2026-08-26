@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migration = await read("supabase/migrations/022_damian_guidance_release_workflow.sql");
+const releaseVersionFix = await read("supabase/migrations/023_fix_guidance_release_version.sql");
 const schema = await read("supabase/migrations/001_initial_schema.sql");
 const audit = await read("supabase/migrations/013_access_lifecycle_and_audit.sql");
 const repository = await read("assets/os/data.js");
@@ -22,6 +23,9 @@ for (const fragment of [
 ]) assert.match(migration, new RegExp(fragment));
 assert.match(schema, /home_plans_one_active_per_client_idx/);
 assert.match(migration, /set status = 'archived', superseded_by_home_plan_id/);
+assert.match(releaseVersionFix, /create or replace function public\.publish_home_plan_guidance/);
+assert.match(releaseVersionFix, /and published_at is not null/);
+assert.match(releaseVersionFix, /coalesce\(max\(release_version\), 0\) \+ 1/);
 assert.match(migration, /set status = 'active',[\s\S]*published_at = now\(\)/);
 assert.match(migration, /set status = 'archived', withdrawn_at = now\(\)/);
 assert.match(migration, /set delivery_status = p_delivery_status/);
