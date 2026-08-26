@@ -2,7 +2,7 @@ import {
   assertNoPersistentHealthData,
   clearAuthArtifactsFromUrl,
   getPasswordSetupContext,
-  getProductionRuntimeConfig,
+  getRuntimeConfig,
   userSafeError
 } from "./runtime.js";
 import {
@@ -406,7 +406,7 @@ function handleRuntimeError(error) {
 
 async function initialize() {
   try {
-    state.config = getProductionRuntimeConfig();
+    state.config = getRuntimeConfig();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
     state.mfa = new TrainerMfaController(state.auth);

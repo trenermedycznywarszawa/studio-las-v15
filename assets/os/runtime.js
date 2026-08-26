@@ -15,6 +15,9 @@ function assertPlainObject(value, label) {
   }
 }
 
+const CANONICAL_PRODUCTION_REF = "ufcumhbnuyernuwepcij";
+const CANONICAL_STAGING_REF = "ulauyoqjoetjqktegeuq";
+
 function normalizeUrl(value) {
   const url = new URL(String(value || ""));
   if (url.protocol !== "https:") {
@@ -23,18 +26,14 @@ function normalizeUrl(value) {
   return url.origin;
 }
 
-export function getProductionRuntimeConfig() {
+export function getRuntimeConfig() {
   const raw = window.STUDIO_LAS_CONFIG;
   assertPlainObject(raw, "STUDIO_LAS_CONFIG");
 
-  if (raw.mode !== "production") {
-    throw new RuntimeConfigurationError(
-      "Produkcja została zatrzymana: STUDIO_LAS_CONFIG.mode musi mieć wartość production."
-    );
-  }
-
   assertPlainObject(raw.supabase, "STUDIO_LAS_CONFIG.supabase");
 
+  const mode = String(raw.mode || "").trim();
+  const projectRef = String(raw.supabase.projectRef || "").trim();
   const supabaseUrl = normalizeUrl(raw.supabase.url);
   const publishableKey = String(raw.supabase.publishableKey || "").trim();
 
@@ -42,11 +41,31 @@ export function getProductionRuntimeConfig() {
     throw new RuntimeConfigurationError("Brak prawidłowego klucza publicznego Supabase.");
   }
 
+  if (mode !== "production" && mode !== "staging") {
+    throw new RuntimeConfigurationError(
+      "Nieobsługiwane środowisko: STUDIO_LAS_CONFIG.mode musi mieć wartość production albo staging."
+    );
+  }
+
+  const expectedRef = mode === "production" ? CANONICAL_PRODUCTION_REF : CANONICAL_STAGING_REF;
+  if (projectRef !== expectedRef) {
+    const environment = mode === "production" ? "production" : "stagingu";
+    throw new RuntimeConfigurationError(
+      `Błędna konfiguracja ${environment}: dozwolony jest wyłącznie kanoniczny ref ${expectedRef}.`
+    );
+  }
+
+  if (supabaseUrl !== `https://${expectedRef}.supabase.co`) {
+    throw new RuntimeConfigurationError(
+      `Błędna konfiguracja ${mode === "production" ? "production" : "stagingu"}: URL Supabase musi wskazywać kanoniczny ref ${expectedRef}.`
+    );
+  }
+
   return Object.freeze({
-    mode: "production",
+    mode,
     supabaseUrl,
     publishableKey,
-    projectRef: String(raw.supabase.projectRef || "").trim(),
+    projectRef,
     authStorage: "sessionStorage",
     healthDataStorage: "supabase-only"
   });

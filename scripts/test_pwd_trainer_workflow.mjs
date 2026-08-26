@@ -6,6 +6,7 @@ import {
   pwdDecisionLabel,
   pwdTrainerObservation
 } from "../assets/os/pwd.js";
+import { getRuntimeConfig } from "../assets/os/runtime.js";
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migration = await read("supabase/migrations/20260826101816_pwd_trainer_workflow.sql");
@@ -50,5 +51,42 @@ assert.match(app, /updateClient\(state\.activeClientId/);
 assert.match(app, /saveSession\(state\.activeClientId/);
 assert.match(app, /saveAssessment\(state\.activeClientId/);
 assert.doesNotMatch(app, /save_pwd_decision/);
+
+const key = "p".repeat(40);
+const originalWindow = globalThis.window;
+const setRuntimeConfig = ({ mode, projectRef, url }) => {
+  globalThis.window = {
+    STUDIO_LAS_CONFIG: { mode, supabase: { projectRef, url, publishableKey: key } }
+  };
+};
+
+setRuntimeConfig({
+  mode: "staging",
+  projectRef: "ulauyoqjoetjqktegeuq",
+  url: "https://ulauyoqjoetjqktegeuq.supabase.co"
+});
+assert.equal(getRuntimeConfig().mode, "staging");
+
+setRuntimeConfig({
+  mode: "staging",
+  projectRef: "other-staging-ref",
+  url: "https://other-staging-ref.supabase.co"
+});
+assert.throws(() => getRuntimeConfig(), /Błędna konfiguracja stagingu/);
+
+setRuntimeConfig({
+  mode: "production",
+  projectRef: "ulauyoqjoetjqktegeuq",
+  url: "https://ulauyoqjoetjqktegeuq.supabase.co"
+});
+assert.throws(() => getRuntimeConfig(), /Błędna konfiguracja production/);
+
+setRuntimeConfig({
+  mode: "preview",
+  projectRef: "ulauyoqjoetjqktegeuq",
+  url: "https://ulauyoqjoetjqktegeuq.supabase.co"
+});
+assert.throws(() => getRuntimeConfig(), /Nieobsługiwane środowisko/);
+globalThis.window = originalWindow;
 
 console.log("PWD_TRAINER_WORKFLOW_SUCCESS domain and static contract PASS (no database integration executed)");
