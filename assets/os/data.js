@@ -378,7 +378,14 @@ export class StudioLasRepository {
   }
 
   async rpc(name, args = {}) {
-    const allowed = new Set(["client_portal_snapshot", "save_client_checkin"]);
+    const allowed = new Set([
+      "client_portal_snapshot",
+      "save_client_checkin",
+      "publish_home_plan_guidance",
+      "withdraw_home_plan_guidance",
+      "record_home_plan_guidance_delivery",
+      "confirm_home_plan_paper_retirement"
+    ]);
     if (!allowed.has(name)) throw new Error(`RPC is not allowed: ${name}`);
     return this.auth.request(`/rest/v1/rpc/${name}`, {
       method: "POST",
@@ -737,7 +744,6 @@ export class StudioLasRepository {
   }
 
   async saveHomePlan(clientId, input) {
-    const published = Boolean(input.published);
     return this.insert("home_plans", {
       client_id: clientId,
       title: input.title || null,
@@ -745,13 +751,13 @@ export class StudioLasRepository {
       frequency: input.frequency || null,
       duration: input.duration || null,
       instructions: input.instructions || null,
-      status: published ? "active" : "draft",
-      published_at: published ? new Date().toISOString() : null
+      guidance_channel: input.guidanceChannel || null,
+      status: "draft",
+      published_at: null
     });
   }
 
   async saveHomePlanItem(clientId, homePlanId, input) {
-    const published = Boolean(input.published);
     return this.insert("home_plan_items", {
       home_plan_id: homePlanId,
       client_id: clientId,
@@ -768,10 +774,32 @@ export class StudioLasRepository {
       sort_order: Number(input.sortOrder || 0),
       added_at: asIsoDate(input.addedAt) || new Date().toISOString().slice(0, 10),
       trainer_note: input.trainerNote || null,
-      published_at: published ? new Date().toISOString() : null
+      published_at: null
     });
   }
 
+
+  async publishHomePlanGuidance(homePlanId) {
+    const rows = await this.rpc("publish_home_plan_guidance", { p_home_plan_id: homePlanId });
+    return Array.isArray(rows) ? rows[0] : rows;
+  }
+
+  async withdrawHomePlanGuidance(homePlanId) {
+    const rows = await this.rpc("withdraw_home_plan_guidance", { p_home_plan_id: homePlanId });
+    return Array.isArray(rows) ? rows[0] : rows;
+  }
+
+  async confirmHomePlanPaperRetirement(homePlanId) {
+    const rows = await this.rpc("confirm_home_plan_paper_retirement", { p_home_plan_id: homePlanId });
+    return Array.isArray(rows) ? rows[0] : rows;
+  }
+  async recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus) {
+    const rows = await this.rpc("record_home_plan_guidance_delivery", {
+      p_home_plan_id: homePlanId,
+      p_delivery_status: deliveryStatus
+    });
+    return Array.isArray(rows) ? rows[0] : rows;
+  }
   async saveReport(profileId, clientId, input) {
     const published = Boolean(input.published);
     return this.insert("reports", {

@@ -163,30 +163,58 @@ function assessmentsSection(workspace, model) {
   ]));
 }
 
-function plansSection(workspace, model) {
-  const plans = create("div", {}, [
-    create("h3", { text: "Plany" }),
-    recordList(workspace.homePlans, plan => create("article", { className: "record" }, [
-      create("strong", { text: plan.title || "Plan" }),
-      create("p", { text: plan.focus || "Brak kierunku" }),
-      create("p", { className: "muted", text: `${plan.status} · ${plan.published_at ? "opublikowany" : "nieopublikowany"}` })
-    ]), "Brak planu."),
-    detailsForm("Utwórz plan", homePlanForm(model.onSaveHomePlan))
+function guidancePlanCard(plan, model) {
+  const paperChannel = ["paper", "hybrid"].includes(plan.guidance_channel);
+  const retirementConfirmed = plan.delivery_status === "paper_retirement_confirmed";
+  const retirementRequired = paperChannel && !retirementConfirmed;
+  const delivery = create("select", { "aria-label": "Status dostarczenia wskazówki" }, [
+    { value: "pending", text: "Dostarczenie oczekuje" },
+    { value: "recorded", text: "Dostarczenie zapisane" },
+    { value: "paper_retirement_unresolved", text: "Papier: wycofanie kopii przed następcą niepotwierdzone" }
+  ].map(option => create("option", option)));
+  delivery.value = retirementConfirmed ? "recorded" : (plan.delivery_status || "pending");
+  const actions = [];
+  if (plan.status === "draft") actions.push(button("Opublikuj jako aktualną wskazówkę", { className: "button primary", onclick: () => model.onPublishHomePlan(plan.id) }));
+  if (plan.status === "active") {
+    if (retirementRequired) actions.push(button("Potwierdź wycofanie poprzedniej kopii papierowej", { onclick: () => model.onConfirmHomePlanPaperRetirement(plan.id) }));
+    if (!retirementConfirmed) actions.push(button("Zapisz dostarczenie", { onclick: () => model.onRecordGuidanceDelivery(plan.id, delivery.value) }));
+    actions.push(button("Wycofaj wskazówkę", { className: "button danger", onclick: () => model.onWithdrawHomePlan(plan.id) }));
+  }
+  return create("article", { className: "record" }, [
+    create("strong", { text: plan.title || "Wskazówka" }),
+    create("p", { text: plan.focus || "Brak celu wskazówki" }),
+    create("p", { className: "muted", text: `Wersja ${plan.release_version || 1} · ${plan.status} · kanał: ${plan.guidance_channel || "brak"}` }),
+    create("p", { className: "muted", text: `Dostarczenie: ${plan.delivery_status || "oczekuje"}` }),
+    retirementRequired ? create("p", { className: "muted", text: "Przed publikacją następcy Damian musi potwierdzić wycofanie poprzedniej kopii papierowej." }) : null,
+    paperChannel && retirementConfirmed ? create("p", { className: "muted", text: "Wycofanie poprzedniej kopii papierowej: potwierdzone." }) : null,
+    plan.status === "active" && !retirementConfirmed ? delivery : null,
+    actions.length ? create("div", { className: "form-actions" }, actions) : null
   ]);
-
+}
+function plansSection(workspace, model) {
+  const plans = [...(workspace.homePlans || [])].sort((left, right) => {
+    if (left.status === "active") return -1;
+    if (right.status === "active") return 1;
+    return String(right.created_at || "").localeCompare(String(left.created_at || ""));
+  });
+  const drafts = plans.filter(plan => plan.status === "draft");
+  const planColumn = create("div", {}, [
+    create("h3", { text: "Aktualne prowadzenie i historia" }),
+    create("p", { className: "muted", text: "Damian podejmuje decyzję o publikacji, zastąpieniu, wycofaniu i kanale. System nie rekomenduje decyzji medycznej." }),
+    recordList(plans, plan => guidancePlanCard(plan, model), "Brak wskazówki."),
+    detailsForm("Utwórz szkic wskazówki", homePlanForm(model.onSaveHomePlan))
+  ]);
   const items = create("div", {}, [
-    create("h3", { text: "Zadania" }),
+    create("h3", { text: "Działania w szkicu" }),
     recordList(workspace.homePlanItems, item => create("article", { className: "record" }, [
       create("strong", { text: item.name }),
       create("p", { text: [item.dosage, item.frequency].filter(Boolean).join(" · ") || "Brak dawkowania" }),
-      create("p", { className: "muted", text: item.client_cue || "Brak wskazówki" })
-    ]), "Brak zadań."),
-    detailsForm("Dodaj zadanie", homePlanItemForm(workspace.homePlans, model.onSaveHomePlanItem))
+      create("p", { className: "muted", text: [item.client_cue, item.stop_criteria].filter(Boolean).join(" · ") || "Brak celu lub granicy" })
+    ]), "Brak działań w szkicu."),
+    detailsForm("Dodaj działanie do szkicu", homePlanItemForm(drafts, model.onSaveHomePlanItem))
   ]);
-
-  return panel("Plan domowy", create("div", { className: "two-column" }, [plans, items]));
+  return panel("Prowadzenie klienta", create("div", { className: "two-column" }, [planColumn, items]));
 }
-
 function reportsSection(workspace, model) {
   return panel("Raporty", create("div", {}, [
     recordList(workspace.reports, report => create("article", { className: "record" }, [

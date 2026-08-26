@@ -133,11 +133,18 @@ export function reportForm(onSubmit) {
 export function homePlanForm(onSubmit) {
   return submitForm([
     field("Tytuł", "title", "text", { required: true, maxlength: 240 }),
-    field("Główny kierunek", "focus", "textarea", { maxlength: 4000 }),
+    field("Cel wskazówki — po co", "focus", "textarea", { required: true, maxlength: 4000 }),
     field("Częstotliwość", "frequency", "text", { maxlength: 160 }),
     field("Czas", "duration", "text", { maxlength: 160 }),
     field("Instrukcja ogólna", "instructions", "textarea", { maxlength: 8000 }),
-    checkbox("Opublikuj jako aktywny plan", "published")
+    field("Kanał prowadzenia", "guidanceChannel", "select", {
+      required: true,
+      options: [
+        { value: "app", label: "Aplikacja" },
+        { value: "paper", label: "Papier" },
+        { value: "hybrid", label: "Hybrydowo: papier + aplikacja" }
+      ]
+    })
   ], "Zapisz plan", onSubmit);
 }
 
@@ -162,7 +169,7 @@ export function homePlanItemForm(homePlans, onSubmit) {
     field("Wskazówka dla klienta", "clientCue", "textarea", { maxlength: 4000, disabled: !hasPlan }),
     field("Kiedy przerwać / co zgłosić", "stopCriteria", "textarea", { maxlength: 4000, disabled: !hasPlan }),
     field("Video URL", "videoUrl", "url", { maxlength: 2000, disabled: !hasPlan }),
-    checkbox("Opublikuj klientowi", "published", false, { disabled: !hasPlan })
+
   ], "Dodaj zadanie do planu", values => onSubmit(values.homePlanId, values), "form-grid", {
     disabled: !hasPlan,
     disabledReason: hasPlan ? "" : "Najpierw utwórz plan domowy. Zadanie nie może istnieć bez planu nadrzędnego."
