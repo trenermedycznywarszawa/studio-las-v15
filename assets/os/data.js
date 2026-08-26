@@ -578,6 +578,7 @@ export class StudioLasRepository {
   async saveSession(clientId, input) {
     return this.insert("sessions", {
       client_id: clientId,
+      session_type: input.sessionType === "pwd" ? "pwd" : "session",
       date: asIsoDate(input.date) || new Date().toISOString().slice(0, 10),
       readiness: asNullableNumber(input.readiness),
       vas_before: asNullableNumber(input.vasBefore),

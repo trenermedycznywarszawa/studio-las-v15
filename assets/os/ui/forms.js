@@ -1,5 +1,6 @@
 import {
   checkbox,
+  create,
   field,
   submitForm
 } from "./common.js";
@@ -7,6 +8,7 @@ import {
   CANONICAL_ENGAGEMENTS,
   CANONICAL_STAGES
 } from "../runtime.js";
+import { PWD_MOVEMENTS } from "../pwd.js";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -53,6 +55,36 @@ export function sessionForm(onSubmit) {
   ], "Zapisz sesję w Supabase", onSubmit);
 }
 
+
+export function pwdForm(onSubmit) {
+  const movementFields = PWD_MOVEMENTS.map(movement => create("details", { className: "details-card" }, [
+    create("summary", { text: movement.label }),
+    checkbox("Uwzględnij tę obserwację", `pwdMovement_${movement.id}`),
+    field("Opis obserwacji", `pwdObservation_${movement.id}`, "textarea", { maxlength: 4000 }),
+    field("Znaczenie według Damiana", `pwdMeaning_${movement.id}`, "textarea", { maxlength: 4000 })
+  ]));
+
+  return submitForm([
+    field("Data PWD", "date", "date", { value: today(), required: true }),
+    field("Co klient chce móc robić w realnym życiu", "realLifeGoal", "textarea", { required: true, maxlength: 4000 }),
+    field("Dlaczego to jest ważne", "whyImportant", "textarea", { required: true, maxlength: 4000 }),
+    field("Istotny kontekst i granice", "contextBoundaries", "textarea", { required: true, maxlength: 8000 }),
+    create("div", { className: "field" }, [
+      create("span", { text: "Wybrane obserwacje ruchowe — opcjonalnie, bez scoringu" }),
+      ...movementFields
+    ]),
+    field("Interpretacja Damiana", "trainerInterpretation", "textarea", { required: true, maxlength: 8000 }),
+    field("Decyzja Damiana", "trainerDecision", "select", {
+      required: true,
+      options: [
+        { value: "start_guidance", label: "Rozpocząć 2–3 tygodnie prowadzenia" },
+        { value: "further_contact", label: "Potrzebny dalszy kontakt / ostrożność" },
+        { value: "not_start", label: "Nie rozpoczynać / właściwie skierować dalej" }
+      ]
+    }),
+    field("Jasny kolejny krok", "nextStep", "textarea", { required: true, maxlength: 4000 })
+  ], "Zapisz PWD", onSubmit);
+}
 export function measurementForm(onSubmit) {
   return submitForm([
     field("Data", "date", "date", { value: today(), required: true }),

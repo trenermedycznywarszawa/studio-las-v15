@@ -14,6 +14,7 @@ import {
   measurementForm,
   newClientForm,
   reportForm,
+  pwdForm,
   sessionForm,
   trainingLoadForm
 } from "./forms.js";
@@ -118,9 +119,25 @@ function sessionBriefPanel(workspace) {
   ]), "Tylko odczyt · każdy fakt pokazuje źródło i datę");
 }
 
+
+function pwdSection(workspace, model) {
+  const pwdSessions = (workspace.sessions || []).filter(session => session.session_type === "pwd");
+  return panel("PWD — pierwsza wizyta diagnostyczna", create("div", {}, [
+    create("p", { className: "muted", text: "Pytanie → obserwacja → znaczenie → decyzja Damiana. Każdy ruch jest dobrowolny; system nie diagnozuje ani nie wybiera decyzji." }),
+    recordList(pwdSessions, session => create("article", { className: "record" }, [
+      create("strong", { text: `PWD · ${formatDate(session.date)}` }),
+      create("p", { text: session.client_summary || "Cel i znaczenie zapisano w karcie klienta." }),
+      create("p", { text: session.trainer_observation || "Brak kontekstu i interpretacji." }),
+      create("p", { className: "muted", text: `Decyzja: ${session.trainer_decision || "brak"}` }),
+      create("p", { className: "muted", text: `Kolejny krok: ${session.client_next_step || "brak"}` })
+    ]), "Brak zapisanej PWD."),
+    detailsForm("Zapisz PWD", pwdForm(model.onSavePwd)),
+    create("p", { className: "muted", text: "Zapis PWD nie tworzy ani nie publikuje wskazówki. Przygotowanie i publikacja pierwszej wskazówki pozostają osobnym krokiem w sekcji Prowadzenie klienta." })
+  ]));
+}
 function sessionsSection(workspace, model) {
   return panel("Sesje", create("div", {}, [
-    recordList(workspace.sessions, session => create("article", { className: "record" }, [
+    recordList((workspace.sessions || []).filter(session => session.session_type !== "pwd"), session => create("article", { className: "record" }, [
       create("strong", { text: formatDate(session.date) }),
       create("p", { text: session.trainer_observation || "Brak obserwacji" }),
       create("p", { className: "muted", text: session.trainer_decision || "Brak zapisanej decyzji trenera" })
@@ -267,6 +284,7 @@ export function renderTrainer(root, model) {
     const workspace = model.workspace;
     content.append(
       panel(workspace.client.name, summaryGrid(workspace.client)),
+      pwdSection(workspace, model),
       sessionBriefPanel(workspace),
       panel("Sygnały do przeglądu", signalPanel(model.attentionSignals), "Program nie podejmuje decyzji za trenera."),
       sessionsSection(workspace, model),
