@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import { SupabaseAuth } from "../assets/os/data.js";
 import {
   PWD_MOVEMENTS,
   collectPwdObservations,
   pwdDecisionLabel,
   pwdTrainerObservation
 } from "../assets/os/pwd.js";
-import { getRuntimeConfig, submitPasswordLogin } from "../assets/os/runtime.js";
+import { getRuntimeConfig, submitPasswordLogin, userSafeError } from "../assets/os/runtime.js";
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migration = await read("supabase/migrations/20260826101816_pwd_trainer_workflow.sql");
@@ -110,5 +111,24 @@ assert.deepEqual(loginCalls[0], [
   "synthetic-password",
   { persist: false }
 ]);
+
+const originalSessionStorage = globalThis.sessionStorage;
+const originalFetch = globalThis.fetch;
+let coldStartRequests = 0;
+globalThis.sessionStorage = { getItem: () => null, setItem: () => {}, removeItem: () => {} };
+globalThis.fetch = async () => {
+  coldStartRequests += 1;
+  throw new Error("cold start must not fetch without a session");
+};
+assert.equal(await new SupabaseAuth({}).restore(), null);
+assert.equal(coldStartRequests, 0);
+globalThis.sessionStorage = originalSessionStorage;
+globalThis.fetch = originalFetch;
+
+assert.match(userSafeError(new TypeError("Failed to fetch"), "staging"), /STAGING \/ QA/);
+assert.equal(
+  userSafeError({ status: 400, message: "Invalid login credentials", payload: { code: "invalid_credentials" } }),
+  "E-mail lub hasło są nieprawidłowe."
+);
 
 console.log("PWD_TRAINER_WORKFLOW_SUCCESS domain and static contract PASS (no database integration executed)");

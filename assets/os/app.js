@@ -65,7 +65,7 @@ async function withWrite(label, operation) {
     announce(`${label}: zapisano w Supabase.`, "ok");
     return result;
   } catch (error) {
-    announce(userSafeError(error), "error");
+    announce(userSafeError(error, state.config?.mode), "error");
     throw error;
   }
 }
@@ -94,7 +94,7 @@ function showLogin(message = "") {
         await submitPasswordLogin(state.auth, { email, password });
         await loadAuthenticatedRuntime();
       } catch (error) {
-        showLogin(userSafeError(error));
+        showLogin(userSafeError(error, state.config?.mode));
       }
     }
   });
@@ -112,7 +112,7 @@ function showRecoveryRequest({ sent = false, message = "" } = {}) {
         await requestPasswordRecovery(state.auth, email, redirectTo);
         showRecoveryRequest({ sent: true });
       } catch (error) {
-        showRecoveryRequest({ message: userSafeError(error) });
+        showRecoveryRequest({ message: userSafeError(error, state.config?.mode) });
       }
     }
   });
@@ -129,7 +129,7 @@ function showPasswordSetup(context, message = "") {
         await updatePassword(state.auth, password);
         await loadAuthenticatedRuntime();
       } catch (error) {
-        showPasswordSetup(context, userSafeError(error));
+        showPasswordSetup(context, userSafeError(error, state.config?.mode));
       }
     }
   });
@@ -191,7 +191,7 @@ async function advanceMfa(operation, loadingMessage) {
     renderMfaView(next);
   } catch (error) {
     const fallback = state.mfaView || { status: "enrollment_required" };
-    renderMfaView(fallback, userSafeError(error));
+    renderMfaView(fallback, userSafeError(error, state.config?.mode));
   }
 }
 
@@ -224,7 +224,7 @@ async function removeMfaFactor(index) {
     renderMfaView(next);
   } catch (error) {
     const fallback = state.mfaView || { status: "management", factors: [] };
-    renderMfaView(fallback, userSafeError(error));
+    renderMfaView(fallback, userSafeError(error, state.config?.mode));
   }
 }
 
@@ -396,7 +396,7 @@ async function loadClientPortal() {
 }
 
 function handleRuntimeError(error) {
-  const message = userSafeError(error);
+  const message = userSafeError(error, state.config?.mode);
   announce(message, "error");
   const status = Number(error?.status || 0);
   if (status === 401) showLogin(message);
@@ -450,11 +450,11 @@ async function initialize() {
     }
 
     if (Number(error?.status || 0) === 401) {
-      showLogin(userSafeError(error));
+      showLogin(userSafeError(error, state.config?.mode));
       return;
     }
 
-    renderFatal(root, userSafeError(error));
+    renderFatal(root, userSafeError(error, state.config?.mode));
   }
 }
 

@@ -197,10 +197,19 @@ export function assertNoPersistentHealthData() {
   }
 }
 
-export function userSafeError(error) {
+export function userSafeError(error, environment = "") {
   if (error instanceof RuntimeConfigurationError) return error.message;
 
   const status = Number(error?.status || 0);
+  const errorCode = String(error?.payload?.code || error?.payload?.error_code || "").toLowerCase();
+  if (error instanceof TypeError && /fetch|network/i.test(String(error.message || ""))) {
+    return environment === "staging"
+      ? "Nie można połączyć się ze stagingiem (STAGING / QA). Sprawdź lokalny preview i konfigurację środowiska."
+      : "Nie można połączyć się z usługą danych. Sprawdź konfigurację środowiska.";
+  }
+  if (status === 400 && (errorCode === "invalid_credentials" || /invalid login credentials/i.test(String(error?.message || "")))) {
+    return "E-mail lub hasło są nieprawidłowe.";
+  }
   if (status === 400) return "Dane formularza nie spełniają wymagań. Sprawdź pola i spróbuj ponownie.";
   if (status === 401) return "Sesja wygasła albo link jest nieprawidłowy. Zaloguj się ponownie.";
   if (status === 403) return "Nie masz dostępu do tych danych.";
