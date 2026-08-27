@@ -3,6 +3,7 @@ import {
   clearAuthArtifactsFromUrl,
   getPasswordSetupContext,
   getRuntimeConfig,
+  submitPasswordLogin,
   userSafeError
 } from "./runtime.js";
 import {
@@ -84,12 +85,13 @@ async function logout() {
 
 function showLogin(message = "") {
   renderLogin(root, {
+    environment: state.config?.mode,
     message,
     onRecover: () => showRecoveryRequest(),
     onSubmit: async ({ email, password }) => {
       try {
         renderLoading(root, "Weryfikowanie konta…");
-        await state.auth.signInWithPassword(email, password, { persist: false });
+        await submitPasswordLogin(state.auth, { email, password });
         await loadAuthenticatedRuntime();
       } catch (error) {
         showLogin(userSafeError(error));

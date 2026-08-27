@@ -6,7 +6,7 @@ import {
   pwdDecisionLabel,
   pwdTrainerObservation
 } from "../assets/os/pwd.js";
-import { getRuntimeConfig } from "../assets/os/runtime.js";
+import { getRuntimeConfig, submitPasswordLogin } from "../assets/os/runtime.js";
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migration = await read("supabase/migrations/20260826101816_pwd_trainer_workflow.sql");
@@ -14,6 +14,7 @@ const data = await read("assets/os/data.js");
 const app = await read("assets/os/app.js");
 const forms = await read("assets/os/ui/forms.js");
 const trainer = await read("assets/os/ui/trainer.js");
+const common = await read("assets/os/ui/common.js");
 
 assert.equal(PWD_MOVEMENTS.length, 7);
 assert.deepEqual(collectPwdObservations({}), []);
@@ -51,6 +52,9 @@ assert.match(app, /updateClient\(state\.activeClientId/);
 assert.match(app, /saveSession\(state\.activeClientId/);
 assert.match(app, /saveAssessment\(state\.activeClientId/);
 assert.doesNotMatch(app, /save_pwd_decision/);
+assert.match(app, /environment: state\.config\?\.mode/);
+assert.match(app, /onSubmit: async \(\{ email, password \}\) => \{[\s\S]*submitPasswordLogin\(state\.auth, \{ email, password \}\)/);
+assert.match(common, /staging: "STAGING \/ QA", production: "PRODUKCJA"/);
 
 const key = "p".repeat(40);
 const originalWindow = globalThis.window;
@@ -88,5 +92,23 @@ setRuntimeConfig({
 });
 assert.throws(() => getRuntimeConfig(), /Nieobsługiwane środowisko/);
 globalThis.window = originalWindow;
+
+const loginCalls = [];
+const authMock = {
+  signInWithPassword: async (...args) => {
+    loginCalls.push(args);
+    return { session: null };
+  }
+};
+await submitPasswordLogin(authMock, {
+  email: " qa-trainer@example.test ",
+  password: "synthetic-password"
+});
+assert.equal(loginCalls.length, 1);
+assert.deepEqual(loginCalls[0], [
+  "qa-trainer@example.test",
+  "synthetic-password",
+  { persist: false }
+]);
 
 console.log("PWD_TRAINER_WORKFLOW_SUCCESS domain and static contract PASS (no database integration executed)");

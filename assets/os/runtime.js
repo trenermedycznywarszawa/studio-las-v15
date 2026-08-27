@@ -71,6 +71,14 @@ export function getRuntimeConfig() {
   });
 }
 
+export async function submitPasswordLogin(auth, { email, password }) {
+  const normalizedEmail = String(email || "").trim();
+  const submittedPassword = String(password || "");
+  if (!normalizedEmail || !submittedPassword) {
+    throw new RuntimeConfigurationError("Email i hasło są wymagane.");
+  }
+  return auth.signInWithPassword(normalizedEmail, submittedPassword, { persist: false });
+}
 export function loadAuthSession() {
   try {
     const raw = sessionStorage.getItem(AUTH_SESSION_KEY);
