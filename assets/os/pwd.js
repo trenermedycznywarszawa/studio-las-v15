@@ -8,22 +8,24 @@ export const PWD_MOVEMENTS = Object.freeze([
   Object.freeze({ id: "look_over_shoulders", label: "Spojrzenie za oba barki" })
 ]);
 
+export const PWD_MAX_OBSERVATIONS = 3;
+
 function text(value) {
   return String(value || "").trim();
 }
 
 export function collectPwdObservations(values) {
-  return PWD_MOVEMENTS.flatMap(movement => {
+  const observations = PWD_MOVEMENTS.flatMap(movement => {
     const selected = Boolean(values[`pwdMovement_${movement.id}`]);
     const observation = text(values[`pwdObservation_${movement.id}`]);
     const meaning = text(values[`pwdMeaning_${movement.id}`]);
 
     if (!selected && (observation || meaning)) {
-      throw new Error("Zaznacz ruch albo usuń jego opis obserwacji.");
+      throw new Error("Zaznacz propozycję obserwacji albo usuń jej opis.");
     }
     if (!selected) return [];
     if (!observation || !meaning) {
-      throw new Error(`Dla ruchu „${movement.label}” wpisz opis i znaczenie Damiana.`);
+      throw new Error(`Dla propozycji „${movement.label}” wpisz obserwację i jej znaczenie.`);
     }
     return [Object.freeze({
       testId: `pwd:${movement.id}`,
@@ -32,16 +34,79 @@ export function collectPwdObservations(values) {
       interpretation: meaning
     })];
   });
+
+  const customSelected = Boolean(values.pwdMovement_custom);
+  const customObservation = text(values.pwdObservation_custom);
+  const customMeaning = text(values.pwdMeaning_custom);
+
+  if (!customSelected && (customObservation || customMeaning)) {
+    throw new Error("Zaznacz własną obserwację albo usuń jej opis.");
+  }
+  if (customSelected) {
+    if (!customObservation || !customMeaning) {
+      throw new Error("Dla własnej obserwacji wpisz jej krótki opis i znaczenie.");
+    }
+    observations.push(Object.freeze({
+      testId: "pwd:custom",
+      testName: "Własna obserwacja istotna dla celu",
+      resultText: customObservation,
+      interpretation: customMeaning
+    }));
+  }
+
+  if (observations.length > PWD_MAX_OBSERVATIONS) {
+    throw new Error(`Możesz zapisać maksymalnie ${PWD_MAX_OBSERVATIONS} obserwacje istotne dla celu.`);
+  }
+  return observations;
 }
 
+export async function savePwdWorkflow(repository, clientId, values) {
+  const observations = collectPwdObservations(values);
+  const decisionLabel = pwdDecisionLabel(values.trainerDecision);
+  const trainerObservation = pwdTrainerObservation(values);
+
+  await repository.updateClient(clientId, {
+    goal: values.realLifeGoal,
+    motivation: values.whyImportant
+  });
+  await repository.saveSession(clientId, {
+    date: values.date,
+    sessionType: "pwd",
+    trainerObservation,
+    trainerDecision: decisionLabel,
+    clientSummary: `Co klient chce robić swobodniej: ${values.realLifeGoal}\nDlaczego to ważne: ${values.whyImportant}`,
+    clientNextStep: values.nextStep,
+    clientVisible: false
+  });
+  for (const observation of observations) {
+    await repository.saveAssessment(clientId, {
+      date: values.date,
+      testId: observation.testId,
+      testName: observation.testName,
+      resultText: observation.resultText,
+      interpretation: observation.interpretation,
+      trainerDecision: decisionLabel,
+      nextStep: values.nextStep,
+      clientVisible: false
+    });
+  }
+  return Object.freeze({ observationCount: observations.length, decisionLabel });
+}
 export function pwdDecisionLabel(value) {
-  return {
-    start_guidance: "Rozpocząć 2–3 tygodnie prowadzenia",
-    further_contact: "Potrzebny dalszy kontakt / ostrożność",
-    not_start: "Nie rozpoczynać / właściwie skierować dalej"
-  }[value] || "";
+  const label = {
+    continue_guidance: "Dalsze prowadzenie",
+    clarify_or_observe: "Dodatkowe wyjaśnienie lub obserwacja",
+    prepare_guidance_later: "Przygotowanie wskazówki później",
+    defer_or_refer: "Odroczenie decyzji lub skierowanie dalej"
+  }[value];
+  if (!label) throw new Error("Wybierz decyzję i następny krok.");
+  return label;
 }
 
 export function pwdTrainerObservation(values) {
-  return `Kontekst i granice: ${text(values.contextBoundaries)}\n\nInterpretacja Damiana: ${text(values.trainerInterpretation)}`;
+  return [
+    `Kontekst i granice: ${text(values.contextBoundaries)}`,
+    `Co zmieniło się po próbie lub wskazówce: ${text(values.changeAfterTrial) || "Nie zapisano"}`,
+    `Interpretacja trenera: ${text(values.trainerInterpretation)}`
+  ].join("\n\n");
 }

@@ -26,7 +26,7 @@ import {
 import { renderTrainer } from "./ui/trainer.js";
 import { renderClient } from "./ui/client.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
-import { collectPwdObservations, pwdDecisionLabel, pwdTrainerObservation } from "./pwd.js";
+import { savePwdWorkflow } from "./pwd.js";
 import { renderTrainerMfa } from "./ui/trainer-mfa.js";
 
 const root = document.getElementById("app");
@@ -295,34 +295,9 @@ function renderTrainerState() {
       await loadTrainer(client.id);
     },
     onSavePwd: async values => {
-      const observations = collectPwdObservations(values);
-      await withWrite("Zapisywanie PWD", async () => {
-        await state.repository.updateClient(state.activeClientId, {
-          goal: values.realLifeGoal,
-          motivation: values.whyImportant
-        });
-        await state.repository.saveSession(state.activeClientId, {
-          date: values.date,
-          sessionType: "pwd",
-          trainerObservation: pwdTrainerObservation(values),
-          trainerDecision: pwdDecisionLabel(values.trainerDecision),
-          clientSummary: `Cel w realnym życiu: ${values.realLifeGoal}\nDlaczego ważne: ${values.whyImportant}`,
-          clientNextStep: values.nextStep,
-          clientVisible: false
-        });
-        for (const observation of observations) {
-          await state.repository.saveAssessment(state.activeClientId, {
-            date: values.date,
-            testId: observation.testId,
-            testName: observation.testName,
-            resultText: observation.resultText,
-            interpretation: observation.interpretation,
-            trainerDecision: "obserwuj",
-            nextStep: values.nextStep,
-            clientVisible: false
-          });
-        }
-      });
+      await withWrite("Zapisywanie PWD", () =>
+        savePwdWorkflow(state.repository, state.activeClientId, values)
+      );
       await reloadWorkspace();
     },
     onSaveSession: async values => {

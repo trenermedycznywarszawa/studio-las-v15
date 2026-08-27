@@ -8,7 +8,7 @@ import {
   CANONICAL_ENGAGEMENTS,
   CANONICAL_STAGES
 } from "../runtime.js";
-import { PWD_MOVEMENTS } from "../pwd.js";
+import { PWD_MAX_OBSERVATIONS, PWD_MOVEMENTS } from "../pwd.js";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -60,30 +60,55 @@ export function pwdForm(onSubmit) {
   const movementFields = PWD_MOVEMENTS.map(movement => create("details", { className: "details-card" }, [
     create("summary", { text: movement.label }),
     checkbox("Uwzględnij tę obserwację", `pwdMovement_${movement.id}`),
-    field("Opis obserwacji", `pwdObservation_${movement.id}`, "textarea", { maxlength: 4000 }),
-    field("Znaczenie według Damiana", `pwdMeaning_${movement.id}`, "textarea", { maxlength: 4000 })
+    field("Krótki opis obserwacji", `pwdObservation_${movement.id}`, "textarea", { maxlength: 4000 }),
+    field("Znaczenie tej obserwacji", `pwdMeaning_${movement.id}`, "textarea", { maxlength: 4000 })
   ]));
 
-  return submitForm([
+  const customObservation = create("details", { className: "details-card" }, [
+    create("summary", { text: "Własna krótka obserwacja" }),
+    checkbox("Uwzględnij własną obserwację", "pwdMovement_custom"),
+    field("Krótki opis obserwacji", "pwdObservation_custom", "textarea", { maxlength: 4000 }),
+    field("Znaczenie tej obserwacji", "pwdMeaning_custom", "textarea", { maxlength: 4000 })
+  ]);
+
+  const form = submitForm([
     field("Data PWD", "date", "date", { value: today(), required: true }),
-    field("Co klient chce móc robić w realnym życiu", "realLifeGoal", "textarea", { required: true, maxlength: 4000 }),
-    field("Dlaczego to jest ważne", "whyImportant", "textarea", { required: true, maxlength: 4000 }),
-    field("Istotny kontekst i granice", "contextBoundaries", "textarea", { required: true, maxlength: 8000 }),
+    field("Co chcesz móc robić swobodniej? — słowami klienta", "realLifeGoal", "textarea", { required: true, maxlength: 4000 }),
+    field("Dlaczego to jest dla Ciebie ważne?", "whyImportant", "textarea", { required: true, maxlength: 4000 }),
+    field("Kontekst i granice — istotne okoliczności, tolerancja, obawy", "contextBoundaries", "textarea", { required: true, maxlength: 8000 }),
     create("div", { className: "field" }, [
-      create("span", { text: "Wybrane obserwacje ruchowe — opcjonalnie, bez scoringu" }),
-      ...movementFields
+      create("span", { text: `Obserwacje istotne dla celu — opcjonalnie, maksymalnie ${PWD_MAX_OBSERVATIONS}` }),
+      create("p", { className: "muted", text: "Poniższe ruchy są wyłącznie propozycjami obserwacji. Możesz zapisać PWD bez obserwacji." }),
+      ...movementFields,
+      customObservation
     ]),
-    field("Interpretacja Damiana", "trainerInterpretation", "textarea", { required: true, maxlength: 8000 }),
-    field("Decyzja Damiana", "trainerDecision", "select", {
+    field("Co zmieniło się po próbie lub wskazówce?", "changeAfterTrial", "textarea", { maxlength: 4000 }),
+    field("Interpretacja trenera", "trainerInterpretation", "textarea", { required: true, maxlength: 8000 }),
+    field("Decyzja i następny krok — wybiera trener", "trainerDecision", "select", {
       required: true,
       options: [
-        { value: "start_guidance", label: "Rozpocząć 2–3 tygodnie prowadzenia" },
-        { value: "further_contact", label: "Potrzebny dalszy kontakt / ostrożność" },
-        { value: "not_start", label: "Nie rozpoczynać / właściwie skierować dalej" }
+        { value: "", label: "Wybierz decyzję", disabled: true },
+        { value: "continue_guidance", label: "Dalsze prowadzenie" },
+        { value: "clarify_or_observe", label: "Dodatkowe wyjaśnienie lub obserwacja" },
+        { value: "prepare_guidance_later", label: "Przygotowanie wskazówki później" },
+        { value: "defer_or_refer", label: "Odroczenie decyzji lub skierowanie dalej" }
       ]
     }),
-    field("Jasny kolejny krok", "nextStep", "textarea", { required: true, maxlength: 4000 })
+    field("Jasny następny krok zapisany przez trenera", "nextStep", "textarea", { required: true, maxlength: 4000 }),
+    create("p", { className: "muted", text: "Zapis decyzji nie wykonuje jej automatycznie i nie tworzy wskazówki ani planu domowego." })
   ], "Zapisz PWD", onSubmit);
+
+  const observationCheckboxes = [...form.querySelectorAll('input[type="checkbox"][name^="pwdMovement_"]')];
+  const syncObservationLimit = () => {
+    const selectedCount = observationCheckboxes.filter(input => input.checked).length;
+    observationCheckboxes.forEach(input => {
+      input.disabled = !input.checked && selectedCount >= PWD_MAX_OBSERVATIONS;
+    });
+  };
+  observationCheckboxes.forEach(input => input.addEventListener("change", syncObservationLimit));
+  form.addEventListener("reset", () => queueMicrotask(syncObservationLimit));
+  syncObservationLimit();
+  return form;
 }
 export function measurementForm(onSubmit) {
   return submitForm([

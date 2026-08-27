@@ -122,8 +122,8 @@ function sessionBriefPanel(workspace) {
 
 function pwdSection(workspace, model) {
   const pwdSessions = (workspace.sessions || []).filter(session => session.session_type === "pwd");
-  return panel("PWD — pierwsza wizyta diagnostyczna", create("div", {}, [
-    create("p", { className: "muted", text: "Pytanie → obserwacja → znaczenie → decyzja Damiana. Każdy ruch jest dobrowolny; system nie diagnozuje ani nie wybiera decyzji." }),
+  return panel("PWD — przestrzeń decyzji", create("div", {}, [
+    create("p", { className: "muted", text: "QUESTION → SIGNAL → MEANING → DECISION. Krótka rozmowa i selektywne obserwacje istotne dla celu; system nie diagnozuje, nie punktuje i nie wybiera decyzji." }),
     recordList(pwdSessions, session => create("article", { className: "record" }, [
       create("strong", { text: `PWD · ${formatDate(session.date)}` }),
       create("p", { text: session.client_summary || "Cel i znaczenie zapisano w karcie klienta." }),
