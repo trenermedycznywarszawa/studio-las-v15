@@ -86,19 +86,27 @@ export function pwdForm(onSubmit) {
     field("Interpretacja trenera", "trainerInterpretation", "textarea", { required: true, maxlength: 8000 }),
     field("Decyzja i następny krok — wybiera trener", "trainerDecision", "select", {
       required: true,
+      value: "",
       options: [
-        { value: "", label: "Wybierz decyzję", disabled: true },
+        { value: "", label: "Wybierz decyzję i następny krok…", disabled: true, selected: true },
         { value: "continue_guidance", label: "Dalsze prowadzenie" },
         { value: "clarify_or_observe", label: "Dodatkowe wyjaśnienie lub obserwacja" },
         { value: "prepare_guidance_later", label: "Przygotowanie wskazówki później" },
         { value: "defer_or_refer", label: "Odroczenie decyzji lub skierowanie dalej" }
       ]
     }),
+    create("p", { className: "muted", text: "Wybór decyzji jest wymagany. System nie wybierze jej automatycznie." }),
     field("Jasny następny krok zapisany przez trenera", "nextStep", "textarea", { required: true, maxlength: 4000 }),
     create("p", { className: "muted", text: "Zapis decyzji nie wykonuje jej automatycznie i nie tworzy wskazówki ani planu domowego." })
   ], "Zapisz PWD", onSubmit);
 
   const observationCheckboxes = [...form.querySelectorAll('input[type="checkbox"][name^="pwdMovement_"]')];
+  const decisionSelect = form.elements.namedItem("trainerDecision");
+  decisionSelect.value = "";
+  decisionSelect.addEventListener("invalid", () => {
+    decisionSelect.setCustomValidity("Wybierz decyzję i następny krok.");
+  });
+  decisionSelect.addEventListener("change", () => decisionSelect.setCustomValidity(""));
   const syncObservationLimit = () => {
     const selectedCount = observationCheckboxes.filter(input => input.checked).length;
     observationCheckboxes.forEach(input => {

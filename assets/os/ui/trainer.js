@@ -20,6 +20,7 @@ import {
 } from "./forms.js";
 import {
   CANONICAL_ENGAGEMENTS,
+  runtimeEnvironmentLabel,
   CANONICAL_STAGES
 } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
@@ -122,8 +123,8 @@ function sessionBriefPanel(workspace) {
 
 function pwdSection(workspace, model) {
   const pwdSessions = (workspace.sessions || []).filter(session => session.session_type === "pwd");
-  return panel("PWD — przestrzeń decyzji", create("div", {}, [
-    create("p", { className: "muted", text: "QUESTION → SIGNAL → MEANING → DECISION. Krótka rozmowa i selektywne obserwacje istotne dla celu; system nie diagnozuje, nie punktuje i nie wybiera decyzji." }),
+  return panel("Pierwsza Wizyta Diagnostyczna", create("div", {}, [
+    create("p", { className: "muted", text: "QUESTION → SIGNAL → MEANING → DECISION. Trener zapisuje diagnozę ruchu, obserwacje, pomiary i własną decyzję; system nie wybiera jej automatycznie." }),
     recordList(pwdSessions, session => create("article", { className: "record" }, [
       create("strong", { text: `PWD · ${formatDate(session.date)}` }),
       create("p", { text: session.client_summary || "Cel i znaczenie zapisano w karcie klienta." }),
@@ -255,7 +256,7 @@ export function renderTrainer(root, model) {
 
   const header = create("header", { className: "topbar" }, [
     create("div", {}, [
-      create("p", { className: "eyebrow", text: "Studio Las OS · produkcja" }),
+      create("p", { className: "eyebrow", text: `Studio Las OS · ${runtimeEnvironmentLabel(model.environment)}` }),
       create("h1", { text: "Panel trenera" })
     ]),
     create("div", { className: "top-actions" }, [

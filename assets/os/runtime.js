@@ -18,6 +18,14 @@ function assertPlainObject(value, label) {
 const CANONICAL_PRODUCTION_REF = "ufcumhbnuyernuwepcij";
 const CANONICAL_STAGING_REF = "ulauyoqjoetjqktegeuq";
 
+export function runtimeEnvironmentLabel(mode) {
+  const label = { staging: "STAGING / QA", production: "PRODUKCJA" }[mode];
+  if (!label) {
+    throw new RuntimeConfigurationError("Nieobsługiwane środowisko nie może zostać oznaczone jako aktywne.");
+  }
+  return label;
+}
+
 function normalizeUrl(value) {
   const url = new URL(String(value || ""));
   if (url.protocol !== "https:") {

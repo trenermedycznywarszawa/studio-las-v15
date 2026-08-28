@@ -9,7 +9,14 @@ import {
   pwdTrainerObservation,
   savePwdWorkflow
 } from "../assets/os/pwd.js";
-import { getRuntimeConfig, submitPasswordLogin, userSafeError } from "../assets/os/runtime.js";
+import {
+  CANONICAL_ENGAGEMENTS,
+  CANONICAL_STAGES,
+  getRuntimeConfig,
+  runtimeEnvironmentLabel,
+  submitPasswordLogin,
+  userSafeError
+} from "../assets/os/runtime.js";
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migration = await read("supabase/migrations/20260826101816_pwd_trainer_workflow.sql");
@@ -91,6 +98,24 @@ const basePwd = {
   nextStep: "wrócić do pytania na kolejnej rozmowie"
 };
 
+const undecidedRepository = repositoryRecorder();
+await assert.rejects(
+  savePwdWorkflow(undecidedRepository, "synthetic-client", { ...basePwd, trainerDecision: "" }),
+  /Wybierz decyzję i następny krok/
+);
+assert.deepEqual(undecidedRepository.calls, []);
+
+const explicitContinueRepository = repositoryRecorder();
+const explicitContinueResult = await savePwdWorkflow(
+  explicitContinueRepository,
+  "synthetic-client",
+  { ...basePwd, trainerDecision: "continue_guidance" }
+);
+assert.equal(explicitContinueResult.decisionLabel, "Dalsze prowadzenie");
+assert.equal(
+  explicitContinueRepository.calls.find(([operation]) => operation === "saveSession")[2].trainerDecision,
+  "Dalsze prowadzenie"
+);
 const zeroRepository = repositoryRecorder();
 assert.deepEqual(
   await savePwdWorkflow(zeroRepository, "synthetic-client", basePwd),
@@ -153,8 +178,13 @@ assert.match(forms, /Dlaczego to jest dla Ciebie ważne\?/);
 assert.match(forms, /Obserwacje istotne dla celu — opcjonalnie, maksymalnie/);
 assert.match(forms, /Własna krótka obserwacja/);
 assert.match(forms, /input\.disabled = !input\.checked && selectedCount >= PWD_MAX_OBSERVATIONS/);
-assert.match(forms, /value: "", label: "Wybierz decyzję", disabled: true/);
+assert.match(forms, /value: "", label: "Wybierz decyzję i następny krok…", disabled: true, selected: true/);
+assert.match(forms, /decisionSelect\.value = ""/);
+assert.match(forms, /setCustomValidity\("Wybierz decyzję i następny krok\."\)/);
+assert.match(trainer, /panel\("Pierwsza Wizyta Diagnostyczna"/);
 assert.match(trainer, /QUESTION → SIGNAL → MEANING → DECISION/);
+assert.equal(CANONICAL_ENGAGEMENTS.diagnostic_visit, "Pierwsza Wizyta Diagnostyczna");
+assert.equal(CANONICAL_STAGES[1], "Diagnostyka i punkt startowy");
 assert.match(trainer, /Zapis PWD nie tworzy ani nie publikuje wskazówki/);
 
 assert.match(app, /onSavePwd:[\s\S]*savePwdWorkflow\(state\.repository, state\.activeClientId, values\)/);
@@ -170,7 +200,9 @@ assert.match(app, /onPublishHomePlan:[\s\S]*publishHomePlanGuidance/);
 
 assert.match(app, /environment: state\.config\?\.mode/);
 assert.match(app, /onSubmit: async \(\{ email, password \}\) => \{[\s\S]*submitPasswordLogin\(state\.auth, \{ email, password \}\)/);
-assert.match(common, /staging: "STAGING \/ QA", production: "PRODUKCJA"/);
+assert.match(common, /runtimeEnvironmentLabel\(environment\)/);
+assert.match(common, /selected: option\.selected/);
+assert.match(trainer, /runtimeEnvironmentLabel\(model\.environment\)/);
 
 const key = "p".repeat(40);
 const originalWindow = globalThis.window;
@@ -185,7 +217,9 @@ setRuntimeConfig({
   projectRef: "ulauyoqjoetjqktegeuq",
   url: "https://ulauyoqjoetjqktegeuq.supabase.co"
 });
-assert.equal(getRuntimeConfig().mode, "staging");
+const stagingConfig = getRuntimeConfig();
+assert.equal(stagingConfig.mode, "staging");
+assert.equal(runtimeEnvironmentLabel(stagingConfig.mode), "STAGING / QA");
 
 setRuntimeConfig({
   mode: "staging",
@@ -194,6 +228,14 @@ setRuntimeConfig({
 });
 assert.throws(() => getRuntimeConfig(), /Błędna konfiguracja stagingu/);
 
+setRuntimeConfig({
+  mode: "production",
+  projectRef: "ufcumhbnuyernuwepcij",
+  url: "https://ufcumhbnuyernuwepcij.supabase.co"
+});
+const productionConfig = getRuntimeConfig();
+assert.equal(productionConfig.mode, "production");
+assert.equal(runtimeEnvironmentLabel(productionConfig.mode), "PRODUKCJA");
 setRuntimeConfig({
   mode: "production",
   projectRef: "ulauyoqjoetjqktegeuq",
@@ -207,6 +249,7 @@ setRuntimeConfig({
   url: "https://ulauyoqjoetjqktegeuq.supabase.co"
 });
 assert.throws(() => getRuntimeConfig(), /Nieobsługiwane środowisko/);
+assert.throws(() => runtimeEnvironmentLabel("preview"), /Nieobsługiwane środowisko/);
 globalThis.window = originalWindow;
 
 const loginCalls = [];

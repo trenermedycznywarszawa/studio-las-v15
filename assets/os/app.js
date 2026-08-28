@@ -279,6 +279,7 @@ function renderTrainerState() {
   };
 
   renderTrainer(root, {
+    environment: state.config?.mode,
     profile: state.profile,
     clients: state.clients,
     activeClientId: state.activeClientId,
