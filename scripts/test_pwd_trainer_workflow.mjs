@@ -4,6 +4,7 @@ import { SupabaseAuth } from "../assets/os/data.js";
 import {
   PWD_MAX_OBSERVATIONS,
   PWD_MOVEMENTS,
+  PWD_OBSERVATION_TYPES,
   collectPwdObservations,
   pwdDecisionLabel,
   pwdTrainerObservation,
@@ -29,54 +30,71 @@ const common = await read("assets/os/ui/common.js");
 
 assert.equal(PWD_MOVEMENTS.length, 7);
 assert.equal(PWD_MAX_OBSERVATIONS, 3);
+assert.deepEqual(Object.keys(PWD_OBSERVATION_TYPES), [
+  "reference", "goal_task", "trainer_observation"
+]);
 
-// Zero observations is a valid PWD input.
+// PWD remains valid without observations.
 assert.deepEqual(collectPwdObservations({}), []);
-assert.throws(
-  () => collectPwdObservations({ pwdMovement_sock: true, pwdObservation_sock: "opis" }),
-  /obserwację i jej znaczenie/
-);
-assert.throws(
-  () => collectPwdObservations({ pwdMeaning_sock: "znaczenie" }),
-  /Zaznacz propozycję/
-);
 
-// Two selected observation suggestions remain independent, descriptive records.
-const observations = collectPwdObservations({
-  pwdMovement_sock: true,
-  pwdObservation_sock: "syntetyczna obserwacja skarpetki",
-  pwdMeaning_sock: "znaczenie skarpetki wpisane przez trenera",
-  pwdMovement_squat: true,
-  pwdObservation_squat: "syntetyczna obserwacja przysiadu",
-  pwdMeaning_squat: "znaczenie przysiadu wpisane przez trenera"
+// A trainer-owned observation preserves its type, name, signal and optional reaction.
+const trainerObservation = collectPwdObservations({
+  pwdObservationType_0: "trainer_observation",
+  pwdObservationName_0: "Spontaniczna zmiana sposobu wstawania",
+  pwdObservationNoticed_0: "Klient wybrał spokojniejsze tempo",
+  pwdObservationReaction_0: "Ruch był łatwiejszy"
 });
-assert.deepEqual(observations.map(item => item.testId), ["pwd:sock", "pwd:squat"]);
-assert.equal(observations[0].interpretation, "znaczenie skarpetki wpisane przez trenera");
-assert.equal(observations[1].resultText, "syntetyczna obserwacja przysiadu");
-
-// A custom short observation uses the same existing record contract.
-const customObservation = collectPwdObservations({
-  pwdMovement_custom: true,
-  pwdObservation_custom: "własny syntetyczny sygnał",
-  pwdMeaning_custom: "znaczenie zapisane przez trenera"
-});
-assert.deepEqual(customObservation, [{
-  testId: "pwd:custom",
-  testName: "Własna obserwacja istotna dla celu",
-  resultText: "własny syntetyczny sygnał",
-  interpretation: "znaczenie zapisane przez trenera"
+assert.deepEqual(trainerObservation, [{
+  observationType: "trainer_observation",
+  testId: "pwd:trainer_observation",
+  testName: "Spontaniczna zmiana sposobu wstawania",
+  resultText: "Klient wybrał spokojniejsze tempo",
+  reaction: "Ruch był łatwiejszy",
+  referenceId: null
 }]);
 
-// A fourth observation fails before repository writes.
-const fourObservations = Object.fromEntries(
-  PWD_MOVEMENTS.slice(0, 4).flatMap(movement => [
-    [`pwdMovement_${movement.id}`, true],
-    [`pwdObservation_${movement.id}`, `obserwacja ${movement.id}`],
-    [`pwdMeaning_${movement.id}`, `znaczenie ${movement.id}`]
-  ])
-);
-assert.throws(() => collectPwdObservations(fourObservations), /maksymalnie 3 obserwacje/);
+// A task can be defined directly from the client's goal.
+const goalTaskObservation = collectPwdObservations({
+  pwdObservationType_0: "goal_task",
+  pwdObservationName_0: "Wejście po schodach",
+  pwdObservationNoticed_0: "Tempo pozostawało swobodne przez jedno piętro"
+});
+assert.equal(goalTaskObservation[0].testId, "pwd:goal_task");
+assert.equal(goalTaskObservation[0].testName, "Wejście po schodach");
 
+// The seven movements are only an optional reference-name library.
+const referenceObservation = collectPwdObservations({
+  pwdObservationType_0: "reference",
+  pwdObservationReference_0: "sock",
+  pwdObservationNoticed_0: "Ruch zapisany do późniejszego porównania"
+});
+assert.equal(referenceObservation[0].testId, "pwd:reference:sock");
+assert.equal(referenceObservation[0].testName, "Skarpetka bez podparcia");
+assert.equal(referenceObservation[0].referenceId, "sock");
+assert.throws(
+  () => collectPwdObservations({
+    pwdObservationType_0: "goal_task",
+    pwdObservationReference_0: "sock",
+    pwdObservationName_0: "Wejście po schodach",
+    pwdObservationNoticed_0: "Sygnał"
+  }),
+  /wyłącznie dla obserwacji porównawczej/
+);
+
+const threeObservations = Object.fromEntries([0, 1, 2].flatMap(index => [
+  [`pwdObservationType_${index}`, "trainer_observation"],
+  [`pwdObservationName_${index}`, `Obserwacja ${index + 1}`],
+  [`pwdObservationNoticed_${index}`, `Sygnał ${index + 1}`]
+]));
+assert.equal(collectPwdObservations(threeObservations).length, 3);
+
+const fourObservations = {
+  ...threeObservations,
+  pwdObservationType_3: "trainer_observation",
+  pwdObservationName_3: "Obserwacja 4",
+  pwdObservationNoticed_3: "Sygnał 4"
+};
+assert.throws(() => collectPwdObservations(fourObservations), /maksymalnie 3 obserwacje/);
 function repositoryRecorder() {
   const calls = [];
   return {
@@ -92,7 +110,6 @@ const basePwd = {
   realLifeGoal: "wejść spokojnie po schodach",
   whyImportant: "samodzielne wyjście z domu",
   contextBoundaries: "bez presji i bez automatycznej interpretacji",
-  changeAfterTrial: "",
   trainerInterpretation: "syntetyczna interpretacja trenera",
   trainerDecision: "clarify_or_observe",
   nextStep: "wrócić do pytania na kolejnej rozmowie"
@@ -116,6 +133,11 @@ assert.equal(
   explicitContinueRepository.calls.find(([operation]) => operation === "saveSession")[2].trainerDecision,
   "Dalsze prowadzenie"
 );
+const explicitClientUpdate = explicitContinueRepository.calls.find(
+  ([operation]) => operation === "updateClient"
+)[2];
+assert.equal(explicitClientUpdate.goal, basePwd.realLifeGoal);
+assert.notEqual(explicitClientUpdate.goal, explicitContinueResult.decisionLabel);
 const zeroRepository = repositoryRecorder();
 assert.deepEqual(
   await savePwdWorkflow(zeroRepository, "synthetic-client", basePwd),
@@ -123,33 +145,38 @@ assert.deepEqual(
 );
 assert.deepEqual(zeroRepository.calls.map(([operation]) => operation), ["updateClient", "saveSession"]);
 
-const twoRepository = repositoryRecorder();
-assert.equal(
-  (await savePwdWorkflow(twoRepository, "synthetic-client", {
-    ...basePwd,
-    pwdMovement_sock: true,
-    pwdObservation_sock: "sygnał pierwszy",
-    pwdMeaning_sock: "znaczenie pierwsze",
-    pwdMovement_squat: true,
-    pwdObservation_squat: "sygnał drugi",
-    pwdMeaning_squat: "znaczenie drugie"
-  })).observationCount,
-  2
-);
-assert.deepEqual(twoRepository.calls.map(([operation]) => operation), [
-  "updateClient", "saveSession", "saveAssessment", "saveAssessment"
-]);
-
-const customRepository = repositoryRecorder();
-await savePwdWorkflow(customRepository, "synthetic-client", {
+const trainerRepository = repositoryRecorder();
+await savePwdWorkflow(trainerRepository, "synthetic-client", {
   ...basePwd,
-  pwdMovement_custom: true,
-  pwdObservation_custom: "własny krótki sygnał",
-  pwdMeaning_custom: "własne znaczenie"
+  pwdObservationType_0: "trainer_observation",
+  pwdObservationName_0: "Własna obserwacja trenera",
+  pwdObservationNoticed_0: "Klient sam dobrał spokojniejsze tempo",
+  pwdObservationReaction_0: "Próba była swobodniejsza"
 });
-assert.equal(customRepository.calls.at(-1)[0], "saveAssessment");
-assert.equal(customRepository.calls.at(-1)[2].testId, "pwd:custom");
-assert.equal(customRepository.calls.at(-1)[2].resultText, "własny krótki sygnał");
+const savedTrainerObservation = trainerRepository.calls.at(-1)[2];
+assert.equal(savedTrainerObservation.testId, "pwd:trainer_observation");
+assert.equal(savedTrainerObservation.resultText, "Klient sam dobrał spokojniejsze tempo");
+assert.match(savedTrainerObservation.trainerNote, /Reakcja po próbie lub wskazówce: Próba była swobodniejsza/);
+
+const goalTaskRepository = repositoryRecorder();
+await savePwdWorkflow(goalTaskRepository, "synthetic-client", {
+  ...basePwd,
+  pwdObservationType_0: "goal_task",
+  pwdObservationName_0: "Wejście po schodach",
+  pwdObservationNoticed_0: "Jedno piętro w swobodnym tempie"
+});
+assert.equal(goalTaskRepository.calls.at(-1)[2].testId, "pwd:goal_task");
+assert.equal(goalTaskRepository.calls.at(-1)[2].testName, "Wejście po schodach");
+
+const referenceRepository = repositoryRecorder();
+await savePwdWorkflow(referenceRepository, "synthetic-client", {
+  ...basePwd,
+  pwdObservationType_0: "reference",
+  pwdObservationReference_0: "sock",
+  pwdObservationNoticed_0: "Zapis do porównania z kolejną wizytą"
+});
+assert.equal(referenceRepository.calls.at(-1)[2].testId, "pwd:reference:sock");
+assert.equal(referenceRepository.calls.at(-1)[2].testName, "Skarpetka bez podparcia");
 
 const rejectedRepository = repositoryRecorder();
 await assert.rejects(
@@ -157,17 +184,16 @@ await assert.rejects(
   /maksymalnie 3 obserwacje/
 );
 assert.deepEqual(rejectedRepository.calls, []);
-
 assert.equal(pwdDecisionLabel("continue_guidance"), "Dalsze prowadzenie");
 assert.equal(pwdDecisionLabel("defer_or_refer"), "Odroczenie decyzji lub skierowanie dalej");
 assert.throws(() => pwdDecisionLabel(""), /Wybierz decyzję/);
 assert.match(
-  pwdTrainerObservation({
-    contextBoundaries: "granica",
-    changeAfterTrial: "zmiana",
-    trainerInterpretation: "interpretacja"
-  }),
-  /Kontekst i granice: granica[\s\S]*Co zmieniło się po próbie lub wskazówce: zmiana[\s\S]*Interpretacja trenera: interpretacja/
+  pwdTrainerObservation({ contextBoundaries: "granica", trainerInterpretation: "interpretacja" }),
+  /Kontekst i granice: granica[\s\S]*Interpretacja trenera: interpretacja/
+);
+assert.doesNotMatch(
+  pwdTrainerObservation({ contextBoundaries: "granica", trainerInterpretation: "interpretacja" }),
+  /Co zmieniło się po próbie/
 );
 
 assert.match(migration, /add column if not exists session_type text not null default 'session'/);
@@ -175,14 +201,18 @@ assert.match(migration, /session_type in \('session', 'pwd'\)/);
 assert.match(data, /session_type: input\.sessionType === "pwd" \? "pwd" : "session"/);
 assert.match(forms, /Co chcesz móc robić swobodniej\?/);
 assert.match(forms, /Dlaczego to jest dla Ciebie ważne\?/);
-assert.match(forms, /Obserwacje istotne dla celu — opcjonalnie, maksymalnie/);
-assert.match(forms, /Własna krótka obserwacja/);
-assert.match(forms, /input\.disabled = !input\.checked && selectedCount >= PWD_MAX_OBSERVATIONS/);
+assert.match(forms, /Dodaj obserwację/);
+assert.match(forms, /data-pwd-observation-card/);
+assert.match(forms, /data-pwd-reference-library/);
+assert.match(forms, /referenceLibrary\.hidden = !isReference/);
+assert.match(forms, /PWD_MOVEMENTS\.map\(movement => \(\{ value: movement\.id, label: movement\.label \}\)\)/);
+assert.doesNotMatch(forms, /PWD_MOVEMENTS\.map\(movement => create\("details"/);
+assert.match(forms, /activeSlots\.size >= PWD_MAX_OBSERVATIONS/);
 assert.match(forms, /value: "", label: "Wybierz decyzję i następny krok…", disabled: true, selected: true/);
 assert.match(forms, /decisionSelect\.value = ""/);
 assert.match(forms, /setCustomValidity\("Wybierz decyzję i następny krok\."\)/);
 assert.match(trainer, /panel\("Pierwsza Wizyta Diagnostyczna"/);
-assert.match(trainer, /QUESTION → SIGNAL → MEANING → DECISION/);
+assert.match(trainer, /Cel klienta → kontekst i granice → maksymalnie 3 adekwatne obserwacje/);
 assert.equal(CANONICAL_ENGAGEMENTS.diagnostic_visit, "Pierwsza Wizyta Diagnostyczna");
 assert.equal(CANONICAL_STAGES[1], "Diagnostyka i punkt startowy");
 assert.match(trainer, /Zapis PWD nie tworzy ani nie publikuje wskazówki/);

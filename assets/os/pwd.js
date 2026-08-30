@@ -10,54 +10,65 @@ export const PWD_MOVEMENTS = Object.freeze([
 
 export const PWD_MAX_OBSERVATIONS = 3;
 
+export const PWD_OBSERVATION_TYPES = Object.freeze({
+  reference: "Punkt odniesienia do późniejszego porównania",
+  goal_task: "Zadanie związane z celem klienta",
+  trainer_observation: "Własna obserwacja trenera"
+});
+
 function text(value) {
   return String(value || "").trim();
 }
 
 export function collectPwdObservations(values) {
-  const observations = PWD_MOVEMENTS.flatMap(movement => {
-    const selected = Boolean(values[`pwdMovement_${movement.id}`]);
-    const observation = text(values[`pwdObservation_${movement.id}`]);
-    const meaning = text(values[`pwdMeaning_${movement.id}`]);
+  const slotIndexes = [...new Set(Object.keys(values).flatMap(key => {
+    const match = /^pwdObservation(?:Type|Name|Noticed|Reaction|Reference)_(\d+)$/.exec(key);
+    return match ? [Number(match[1])] : [];
+  }))].sort((left, right) => left - right);
 
-    if (!selected && (observation || meaning)) {
-      throw new Error("Zaznacz propozycję obserwacji albo usuń jej opis.");
-    }
-    if (!selected) return [];
-    if (!observation || !meaning) {
-      throw new Error(`Dla propozycji „${movement.label}” wpisz obserwację i jej znaczenie.`);
-    }
-    return [Object.freeze({
-      testId: `pwd:${movement.id}`,
-      testName: movement.label,
-      resultText: observation,
-      interpretation: meaning
-    })];
-  });
-
-  const customSelected = Boolean(values.pwdMovement_custom);
-  const customObservation = text(values.pwdObservation_custom);
-  const customMeaning = text(values.pwdMeaning_custom);
-
-  if (!customSelected && (customObservation || customMeaning)) {
-    throw new Error("Zaznacz własną obserwację albo usuń jej opis.");
-  }
-  if (customSelected) {
-    if (!customObservation || !customMeaning) {
-      throw new Error("Dla własnej obserwacji wpisz jej krótki opis i znaczenie.");
-    }
-    observations.push(Object.freeze({
-      testId: "pwd:custom",
-      testName: "Własna obserwacja istotna dla celu",
-      resultText: customObservation,
-      interpretation: customMeaning
-    }));
-  }
-
-  if (observations.length > PWD_MAX_OBSERVATIONS) {
+  if (slotIndexes.some(index => index >= PWD_MAX_OBSERVATIONS)) {
     throw new Error(`Możesz zapisać maksymalnie ${PWD_MAX_OBSERVATIONS} obserwacje istotne dla celu.`);
   }
-  return observations;
+
+  return slotIndexes.flatMap(index => {
+    const observationType = text(values[`pwdObservationType_${index}`]);
+    const enteredName = text(values[`pwdObservationName_${index}`]);
+    const resultText = text(values[`pwdObservationNoticed_${index}`]);
+    const reaction = text(values[`pwdObservationReaction_${index}`]);
+    const referenceId = text(values[`pwdObservationReference_${index}`]);
+
+    if (!observationType && !enteredName && !resultText && !reaction && !referenceId) return [];
+    if (!PWD_OBSERVATION_TYPES[observationType]) {
+      throw new Error("Wybierz typ każdej dodanej obserwacji.");
+    }
+    if (referenceId && observationType !== "reference") {
+      throw new Error("Biblioteka punktów odniesienia jest dostępna wyłącznie dla obserwacji porównawczej.");
+    }
+
+    const reference = referenceId
+      ? PWD_MOVEMENTS.find(movement => movement.id === referenceId)
+      : null;
+    if (referenceId && !reference) {
+      throw new Error("Wybrany punkt odniesienia nie należy do prywatnej biblioteki PWD.");
+    }
+
+    const testName = enteredName || reference?.label || "";
+    if (!testName || !resultText) {
+      throw new Error("Dla każdej dodanej obserwacji wpisz nazwę oraz to, co zauważyliśmy.");
+    }
+
+    const referenceSuffix = observationType === "reference"
+      ? `:${reference?.id || "custom"}`
+      : "";
+    return [Object.freeze({
+      observationType,
+      testId: `pwd:${observationType}${referenceSuffix}`,
+      testName,
+      resultText,
+      reaction: reaction || null,
+      referenceId: reference?.id || null
+    })];
+  });
 }
 
 export async function savePwdWorkflow(repository, clientId, values) {
@@ -84,7 +95,11 @@ export async function savePwdWorkflow(repository, clientId, values) {
       testId: observation.testId,
       testName: observation.testName,
       resultText: observation.resultText,
-      interpretation: observation.interpretation,
+      interpretation: null,
+      trainerNote: [
+        `Typ obserwacji: ${PWD_OBSERVATION_TYPES[observation.observationType]}`,
+        observation.reaction ? `Reakcja po próbie lub wskazówce: ${observation.reaction}` : ""
+      ].filter(Boolean).join("\n"),
       trainerDecision: decisionLabel,
       nextStep: values.nextStep,
       clientVisible: false
@@ -92,6 +107,7 @@ export async function savePwdWorkflow(repository, clientId, values) {
   }
   return Object.freeze({ observationCount: observations.length, decisionLabel });
 }
+
 export function pwdDecisionLabel(value) {
   const label = {
     continue_guidance: "Dalsze prowadzenie",
@@ -106,7 +122,6 @@ export function pwdDecisionLabel(value) {
 export function pwdTrainerObservation(values) {
   return [
     `Kontekst i granice: ${text(values.contextBoundaries)}`,
-    `Co zmieniło się po próbie lub wskazówce: ${text(values.changeAfterTrial) || "Nie zapisano"}`,
     `Interpretacja trenera: ${text(values.trainerInterpretation)}`
   ].join("\n\n");
 }

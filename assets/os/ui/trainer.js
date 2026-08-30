@@ -124,7 +124,7 @@ function sessionBriefPanel(workspace) {
 function pwdSection(workspace, model) {
   const pwdSessions = (workspace.sessions || []).filter(session => session.session_type === "pwd");
   return panel("Pierwsza Wizyta Diagnostyczna", create("div", {}, [
-    create("p", { className: "muted", text: "QUESTION → SIGNAL → MEANING → DECISION. Trener zapisuje diagnozę ruchu, obserwacje, pomiary i własną decyzję; system nie wybiera jej automatycznie." }),
+    create("p", { className: "muted", text: "Cel klienta → kontekst i granice → maksymalnie 3 adekwatne obserwacje → interpretacja trenera → świadoma decyzja. System nie wybiera obserwacji ani decyzji automatycznie." }),
     recordList(pwdSessions, session => create("article", { className: "record" }, [
       create("strong", { text: `PWD · ${formatDate(session.date)}` }),
       create("p", { text: session.client_summary || "Cel i znaczenie zapisano w karcie klienta." }),
