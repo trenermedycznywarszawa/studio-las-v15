@@ -31,7 +31,6 @@ jobs:
       STAGING_REF: ulauyoqjoetjqktegeuq
       STAGING_ORIGIN: https://ulauyoqjoetjqktegeuq.supabase.co
       STUDIO_LAS_STAGING_PUBLISHABLE_KEY: sb_publishable_5IVYDd1a02rye5szV80sLA_UWzwjZRk
-      STUDIO_LAS_QA_EMAIL: lordskun@gmail.com
       STUDIO_LAS_E2E_URL: http://127.0.0.1:8790/studio-las-os.html
       STUDIO_LAS_E2E_ARTIFACT_DIR: artifacts/browser-e2e
 
@@ -43,11 +42,17 @@ jobs:
 
       - name: Verify QA secrets are configured
         env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
           STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
           STUDIO_LAS_QA_TOTP_SECRET: ${{ secrets.STUDIO_LAS_QA_TOTP_SECRET }}
         run: |
+          test -n "$STUDIO_LAS_QA_EMAIL"
           test -n "$STUDIO_LAS_QA_PASSWORD"
           test -n "$STUDIO_LAS_QA_TOTP_SECRET"
+          case "$STUDIO_LAS_QA_EMAIL" in
+            *@*.*) ;;
+            *) echo "STUDIO_LAS_QA_EMAIL must contain the actual QA account email address." >&2; exit 1 ;;
+          esac
 
       - name: Build isolated staging preview configuration
         run: |
@@ -111,6 +116,7 @@ jobs:
 
       - name: Run trainer PWD browser E2E
         env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
           STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
           STUDIO_LAS_QA_TOTP_SECRET: ${{ secrets.STUDIO_LAS_QA_TOTP_SECRET }}
           STUDIO_LAS_E2E_MARKER: GHA-${{ github.run_id }}-${{ github.run_attempt }}
