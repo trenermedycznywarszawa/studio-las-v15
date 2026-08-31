@@ -148,37 +148,22 @@ async function getSessionObservations(token, sessionId) {
   }), { token });
 }
 
-async function softDeleteSession(token, sessionId) {
-  const deletedAt = new Date().toISOString();
-  await apiRequest(queryPath("assessment_results", {
-    session_id: `eq.${sessionId}`,
-    deleted_at: "is.null"
-  }), {
-    token,
-    method: "PATCH",
-    body: { deleted_at: deletedAt }
-  });
-  await apiRequest(queryPath("sessions", {
-    id: `eq.${sessionId}`,
-    deleted_at: "is.null"
-  }), {
-    token,
-    method: "PATCH",
-    body: { deleted_at: deletedAt }
-  });
-}
-
 async function cleanupRun(token, clientId, baseline) {
   if (!token || !clientId || !baseline) return;
-  for (const marker of [ZERO_MARKER, THREE_MARKER]) {
-    const sessions = await findPwdSessions(token, clientId, marker);
-    for (const session of sessions) await softDeleteSession(token, session.id);
-  }
-  await apiRequest(queryPath("clients", { id: `eq.${clientId}` }), {
+  const cleanupMarker = `E2E-${RUN_MARKER}`;
+  const cleanup = await apiRequest("/rest/v1/rpc/cleanup_synthetic_pwd_e2e", {
     token,
-    method: "PATCH",
-    body: { goal: baseline.goal ?? null, motivation: baseline.motivation ?? null }
+    method: "POST",
+    body: {
+      p_client_id: clientId,
+      p_marker: cleanupMarker,
+      p_restore_goal: baseline.goal ?? null,
+      p_restore_motivation: baseline.motivation ?? null
+    }
   });
+  assert(cleanup && Number.isFinite(Number(cleanup.sessionCount)),
+    "Synthetic cleanup RPC returned an invalid response");
+
   const remaining = [
     ...(await findPwdSessions(token, clientId, ZERO_MARKER)),
     ...(await findPwdSessions(token, clientId, THREE_MARKER))
@@ -240,6 +225,13 @@ async function openPwdForm(page) {
   const form = details.locator("form");
   await form.waitFor({ state: "visible" });
   return { section, details, summary, form };
+}
+
+function pwdSessionArticle(page, marker) {
+  const heading = page.getByRole("heading", { name: "Pierwsza Wizyta Diagnostyczna" });
+  const section = heading.locator("xpath=ancestor::section[contains(@class, 'panel')]");
+  const sessionList = section.locator(".record-list").first();
+  return sessionList.locator(":scope > article.record").filter({ hasText: marker });
 }
 
 async function fillPwdCore(form, marker, decision = "") {
@@ -338,7 +330,7 @@ async function run() {
       "Zero-observation PWD unexpectedly created assessments");
 
     await reloadAndSelect(page);
-    const zeroArticle = page.locator("article.record").filter({ hasText: ZERO_MARKER });
+    const zeroArticle = pwdSessionArticle(page, ZERO_MARKER);
     assert(await zeroArticle.count() === 1, "Zero-observation PWD did not rehydrate exactly once after reload");
     assert((await zeroArticle.innerText()).includes("Brak obserwacji w tej PWD."),
       "Zero-observation PWD lost its empty-observation state after reload");
@@ -391,8 +383,8 @@ async function run() {
 
     await reloadAndSelect(page);
     zeroSessions = await findPwdSessions(token, clientId, ZERO_MARKER);
-    const zeroAfter = page.locator("article.record").filter({ hasText: ZERO_MARKER });
-    const threeAfter = page.locator("article.record").filter({ hasText: THREE_MARKER });
+    const zeroAfter = pwdSessionArticle(page, ZERO_MARKER);
+    const threeAfter = pwdSessionArticle(page, THREE_MARKER);
     assert(zeroSessions.length === 1 && await zeroAfter.count() === 1, "First PWD was lost or duplicated after second PWD");
     assert(await threeAfter.count() === 1, "Second PWD was lost or duplicated after reload");
     const threeText = await threeAfter.innerText();
