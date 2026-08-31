@@ -14,7 +14,6 @@ import {
   measurementForm,
   newClientForm,
   reportForm,
-  pwdForm,
   sessionForm,
   trainingLoadForm
 } from "./forms.js";
@@ -24,6 +23,7 @@ import {
   CANONICAL_STAGES
 } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
+import { pwdSection } from "./pwd-section.js";
 
 function summaryGrid(client) {
   const values = [
@@ -121,21 +121,6 @@ function sessionBriefPanel(workspace) {
 }
 
 
-function pwdSection(workspace, model) {
-  const pwdSessions = (workspace.sessions || []).filter(session => session.session_type === "pwd");
-  return panel("Pierwsza Wizyta Diagnostyczna", create("div", {}, [
-    create("p", { className: "muted", text: "Cel klienta → kontekst i granice → maksymalnie 3 adekwatne obserwacje → interpretacja trenera → świadoma decyzja. System nie wybiera obserwacji ani decyzji automatycznie." }),
-    recordList(pwdSessions, session => create("article", { className: "record" }, [
-      create("strong", { text: `PWD · ${formatDate(session.date)}` }),
-      create("p", { text: session.client_summary || "Cel i znaczenie zapisano w karcie klienta." }),
-      create("p", { text: session.trainer_observation || "Brak kontekstu i interpretacji." }),
-      create("p", { className: "muted", text: `Decyzja: ${session.trainer_decision || "brak"}` }),
-      create("p", { className: "muted", text: `Kolejny krok: ${session.client_next_step || "brak"}` })
-    ]), "Brak zapisanej PWD."),
-    detailsForm("Zapisz PWD", pwdForm(model.onSavePwd)),
-    create("p", { className: "muted", text: "Zapis PWD nie tworzy ani nie publikuje wskazówki. Przygotowanie i publikacja pierwszej wskazówki pozostają osobnym krokiem w sekcji Prowadzenie klienta." })
-  ]));
-}
 function sessionsSection(workspace, model) {
   return panel("Sesje", create("div", {}, [
     recordList((workspace.sessions || []).filter(session => session.session_type !== "pwd"), session => create("article", { className: "record" }, [
@@ -171,8 +156,9 @@ function measurementsSection(workspace, model) {
 }
 
 function assessmentsSection(workspace, model) {
+  const ordinaryAssessments = (workspace.assessments || []).filter(item => !item.observation_type);
   return panel("Obserwacje ruchowe", create("div", {}, [
-    recordList(workspace.assessments, item => create("article", { className: "record" }, [
+    recordList(ordinaryAssessments, item => create("article", { className: "record" }, [
       create("strong", { text: `${formatDate(item.performed_at)} · ${item.test_name || "Obserwacja"}` }),
       create("p", { text: item.result_text || "Brak opisu" }),
       create("p", { className: "muted", text: item.interpretation || "Bez automatycznej interpretacji" })

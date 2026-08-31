@@ -71,44 +71,38 @@ export function collectPwdObservations(values) {
   });
 }
 
+function requiredText(value, label) {
+  const normalized = text(value);
+  if (!normalized) throw new Error(label + " jest wymagane.");
+  return normalized;
+}
 export async function savePwdWorkflow(repository, clientId, values) {
   const observations = collectPwdObservations(values);
-  const decisionLabel = pwdDecisionLabel(values.trainerDecision);
-  const trainerObservation = pwdTrainerObservation(values);
-
-  await repository.updateClient(clientId, {
-    goal: values.realLifeGoal,
-    motivation: values.whyImportant
-  });
-  await repository.saveSession(clientId, {
-    date: values.date,
-    sessionType: "pwd",
-    trainerObservation,
-    trainerDecision: decisionLabel,
-    clientSummary: `Co klient chce robić swobodniej: ${values.realLifeGoal}\nDlaczego to ważne: ${values.whyImportant}`,
-    clientNextStep: values.nextStep,
-    clientVisible: false
-  });
-  for (const observation of observations) {
-    await repository.saveAssessment(clientId, {
-      date: values.date,
-      testId: observation.testId,
-      testName: observation.testName,
+  const trainerDecision = text(values.trainerDecision);
+  const decisionLabel = pwdDecisionLabel(trainerDecision);
+  const payload = Object.freeze({
+    date: requiredText(values.date, "Data PWD"),
+    realLifeGoal: requiredText(values.realLifeGoal, "Cel klienta"),
+    whyImportant: requiredText(values.whyImportant, "Znaczenie celu"),
+    contextBoundaries: requiredText(values.contextBoundaries, "Kontekst i granice"),
+    trainerInterpretation: requiredText(values.trainerInterpretation, "Interpretacja trenera"),
+    trainerDecision,
+    nextStep: requiredText(values.nextStep, "Następny krok"),
+    observations: observations.map(observation => Object.freeze({
+      observationType: observation.observationType,
+      name: observation.testName,
       resultText: observation.resultText,
-      interpretation: null,
-      trainerNote: [
-        `Typ obserwacji: ${PWD_OBSERVATION_TYPES[observation.observationType]}`,
-        observation.reaction ? `Reakcja po próbie lub wskazówce: ${observation.reaction}` : ""
-      ].filter(Boolean).join("\n"),
-      trainerDecision: decisionLabel,
-      nextStep: values.nextStep,
-      clientVisible: false
-    });
-  }
-  return Object.freeze({ observationCount: observations.length, decisionLabel });
-}
-
-export function pwdDecisionLabel(value) {
+      reactionText: observation.reaction,
+      referenceId: observation.referenceId
+    }))
+  });
+  const result = await repository.savePwdWorkflow(clientId, payload);
+  return Object.freeze({
+    sessionId: result?.sessionId || result?.session_id || null,
+    observationCount: Number(result?.observationCount ?? observations.length),
+    decisionLabel: result?.decisionLabel || result?.decision_label || decisionLabel
+  });
+}export function pwdDecisionLabel(value) {
   const label = {
     continue_guidance: "Dalsze prowadzenie",
     clarify_or_observe: "Dodatkowe wyjaśnienie lub obserwacja",

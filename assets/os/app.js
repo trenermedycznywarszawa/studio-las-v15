@@ -28,6 +28,7 @@ import { renderClient } from "./ui/client.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
 import { savePwdWorkflow } from "./pwd.js";
 import { renderTrainerMfa } from "./ui/trainer-mfa.js";
+import { createRuntimeFeedback } from "./ui/runtime-feedback.js";
 
 const root = document.getElementById("app");
 const state = {
@@ -43,33 +44,7 @@ const state = {
   snapshot: null
 };
 
-function announce(message, kind = "info") {
-  let region = document.getElementById("runtime-message");
-  if (!region) {
-    region = document.createElement("div");
-    region.id = "runtime-message";
-    region.setAttribute("role", "status");
-    document.body.append(region);
-  }
-  region.className = `runtime-message ${kind}`;
-  region.textContent = message;
-  window.setTimeout(() => {
-    if (region.textContent === message) region.textContent = "";
-  }, 6000);
-}
-
-async function withWrite(label, operation) {
-  announce(`${label}…`);
-  try {
-    const result = await operation();
-    announce(`${label}: zapisano w Supabase.`, "ok");
-    return result;
-  } catch (error) {
-    announce(userSafeError(error, state.config?.mode), "error");
-    throw error;
-  }
-}
-
+const { announce, withWrite } = createRuntimeFeedback(() => state.config?.mode);
 async function logout() {
   state.mfa?.clear();
   renderLoading(root, "Wylogowywanie…");
