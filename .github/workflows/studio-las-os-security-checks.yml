@@ -18,6 +18,7 @@ on:
       - "scripts/verify_access_lifecycle.py"
       - "scripts/verify_trainer_mfa.py"
       - "scripts/test_trainer_mfa.mjs"
+      - "scripts/test_pwd_trainer_workflow.mjs"
       - "scripts/test_session_brief.mjs"
       - "scripts/verify_target_preflight_read_only.py"
       - ".github/workflows/studio-las-os-security-checks.yml"
@@ -85,6 +86,9 @@ jobs:
 
       - name: Verify trainer TOTP browser flows
         run: node scripts/test_trainer_mfa.mjs
+
+      - name: Verify atomic trainer PWD workflow
+        run: node scripts/test_pwd_trainer_workflow.mjs
 
       - name: Verify Trainer Session Brief composition
         run: node scripts/test_session_brief.mjs

@@ -3,22 +3,17 @@ import {
   loadAuthSession,
   saveAuthSession
 } from "./runtime.js";
+import {
+  asIsoDate,
+  asNullableNumber,
+  asTextArray,
+  buildUrl,
+  compactObject,
+  decodeJwtClaims,
+  parseResponse
+} from "./data-utils.js";
 
 const MFA_FACTOR_ID_PATTERN = /^[0-9a-f-]{20,64}$/i;
-
-function decodeJwtClaims(token) {
-  try {
-    const encoded = String(token || "").split(".")[1] || "";
-    const base64 = encoded.replace(/-/g, "+").replace(/_/g, "/").padEnd(
-      Math.ceil(encoded.length / 4) * 4,
-      "="
-    );
-    const bytes = Uint8Array.from(atob(base64), character => character.charCodeAt(0));
-    return JSON.parse(new TextDecoder().decode(bytes));
-  } catch {
-    return {};
-  }
-}
 
 function assertMfaFactorId(value) {
   const factorId = String(value || "");
@@ -34,54 +29,6 @@ export class SupabaseHttpError extends Error {
     this.name = "SupabaseHttpError";
     this.status = status;
     this.details = details;
-  }
-}
-
-function compactObject(value) {
-  return Object.fromEntries(
-    Object.entries(value).filter(([, entry]) => entry !== undefined)
-  );
-}
-
-function asIsoDate(value) {
-  if (!value) return null;
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return null;
-  return date.toISOString().slice(0, 10);
-}
-
-function asNullableNumber(value) {
-  if (value === "" || value === null || value === undefined) return null;
-  const number = Number(value);
-  return Number.isFinite(number) ? number : null;
-}
-
-function asTextArray(value) {
-  if (Array.isArray(value)) return value.map(String).map(item => item.trim()).filter(Boolean);
-  return String(value || "")
-    .split(/\n|,/)
-    .map(item => item.trim())
-    .filter(Boolean);
-}
-
-function buildUrl(baseUrl, path, query = {}) {
-  const url = new URL(path, `${baseUrl}/`);
-  Object.entries(query).forEach(([key, value]) => {
-    if (value !== undefined && value !== null && value !== "") {
-      url.searchParams.set(key, String(value));
-    }
-  });
-  return url.toString();
-}
-
-async function parseResponse(response) {
-  const text = await response.text();
-  if (!text) return null;
-
-  try {
-    return JSON.parse(text);
-  } catch {
-    return text;
   }
 }
 
@@ -384,7 +331,8 @@ export class StudioLasRepository {
       "publish_home_plan_guidance",
       "withdraw_home_plan_guidance",
       "record_home_plan_guidance_delivery",
-      "confirm_home_plan_paper_retirement"
+      "confirm_home_plan_paper_retirement",
+      "save_pwd_workflow"
     ]);
     if (!allowed.has(name)) throw new Error(`RPC is not allowed: ${name}`);
     return this.auth.request(`/rest/v1/rpc/${name}`, {
@@ -494,6 +442,19 @@ export class StudioLasRepository {
     };
   }
 
+  async savePwdWorkflow(clientId, input) {
+    return this.rpc("save_pwd_workflow", {
+      p_client_id: clientId,
+      p_date: input.date,
+      p_real_life_goal: input.realLifeGoal,
+      p_why_important: input.whyImportant,
+      p_context_boundaries: input.contextBoundaries,
+      p_trainer_interpretation: input.trainerInterpretation,
+      p_trainer_decision: input.trainerDecision,
+      p_next_step: input.nextStep,
+      p_observations: input.observations
+    });
+  }
   async createClient(profileId, input) {
     return this.insert("clients", {
       owner_trainer_id: profileId,
@@ -578,6 +539,7 @@ export class StudioLasRepository {
   async saveSession(clientId, input) {
     return this.insert("sessions", {
       client_id: clientId,
+      session_type: input.sessionType === "pwd" ? "pwd" : "session",
       date: asIsoDate(input.date) || new Date().toISOString().slice(0, 10),
       readiness: asNullableNumber(input.readiness),
       vas_before: asNullableNumber(input.vasBefore),

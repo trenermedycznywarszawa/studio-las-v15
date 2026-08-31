@@ -19,9 +19,11 @@ import {
 } from "./forms.js";
 import {
   CANONICAL_ENGAGEMENTS,
+  runtimeEnvironmentLabel,
   CANONICAL_STAGES
 } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
+import { pwdSection } from "./pwd-section.js";
 
 function summaryGrid(client) {
   const values = [
@@ -118,9 +120,10 @@ function sessionBriefPanel(workspace) {
   ]), "Tylko odczyt · każdy fakt pokazuje źródło i datę");
 }
 
+
 function sessionsSection(workspace, model) {
   return panel("Sesje", create("div", {}, [
-    recordList(workspace.sessions, session => create("article", { className: "record" }, [
+    recordList((workspace.sessions || []).filter(session => session.session_type !== "pwd"), session => create("article", { className: "record" }, [
       create("strong", { text: formatDate(session.date) }),
       create("p", { text: session.trainer_observation || "Brak obserwacji" }),
       create("p", { className: "muted", text: session.trainer_decision || "Brak zapisanej decyzji trenera" })
@@ -153,8 +156,9 @@ function measurementsSection(workspace, model) {
 }
 
 function assessmentsSection(workspace, model) {
+  const ordinaryAssessments = (workspace.assessments || []).filter(item => !item.observation_type);
   return panel("Obserwacje ruchowe", create("div", {}, [
-    recordList(workspace.assessments, item => create("article", { className: "record" }, [
+    recordList(ordinaryAssessments, item => create("article", { className: "record" }, [
       create("strong", { text: `${formatDate(item.performed_at)} · ${item.test_name || "Obserwacja"}` }),
       create("p", { text: item.result_text || "Brak opisu" }),
       create("p", { className: "muted", text: item.interpretation || "Bez automatycznej interpretacji" })
@@ -238,7 +242,7 @@ export function renderTrainer(root, model) {
 
   const header = create("header", { className: "topbar" }, [
     create("div", {}, [
-      create("p", { className: "eyebrow", text: "Studio Las OS · produkcja" }),
+      create("p", { className: "eyebrow", text: `Studio Las OS · ${runtimeEnvironmentLabel(model.environment)}` }),
       create("h1", { text: "Panel trenera" })
     ]),
     create("div", { className: "top-actions" }, [
@@ -267,6 +271,7 @@ export function renderTrainer(root, model) {
     const workspace = model.workspace;
     content.append(
       panel(workspace.client.name, summaryGrid(workspace.client)),
+      pwdSection(workspace, model),
       sessionBriefPanel(workspace),
       panel("Sygnały do przeglądu", signalPanel(model.attentionSignals), "Program nie podejmuje decyzji za trenera."),
       sessionsSection(workspace, model),

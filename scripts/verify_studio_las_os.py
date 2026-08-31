@@ -17,6 +17,8 @@ ROOT = Path(__file__).resolve().parents[1]
 JS_FILES = [
     ROOT / "assets/os/runtime.js",
     ROOT / "assets/os/data.js",
+    ROOT / "assets/os/data-utils.js",
+    ROOT / "assets/os/pwd.js",
     ROOT / "assets/os/trainer-mfa.js",
     ROOT / "assets/os/decision-support.js",
     ROOT / "assets/os/session-brief.js",
@@ -25,6 +27,9 @@ JS_FILES = [
     ROOT / "assets/os/ui/common.js",
     ROOT / "assets/os/ui/trainer-mfa.js",
     ROOT / "assets/os/ui/forms.js",
+    ROOT / "assets/os/ui/pwd-form.js",
+    ROOT / "assets/os/ui/pwd-section.js",
+    ROOT / "assets/os/ui/runtime-feedback.js",
     ROOT / "assets/os/ui/trainer.js",
     ROOT / "assets/os/ui/client.js",
     ROOT / "demo/studio-las-os-demo.js",
@@ -33,6 +38,8 @@ JS_FILES = [
 
 PRODUCTION_RUNTIME_FILES = [
     ROOT / "assets/os/data.js",
+    ROOT / "assets/os/data-utils.js",
+    ROOT / "assets/os/pwd.js",
     ROOT / "assets/os/trainer-mfa.js",
     ROOT / "assets/os/decision-support.js",
     ROOT / "assets/os/session-brief.js",
@@ -41,6 +48,9 @@ PRODUCTION_RUNTIME_FILES = [
     ROOT / "assets/os/ui/common.js",
     ROOT / "assets/os/ui/trainer-mfa.js",
     ROOT / "assets/os/ui/forms.js",
+    ROOT / "assets/os/ui/pwd-form.js",
+    ROOT / "assets/os/ui/pwd-section.js",
+    ROOT / "assets/os/ui/runtime-feedback.js",
     ROOT / "assets/os/ui/trainer.js",
     ROOT / "assets/os/ui/client.js",
 ]
@@ -87,6 +97,7 @@ def check_js_syntax() -> None:
             input=source,
             capture_output=True,
             text=True,
+            encoding="utf-8",
             check=False,
         )
         if result.returncode != 0:
@@ -229,6 +240,8 @@ def check_legacy_export_boundary() -> None:
 def check_modularity() -> None:
     limits = {
         "assets/os/data.js": 850,
+        "assets/os/data-utils.js": 100,
+        "assets/os/pwd.js": 180,
         "assets/os/trainer-mfa.js": 180,
         "assets/os/app.js": 420,
         "assets/os/decision-support.js": 220,
@@ -238,6 +251,9 @@ def check_modularity() -> None:
         "assets/os/ui/common.js": 260,
         "assets/os/ui/trainer-mfa.js": 180,
         "assets/os/ui/forms.js": 320,
+        "assets/os/ui/pwd-form.js": 220,
+        "assets/os/ui/pwd-section.js": 100,
+        "assets/os/ui/runtime-feedback.js": 80,
         "assets/os/ui/trainer.js": 300,
         "assets/os/ui/client.js": 180,
     }

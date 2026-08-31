@@ -107,7 +107,12 @@ def check_browser_flow() -> None:
         data.find('!== "aal2"') < data.find("saveAuthSession(this.session)", data.find("verifyTotp")),
         "MFA verification saves a session before checking AAL2",
     )
-    require('{ persist: false }' in app, "main login persists password-only trainer session")
+    require("submitPasswordLogin" in app, "main login is not wired through the runtime login boundary")
+    require(
+        runtime.count("auth.signInWithPassword(") == 1,
+        "runtime login boundary must call signInWithPassword exactly once",
+    )
+    require('{ persist: false }' in runtime, "runtime login persists password-only trainer session")
     require('{ persist: false }' in admin, "admin login persists password-only trainer session")
     require("persistCurrentSession()" in app, "client AAL1 session is not restored to the session boundary")
 

@@ -1,3 +1,5 @@
+import { runtimeEnvironmentLabel } from "../runtime.js";
+
 export function clear(node) {
   while (node.firstChild) node.removeChild(node.firstChild);
 }
@@ -42,7 +44,8 @@ export function field(label, name, type = "text", options = {}) {
     (options.options || []).forEach(option => input.append(create("option", {
       value: option.value,
       text: option.label,
-      disabled: option.disabled
+      disabled: option.disabled,
+      selected: option.selected
     })));
   } else {
     input = create("input", {
@@ -173,10 +176,11 @@ export function renderLoading(root, message = "Ładowanie bezpiecznego środowis
   ]));
 }
 
-export function renderLogin(root, { onSubmit, onRecover, message = "" }) {
+export function renderLogin(root, { environment, onSubmit, onRecover, message = "" }) {
   clear(root);
+  const environmentLabel = runtimeEnvironmentLabel(environment);
   const form = submitForm([
-    create("p", { className: "eyebrow", text: "Studio Las OS · produkcja" }),
+    create("p", { className: "eyebrow", text: `Studio Las OS · ${environmentLabel}` }),
     create("h1", { text: "Bezpieczne logowanie" }),
     create("p", { className: "muted", text: "Konto trenera lub klienta w Supabase Auth. Lokalne kody dostępu nie są obsługiwane." }),
     message ? statusBox(message, "error") : null,

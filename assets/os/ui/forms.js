@@ -1,5 +1,6 @@
 import {
   checkbox,
+  create,
   field,
   submitForm
 } from "./common.js";
@@ -52,6 +53,7 @@ export function sessionForm(onSubmit) {
     checkbox("Opublikuj klientowi", "clientVisible")
   ], "Zapisz sesję w Supabase", onSubmit);
 }
+
 
 export function measurementForm(onSubmit) {
   return submitForm([

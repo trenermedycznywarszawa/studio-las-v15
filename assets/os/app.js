@@ -2,7 +2,8 @@ import {
   assertNoPersistentHealthData,
   clearAuthArtifactsFromUrl,
   getPasswordSetupContext,
-  getProductionRuntimeConfig,
+  getRuntimeConfig,
+  submitPasswordLogin,
   userSafeError
 } from "./runtime.js";
 import {
@@ -25,7 +26,9 @@ import {
 import { renderTrainer } from "./ui/trainer.js";
 import { renderClient } from "./ui/client.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
+import { savePwdWorkflow } from "./pwd.js";
 import { renderTrainerMfa } from "./ui/trainer-mfa.js";
+import { createRuntimeFeedback } from "./ui/runtime-feedback.js";
 
 const root = document.getElementById("app");
 const state = {
@@ -41,33 +44,7 @@ const state = {
   snapshot: null
 };
 
-function announce(message, kind = "info") {
-  let region = document.getElementById("runtime-message");
-  if (!region) {
-    region = document.createElement("div");
-    region.id = "runtime-message";
-    region.setAttribute("role", "status");
-    document.body.append(region);
-  }
-  region.className = `runtime-message ${kind}`;
-  region.textContent = message;
-  window.setTimeout(() => {
-    if (region.textContent === message) region.textContent = "";
-  }, 6000);
-}
-
-async function withWrite(label, operation) {
-  announce(`${label}…`);
-  try {
-    const result = await operation();
-    announce(`${label}: zapisano w Supabase.`, "ok");
-    return result;
-  } catch (error) {
-    announce(userSafeError(error), "error");
-    throw error;
-  }
-}
-
+const { announce, withWrite } = createRuntimeFeedback(() => state.config?.mode);
 async function logout() {
   state.mfa?.clear();
   renderLoading(root, "Wylogowywanie…");
@@ -83,15 +60,16 @@ async function logout() {
 
 function showLogin(message = "") {
   renderLogin(root, {
+    environment: state.config?.mode,
     message,
     onRecover: () => showRecoveryRequest(),
     onSubmit: async ({ email, password }) => {
       try {
         renderLoading(root, "Weryfikowanie konta…");
-        await state.auth.signInWithPassword(email, password, { persist: false });
+        await submitPasswordLogin(state.auth, { email, password });
         await loadAuthenticatedRuntime();
       } catch (error) {
-        showLogin(userSafeError(error));
+        showLogin(userSafeError(error, state.config?.mode));
       }
     }
   });
@@ -109,7 +87,7 @@ function showRecoveryRequest({ sent = false, message = "" } = {}) {
         await requestPasswordRecovery(state.auth, email, redirectTo);
         showRecoveryRequest({ sent: true });
       } catch (error) {
-        showRecoveryRequest({ message: userSafeError(error) });
+        showRecoveryRequest({ message: userSafeError(error, state.config?.mode) });
       }
     }
   });
@@ -126,7 +104,7 @@ function showPasswordSetup(context, message = "") {
         await updatePassword(state.auth, password);
         await loadAuthenticatedRuntime();
       } catch (error) {
-        showPasswordSetup(context, userSafeError(error));
+        showPasswordSetup(context, userSafeError(error, state.config?.mode));
       }
     }
   });
@@ -188,7 +166,7 @@ async function advanceMfa(operation, loadingMessage) {
     renderMfaView(next);
   } catch (error) {
     const fallback = state.mfaView || { status: "enrollment_required" };
-    renderMfaView(fallback, userSafeError(error));
+    renderMfaView(fallback, userSafeError(error, state.config?.mode));
   }
 }
 
@@ -221,7 +199,7 @@ async function removeMfaFactor(index) {
     renderMfaView(next);
   } catch (error) {
     const fallback = state.mfaView || { status: "management", factors: [] };
-    renderMfaView(fallback, userSafeError(error));
+    renderMfaView(fallback, userSafeError(error, state.config?.mode));
   }
 }
 
@@ -276,6 +254,7 @@ function renderTrainerState() {
   };
 
   renderTrainer(root, {
+    environment: state.config?.mode,
     profile: state.profile,
     clients: state.clients,
     activeClientId: state.activeClientId,
@@ -290,6 +269,12 @@ function renderTrainerState() {
         state.repository.createClient(state.profile.id, values)
       );
       await loadTrainer(client.id);
+    },
+    onSavePwd: async values => {
+      await withWrite("Zapisywanie PWD", () =>
+        savePwdWorkflow(state.repository, state.activeClientId, values)
+      );
+      await reloadWorkspace();
     },
     onSaveSession: async values => {
       await withWrite("Zapisywanie sesji", () => state.repository.saveSession(state.activeClientId, values));
@@ -362,7 +347,7 @@ async function loadClientPortal() {
 }
 
 function handleRuntimeError(error) {
-  const message = userSafeError(error);
+  const message = userSafeError(error, state.config?.mode);
   announce(message, "error");
   const status = Number(error?.status || 0);
   if (status === 401) showLogin(message);
@@ -374,7 +359,7 @@ function handleRuntimeError(error) {
 
 async function initialize() {
   try {
-    state.config = getProductionRuntimeConfig();
+    state.config = getRuntimeConfig();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
     state.mfa = new TrainerMfaController(state.auth);
@@ -416,11 +401,11 @@ async function initialize() {
     }
 
     if (Number(error?.status || 0) === 401) {
-      showLogin(userSafeError(error));
+      showLogin(userSafeError(error, state.config?.mode));
       return;
     }
 
-    renderFatal(root, userSafeError(error));
+    renderFatal(root, userSafeError(error, state.config?.mode));
   }
 }
 
