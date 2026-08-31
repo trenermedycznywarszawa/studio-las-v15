@@ -9,6 +9,7 @@ on:
       - "studio-las-config.js"
       - "assets/os/**"
       - "supabase/migrations/**"
+      - "supabase/dev/staging_browser_e2e_cleanup.sql"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
       - ".github/workflows/studio-las-browser-e2e.yml"
