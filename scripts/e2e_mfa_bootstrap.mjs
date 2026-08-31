@@ -144,9 +144,27 @@ async function deleteFactor(token, factorId) {
   });
 }
 
+async function prepareCleanQaAccount(passwordToken) {
+  const factors = await userFactors(passwordToken);
+  const verified = factors.filter(factor => factor?.status === "verified");
+  assert(verified.length === 0,
+    "Synthetic QA account already has a verified MFA factor; refusing to alter persistent MFA");
+
+  for (const factor of factors) {
+    const id = String(factor?.id || "");
+    const friendlyName = String(factor?.friendly_name || "");
+    if (!id) continue;
+    assert(friendlyName.startsWith(FACTOR_PREFIX),
+      "Synthetic QA account has a non-E2E MFA factor; refusing to alter it");
+    await deleteFactor(passwordToken, id);
+  }
+}
+
 async function bootstrap() {
   assert(GITHUB_ENV, "GITHUB_ENV is required for ephemeral QA TOTP handoff");
   const password = await passwordSession();
+  await prepareCleanQaAccount(password.access_token);
+
   let ephemeral = null;
   let aal2 = null;
   try {
@@ -154,18 +172,18 @@ async function bootstrap() {
     aal2 = await verifyFactor(password.access_token, ephemeral.id, ephemeral.secret);
 
     const factors = await userFactors(aal2.access_token);
-    for (const factor of factors) {
-      const id = String(factor?.id || "");
-      if (id && id !== ephemeral.id) await deleteFactor(aal2.access_token, id);
-    }
+    const verified = factors.filter(factor => factor?.status === "verified");
+    assert(verified.length === 1 && String(verified[0]?.id || "") === ephemeral.id,
+      "Synthetic QA account contains an unexpected verified MFA factor");
 
     process.stdout.write(`::add-mask::${ephemeral.secret}\n`);
     await appendFile(GITHUB_ENV, `STUDIO_LAS_QA_TOTP_SECRET=${ephemeral.secret}\n`, { encoding: "utf8" });
     await appendFile(GITHUB_ENV, `STUDIO_LAS_QA_E2E_FACTOR_ID=${ephemeral.id}\n`, { encoding: "utf8" });
     console.log("STUDIO_LAS_QA_MFA_BOOTSTRAP_PASS");
   } catch (error) {
-    if (ephemeral?.id && aal2?.access_token) {
-      await deleteFactor(aal2.access_token, ephemeral.id).catch(() => {});
+    if (ephemeral?.id) {
+      const cleanupToken = aal2?.access_token || password.access_token;
+      await deleteFactor(cleanupToken, ephemeral.id).catch(() => {});
     }
     throw error;
   }
@@ -186,12 +204,16 @@ async function cleanup() {
     return;
   }
 
+  const factor = factors.find(item => String(item?.id || "") === factorId);
+  assert(String(factor?.friendly_name || "").startsWith(FACTOR_PREFIX),
+    "Refusing to remove an MFA factor not created by browser E2E");
+
   const aal2 = await verifyFactor(password.access_token, factorId, secret);
   await deleteFactor(aal2.access_token, factorId);
 
   const postCleanupPassword = await passwordSession();
   const remaining = await userFactors(postCleanupPassword.access_token);
-  const verifiedTotp = remaining.filter(factor => factor?.factor_type === "totp" && factor?.status === "verified");
+  const verifiedTotp = remaining.filter(item => item?.factor_type === "totp" && item?.status === "verified");
   assert(verifiedTotp.length === 0, "Ephemeral QA MFA cleanup left a verified TOTP factor behind");
   console.log("STUDIO_LAS_QA_MFA_CLEANUP_PASS");
 }
