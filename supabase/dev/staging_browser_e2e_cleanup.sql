@@ -65,15 +65,15 @@ begin
       and s.id = any(v_session_ids)
       and s.deleted_at is null;
     get diagnostics v_session_count = row_count;
-  end if;
 
-  update public.clients c
-  set goal = p_restore_goal,
-      motivation = p_restore_motivation,
-      updated_at = now()
-  where c.id = p_client_id
-    and c.deleted_at is null
-    and c.name = 'QA PWD Client (synthetic)';
+    update public.clients c
+    set goal = p_restore_goal,
+        motivation = p_restore_motivation,
+        updated_at = now()
+    where c.id = p_client_id
+      and c.deleted_at is null
+      and c.name = 'QA PWD Client (synthetic)';
+  end if;
 
   return jsonb_build_object(
     'sessionCount', v_session_count,
