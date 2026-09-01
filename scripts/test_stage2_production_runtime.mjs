@@ -41,6 +41,8 @@ const ui = await read("assets/os/ui/inquiries-section.js");
 assert(ui.includes('value: "", label: "Wybierz dopiero po rozmowie"'), "decision UI does not fail open with an empty choice");
 assert(ui.includes("Utwórz klienta do PWD"), "explicit conversion action missing");
 assert(ui.includes("Sam zapis tej decyzji nie tworzy klienta"), "PWD recommendation/conversion boundary missing in UI");
+assert(ui.includes('["Następny krok", formatNextAction(inquiry)]'), "agreed current next action is not visible in inquiry summary");
+assert(ui.includes("Następny krok: ${formatNextAction(item)}"), "decision history does not preserve visible next-action context");
 assert(!/score|conversion probability|lead score/i.test(ui), "CRM/scoring language found in inquiry UI");
 
 const migration = (await read("supabase/migrations/20260901120053_stage2_production_runtime.sql")).toLowerCase();
@@ -58,6 +60,8 @@ for (const fragment of [
   "coalesce(auth.jwt() ->> 'aal', '') <> 'aal2'",
   "private.trainer_owns_inquiry",
   "inquiry_decisions_one_active_idx",
+  "constraint inquiry_decisions_unique_supersedes unique (supersedes_decision_id)",
+  "revoke all on function private.trainer_owns_inquiry(uuid) from public, anon, authenticated",
   "'pwd', 'follow_up', 'not_now', 'referred', 'not_a_fit', 'closed_by_person'",
   "'pending', 'contacting', 'completed', 'unreachable'"
 ]) assert(migration.includes(fragment), `migration missing: ${fragment}`);
