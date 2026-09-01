@@ -68,6 +68,13 @@ const CALL_BRIEF_TEMPLATES = Object.freeze({
   }
 });
 
+function normalizeLocalDateTime(value) {
+  const text = String(value || "").trim();
+  if (!text) return null;
+  const date = new Date(text);
+  return Number.isNaN(date.getTime()) ? null : date.toISOString();
+}
+
 export function buildInquiryCallBrief(inquiry) {
   const template = CALL_BRIEF_TEMPLATES[inquiry?.broad_goal] || CALL_BRIEF_TEMPLATES["Chcę najpierw porozmawiać"];
   return {
@@ -85,7 +92,7 @@ export function decisionNextAction(decision, values = {}) {
   if (decision === "FOLLOW_UP") {
     return {
       type: values.followUpChannel === "message" ? "contact_message" : "contact_call",
-      at: values.followUpAt || null
+      at: normalizeLocalDateTime(values.followUpAt)
     };
   }
   return { type: null, at: null };
