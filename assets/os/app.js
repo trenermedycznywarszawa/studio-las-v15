@@ -10,6 +10,7 @@ import {
   StudioLasRepository,
   SupabaseAuth
 } from "./data.js";
+import { InquiryRepository } from "./inquiries-data.js";
 import { collectAttentionSignals } from "./decision-support.js";
 import {
   consumePasswordCallback,
@@ -24,6 +25,7 @@ import {
   renderLogin
 } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
+import { renderInquirySection } from "./ui/inquiries-section.js";
 import { renderClient } from "./ui/client.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
 import { savePwdWorkflow } from "./pwd.js";
@@ -35,12 +37,16 @@ const state = {
   config: null,
   auth: null,
   repository: null,
+  inquiryRepository: null,
   mfa: null,
   mfaView: null,
   profile: null,
   clients: [],
   activeClientId: "",
   workspace: null,
+  inquiries: [],
+  activeInquiryId: "",
+  inquiryDecisions: [],
   snapshot: null
 };
 
@@ -53,6 +59,9 @@ async function logout() {
   state.clients = [];
   state.activeClientId = "";
   state.workspace = null;
+  state.inquiries = [];
+  state.activeInquiryId = "";
+  state.inquiryDecisions = [];
   state.snapshot = null;
   state.mfaView = null;
   showLogin();
@@ -138,15 +147,15 @@ function renderMfaView(view, message = "") {
     message,
     onStartEnrollment: () => advanceMfa(
       () => state.mfa.beginEnrollment(),
-      "Przygotowywanie konfiguracji TOTP\u2026"
+      "Przygotowywanie konfiguracji TOTP…"
     ),
     onVerify: code => advanceMfa(
       () => state.mfa.verify(code),
-      "Weryfikowanie kodu TOTP\u2026"
+      "Weryfikowanie kodu TOTP…"
     ),
     onRetry: () => advanceMfa(
       () => state.mfa.prepare(),
-      "Tworzenie nowego wyzwania\u2026"
+      "Tworzenie nowego wyzwania…"
     ),
     onLogout: () => logout().catch(handleRuntimeError),
     onRemoveFactor: index => removeMfaFactor(index),
@@ -173,13 +182,13 @@ async function advanceMfa(operation, loadingMessage) {
 async function enforceTrainerMfa() {
   await advanceMfa(
     () => state.mfa.prepare(),
-    "Sprawdzanie drugiego sk\u0142adnika\u2026"
+    "Sprawdzanie drugiego składnika…"
   );
 }
 
 async function showMfaManagement() {
   try {
-    renderLoading(root, "\u0141adowanie ustawie\u0144 MFA\u2026");
+    renderLoading(root, "Ładowanie ustawień MFA…");
     renderMfaView(await state.mfa.management());
   } catch (error) {
     handleRuntimeError(error);
@@ -187,9 +196,9 @@ async function showMfaManagement() {
 }
 
 async function removeMfaFactor(index) {
-  if (!window.confirm("Usun\u0105\u0107 ten sk\u0142adnik TOTP?")) return;
+  if (!window.confirm("Usunąć ten składnik TOTP?")) return;
   try {
-    renderLoading(root, "Usuwanie sk\u0142adnika TOTP\u2026");
+    renderLoading(root, "Usuwanie składnika TOTP…");
     const next = await state.mfa.removeFactor(index);
     if (next.status === "verified") {
       state.mfaView = null;
@@ -203,6 +212,16 @@ async function removeMfaFactor(index) {
   }
 }
 
+async function refreshInquiries(preferredInquiryId = state.activeInquiryId) {
+  state.inquiries = await state.inquiryRepository.listInquiries();
+  state.activeInquiryId = preferredInquiryId && state.inquiries.some(item => item.id === preferredInquiryId)
+    ? preferredInquiryId
+    : "";
+  state.inquiryDecisions = state.activeInquiryId
+    ? await state.inquiryRepository.listDecisions(state.activeInquiryId)
+    : [];
+}
+
 async function loadTrainer(preferredClientId = state.activeClientId) {
   renderLoading(root, "Ładowanie panelu trenera…");
   const mfaView = await state.mfa.prepare();
@@ -211,7 +230,10 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
-  state.clients = await state.repository.listClients();
+  [state.clients] = await Promise.all([
+    state.repository.listClients(),
+    refreshInquiries()
+  ]);
   state.activeClientId = preferredClientId && state.clients.some(client => client.id === preferredClientId)
     ? preferredClientId
     : "";
@@ -234,6 +256,14 @@ async function selectClient(clientId) {
   renderTrainerState();
 }
 
+async function selectInquiry(inquiryId) {
+  state.activeInquiryId = inquiryId || "";
+  state.inquiryDecisions = state.activeInquiryId
+    ? await state.inquiryRepository.listDecisions(state.activeInquiryId)
+    : [];
+  renderTrainerState();
+}
+
 function renderTrainerState() {
   const latestSession = state.workspace?.sessions?.[0] || null;
   const latestTrainingLoad = state.workspace?.trainingLoad?.[0] || null;
@@ -250,6 +280,11 @@ function renderTrainerState() {
       state.workspace = await state.repository.getClientWorkspace(state.activeClientId);
     }
     state.clients = await state.repository.listClients();
+    renderTrainerState();
+  };
+
+  const reloadInquiry = async inquiryId => {
+    await refreshInquiries(inquiryId || state.activeInquiryId);
     renderTrainerState();
   };
 
@@ -329,6 +364,26 @@ function renderTrainerState() {
       await reloadWorkspace();
     }
   });
+
+  renderInquirySection(root.querySelector(".workspace"), {
+    inquiries: state.inquiries,
+    activeInquiryId: state.activeInquiryId,
+    inquiryDecisions: state.inquiryDecisions,
+    onSelectInquiry: inquiryId => selectInquiry(inquiryId).catch(handleRuntimeError),
+    onSetContactState: async (inquiryId, values) => {
+      await withWrite("Zapisywanie stanu kontaktu", () => state.inquiryRepository.setContactState(inquiryId, values));
+      await reloadInquiry(inquiryId);
+    },
+    onSaveDecision: async (inquiryId, values) => {
+      await withWrite("Zapisywanie decyzji po rozmowie", () => state.inquiryRepository.saveDecision(inquiryId, values));
+      await reloadInquiry(inquiryId);
+    },
+    onConvertInquiry: async inquiryId => {
+      const result = await withWrite("Tworzenie klienta do PWD", () => state.inquiryRepository.convertToPwdClient(inquiryId));
+      await refreshInquiries(inquiryId);
+      await loadTrainer(result?.clientId || state.activeClientId);
+    }
+  });
 }
 
 async function loadClientPortal() {
@@ -362,6 +417,7 @@ async function initialize() {
     state.config = getRuntimeConfig();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
+    state.inquiryRepository = new InquiryRepository(state.config, state.auth);
     state.mfa = new TrainerMfaController(state.auth);
 
     // Password callbacks are consumed and removed from the address bar before any
