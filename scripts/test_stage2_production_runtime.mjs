@@ -72,6 +72,27 @@ assert(fixture.includes("staging / qa only"), "staging fixture is not explicitly
 assert(fixture.includes("qa inquiry (synthetic)"), "synthetic inquiry guard missing");
 assert(fixture.includes("refusing cleanup"), "fixture cleanup does not fail closed");
 
+const sqlSecurity = (await read("supabase/tests/20260901_stage2_production_runtime_security.sql")).toLowerCase();
+for (const fragment of [
+  "set local role anon",
+  "'aal', 'aal1'",
+  "'aal', 'aal2'",
+  "cross-trainer isolation",
+  "unreachable decision mutated history",
+  "empty rationale mutated decision history",
+  "decision history/supersession is not truthful",
+  "pwd decision created a client before explicit conversion",
+  "failed conversion left partial state",
+  "repeated conversion is not safely idempotent",
+  "conversion copied non-allowlisted process/health data",
+  "conversion created % forbidden downstream rows",
+  "closed inquiry was silently reopened",
+  "security_audit_events",
+  "rollback;",
+  "stage2_sql_security_success 20/20 pass"
+]) assert(sqlSecurity.includes(fragment), `focused SQL/security test missing: ${fragment}`);
+assert(!sqlSecurity.includes("commit;"), "focused SQL/security test may persist synthetic rows");
+
 const app = await read("assets/os/app.js");
 assert(app.includes("InquiryController"), "trainer runtime does not integrate inquiry controller");
 assert(app.includes('root.querySelector(".workspace")'), "inquiry workspace is not integrated into trainer workspace");
