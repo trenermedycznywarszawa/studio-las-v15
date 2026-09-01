@@ -192,7 +192,87 @@ const byId=id=>document.getElementById(id);
 function showError(id,show){byId(id)?.classList.toggle('show',show)}
 function validateField(id,errorId,invalid){const el=byId(id);el.classList.toggle('err',invalid);showError(errorId,invalid);return !invalid}
 function setStatus(message,error=false){statusEl.textContent=message;statusEl.classList.add('show');statusEl.classList.toggle('err',error)}
-function buildMailto(){const data=new FormData(form);const lines=[];for(const [key,value] of data.entries()){if(!value||key==='_subject'||key==='_gotcha')continue;lines.push(`${key}: ${value}`)}return 'mailto:trenermedycznywarszawa@gmail.com?subject='+encodeURIComponent('Pierwszy kontakt – Studio Las')+'&body='+encodeURIComponent(lines.join('\n'))}
+
+const callBriefTemplates={
+  'Swobodniejsze poruszanie się na co dzień':{
+    purpose:'Zrozumieć, co konkretnie w codziennym życiu jest dziś trudniejsze i jaką swobodę klient chce odzyskać.',
+    questions:[
+      'Co konkretnie jest dziś trudniejsze niż kiedyś?',
+      'W jakich sytuacjach najbardziej to zauważasz?',
+      'Co chciałbyś móc robić bez zastanawiania się nad ciałem?',
+      'Dlaczego chcesz zająć się tym właśnie teraz?'
+    ]
+  },
+  'Powrót do aktywności lub sportu':{
+    purpose:'Ustalić konkretną aktywność, znaczenie powrotu oraz to, co obecnie stoi między klientem a bezpiecznym powrotem.',
+    questions:[
+      'Do czego konkretnie chcesz wrócić?',
+      'Na jakim poziomie robiłeś to wcześniej?',
+      'Co obecnie najbardziej zatrzymuje Cię przed powrotem?',
+      'Po czym poznasz, że powrót się udał?'
+    ]
+  },
+  'Siła i kondycja po przerwie':{
+    purpose:'Zrozumieć punkt odniesienia sprzed przerwy, najważniejszy brak dzisiaj i realny efekt, którego klient chce w najbliższych miesiącach.',
+    questions:[
+      'Jak wyglądała Twoja aktywność przed przerwą?',
+      'Co chciałbyś odzyskać jako pierwsze?',
+      'Co sprawiło, że do tej pory trudno było wrócić?',
+      'Co chciałbyś móc zrobić za 3 miesiące, czego dziś nie robisz?'
+    ]
+  },
+  'Większa pewność w ruchu':{
+    purpose:'Zrozumieć sytuacje, w których klient nie ufa swojemu ciału, oraz czego potrzebuje, żeby odzyskać poczucie bezpieczeństwa w ruchu.',
+    questions:[
+      'W jakich sytuacjach najbardziej brakuje Ci pewności?',
+      'Czy są ruchy lub aktywności, których dziś unikasz?',
+      'Co musiałoby się zmienić, żebyś znowu ufał swojemu ciału?',
+      'Czy wydarzyło się coś, po czym ta pewność się zmniejszyła?'
+    ]
+  },
+  'Chcę najpierw porozmawiać':{
+    purpose:'Pomóc klientowi nazwać właściwy cel bez wciskania go w gotową kategorię i sprawdzić, dlaczego szuka pomocy właśnie teraz.',
+    questions:[
+      'Co sprawiło, że zostawiłeś dziś kontakt?',
+      'Co chciałbyś, żeby za kilka miesięcy było inne?',
+      'Czy jest coś, co obecnie ogranicza Cię w życiu lub aktywności?',
+      'Dlaczego pomyślałeś właśnie o Studio Las?'
+    ]
+  }
+};
+
+function buildCallBrief(goalValue,sentence){
+  const template=callBriefTemplates[goalValue];
+  if(!template)return '';
+  return [
+    'BRIEF PIERWSZEJ ROZMOWY — STUDIO LAS',
+    `Kierunek klienta: ${goalValue}`,
+    `Własne zdanie klienta: ${sentence||'brak'}`,
+    '',
+    `Cel rozmowy: ${template.purpose}`,
+    '',
+    'Pytania prowadzące:',
+    ...template.questions.map((question,index)=>`${index+1}. ${question}`),
+    '',
+    'Podsumuj: „Czyli dobrze rozumiem, że najbardziej zależy Ci na ___, a obecnie zatrzymuje Cię przede wszystkim ___?”',
+    'Jeśli jest dopasowanie: przedstaw PWD jako sposób ustalenia spokojnego i rozsądnego punktu startowego — nie jako sprzedaż treningu.',
+    'Nie zakładaj: diagnozy, źródła bólu, przyczyny przerwy ani gotowości klienta do zakupu programu.'
+  ].join('\n');
+}
+
+function buildSubmissionData(){
+  const data=new FormData(form);
+  const goal=form.querySelector('input[name="Główny cel"]:checked');
+  const sentence=byId('zdanie').value.trim();
+  if(!sentence)data.delete('Co chce znowu móc robić');
+  if(goal){
+    data.set('Brief pierwszej rozmowy',buildCallBrief(goal.value,sentence));
+    data.set('_subject',`Studio Las — nowy kontakt: ${byId('imie').value.trim()} — ${goal.value}`);
+  }
+  return data;
+}
+
+function buildMailto(){const data=buildSubmissionData();const lines=[];for(const [key,value] of data.entries()){if(!value||key==='_subject'||key==='_gotcha')continue;lines.push(`${key}: ${value}`)}return 'mailto:trenermedycznywarszawa@gmail.com?subject='+encodeURIComponent(data.get('_subject')||'Pierwszy kontakt – Studio Las')+'&body='+encodeURIComponent(lines.join('\n\n'))}
 
 form.addEventListener('submit',async event=>{
   event.preventDefault();
@@ -208,7 +288,7 @@ form.addEventListener('submit',async event=>{
 
   const submit=form.querySelector('button[type="submit"]');const oldText=submit.textContent;submit.disabled=true;submit.textContent='Wysyłam...';setStatus('Wysyłam prośbę o kontakt...');
   try{
-    const response=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+    const response=await fetch(form.action,{method:'POST',body:buildSubmissionData(),headers:{Accept:'application/json'}});
     if(!response.ok)throw new Error(`Formspree ${response.status}`);
     form.reset();form.style.display='none';statusEl.classList.remove('show');successEl.classList.add('show');successEl.scrollIntoView({behavior:'smooth',block:'center'});
   }catch(error){
