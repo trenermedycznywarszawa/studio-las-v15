@@ -125,7 +125,10 @@ async function main() {
   await mkdir(ARTIFACT_DIR, { recursive: true });
 
   const browser = await chromium.launch({ headless: true });
-  const context = await browser.newContext({ viewport: { width: 360, height: 900 } });
+  const context = await browser.newContext({
+    viewport: { width: 360, height: 900 },
+    timezoneId: "Europe/Warsaw"
+  });
   const page = await context.newPage();
   const consoleErrors = [];
   const failedRequests = [];
@@ -187,6 +190,17 @@ async function main() {
     await page.getByLabel("Decyzja i powód").fill("Potrzebujemy jeszcze krótkiego kontaktu przed decyzją o PWD.");
     await page.getByRole("button", { name: "Zapisz decyzję" }).click();
     await page.getByText("v1 · FOLLOW_UP · aktualna", { exact: true }).waitFor({ state: "visible" });
+    const nextActionSummary = page.locator(".summary-grid .summary-item").filter({ hasText: "Następny krok" });
+    await nextActionSummary.getByText("Wiadomość", { exact: false }).waitFor({ state: "visible" });
+    await nextActionSummary.getByText("18:00", { exact: false }).waitFor({ state: "visible" });
+
+    const followUpRow = (await api(query("inquiries", {
+      id: `eq.${inquiryId}`,
+      select: "next_action_type,next_action_at"
+    }), { token })).payload?.[0];
+    assert(followUpRow?.next_action_type === "contact_message", "FOLLOW_UP next action type was not persisted");
+    assert(String(followUpRow?.next_action_at || "").startsWith("2026-09-03T16:00:00"),
+      "Warsaw 18:00 was not stored as the correct explicit UTC instant");
 
     await page.getByLabel("Co ta osoba chce realnie odzyskać?").fill("Chcę znowu biegać 5 km.");
     await page.getByLabel("Co dziś najbardziej utrudnia kolejny krok?").fill("Potrzebuje bezpiecznego punktu startowego.");
@@ -252,6 +266,7 @@ async function main() {
       consoleErrors,
       failedRequests,
       viewport: { width: 360, height: 900 },
+      timezoneId: "Europe/Warsaw",
       status: consoleErrors.length || protectedDirectWrites.length || failedRequests.length ? "FAIL" : "PASS"
     };
     await writeFile(`${ARTIFACT_DIR}/stage2-result.json`, JSON.stringify(result, null, 2));
