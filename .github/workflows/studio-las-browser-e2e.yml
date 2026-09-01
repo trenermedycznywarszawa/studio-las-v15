@@ -1,0 +1,151 @@
+name: Studio Las browser E2E staging
+
+on:
+  pull_request:
+    branches:
+      - product-recovery
+    paths:
+      - "studio-las-os.html"
+      - "studio-las-config.js"
+      - "assets/os/**"
+      - "supabase/migrations/**"
+      - "supabase/dev/staging_browser_e2e_cleanup.sql"
+      - "scripts/e2e_mfa_bootstrap.mjs"
+      - "scripts/e2e_pwd_staging.mjs"
+      - ".github/workflows/studio-las-browser-e2e.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: studio-las-browser-e2e-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  browser-e2e-staging:
+    name: Browser E2E — canonical staging
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      STAGING_REF: ulauyoqjoetjqktegeuq
+      STAGING_ORIGIN: https://ulauyoqjoetjqktegeuq.supabase.co
+      STUDIO_LAS_STAGING_PUBLISHABLE_KEY: sb_publishable_5IVYDd1a02rye5szV80sLA_UWzwjZRk
+      STUDIO_LAS_E2E_URL: http://127.0.0.1:8790/studio-las-os.html
+      STUDIO_LAS_E2E_ARTIFACT_DIR: artifacts/browser-e2e
+      STUDIO_LAS_E2E_MARKER: GHA-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Verify QA secrets are configured
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: |
+          test -n "$STUDIO_LAS_QA_EMAIL"
+          test -n "$STUDIO_LAS_QA_PASSWORD"
+          case "$STUDIO_LAS_QA_EMAIL" in
+            *@*.*) ;;
+            *) echo "STUDIO_LAS_QA_EMAIL must contain the actual QA account email address." >&2; exit 1 ;;
+          esac
+
+      - name: Build isolated staging preview configuration
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          staging_ref = os.environ["STAGING_REF"]
+          staging_origin = os.environ["STAGING_ORIGIN"]
+          publishable_key = os.environ["STUDIO_LAS_STAGING_PUBLISHABLE_KEY"]
+          production_origin = "https://ufcumhbnuyernuwepcij.supabase.co"
+
+          config = f'''(function () {{
+            window.STUDIO_LAS_CONFIG = Object.freeze({{
+              mode: "staging",
+              supabase: Object.freeze({{
+                projectRef: "{staging_ref}",
+                url: "{staging_origin}",
+                publishableKey: "{publishable_key}"
+              }})
+            }});
+          }})();
+          '''
+          Path("studio-las-config.js").write_text(config, encoding="utf-8")
+
+          html_path = Path("studio-las-os.html")
+          html = html_path.read_text(encoding="utf-8")
+          if production_origin not in html:
+              raise SystemExit("Canonical production CSP origin not found; refusing ambiguous staging rewrite")
+          html_path.write_text(html.replace(production_origin, staging_origin), encoding="utf-8")
+          PY
+
+      - name: Verify preview is pinned to canonical staging
+        run: |
+          grep -q 'mode: "staging"' studio-las-config.js
+          grep -q 'projectRef: "ulauyoqjoetjqktegeuq"' studio-las-config.js
+          grep -q 'https://ulauyoqjoetjqktegeuq.supabase.co' studio-las-config.js
+          grep -q 'connect-src https://ulauyoqjoetjqktegeuq.supabase.co' studio-las-os.html
+          if grep -q 'connect-src https://ufcumhbnuyernuwepcij.supabase.co' studio-las-os.html; then
+            echo "Production Supabase origin remains in the E2E CSP" >&2
+            exit 1
+          fi
+
+      - name: Bootstrap ephemeral QA TOTP on staging
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_mfa_bootstrap.mjs bootstrap
+
+      - name: Install pinned Playwright runtime
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local staging preview
+        run: |
+          python3 -m http.server 8790 --bind 127.0.0.1 > /tmp/studio-las-e2e-server.log 2>&1 &
+          echo $! > /tmp/studio-las-e2e-server.pid
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent --show-error http://127.0.0.1:8790/studio-las-os.html > /dev/null; then
+              exit 0
+            fi
+            sleep 0.5
+          done
+          cat /tmp/studio-las-e2e-server.log
+          exit 1
+
+      - name: Run trainer PWD browser E2E
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_pwd_staging.mjs
+
+      - name: Remove ephemeral QA TOTP from staging
+        if: always()
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_mfa_bootstrap.mjs cleanup
+
+      - name: Upload browser E2E evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: studio-las-browser-e2e-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/browser-e2e/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          if test -f /tmp/studio-las-e2e-server.pid; then
+            kill "$(cat /tmp/studio-las-e2e-server.pid)" 2>/dev/null || true
+          fi
