@@ -10,7 +10,7 @@ import {
   StudioLasRepository,
   SupabaseAuth
 } from "./data.js";
-import { InquiryRepository } from "./inquiries-data.js";
+import { InquiryController } from "./inquiries-controller.js";
 import { collectAttentionSignals } from "./decision-support.js";
 import {
   consumePasswordCallback,
@@ -25,7 +25,6 @@ import {
   renderLogin
 } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
-import { renderInquirySection } from "./ui/inquiries-section.js";
 import { renderClient } from "./ui/client.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
 import { savePwdWorkflow } from "./pwd.js";
@@ -37,31 +36,26 @@ const state = {
   config: null,
   auth: null,
   repository: null,
-  inquiryRepository: null,
+  inquiryController: null,
   mfa: null,
   mfaView: null,
   profile: null,
   clients: [],
   activeClientId: "",
   workspace: null,
-  inquiries: [],
-  activeInquiryId: "",
-  inquiryDecisions: [],
   snapshot: null
 };
 
 const { announce, withWrite } = createRuntimeFeedback(() => state.config?.mode);
 async function logout() {
   state.mfa?.clear();
+  state.inquiryController?.reset();
   renderLoading(root, "Wylogowywanie…");
   await state.auth.logout();
   state.profile = null;
   state.clients = [];
   state.activeClientId = "";
   state.workspace = null;
-  state.inquiries = [];
-  state.activeInquiryId = "";
-  state.inquiryDecisions = [];
   state.snapshot = null;
   state.mfaView = null;
   showLogin();
@@ -212,16 +206,6 @@ async function removeMfaFactor(index) {
   }
 }
 
-async function refreshInquiries(preferredInquiryId = state.activeInquiryId) {
-  state.inquiries = await state.inquiryRepository.listInquiries();
-  state.activeInquiryId = preferredInquiryId && state.inquiries.some(item => item.id === preferredInquiryId)
-    ? preferredInquiryId
-    : "";
-  state.inquiryDecisions = state.activeInquiryId
-    ? await state.inquiryRepository.listDecisions(state.activeInquiryId)
-    : [];
-}
-
 async function loadTrainer(preferredClientId = state.activeClientId) {
   renderLoading(root, "Ładowanie panelu trenera…");
   const mfaView = await state.mfa.prepare();
@@ -232,7 +216,7 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
   state.mfaView = null;
   [state.clients] = await Promise.all([
     state.repository.listClients(),
-    refreshInquiries()
+    state.inquiryController.refresh()
   ]);
   state.activeClientId = preferredClientId && state.clients.some(client => client.id === preferredClientId)
     ? preferredClientId
@@ -256,14 +240,6 @@ async function selectClient(clientId) {
   renderTrainerState();
 }
 
-async function selectInquiry(inquiryId) {
-  state.activeInquiryId = inquiryId || "";
-  state.inquiryDecisions = state.activeInquiryId
-    ? await state.inquiryRepository.listDecisions(state.activeInquiryId)
-    : [];
-  renderTrainerState();
-}
-
 function renderTrainerState() {
   const latestSession = state.workspace?.sessions?.[0] || null;
   const latestTrainingLoad = state.workspace?.trainingLoad?.[0] || null;
@@ -280,11 +256,6 @@ function renderTrainerState() {
       state.workspace = await state.repository.getClientWorkspace(state.activeClientId);
     }
     state.clients = await state.repository.listClients();
-    renderTrainerState();
-  };
-
-  const reloadInquiry = async inquiryId => {
-    await refreshInquiries(inquiryId || state.activeInquiryId);
     renderTrainerState();
   };
 
@@ -365,24 +336,10 @@ function renderTrainerState() {
     }
   });
 
-  renderInquirySection(root.querySelector(".workspace"), {
-    inquiries: state.inquiries,
-    activeInquiryId: state.activeInquiryId,
-    inquiryDecisions: state.inquiryDecisions,
-    onSelectInquiry: inquiryId => selectInquiry(inquiryId).catch(handleRuntimeError),
-    onSetContactState: async (inquiryId, values) => {
-      await withWrite("Zapisywanie stanu kontaktu", () => state.inquiryRepository.setContactState(inquiryId, values));
-      await reloadInquiry(inquiryId);
-    },
-    onSaveDecision: async (inquiryId, values) => {
-      await withWrite("Zapisywanie decyzji po rozmowie", () => state.inquiryRepository.saveDecision(inquiryId, values));
-      await reloadInquiry(inquiryId);
-    },
-    onConvertInquiry: async inquiryId => {
-      const result = await withWrite("Tworzenie klienta do PWD", () => state.inquiryRepository.convertToPwdClient(inquiryId));
-      await refreshInquiries(inquiryId);
-      await loadTrainer(result?.clientId || state.activeClientId);
-    }
+  state.inquiryController.render(root.querySelector(".workspace"), {
+    rerender: renderTrainerState,
+    loadTrainer,
+    onError: handleRuntimeError
   });
 }
 
@@ -417,7 +374,7 @@ async function initialize() {
     state.config = getRuntimeConfig();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
-    state.inquiryRepository = new InquiryRepository(state.config, state.auth);
+    state.inquiryController = new InquiryController(state.config, state.auth, withWrite);
     state.mfa = new TrainerMfaController(state.auth);
 
     // Password callbacks are consumed and removed from the address bar before any
