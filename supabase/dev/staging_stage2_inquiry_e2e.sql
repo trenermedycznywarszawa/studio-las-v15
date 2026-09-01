@@ -1,7 +1,7 @@
 -- STAGING / QA ONLY.
 -- Installed only on canonical staging as migration history entries:
 -- 20260901121951_staging_only_stage2_inquiry_e2e_fixture
--- 20260901123031_staging_only_stage2_inquiry_e2e_fixture_fix
+-- 20260901122955_staging_only_stage2_inquiry_e2e_fixture_fix
 -- MUST NOT be promoted as a production migration.
 
 create or replace function public.create_stage2_synthetic_inquiry_e2e(p_marker text)
