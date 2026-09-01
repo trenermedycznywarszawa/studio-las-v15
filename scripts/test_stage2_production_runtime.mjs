@@ -27,7 +27,9 @@ for (const broad_goal of goals) {
 assert(domain.decisionNextAction("PWD").type === "arrange_pwd", "PWD does not map to arrange_pwd");
 assert(domain.decisionNextAction("REFERRED").type === "referral", "REFERRED does not map to referral");
 assert(domain.decisionNextAction("NOT_NOW").type === null, "NOT_NOW creates an automatic next action");
-assert(domain.decisionNextAction("FOLLOW_UP", { followUpChannel: "message", followUpAt: "2026-09-02T18:00" }).type === "contact_message", "FOLLOW_UP channel mapping failed");
+const followUpAction = domain.decisionNextAction("FOLLOW_UP", { followUpChannel: "message", followUpAt: "2026-09-02T18:00" });
+assert(followUpAction.type === "contact_message", "FOLLOW_UP channel mapping failed");
+assert(/Z$/.test(followUpAction.at || "") && !Number.isNaN(Date.parse(followUpAction.at)), "FOLLOW_UP timestamp is not normalized to an explicit instant");
 
 const data = await read("assets/os/inquiries-data.js");
 assert(data.includes('method: "GET"'), "inquiry repository has no bounded read path");
