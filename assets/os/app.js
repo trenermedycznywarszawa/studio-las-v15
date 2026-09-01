@@ -1,29 +1,9 @@
-import {
-  assertNoPersistentHealthData,
-  clearAuthArtifactsFromUrl,
-  getPasswordSetupContext,
-  getRuntimeConfig,
-  submitPasswordLogin,
-  userSafeError
-} from "./runtime.js";
-import {
-  StudioLasRepository,
-  SupabaseAuth
-} from "./data.js";
+import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
+import { StudioLasRepository, SupabaseAuth } from "./data.js";
 import { InquiryController } from "./inquiries-controller.js";
 import { collectAttentionSignals } from "./decision-support.js";
-import {
-  consumePasswordCallback,
-  renderPasswordSetup,
-  renderRecoveryRequest,
-  requestPasswordRecovery,
-  updatePassword
-} from "./password-auth.js";
-import {
-  renderFatal,
-  renderLoading,
-  renderLogin
-} from "./ui/common.js";
+import { consumePasswordCallback, renderPasswordSetup, renderRecoveryRequest, requestPasswordRecovery, updatePassword } from "./password-auth.js";
+import { renderFatal, renderLoading, renderLogin } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
 import { renderClient } from "./ui/client.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
@@ -376,12 +356,7 @@ async function initialize() {
     state.repository = new StudioLasRepository(state.config, state.auth);
     state.inquiryController = new InquiryController(state.config, state.auth, withWrite);
     state.mfa = new TrainerMfaController(state.auth);
-
-    // Password callbacks are consumed and removed from the address bar before any
-    // other gate can stop the application. The context survives reloads only in
-    // this tab and prevents access until the password has been updated.
     const callback = consumePasswordCallback(state.auth);
-
     assertNoPersistentHealthData();
 
     if (callback) {
