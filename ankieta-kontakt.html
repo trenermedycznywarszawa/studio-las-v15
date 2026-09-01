@@ -1,741 +1,224 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="pl">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ankieta diagnostyczna i kontakt | Studio Las</title>
-  <meta name="description" content="Wypełnij krótką ankietę diagnostyczną. Studio Las w Pracach Dużych pod Warszawą — trening medyczny 1:1 dla osób z bólem, po kontuzji i z lękiem przed ruchem." />
-      <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v14/ankieta-kontakt.html" />
-  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v14/ankieta-kontakt.html" />
+  <title>Pierwszy kontakt | Studio Las</title>
+  <meta name="description" content="Pierwszy kontakt ze Studio Las w Pracach Dużych pod Tarczynem. Zostaw kontakt i napisz krótko, do czego chcesz wrócić lub co chcesz poprawić." />
+  <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v15/ankieta-kontakt.html" />
+  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v15/ankieta-kontakt.html" />
   <meta property="og:locale" content="pl_PL" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet" />
   <style>
-:root {
-  --forest:#1C2B24; --anthracite:#2D2D2D; --cedar:#B8935A; --cedar-light:#D4AC78;
-  --offwhite:#F7F4EF; --white:#FFFFFF; --grey-soft:#E8E4DC; --grey-text:#6B6560;
-  --font-display:'Cormorant Garamond',Georgia,serif; --font-body:'DM Sans',system-ui,sans-serif;
-  --max-w:1120px; --t:.3s ease;
+:root{
+  --forest:#1C2B24;--anthracite:#2D2D2D;--cedar:#B8935A;--cedar-light:#D4AC78;
+  --offwhite:#F7F4EF;--white:#FFFFFF;--grey-soft:#E8E4DC;--grey-text:#6B6560;
+  --font-display:'Cormorant Garamond',Georgia,serif;--font-body:'DM Sans',system-ui,sans-serif;
+  --max-w:1120px;--t:.3s ease;
 }
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth;font-size:16px}
 body{font-family:var(--font-body);font-weight:300;color:var(--anthracite);background:var(--offwhite);line-height:1.7;-webkit-font-smoothing:antialiased}
-img{max-width:100%;display:block} a{color:inherit;text-decoration:none}
-.container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px}
-.reveal{opacity:0;transform:translateY(24px);transition:opacity .65s ease,transform .65s ease}
-.reveal.visible{opacity:1;transform:none}
-
-/* NAVBAR */
-#navbar{position:fixed;top:0;left:0;right:0;z-index:100;padding:0 24px;height:68px;display:flex;align-items:center;justify-content:space-between;background:var(--forest);box-shadow:0 2px 24px rgba(0,0,0,.15)}
+a{color:inherit;text-decoration:none}.container{width:100%;max-width:var(--max-w);margin:0 auto;padding:0 24px}
+#navbar{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:var(--forest);box-shadow:0 2px 24px rgba(0,0,0,.15)}
 .nav-logo{font-family:var(--font-display);font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white)}
-.nav-logo span{color:var(--cedar)}
-.nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none}
-.nav-links a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t)}
-.nav-links a:hover,.nav-links a.active{color:var(--cedar-light)}
-
-.client-panel-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.78);transition:color var(--t),text-shadow var(--t),transform var(--t),border-color var(--t)}
-.client-panel-link:hover,.client-panel-link:focus-visible{color:var(--cedar-light);text-shadow:0 0 18px rgba(141,173,120,.28);transform:translateY(-1px)}
-.client-panel-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.92;transition:opacity var(--t),transform var(--t)}
-.client-panel-link:hover .client-panel-icon,.client-panel-link:focus-visible .client-panel-icon{opacity:1;transform:translateY(-1px)}
-.nav-mobile .client-panel-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.86)}
-.nav-cta{color:var(--white)!important;border:1px solid var(--cedar);padding:9px 20px;font-size:.75rem!important;transition:background var(--t)!important}
-.nav-cta:hover{background:var(--cedar)!important}
-.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:4px}
-.nav-hamburger span{display:block;width:24px;height:2px;background:var(--white)}
-.nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;background:var(--forest);padding:24px;z-index:99;flex-direction:column;gap:20px}
-.nav-mobile.open{display:flex}
-.nav-mobile a{color:rgba(255,255,255,.85);font-size:1rem;padding:8px 0;border-bottom:1px solid rgba(255,255,255,.1)}
-
-/* BUTTONS */
-.btn-primary{display:inline-block;background:var(--cedar);color:var(--white);font-family:var(--font-body);font-size:.8rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:16px 36px;border:none;cursor:pointer;transition:background var(--t),transform var(--t)}
-.btn-primary:hover{background:var(--cedar-light);transform:translateY(-1px)}
-
-/* PAGE HERO */
-#page-hero{background:var(--forest);padding:140px 0 72px;position:relative;overflow:hidden}
-#page-hero::before{content:'';position:absolute;top:0;right:0;width:40%;height:100%;background-image:url('./images/studio-latem.webp');background-size:cover;background-position:center;opacity:.1;mask-image:linear-gradient(to left,rgba(0,0,0,.5),transparent);-webkit-mask-image:linear-gradient(to left,rgba(0,0,0,.5),transparent)}
-.breadcrumb{display:flex;align-items:center;gap:8px;margin-bottom:36px;font-size:.75rem;color:rgba(255,255,255,.4)}
-.breadcrumb a{color:rgba(255,255,255,.4);transition:color var(--t)}
-.breadcrumb a:hover{color:var(--cedar-light)}
-.page-hero-label{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px;display:flex;align-items:center;gap:12px}
-.page-hero-label::before{content:'';display:inline-block;width:24px;height:1px;background:var(--cedar)}
-.page-hero-title{font-family:var(--font-display);font-size:clamp(2.2rem,4.5vw,3.6rem);font-weight:300;line-height:1.1;color:var(--white);margin-bottom:20px;max-width:680px}
-.page-hero-title em{font-style:italic;color:var(--cedar-light)}
-.page-hero-sub{font-size:1rem;font-weight:300;color:rgba(255,255,255,.6);max-width:500px;line-height:1.8}
-.page-hero-tabs{display:flex;gap:0;margin-top:40px;border-top:1px solid rgba(255,255,255,.1)}
-.hero-tab{font-size:.72rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.5);padding:16px 28px;border-right:1px solid rgba(255,255,255,.08);transition:color var(--t);position:relative}
-.hero-tab::after{content:'';position:absolute;bottom:0;left:0;right:0;height:2px;background:var(--cedar);transform:scaleX(0);transition:transform var(--t)}
-.hero-tab:hover{color:var(--white)}
-.hero-tab:hover::after{transform:scaleX(1)}
-
-/* MAIN LAYOUT */
-.page-body{display:grid;grid-template-columns:1fr 1fr;min-height:0}
-
-/* LEFT: ANKIETA */
-#ankieta{background:var(--white);padding:80px 64px 80px 0}
-.section-label{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar);margin-bottom:16px;display:block}
-.form-title{font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;line-height:1.2;color:var(--anthracite);margin-bottom:12px}
-.form-intro{font-size:.9rem;font-weight:300;color:var(--grey-text);line-height:1.8;margin-bottom:40px;max-width:480px}
-.form-promise{background:var(--offwhite);border-left:3px solid var(--cedar);padding:16px 20px;margin-bottom:36px;font-size:.85rem;font-weight:300;color:var(--anthracite);line-height:1.65}
-.form-promise strong{font-weight:500;color:var(--cedar)}
-.form-group{margin-bottom:20px}
-.form-label{display:block;font-size:.75rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--anthracite);margin-bottom:8px}
-.form-label .req{color:var(--cedar);margin-left:2px}
-.form-sublabel{display:block;font-size:.75rem;font-weight:300;color:var(--grey-text);margin-bottom:8px;margin-top:-4px}
-.form-input,.form-select,.form-textarea{width:100%;background:var(--offwhite);border:1px solid var(--grey-soft);padding:14px 16px;font-family:var(--font-body);font-size:.92rem;font-weight:300;color:var(--anthracite);outline:none;transition:border-color var(--t),background var(--t);-webkit-appearance:none;border-radius:0}
-.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--cedar);background:var(--white)}
-.form-input.err,.form-select.err,.form-textarea.err{border-color:#C0392B}
-.form-input::placeholder,.form-textarea::placeholder{color:rgba(107,101,96,.5);font-weight:300}
-.form-select{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23B8935A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}
-.form-textarea{resize:vertical;min-height:120px;line-height:1.65}
-.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}
-.form-err-msg{display:none;font-size:.72rem;color:#C0392B;margin-top:5px}
-.form-err-msg.show{display:block}
-.radio-group,.checkbox-group{display:flex;flex-direction:column;gap:10px}
-.radio-item,.checkbox-item{display:flex;align-items:flex-start;gap:12px;cursor:pointer;padding:12px 14px;border:1px solid var(--grey-soft);background:var(--offwhite);transition:border-color var(--t),background var(--t)}
-.radio-item:hover,.checkbox-item:hover,.radio-item.sel,.checkbox-item.sel{border-color:var(--cedar);background:var(--white)}
-.radio-item input,.checkbox-item input{margin-top:2px;flex-shrink:0;accent-color:var(--cedar);width:16px;height:16px;cursor:pointer}
-.radio-item-label{font-size:.88rem;font-weight:300;color:var(--anthracite);line-height:1.5}
-
-/* Pain scale */
-.pain-scale{display:flex;gap:4px}
-.pain-btn{flex:1;aspect-ratio:1;background:var(--offwhite);border:1px solid var(--grey-soft);font-size:.78rem;font-weight:400;color:var(--grey-text);cursor:pointer;transition:all var(--t);font-family:var(--font-body)}
-.pain-btn:hover{border-color:var(--cedar);color:var(--cedar)}
-.pain-btn.active{background:var(--cedar);border-color:var(--cedar);color:var(--white)}
-.pain-scale-labels{display:flex;justify-content:space-between;margin-top:6px;font-size:.68rem;color:var(--grey-text)}
-
-.form-section{margin:32px 0 24px;padding-top:32px;border-top:1px solid var(--grey-soft)}
-.form-section-title{font-size:.72rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--cedar);margin-bottom:20px;display:flex;align-items:center;gap:10px}
-.form-section-title::after{content:'';flex:1;height:1px;background:var(--grey-soft)}
-
-.rodo-wrap{display:flex;align-items:flex-start;gap:12px;padding:16px;background:var(--offwhite);border:1px solid var(--grey-soft);margin-bottom:8px}
-.rodo-wrap input[type=checkbox]{margin-top:2px;flex-shrink:0;accent-color:var(--cedar);width:16px;height:16px;cursor:pointer}
-.rodo-text{font-size:.78rem;font-weight:300;color:var(--grey-text);line-height:1.65}
-.rodo-text a{color:var(--cedar);text-decoration:underline}
-
-.form-submit-wrap{margin-top:32px}
-.form-submit-btn{width:100%;background:var(--cedar);color:var(--white);font-family:var(--font-body);font-size:.85rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:18px 24px;border:none;cursor:pointer;transition:background var(--t),transform var(--t);display:flex;align-items:center;justify-content:center;gap:10px}
-.form-submit-btn:hover{background:var(--cedar-light);transform:translateY(-1px)}
-.form-submit-note{font-size:.75rem;font-weight:300;color:var(--grey-text);text-align:center;margin-top:12px;line-height:1.6}
-
-.form-status{display:none;margin-top:14px;padding:12px 14px;font-size:.78rem;line-height:1.55;text-align:center;border:1px solid var(--grey-soft);background:var(--offwhite);color:var(--grey-text)}
-.form-status.show{display:block}
-.form-status.err{border-color:#C0392B;color:#C0392B;background:#fff6f4}
-.sf-status{display:none;margin-top:12px;padding:12px 14px;font-size:.82rem;line-height:1.55;text-align:center;border:1px solid rgba(255,255,255,.12);background:rgba(255,255,255,.06);color:rgba(255,255,255,.65)}
-.sf-status.show{display:block}
-.sf-status.err{border-color:#C0392B;color:#ffb8ad;background:rgba(192,57,43,.08)}
-
-.form-success{display:none;background:var(--white);border:1px solid var(--grey-soft);padding:48px 36px;text-align:center}
-.form-success.show{display:block}
-.success-icon{width:64px;height:64px;background:rgba(184,147,90,.1);border:1px solid var(--cedar);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 24px;font-size:1.5rem}
-.success-title{font-family:var(--font-display);font-size:1.8rem;font-weight:400;color:var(--anthracite);margin-bottom:12px}
-.success-body{font-size:.9rem;font-weight:300;color:var(--grey-text);line-height:1.8}
-
-/* RIGHT: KONTAKT */
-#kontakt-lokalizacja{background:var(--offwhite);padding:80px 0 80px 64px}
-.contact-title{font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;color:var(--anthracite);margin-bottom:12px;line-height:1.2}
-.contact-intro{font-size:.9rem;font-weight:300;color:var(--grey-text);line-height:1.8;margin-bottom:40px}
-.contact-cards{display:flex;flex-direction:column;gap:2px;margin-bottom:36px}
-.contact-card{background:var(--white);padding:20px 24px;display:flex;align-items:center;gap:20px;transition:transform var(--t)}
-.contact-card:hover{transform:translateX(4px)}
-.contact-card-icon{width:44px;height:44px;background:var(--offwhite);border:1px solid var(--grey-soft);display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:1.1rem}
-.contact-card-label{font-size:.65rem;font-weight:500;letter-spacing:.15em;text-transform:uppercase;color:var(--grey-text);margin-bottom:3px}
-.contact-card-value{font-size:.95rem;font-weight:400;color:var(--anthracite)}
-.contact-card-value a{color:var(--anthracite);transition:color var(--t)}
-.contact-card-value a:hover{color:var(--cedar)}
-
-.hours-block{background:var(--forest);padding:28px;margin-bottom:36px}
-.hours-title{font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:16px}
-.hours-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.hours-day{font-size:.78rem;font-weight:300;color:rgba(255,255,255,.5);margin-bottom:2px}
-.hours-time{font-size:.92rem;font-weight:400;color:var(--white)}
-
-.map-wrap{margin-bottom:28px}
-.map-placeholder{width:100%;height:260px;background:var(--grey-soft);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;border:1px solid var(--grey-soft)}
-.map-placeholder-icon{font-size:2rem;opacity:.4}
-.map-placeholder-text{font-size:.82rem;color:var(--grey-text);text-align:center;line-height:1.6}
-.map-embed{width:100%;height:260px;border:none;display:block}
-.map-link{display:flex;align-items:center;gap:8px;font-size:.78rem;font-weight:500;letter-spacing:.08em;text-transform:uppercase;color:var(--cedar);transition:color var(--t);margin-top:12px}
-.map-link:hover{color:var(--anthracite)}
-.map-link::before{content:'↗';font-size:1rem}
-
-.dojazd-block{background:var(--white);padding:28px;margin-bottom:28px}
-.dojazd-title{font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--cedar);margin-bottom:16px}
-.dojazd-list{list-style:none;display:flex;flex-direction:column;gap:10px}
-.dojazd-list li{font-size:.87rem;font-weight:300;color:var(--anthracite);padding-left:20px;position:relative;line-height:1.55}
-.dojazd-list li::before{content:'→';position:absolute;left:0;color:var(--cedar);font-size:.85rem}
-.dojazd-list li strong{font-weight:500}
-
-.praktyki-label{font-size:.68rem;font-weight:500;letter-spacing:.18em;text-transform:uppercase;color:var(--cedar);margin-bottom:12px}
-.praktyki-grid{display:grid;grid-template-columns:1fr 1fr;gap:2px}
-.praktyki-item{background:var(--white);padding:18px 20px}
-.praktyki-item-label{font-size:.65rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;color:var(--grey-text);margin-bottom:5px}
-.praktyki-item-value{font-size:.85rem;font-weight:300;color:var(--anthracite);line-height:1.5}
-
-/* SIMPLE CONTACT */
-#prosty-kontakt{background:var(--anthracite);padding:80px 0}
-.simple-grid{display:grid;grid-template-columns:1fr 1fr;gap:80px;align-items:start}
-.simple-title{font-family:var(--font-display);font-size:clamp(1.8rem,3vw,2.6rem);font-weight:300;color:var(--white);line-height:1.2;margin-bottom:16px}
-.simple-title em{font-style:italic;color:var(--cedar-light)}
-.simple-body{font-size:.9rem;font-weight:300;color:rgba(255,255,255,.6);line-height:1.8;margin-bottom:24px}
-.simple-note{font-size:.8rem;font-weight:300;color:rgba(255,255,255,.4);line-height:1.7;font-style:italic}
-.sf-group{margin-bottom:16px}
-.sf-label{display:block;font-size:.7rem;font-weight:500;letter-spacing:.1em;text-transform:uppercase;color:rgba(255,255,255,.5);margin-bottom:7px}
-.sf-input,.sf-textarea{width:100%;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.12);padding:13px 16px;font-family:var(--font-body);font-size:.9rem;font-weight:300;color:var(--white);outline:none;transition:border-color var(--t),background var(--t);-webkit-appearance:none;border-radius:0}
-.sf-input:focus,.sf-textarea:focus{border-color:var(--cedar);background:rgba(255,255,255,.09)}
-.sf-input::placeholder,.sf-textarea::placeholder{color:rgba(255,255,255,.25)}
-.sf-textarea{resize:vertical;min-height:110px;line-height:1.65}
-.sf-submit{width:100%;background:var(--cedar);color:var(--white);font-family:var(--font-body);font-size:.8rem;font-weight:500;letter-spacing:.12em;text-transform:uppercase;padding:16px 24px;border:none;cursor:pointer;margin-top:8px;transition:background var(--t)}
-.sf-submit:hover{background:var(--cedar-light)}
-.sf-success{display:none;padding:24px;background:rgba(184,147,90,.1);border:1px solid rgba(184,147,90,.3);text-align:center;margin-top:16px}
-.sf-success.show{display:block}
-.sf-success p{font-size:.9rem;color:var(--cedar-light);font-weight:300}
-
-/* FOOTER */
-footer{background:var(--forest);padding:60px 0 36px}
-.footer-grid{display:grid;grid-template-columns:1.4fr 1fr 1fr;gap:48px;margin-bottom:48px}
-.footer-logo{font-family:var(--font-display);font-size:1.3rem;font-weight:500;color:var(--white);letter-spacing:.08em;margin-bottom:16px}
-.footer-logo span{color:var(--cedar)}
-.footer-tagline{font-size:.82rem;font-weight:300;color:rgba(255,255,255,.5);line-height:1.7;max-width:280px}
-.footer-col-title{font-size:.68rem;font-weight:500;letter-spacing:.2em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:20px}
-.footer-links{list-style:none;display:flex;flex-direction:column;gap:10px}
-.footer-links a{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);transition:color var(--t)}
-.footer-links a:hover{color:var(--cedar-light)}
-.footer-contact-item{font-size:.85rem;font-weight:300;color:rgba(255,255,255,.6);margin-bottom:10px;line-height:1.6}
-.footer-contact-item a{color:rgba(255,255,255,.6);transition:color var(--t)}
-.footer-contact-item a:hover{color:var(--cedar-light)}
-.footer-bottom{border-top:1px solid rgba(255,255,255,.08);padding-top:28px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px}
-.footer-copy{font-size:.75rem;color:rgba(255,255,255,.3)}
-.footer-legal{display:flex;gap:20px}
-.footer-legal a{font-size:.75rem;color:rgba(255,255,255,.3);transition:color var(--t)}
-.footer-legal a:hover{color:rgba(255,255,255,.6)}
-
-/* RESPONSIVE */
-@media(max-width:960px){
-  .nav-links{display:none} .nav-hamburger{display:flex}
-  .page-body{grid-template-columns:1fr}
-  #ankieta{padding:64px 0;border-bottom:2px solid var(--grey-soft)}
-  #kontakt-lokalizacja{padding:64px 0}
-  .simple-grid{grid-template-columns:1fr;gap:48px}
-  .footer-grid{grid-template-columns:1fr 1fr;gap:32px}
-  .hours-grid{grid-template-columns:1fr}
-  .praktyki-grid{grid-template-columns:1fr}
-  .page-hero-tabs{flex-wrap:wrap}
-}
-@media(max-width:600px){
-  .form-row{grid-template-columns:1fr}
-  .footer-grid{grid-template-columns:1fr}
-  .footer-bottom{flex-direction:column;align-items:flex-start}
-}
-  
-/* Unified global navigation */
-.site-nav{position:fixed;top:0;left:0;right:0;z-index:100;height:68px;padding:0 24px;display:flex;align-items:center;justify-content:space-between;background:rgba(23,37,30,.94);box-shadow:0 2px 24px rgba(0,0,0,.15);backdrop-filter:blur(16px);border-bottom:1px solid rgba(255,255,255,.08)}
-.site-logo{font-family:var(--font-display,var(--display,Georgia,serif));font-size:1.35rem;font-weight:500;letter-spacing:.08em;color:var(--white,#fff)}
-.site-logo span{color:var(--cedar-light,var(--cedar,#b8935a))}
-.site-nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none;margin:0;padding:0}
-.site-nav-links a,.site-nav-mobile a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t,var(--transition,.25s ease)),background var(--t,var(--transition,.25s ease)),border-color var(--t,var(--transition,.25s ease)),transform var(--t,var(--transition,.25s ease))}
-.site-nav-links a:hover,.site-nav-links a.active,.site-nav-mobile a:hover,.site-nav-mobile a.active{color:var(--cedar-light,#d5b982)}
-.site-nav-cta{display:inline-flex;align-items:center;justify-content:center;padding:12px 20px;border:1px solid var(--cedar,#b8935a);background:transparent;color:rgba(255,255,255,.86)!important;line-height:1;white-space:nowrap}
-.site-nav-cta:hover,.site-nav-cta.active{background:rgba(184,147,90,.12);color:var(--cedar-light,#d5b982)!important;border-color:var(--cedar-light,#d5b982)}
-.site-client-link{display:inline-flex;align-items:center;gap:7px;color:rgba(255,255,255,.68)!important;white-space:nowrap}
-.site-client-link:hover,.site-client-link:focus-visible{color:var(--cedar-light,#d5b982)!important;transform:translateY(-1px)}
-.site-client-icon{width:15px;height:15px;flex:0 0 auto;stroke:currentColor;stroke-width:1.55;fill:none;stroke-linecap:round;stroke-linejoin:round;opacity:.9}
-.site-nav-toggle{display:none;flex-direction:column;gap:5px;cursor:pointer;background:transparent;border:0;padding:8px}
-.site-nav-toggle span{display:block;width:24px;height:2px;background:var(--white,#fff)}
-.site-nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;z-index:99;flex-direction:column;gap:16px;padding:24px;background:var(--forest,#17251e);box-shadow:0 18px 40px rgba(0,0,0,.18)}
-.site-nav-mobile.open{display:flex}
-.site-nav-mobile a{padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
-.site-nav-mobile .site-nav-cta{margin-top:4px;padding:14px 18px;border-bottom:1px solid var(--cedar,#b8935a)}
-.site-nav-mobile .site-client-link{min-height:44px;justify-content:flex-start;color:rgba(255,255,255,.72)!important}
-@media(max-width:980px){.site-nav-links{display:none}.site-nav-toggle{display:flex}}
-@media(max-width:640px){.site-nav{height:64px;padding:0 18px}.site-nav-mobile{top:64px;max-height:calc(100vh - 64px);overflow-y:auto}.site-logo{font-size:1.25rem}}
-</style>
-  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v14/images/damian-about.webp" />
+.nav-links{display:flex;align-items:center;gap:clamp(18px,2vw,32px);list-style:none}.nav-links a{font-size:.8rem;font-weight:400;letter-spacing:.12em;text-transform:uppercase;color:rgba(255,255,255,.8);transition:color var(--t)}.nav-links a:hover,.nav-links a.active{color:var(--cedar-light)}
+.nav-cta{color:var(--white)!important;border:1px solid var(--cedar);padding:9px 20px}.nav-hamburger{display:none;flex-direction:column;gap:5px;cursor:pointer;background:none;border:none;padding:8px}.nav-hamburger span{display:block;width:24px;height:2px;background:var(--white)}
+.nav-mobile{display:none;position:fixed;top:68px;left:0;right:0;background:var(--forest);padding:24px;z-index:99;flex-direction:column;gap:12px}.nav-mobile.open{display:flex}.nav-mobile a{color:rgba(255,255,255,.88);padding:10px 0;border-bottom:1px solid rgba(255,255,255,.1)}
+#page-hero{background:var(--forest);padding:136px 0 70px}.breadcrumb{display:flex;gap:8px;margin-bottom:30px;font-size:.75rem;color:rgba(255,255,255,.42)}.page-hero-label{font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:18px}.page-hero-title{font-family:var(--font-display);font-size:clamp(2.4rem,5vw,4rem);font-weight:300;line-height:1.05;color:var(--white);max-width:760px;margin-bottom:18px}.page-hero-title em{font-style:italic;color:var(--cedar-light)}.page-hero-sub{max-width:650px;color:rgba(255,255,255,.68);font-size:1rem;line-height:1.8}
+.page-body{display:grid;grid-template-columns:minmax(0,1.05fr) minmax(360px,.95fr);max-width:var(--max-w);margin:0 auto;background:var(--white)}
+#ankieta{padding:72px 64px 80px 24px}.side{padding:72px 24px 80px 64px;background:var(--offwhite)}
+.section-label{display:block;font-size:.68rem;font-weight:500;letter-spacing:.22em;text-transform:uppercase;color:var(--cedar);margin-bottom:16px}.form-title,.side-title{font-family:var(--font-display);font-size:clamp(2rem,3vw,2.75rem);font-weight:300;line-height:1.15;margin-bottom:14px}.form-intro,.side-intro{font-size:.92rem;color:var(--grey-text);line-height:1.85;margin-bottom:30px;max-width:520px}.promise{background:var(--offwhite);border-left:3px solid var(--cedar);padding:16px 18px;margin-bottom:30px;font-size:.86rem;line-height:1.65}.promise strong{font-weight:500}.privacy-note{background:#fbfaf7;border:1px solid var(--grey-soft);padding:15px 18px;margin-bottom:30px;font-size:.8rem;color:var(--grey-text);line-height:1.65}.privacy-note strong{font-weight:500;color:var(--anthracite)}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px}.form-group{margin-bottom:20px}.form-label{display:block;font-size:.75rem;font-weight:500;letter-spacing:.07em;text-transform:uppercase;margin-bottom:8px}.req{color:var(--cedar)}.form-sublabel{display:block;font-size:.75rem;color:var(--grey-text);margin:-4px 0 8px}.form-input,.form-select,.form-textarea{width:100%;border:1px solid var(--grey-soft);background:var(--offwhite);padding:14px 16px;font:300 .92rem var(--font-body);color:var(--anthracite);outline:none;border-radius:0}.form-input:focus,.form-select:focus,.form-textarea:focus{border-color:var(--cedar);background:var(--white)}.form-input.err,.form-select.err,.form-textarea.err{border-color:#b33b2e}.form-textarea{min-height:105px;resize:vertical;line-height:1.6}.form-select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23B8935A' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 14px center;padding-right:40px}.form-err-msg{display:none;font-size:.72rem;color:#b33b2e;margin-top:5px}.form-err-msg.show{display:block}.choice-group{display:flex;flex-direction:column;gap:9px}.choice-item{display:flex;gap:12px;align-items:flex-start;padding:12px 14px;border:1px solid var(--grey-soft);background:var(--offwhite);cursor:pointer}.choice-item:has(input:checked){border-color:var(--cedar);background:var(--white)}.choice-item input{margin-top:3px;accent-color:var(--cedar);width:16px;height:16px}.choice-label{font-size:.88rem;line-height:1.5}.divider{margin:30px 0 22px;border-top:1px solid var(--grey-soft)}
+.consent{display:flex;gap:12px;align-items:flex-start;padding:15px 16px;border:1px solid var(--grey-soft);background:var(--offwhite);font-size:.78rem;color:var(--grey-text);line-height:1.65}.consent input{margin-top:3px;accent-color:var(--cedar);width:16px;height:16px;flex:0 0 auto}.submit-btn{width:100%;margin-top:24px;border:0;background:var(--cedar);color:var(--white);padding:18px 22px;font:500 .83rem var(--font-body);letter-spacing:.11em;text-transform:uppercase;cursor:pointer}.submit-btn:hover{background:var(--cedar-light)}.submit-btn:disabled{opacity:.6;cursor:wait}.submit-note{margin-top:11px;text-align:center;font-size:.75rem;color:var(--grey-text);line-height:1.55}.status{display:none;margin-top:14px;padding:12px 14px;border:1px solid var(--grey-soft);background:var(--offwhite);font-size:.78rem;text-align:center}.status.show{display:block}.status.err{border-color:#b33b2e;color:#b33b2e;background:#fff7f5}.success{display:none;padding:42px 30px;border:1px solid var(--grey-soft);text-align:center}.success.show{display:block}.success-mark{width:58px;height:58px;border:1px solid var(--cedar);border-radius:50%;display:grid;place-items:center;margin:0 auto 20px;color:var(--cedar);font-size:1.4rem}.success h3{font-family:var(--font-display);font-size:2rem;font-weight:400;margin-bottom:12px}.success p{color:var(--grey-text);font-size:.9rem;line-height:1.8}
+.contact-card{background:var(--white);border:1px solid var(--grey-soft);padding:20px;margin-bottom:12px}.contact-label{font-size:.66rem;font-weight:500;letter-spacing:.16em;text-transform:uppercase;color:var(--cedar);margin-bottom:6px}.contact-value{font-size:.92rem}.hours{margin-top:28px;padding:22px;background:var(--forest);color:var(--white)}.hours-label{font-size:.66rem;letter-spacing:.16em;text-transform:uppercase;color:var(--cedar-light);margin-bottom:10px}.hours p{font-size:.86rem;color:rgba(255,255,255,.72)}.hours strong{color:var(--white);font-weight:500}.why{margin-top:34px}.why h3{font-family:var(--font-display);font-size:1.65rem;font-weight:400;margin-bottom:12px}.why p{font-size:.84rem;color:var(--grey-text);line-height:1.75;margin-bottom:10px}
+footer{background:#16211c;color:rgba(255,255,255,.7);padding:38px 0}.footer-grid{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.footer-logo{font-family:var(--font-display);font-size:1.35rem;color:var(--white)}.footer-copy{font-size:.74rem;text-align:right}
+@media(max-width:900px){.nav-links{display:none}.nav-hamburger{display:flex}.page-body{grid-template-columns:1fr}.side{padding:56px 24px}.page-body{max-width:none}#ankieta{padding:56px 24px}.form-row{grid-template-columns:1fr}.footer-grid{flex-direction:column}.footer-copy{text-align:left}}
+@media(max-width:520px){#page-hero{padding:116px 0 52px}.page-hero-title{font-size:2.65rem}.container{padding:0 18px}#ankieta,.side{padding-left:18px;padding-right:18px}}
+  </style>
 </head>
 <body>
-
-<nav class="site-nav" aria-label="Nawigacja główna">
-  <a class="site-logo" href="./index.html">Studio <span>Las</span></a>
-  <ul class="site-nav-links">
+<nav id="navbar" aria-label="Główna nawigacja">
+  <a class="nav-logo" href="./index.html">Studio Las</a>
+  <ul class="nav-links">
     <li><a href="./index.html">Strona główna</a></li>
     <li><a href="./metoda-i-pakiety.html">Metoda i pakiety</a></li>
     <li><a href="./blog.html">Blog</a></li>
-    <li><a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta active">ANKIETA / KONTAKT</a></li>
-    </ul>
-  <button class="site-nav-toggle" id="hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" type="button">
-    <span></span><span></span><span></span>
-  </button>
+    <li><a href="./ankieta-kontakt.html#ankieta" class="nav-cta active">Kontakt</a></li>
+  </ul>
+  <button class="nav-hamburger" id="hamburger" aria-label="Otwórz menu" aria-expanded="false" aria-controls="navMobile" type="button"><span></span><span></span><span></span></button>
 </nav>
-<div class="site-nav-mobile nav-mobile" id="navMobile">
+<div class="nav-mobile" id="navMobile">
   <a href="./index.html">Strona główna</a>
   <a href="./metoda-i-pakiety.html">Metoda i pakiety</a>
   <a href="./blog.html">Blog</a>
-  <a href="./ankieta-kontakt.html#ankieta" class="site-nav-cta active">ANKIETA / KONTAKT</a>
-  </div>
+  <a href="./ankieta-kontakt.html#ankieta">Kontakt</a>
+</div>
 
-<section id="page-hero">
+<header id="page-hero">
   <div class="container">
-    <nav class="breadcrumb">
-      <a href="./index.html">Strona główna</a><span>›</span><span>Ankieta i kontakt</span>
-    </nav>
+    <nav class="breadcrumb" aria-label="Okruszki"><a href="./index.html">Strona główna</a><span>›</span><span>Pierwszy kontakt</span></nav>
     <p class="page-hero-label">Pierwszy krok</p>
-    <h1 class="page-hero-title">Ankieta, rozmowa –<br>i <em>wiesz, od czego zacząć.</em></h1>
-    <p class="page-hero-sub">Wypełnienie krótkiej ankiety zajmuje 5 minut. Oddzwaniam w ciągu 24 godzin w dni robocze. Bez zobowiązań – najpierw sprawdzamy, czy mogę Ci realnie pomóc.</p>
-    <nav class="page-hero-tabs">
-      <a href="#ankieta" class="hero-tab">Ankieta diagnostyczna</a>
-      <a href="#kontakt-lokalizacja" class="hero-tab">Kontakt i lokalizacja</a>
-      <a href="#prosty-kontakt" class="hero-tab">Napisz bezpośrednio</a>
-    </nav>
+    <h1 class="page-hero-title">Najpierw <em>porozmawiajmy.</em></h1>
+    <p class="page-hero-sub">Nie musisz opisywać diagnozy, historii leczenia ani całej swojej sytuacji. Zostaw kontakt i napisz tylko tyle, żebym wiedział, czego ma dotyczyć pierwsza rozmowa.</p>
   </div>
-</section>
+</header>
 
-<div class="page-body">
+<main class="page-body">
+  <section id="ankieta" aria-labelledby="contactTitle">
+    <span class="section-label">Pierwszy kontakt</span>
+    <h2 class="form-title" id="contactTitle">Powiedz mi tylko,<br>do czego chcesz wrócić</h2>
+    <p class="form-intro">To nie jest ankieta diagnostyczna. Na tym etapie chcę poznać Twój cel i ustalić spokojny moment na krótką rozmowę. Dopiero później, jeśli oboje uznamy że ma to sens, przejdziemy do właściwego przygotowania Pierwszej Wizyty Diagnostycznej.</p>
+    <div class="promise"><strong>Po wysłaniu:</strong> najpierw skontaktuję się w wybranym przez Ciebie przedziale lub wiadomością, żeby ustalić dogodny moment rozmowy. Bez niespodziewanego telefonu i bez presji.</div>
+    <div class="privacy-note"><strong>Na tym etapie nie wpisuj danych medycznych.</strong> Nie potrzebuję diagnozy, wyników badań, opisu operacji ani szczegółów leczenia. Jeśli będą potrzebne do przygotowania PWD, poproszę o nie dopiero w bezpieczniejszym, właściwym etapie procesu.</div>
 
-  <!-- LEWA: ANKIETA -->
-  <div id="ankieta">
-    <div style="padding:0 0 0 max(24px,calc((100vw - 1120px)/2 + 24px))">
-      <div class="reveal">
-        <span class="section-label">Ankieta diagnostyczna</span>
-        <h2 class="form-title">Powiedz mi,<br>z czym przychodzisz</h2>
-        <p class="form-intro">To nie jest rozbudowany formularz. Chcę wiedzieć tyle, żeby przygotować się do rozmowy i powiedzieć Ci wprost – czy jestem w stanie Ci pomóc.</p>
-        <div class="form-promise"><strong>Po wypełnieniu:</strong> oddzwaniam w ciągu 24 godzin w dni robocze. Krótka rozmowa – bez presji, bez sprzedaży.</div>
+    <form id="mainForm" name="pierwszy-kontakt" action="https://formspree.io/f/xgorealz" method="POST" novalidate>
+      <input type="hidden" name="_subject" value="Nowy pierwszy kontakt – Studio Las" />
+      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
+
+      <div class="form-row">
+        <div class="form-group">
+          <label class="form-label" for="imie">Imię <span class="req">*</span></label>
+          <input class="form-input" id="imie" name="Imię" type="text" autocomplete="given-name" placeholder="Twoje imię" required />
+          <span class="form-err-msg" id="err-imie">Podaj imię.</span>
+        </div>
+        <div class="form-group">
+          <label class="form-label" for="telefon">Telefon <span class="req">*</span></label>
+          <input class="form-input" id="telefon" name="Telefon" type="tel" autocomplete="tel" placeholder="np. 600 123 456" required />
+          <span class="form-err-msg" id="err-telefon">Podaj numer telefonu.</span>
+        </div>
       </div>
 
-      <!-- Formspree endpoint dla GitHub Pages. TODO: po wdrożeniu sprawdzić w panelu Formspree, czy formularz jest aktywny i czy powiadomienia e-mail są poprawnie skonfigurowane. -->
-      <form id="mainForm" name="ankieta-krotka" action="https://formspree.io/f/xgorealz" method="POST" novalidate class="reveal" style="transition-delay:.1s">
-        <input type="hidden" name="_subject" value="Nowa ankieta diagnostyczna – Studio Las" />
-
-        <div class="form-row">
-          <div class="form-group">
-            <label class="form-label" for="imie">Imię <span class="req">*</span></label>
-            <input class="form-input" type="text" id="imie" name="Imię" placeholder="Twoje imię" required />
-            <span class="form-err-msg" id="err-imie">Podaj imię</span>
-          </div>
-          <div class="form-group">
-            <label class="form-label" for="telefon">Telefon <span class="req">*</span></label>
-            <input class="form-input" type="tel" id="telefon" name="Telefon" placeholder="np. 600 123 456" required />
-            <span class="form-err-msg" id="err-telefon">Podaj numer telefonu</span>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="email">E-mail <span class="req">*</span></label>
-          <input class="form-input" type="email" id="email" name="Email" placeholder="twoj@email.pl" required />
-          <span class="form-err-msg" id="err-email">Podaj poprawny adres e-mail</span>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="skad">Skąd będziesz dojeżdżać?</label>
-          <span class="form-sublabel">Pomoże mi ocenić czy dojazd jest dla Ciebie realny</span>
-          <select class="form-select" id="skad" name="Skąd dojeżdża">
-            <option value="">— Wybierz —</option>
-            <option>Piaseczno i okolice</option>
-            <option>Tarczyn / Grójec / Mszczonów</option>
-            <option>Południe Warszawy (Ursynów, Wilanów, Mokotów)</option>
-            <option>Centrum / Północ Warszawy</option>
-            <option>Inne</option>
-          </select>
-        </div>
-
-        <div class="form-section"><div class="form-section-title">Twoja sytuacja</div></div>
-
-        <div class="form-group">
-          <label class="form-label">Z czym przychodzisz? <span class="req">*</span></label>
-          <span class="form-sublabel">Możesz wybrać więcej niż jedną opcję</span>
-          <div class="checkbox-group">
-            <label class="checkbox-item"><input type="checkbox" name="Problem" value="Przewlekły ból" /><span class="radio-item-label">Przewlekły ból – plecy, kolana, barki lub biodra</span></label>
-            <label class="checkbox-item"><input type="checkbox" name="Problem" value="Powrót po kontuzji" /><span class="radio-item-label">Powrót po kontuzji lub operacji</span></label>
-            <label class="checkbox-item"><input type="checkbox" name="Problem" value="Lęk przed ruchem" /><span class="radio-item-label">Lęk przed ruchem lub złe doświadczenia z siłownią</span></label>
-            <label class="checkbox-item"><input type="checkbox" name="Problem" value="Poprawa sprawności" /><span class="radio-item-label">Chcę poprawić ogólną sprawność i siłę funkcjonalną</span></label>
-            <label class="checkbox-item"><input type="checkbox" name="Problem" value="Inne" /><span class="radio-item-label">Coś innego – opiszę niżej</span></label>
-          </div>
-          <span class="form-err-msg" id="err-problem">Zaznacz przynajmniej jedną opcję</span>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Jak oceniasz obecny poziom bólu lub dyskomfortu?</label>
-          <span class="form-sublabel">0 = brak bólu · 10 = ból uniemożliwiający normalne funkcjonowanie</span>
-          <div class="pain-scale" id="painScale">
-            <button type="button" class="pain-btn" data-v="0">0</button>
-            <button type="button" class="pain-btn" data-v="1">1</button>
-            <button type="button" class="pain-btn" data-v="2">2</button>
-            <button type="button" class="pain-btn" data-v="3">3</button>
-            <button type="button" class="pain-btn" data-v="4">4</button>
-            <button type="button" class="pain-btn" data-v="5">5</button>
-            <button type="button" class="pain-btn" data-v="6">6</button>
-            <button type="button" class="pain-btn" data-v="7">7</button>
-            <button type="button" class="pain-btn" data-v="8">8</button>
-            <button type="button" class="pain-btn" data-v="9">9</button>
-            <button type="button" class="pain-btn" data-v="10">10</button>
-          </div>
-          <div class="pain-scale-labels"><span>Brak bólu</span><span>Bardzo silny ból</span></div>
-          <input type="hidden" id="painVal" name="Poziom bólu" value="" />
-        </div>
-
-        <div class="form-group">
-          <label class="form-label">Czy jesteś gotowy na regularne spotkania 1× w tygodniu przez minimum 12 tygodni?</label>
-          <div class="radio-group">
-            <label class="radio-item"><input type="radio" name="Gotowość do pracy" value="Tak" /><span class="radio-item-label">Tak, rozumiem że to proces – nie jednorazowa sesja</span></label>
-            <label class="radio-item"><input type="radio" name="Gotowość do pracy" value="Wątpliwości" /><span class="radio-item-label">Mam wątpliwości co do czasu – chcę to omówić</span></label>
-            <label class="radio-item"><input type="radio" name="Gotowość do pracy" value="Nie wiem" /><span class="radio-item-label">Jeszcze nie wiem – chcę najpierw dowiedzieć się więcej</span></label>
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label class="form-label" for="opis">Co najbardziej Cię teraz boli lub przeszkadza? <span class="req">*</span></label>
-          <span class="form-sublabel">Napisz swoimi słowami – nie potrzebuję medycznego opisu</span>
-          <textarea class="form-textarea" id="opis" name="Opis sytuacji" required placeholder="np. Boli mnie dolna część pleców przy dłuższym siedzeniu i wstawaniu. Od pół roku. Byłem u fizjoterapeuty, trochę pomogło, ale wraca..."></textarea>
-          <span class="form-err-msg" id="err-opis">Opisz swój problem – to kluczowe do dobrej rozmowy</span>
-        </div>
-
-        <div class="form-section"><div class="form-section-title">Zgody</div></div>
-
-        <div class="rodo-wrap">
-          <input type="checkbox" id="rodo1" name="Zgoda RODO" value="Tak" required />
-          <span class="rodo-text"><strong>Wyrażam zgodę</strong> na przetwarzanie moich danych osobowych przez Damiana Krawca (Studio Las) w celu odpowiedzi na zapytanie i nawiązania kontaktu w sprawie współpracy treningowej. Dane nie będą przekazywane osobom trzecim. Zgodę mogę wycofać pisząc na <a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a>. <span class="req">*</span></span>
-        </div>
-        <span class="form-err-msg" id="err-rodo" style="margin-bottom:16px;">Zgoda jest wymagana</span>
-
-        <div class="rodo-wrap" style="border-color:var(--grey-soft);">
-          <input type="checkbox" id="rodo2" name="Zgoda na kontakt" value="Tak" />
-          <span class="rodo-text">Opcjonalnie: wyrażam zgodę na otrzymywanie informacji o ofercie Studio Las. Mogę się wypisać w każdej chwili.</span>
-        </div>
-
-        <div class="form-submit-wrap">
-          <button type="submit" class="form-submit-btn">
-            <span>Wyślij ankietę</span><span>→</span>
-          </button>
-          <p class="form-submit-note">Oddzwaniam w ciągu 24 godzin w dni robocze.<br>Dane są bezpieczne i nie trafią nigdzie bez Twojej zgody.</p>
-          <div class="form-status" id="formStatus" role="status" aria-live="polite"></div>
-        </div>
-
-      </form>
-
-      <div class="form-success" id="formSuccess">
-        <div class="success-icon">✓</div>
-        <div class="success-title">Dziękuję. Ankieta dotarła.</div>
-        <p class="success-body">Dziękuję. Ankieta dotarła. Odezwę się w ciągu 24 godzin w dni robocze. Jeśli sprawa jest pilna, zadzwoń: <a href="tel:+48503975998">503 975 998</a>.</p>
+      <div class="form-group">
+        <label class="form-label" for="email">E-mail <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--grey-text)">— opcjonalnie</span></label>
+        <input class="form-input" id="email" name="Email" type="email" autocomplete="email" placeholder="twoj@email.pl" />
+        <span class="form-err-msg" id="err-email">Sprawdź adres e-mail albo pozostaw pole puste.</span>
       </div>
 
+      <div class="form-group">
+        <label class="form-label" for="pora">Kiedy najlepiej się z Tobą skontaktować? <span class="req">*</span></label>
+        <span class="form-sublabel">To nie jest rezerwacja wizyty — chodzi tylko o spokojny pierwszy kontakt.</span>
+        <select class="form-select" id="pora" name="Preferowana pora kontaktu" required>
+          <option value="">— Wybierz —</option>
+          <option>16:00–18:00</option>
+          <option>18:00–20:00</option>
+          <option>20:00–22:00</option>
+          <option>Najpierw napisz SMS i ustalmy termin</option>
+          <option>Inny termin — ustalimy wiadomością</option>
+        </select>
+        <span class="form-err-msg" id="err-pora">Wybierz najwygodniejszy sposób lub porę kontaktu.</span>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="form-group">
+        <label class="form-label">Co chciałbyś odzyskać albo poprawić? <span class="req">*</span></label>
+        <span class="form-sublabel">Wybierz jedną odpowiedź, która jest dziś najbliżej Twojego celu.</span>
+        <div class="choice-group" id="goalChoices">
+          <label class="choice-item"><input type="radio" name="Główny cel" value="Swobodniejsze poruszanie się na co dzień" /><span class="choice-label">Swobodniej poruszać się na co dzień</span></label>
+          <label class="choice-item"><input type="radio" name="Główny cel" value="Powrót do aktywności lub sportu" /><span class="choice-label">Wrócić do aktywności albo sportu</span></label>
+          <label class="choice-item"><input type="radio" name="Główny cel" value="Siła i kondycja po przerwie" /><span class="choice-label">Odzyskać siłę i kondycję po przerwie</span></label>
+          <label class="choice-item"><input type="radio" name="Główny cel" value="Większa pewność w ruchu" /><span class="choice-label">Poczuć się pewniej w ruchu</span></label>
+          <label class="choice-item"><input type="radio" name="Główny cel" value="Chcę najpierw porozmawiać" /><span class="choice-label">Jeszcze nie umiem tego nazwać — chcę najpierw porozmawiać</span></label>
+        </div>
+        <span class="form-err-msg" id="err-cel">Wybierz jedną odpowiedź.</span>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="zdanie">Jeżeli chcesz: jedno zdanie o tym, co chciałbyś znowu móc robić</label>
+        <span class="form-sublabel">Bez diagnozy i dokumentacji. Przykład: „Chcę znowu spokojnie chodzić po górach z rodziną”.</span>
+        <textarea class="form-textarea" id="zdanie" name="Co chce znowu móc robić" maxlength="280" placeholder="Opcjonalnie — jedno krótkie zdanie"></textarea>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label" for="skad">Skąd będziesz dojeżdżać? <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--grey-text)">— opcjonalnie</span></label>
+        <select class="form-select" id="skad" name="Skąd dojeżdża">
+          <option value="">— Wybierz —</option>
+          <option>Tarczyn i okolice</option>
+          <option>Piaseczno i okolice</option>
+          <option>Grójec / Mszczonów i okolice</option>
+          <option>Południe Warszawy</option>
+          <option>Inne</option>
+        </select>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="consent">
+        <input type="checkbox" id="zgoda" name="Prośba o kontakt" value="Tak" required />
+        <label for="zgoda">Proszę o kontakt w sprawie Studio Las i zgadzam się na wykorzystanie podanych danych do obsługi mojego zapytania. Formularz jest technicznie przekazywany przez Formspree. Nie wpisuję tutaj danych medycznych. <span class="req">*</span></label>
+      </div>
+      <span class="form-err-msg" id="err-zgoda">Potwierdź prośbę o kontakt.</span>
+
+      <button class="submit-btn" type="submit">Poproś o kontakt →</button>
+      <p class="submit-note">Najpierw rozmowa. PWD i dalsze kroki dopiero wtedy, gdy uznamy że Studio Las pasuje do Twojej sytuacji.</p>
+      <div class="status" id="formStatus" role="status" aria-live="polite"></div>
+    </form>
+
+    <div class="success" id="formSuccess" role="status" aria-live="polite">
+      <div class="success-mark">✓</div>
+      <h3>Dziękuję. Mam Twój kontakt.</h3>
+      <p>Odezwę się zgodnie z wybraną przez Ciebie porą lub najpierw wiadomością, żeby ustalić spokojny moment rozmowy. Na tym etapie niczego więcej nie musisz przygotowywać.</p>
     </div>
-  </div>
+  </section>
 
-  <!-- PRAWA: KONTAKT + MAPA -->
-  <div id="kontakt-lokalizacja">
-    <div style="padding:0 max(24px,calc((100vw - 1120px)/2 + 24px)) 0 0">
+  <aside class="side" id="kontakt-lokalizacja" aria-labelledby="whereTitle">
+    <span class="section-label">Kontakt i lokalizacja</span>
+    <h2 class="side-title" id="whereTitle">Studio Las —<br>Prace Duże pod Tarczynem</h2>
+    <p class="side-intro">Prywatne studio 1:1. Bez przypadkowych osób obok, bez pośpiechu i bez atmosfery typowej siłowni.</p>
 
-      <div class="reveal">
-        <span class="section-label">Kontakt i lokalizacja</span>
-        <h2 class="contact-title">Studio Las –<br>znajdź nas</h2>
-        <p class="contact-intro">Kameralne studio w lesie pod Tarczynem. Nie w galerii handlowej, nie przy ruchliwej ulicy. 30 metrów od domu, w środku lasu – i to jest zamierzone.</p>
-      </div>
+    <div class="contact-card"><div class="contact-label">Adres</div><div class="contact-value">ul. Pracka 1J, 05-504 Prace Duże<br><small>gmina Tarczyn, mazowieckie</small></div></div>
+    <div class="contact-card"><div class="contact-label">Telefon</div><div class="contact-value"><a href="tel:+48503975998">503 975 998</a></div></div>
+    <div class="contact-card"><div class="contact-label">E-mail</div><div class="contact-value"><a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></div></div>
 
-      <div class="contact-cards reveal" style="transition-delay:.1s">
-        <div class="contact-card">
-          <div class="contact-card-icon">📍</div>
-          <div>
-            <div class="contact-card-label">Adres</div>
-            <div class="contact-card-value">ul. Pracka 1J, 05-504 Prace Duże<br><small style="color:var(--grey-text);font-size:.8rem">gmina Tarczyn, mazowieckie</small></div>
-          </div>
-        </div>
-        <div class="contact-card">
-          <div class="contact-card-icon">📞</div>
-          <div>
-            <div class="contact-card-label">Telefon</div>
-            <div class="contact-card-value"><a href="tel:+48503975998">503 975 998</a></div>
-          </div>
-        </div>
-        <div class="contact-card">
-          <div class="contact-card-icon">✉️</div>
-          <div>
-            <div class="contact-card-label">E-mail</div>
-            <div class="contact-card-value"><a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></div>
-          </div>
-        </div>
-      </div>
+    <div class="hours"><div class="hours-label">Godziny pracy</div><p>Poniedziałek–Piątek<br><strong>16:00–22:00</strong></p><p style="margin-top:10px">Weekend<br><strong>po wcześniejszym ustaleniu</strong></p></div>
 
-      <div class="hours-block reveal" style="transition-delay:.15s">
-        <div class="hours-title">Godziny pracy</div>
-        <div class="hours-grid">
-          <div><div class="hours-day">Poniedziałek – Piątek</div><div class="hours-time">16:00 – 22:00</div></div>
-          <div><div class="hours-day">Sobota – Niedziela</div><div class="hours-time">Po umówieniu</div></div>
-        </div>
-      </div>
+    <div class="why"><h3>Co wydarzy się dalej?</h3><p><strong>1.</strong> Ustalimy dogodny moment krótkiej rozmowy.</p><p><strong>2.</strong> Porozmawiamy o tym, do czego chcesz wrócić i czy Studio Las jest właściwym miejscem.</p><p><strong>3.</strong> Jeśli Pierwsza Wizyta Diagnostyczna będzie miała sens, dopiero wtedy dostaniesz informacje potrzebne do przygotowania spotkania.</p></div>
+  </aside>
+</main>
 
-      <div class="map-wrap reveal" style="transition-delay:.2s">
-        <!--
-          PODMIEŃ ten div na iframe z Google Maps:
-          1. Wejdź na maps.google.com
-          2. Wyszukaj: ul. Pracka 1J Prace Duże
-          3. Kliknij Udostępnij → Osadź mapę → Skopiuj HTML
-          4. Wklej <iframe ...> tutaj zamiast poniższego div
-        -->
-        <div class="map-placeholder">
-          <div class="map-placeholder-icon">🗺️</div>
-          <div class="map-placeholder-text">
-            Wklej tutaj iframe z Google Maps<br>
-            <small style="opacity:.6">ul. Pracka 1J, 05-504 Prace Duże</small>
-          </div>
-        </div>
-        <a href="https://maps.google.com/?q=Pracka+1J+Prace+Duże" target="_blank" rel="noopener" class="map-link">Otwórz w Google Maps</a>
-      </div>
-
-      <div class="dojazd-block reveal" style="transition-delay:.25s">
-        <div class="dojazd-title">Dojazd samochodem</div>
-        <ul class="dojazd-list">
-          <li><strong>Z Piaseczna:</strong> ok. 20–25 min – droga nr 722 przez Tarczyn</li>
-          <li><strong>Z centrum Warszawy:</strong> ok. 40–50 min – trasa S7 lub przez Piaseczno</li>
-          <li><strong>Z Grójca i Mszczonowa:</strong> ok. 15–20 min – droga nr 722</li>
-          <li><strong>Parking:</strong> bezpłatny, bezpośrednio przy studio</li>
-          <li><strong>Komunikacja miejska:</strong> brak – dojazd wyłącznie samochodem</li>
-        </ul>
-      </div>
-
-      <div class="reveal" style="transition-delay:.3s">
-        <div class="praktyki-label">Co zabrać na pierwsze spotkanie</div>
-        <div class="praktyki-grid">
-          <div class="praktyki-item"><div class="praktyki-item-label">Strój</div><div class="praktyki-item-value">Wygodny strój sportowy</div></div>
-          <div class="praktyki-item"><div class="praktyki-item-label">Obuwie</div><div class="praktyki-item-value">Buty sportowe (część ćwiczeń robimy boso)</div></div>
-          <div class="praktyki-item"><div class="praktyki-item-label">Woda i ręcznik</div><div class="praktyki-item-value">Nie musisz – są na miejscu</div></div>
-          <div class="praktyki-item"><div class="praktyki-item-label">Dokumentacja</div><div class="praktyki-item-value">Wyniki badań, opis MRI – jeśli masz</div></div>
-          <div class="praktyki-item"><div class="praktyki-item-label">Prysznic</div><div class="praktyki-item-value">Dostępny – możesz wrócić do pracy</div></div>
-          <div class="praktyki-item"><div class="praktyki-item-label">Parking</div><div class="praktyki-item-value">Bezpłatny – bez liczenia minut</div></div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-
-</div><!-- /.page-body -->
-
-<!-- NAPISZ BEZPOŚREDNIO -->
-<section id="prosty-kontakt">
-  <div class="container">
-    <div class="simple-grid">
-      <div class="reveal">
-        <h2 class="simple-title">Wolisz napisać<br>zamiast <em>wypełniać ankietę?</em></h2>
-        <p class="simple-body">Jeśli chcesz tylko zadać jedno pytanie, opisać krótko swoją sytuację albo zapytać o dostępność terminów – napisz tutaj. Prostszy formularz, bez sekcji i checkboxów.</p>
-        <p class="simple-note">Pamiętaj jednak, że im więcej wiem o Twojej sytuacji przed rozmową, tym bardziej konkretna i pomocna będzie ta rozmowa. Dlatego dla osób z poważniejszymi problemami zdrowotnymi zawsze proszę o wypełnienie pełniejszej ankiety powyżej.</p>
-      </div>
-      <div class="reveal" style="transition-delay:.15s">
-        <form id="simpleForm" name="kontakt-prosty" action="https://formspree.io/f/xgorealz" method="POST" novalidate>
-          <input type="hidden" name="_subject" value="Nowa wiadomość z formularza prostego – Studio Las" />
-          <div class="sf-group">
-            <label class="sf-label" for="sf-imie">Imię i telefon lub e-mail *</label>
-            <input class="sf-input" type="text" id="sf-imie" name="Kontakt" placeholder="Jan, tel. 600 123 456" required />
-          </div>
-          <div class="sf-group">
-            <label class="sf-label" for="sf-msg">Twoja wiadomość *</label>
-            <textarea class="sf-textarea" id="sf-msg" name="Wiadomość" placeholder="Napisz, o co chodzi – bez formalności..." required></textarea>
-          </div>
-          <button type="submit" class="sf-submit">Wyślij wiadomość →</button>
-          <div class="sf-status" id="sfStatus" role="status" aria-live="polite"></div>
-        </form>
-        <div class="sf-success" id="sfSuccess"><p>Wiadomość dotarła. Odezwę się w ciągu 24 godzin w dni robocze.</p></div>
-      </div>
-    </div>
-  </div>
-</section>
-
-<footer>
-  <div class="container">
-    <div class="footer-grid">
-      <div>
-        <div class="footer-logo">Studio <span>Las</span></div>
-        <p class="footer-tagline">Nie dla każdego. Dla osób, które traktują zdrowie jako inwestycję, nie wydatek.</p>
-      </div>
-      <div>
-        <div class="footer-col-title">Nawigacja</div>
-        <ul class="footer-links">
-          <li><a href="./index.html">Strona główna</a></li>
-          <li><a href="./metoda-i-pakiety.html">Metoda i pakiety</a></li>
-          <li><a href="https://sites.google.com/view/trener-personalny-warszawa/referencje" target="_blank" rel="noopener">Certyfikaty</a></li>
-        </ul>
-      </div>
-      <div>
-        <div class="footer-col-title">Kontakt</div>
-        <p class="footer-contact-item">ul. Pracka 1J, 05-504 Prace Duże</p>
-        <p class="footer-contact-item"><a href="tel:+48503975998">503 975 998</a></p>
-        <p class="footer-contact-item"><a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></p>
-        <p class="footer-contact-item" style="margin-top:16px;font-size:.78rem;opacity:.7">Pon–Pt: 16:00–22:00 · Sob–Nd: po umówieniu</p>
-      </div>
-    </div>
-    <div class="footer-bottom">
-      <p class="footer-copy">© 2025 Studio Las · Damian Krawiec. Wszelkie prawa zastrzeżone.</p>
-      <div class="footer-legal"><span>Polityka prywatności</span><span>Regulamin</span></div>
-    </div>
-  </div>
-</footer>
+<footer><div class="container footer-grid"><div><div class="footer-logo">Studio Las</div><p style="font-size:.76rem;margin-top:7px">Prywatna praca 1:1 · Prace Duże</p></div><p class="footer-copy">© 2026 Studio Las · Damian Krawiec<br><a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a></p></div></footer>
 
 <script>
-// Hamburger
-document.getElementById('hamburger').addEventListener('click',()=>document.getElementById('navMobile').classList.toggle('open'));
-document.querySelectorAll('#navMobile a').forEach(l=>l.addEventListener('click',()=>document.getElementById('navMobile').classList.remove('open')));
+const toggle=document.getElementById('hamburger');
+const mobile=document.getElementById('navMobile');
+function setMenu(open){mobile.classList.toggle('open',open);toggle.setAttribute('aria-expanded',open?'true':'false');toggle.setAttribute('aria-label',open?'Zamknij menu':'Otwórz menu')}
+toggle.addEventListener('click',()=>setMenu(!mobile.classList.contains('open')));
+mobile.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});
 
-// Scroll reveal
-const obs=new IntersectionObserver((entries)=>{entries.forEach(e=>{if(e.isIntersecting){e.target.classList.add('visible');obs.unobserve(e.target)}})},{threshold:.1,rootMargin:'0px 0px -32px 0px'});
-document.querySelectorAll('.reveal').forEach(el=>obs.observe(el));
+const form=document.getElementById('mainForm');
+const statusEl=document.getElementById('formStatus');
+const successEl=document.getElementById('formSuccess');
+const byId=id=>document.getElementById(id);
+function showError(id,show){byId(id)?.classList.toggle('show',show)}
+function validateField(id,errorId,invalid){const el=byId(id);el.classList.toggle('err',invalid);showError(errorId,invalid);return !invalid}
+function setStatus(message,error=false){statusEl.textContent=message;statusEl.classList.add('show');statusEl.classList.toggle('err',error)}
+function buildMailto(){const data=new FormData(form);const lines=[];for(const [key,value] of data.entries()){if(!value||key==='_subject'||key==='_gotcha')continue;lines.push(`${key}: ${value}`)}return 'mailto:trenermedycznywarszawa@gmail.com?subject='+encodeURIComponent('Pierwszy kontakt – Studio Las')+'&body='+encodeURIComponent(lines.join('\n'))}
 
-// Checkbox/radio visual state
-document.querySelectorAll('.checkbox-item,.radio-item').forEach(item=>{
-  const inp=item.querySelector('input');
-  inp.addEventListener('change',()=>{
-    if(inp.type==='radio'){
-      document.querySelectorAll('input[name="'+inp.name+'"]').forEach(r=>r.closest('.radio-item')?.classList.remove('sel'));
-    }
-    item.classList.toggle('sel',inp.checked);
-  });
-});
-
-// Pain scale
-document.querySelectorAll('.pain-btn').forEach(btn=>{
-  btn.addEventListener('click',()=>{
-    document.querySelectorAll('.pain-btn').forEach(b=>b.classList.remove('active'));
-    btn.classList.add('active');
-    document.getElementById('painVal').value=btn.dataset.v;
-  });
-});
-
-// Main form validation
-document.getElementById('mainForm').addEventListener('submit',function(e){
-  e.preventDefault();
+form.addEventListener('submit',async event=>{
+  event.preventDefault();
   let ok=true;
-  const show=(id)=>document.getElementById(id).classList.add('show');
-  const hide=(id)=>document.getElementById(id).classList.remove('show');
-  const field=(id,errId,cond)=>{const el=document.getElementById(id);if(cond){el.classList.add('err');show(errId);ok=false}else{el.classList.remove('err');hide(errId)}};
+  const imie=byId('imie');const telefon=byId('telefon');const email=byId('email');const pora=byId('pora');
+  ok=validateField('imie','err-imie',!imie.value.trim())&&ok;
+  ok=validateField('telefon','err-telefon',telefon.value.replace(/\D/g,'').length<9)&&ok;
+  ok=validateField('email','err-email',Boolean(email.value.trim())&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()))&&ok;
+  ok=validateField('pora','err-pora',!pora.value)&&ok;
+  const goal=form.querySelector('input[name="Główny cel"]:checked');showError('err-cel',!goal);if(!goal)ok=false;
+  const consent=byId('zgoda');showError('err-zgoda',!consent.checked);if(!consent.checked)ok=false;
+  if(!ok){form.querySelector('.err,.form-err-msg.show')?.scrollIntoView({behavior:'smooth',block:'center'});return}
 
-  const imie=document.getElementById('imie');
-  const telefon=document.getElementById('telefon');
-  const email=document.getElementById('email');
-  const opis=document.getElementById('opis');
-
-  field('imie','err-imie',!imie.value.trim());
-  field('telefon','err-telefon',telefon.value.replace(/\s/g,'').length<9);
-  field('email','err-email',!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value));
-
-  const checked=this.querySelectorAll('input[name="Problem"]:checked');
-  if(checked.length===0){show('err-problem');ok=false}else hide('err-problem');
-
-  field('opis','err-opis',!opis.value.trim()||opis.value.trim().length<20);
-
-  if(!document.getElementById('rodo1').checked){show('err-rodo');ok=false}else hide('err-rodo');
-
-  if(!ok){const first=this.querySelector('.err,.form-err-msg.show');if(first)first.scrollIntoView({behavior:'smooth',block:'center'});return;}
-
-  submitFormspree(this, 'formStatus', showOk);
-});
-
-
-function buildEmailBody(form){
-  const data=new FormData(form);
-  const grouped={};
-  data.forEach((value,key)=>{
-    if(!value || key==='bot-field' || key==='bot-field-simple' || key==='form-name' || key==='_subject') return;
-    if(!grouped[key]) grouped[key]=[];
-    grouped[key].push(value);
-  });
-  return Object.keys(grouped).map(key=>key+': '+grouped[key].join(', ')).join('\n');
-}
-
-function setStatus(id,msg,isErr=false){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.textContent=msg;
-  el.classList.add('show');
-  el.classList.toggle('err',isErr);
-}
-
-function setStatusHtml(id,html,isErr=false){
-  const el=document.getElementById(id);
-  if(!el) return;
-  el.innerHTML=html;
-  el.classList.add('show');
-  el.classList.toggle('err',isErr);
-}
-
-function buildMailto(form){
-  const subjectField=form.querySelector('[name="_subject"]');
-  const subject=subjectField ? subjectField.value : 'Kontakt Studio Las';
-  const body=buildEmailBody(form);
-  return 'mailto:trenermedycznywarszawa@gmail.com?subject='+encodeURIComponent(subject)+'&body='+encodeURIComponent(body);
-}
-
-async function submitFormspree(form,statusId,onSuccess){
-  const submitBtn=form.querySelector('button[type="submit"]');
-  const oldText=submitBtn ? submitBtn.textContent : '';
-  const action=form.getAttribute('action');
-  if(!action){
-    setStatusHtml(statusId,'Formularz nie ma jeszcze podpiętego endpointu. Wyślij wiadomość bezpośrednio: <a href="'+buildMailto(form)+'">trenermedycznywarszawa@gmail.com</a>.',true);
-    return;
-  }
-  if(submitBtn){submitBtn.disabled=true;submitBtn.textContent='Wysyłam...';}
-  setStatus(statusId,'Wysyłam formularz...');
+  const submit=form.querySelector('button[type="submit"]');const oldText=submit.textContent;submit.disabled=true;submit.textContent='Wysyłam...';setStatus('Wysyłam prośbę o kontakt...');
   try{
-    const response=await fetch(action,{
-      method:'POST',
-      body:new FormData(form),
-      headers:{'Accept':'application/json'}
-    });
-    if(response.ok){
-      form.reset();
-      document.querySelectorAll('.checkbox-item.sel,.radio-item.sel').forEach(el=>el.classList.remove('sel'));
-      document.querySelectorAll('.pain-btn.active').forEach(el=>el.classList.remove('active'));
-      onSuccess();
-      return;
-    }
-    throw new Error('Formspree response '+response.status);
+    const response=await fetch(form.action,{method:'POST',body:new FormData(form),headers:{Accept:'application/json'}});
+    if(!response.ok)throw new Error(`Formspree ${response.status}`);
+    form.reset();form.style.display='none';statusEl.classList.remove('show');successEl.classList.add('show');successEl.scrollIntoView({behavior:'smooth',block:'center'});
   }catch(error){
-    const mailto=buildMailto(form);
-    setStatusHtml(statusId,'Nie udało się wysłać formularza automatycznie. Nie pokazuję fałszywego sukcesu. <a href="'+mailto+'">Wyślij tę treść e-mailem</a> albo napisz na <a href="mailto:trenermedycznywarszawa@gmail.com">trenermedycznywarszawa@gmail.com</a>.',true);
-  }finally{
-    if(submitBtn){submitBtn.disabled=false;submitBtn.textContent=oldText;}
-  }
-}
-
-function showOk(){
-  document.getElementById('mainForm').style.display='none';
-  const s=document.getElementById('formSuccess');
-  s.classList.add('show');
-  s.scrollIntoView({behavior:'smooth',block:'center'});
-}
-
-// Simple form
-document.getElementById('simpleForm').addEventListener('submit',function(e){
-  e.preventDefault();
-  const kontakt=document.getElementById('sf-imie');
-  const msg=document.getElementById('sf-msg');
-  if(!kontakt.value.trim()||!msg.value.trim()){
-    setStatus('sfStatus','Uzupełnij imię z kontaktem oraz wiadomość.',true);
-    return;
-  }
-  submitFormspree(this,'sfStatus',()=>{
-    this.style.display='none';
-    document.getElementById('sfSuccess').classList.add('show');
-  });
+    statusEl.innerHTML='Nie udało się wysłać formularza automatycznie. <a style="text-decoration:underline" href="'+buildMailto()+'">Wyślij tę samą treść e-mailem</a> albo zadzwoń pod <a style="text-decoration:underline" href="tel:+48503975998">503 975 998</a>.';statusEl.classList.add('show','err');
+  }finally{submit.disabled=false;submit.textContent=oldText}
 });
-</script>
-<script>
-(function initSiteNavigation(){
-  const toggle=document.getElementById('hamburger');
-  const menu=document.getElementById('navMobile');
-  if(!toggle||!menu)return;
-  const setOpen=(open)=>{
-    menu.classList.toggle('open',open);
-    toggle.setAttribute('aria-expanded',open?'true':'false');
-    toggle.setAttribute('aria-label',open?'Zamknij menu':'Otwórz menu');
-  };
-  toggle.addEventListener('click',(event)=>{
-    event.preventDefault();
-    event.stopImmediatePropagation();
-    setOpen(!menu.classList.contains('open'));
-  },true);
-  menu.querySelectorAll('a').forEach(link=>{
-    link.addEventListener('click',()=>setOpen(false));
-  });
-  document.addEventListener('keydown',(event)=>{
-    if(event.key==='Escape')setOpen(false);
-  });
-})();
 </script>
 </body>
 </html>
