@@ -13,6 +13,23 @@ import {
   INQUIRY_STATUS_LABELS
 } from "../inquiries.js";
 
+const NEXT_ACTION_LABELS = Object.freeze({
+  contact_call: "Telefon",
+  contact_message: "Wiadomość",
+  arrange_pwd: "Ustalić termin PWD",
+  follow_up: "Follow-up",
+  referral: "Najpierw konsultacja / inny krok"
+});
+
+function formatNextAction(item) {
+  if (!item?.next_action_type) return "Nie ustalono";
+  const label = NEXT_ACTION_LABELS[item.next_action_type] || item.next_action_type;
+  if (!item.next_action_at) return label;
+  const date = new Date(item.next_action_at);
+  if (Number.isNaN(date.getTime())) return `${label} · ${item.next_action_at}`;
+  return `${label} · ${date.toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" })}`;
+}
+
 function inquiryOption(inquiry) {
   const state = INQUIRY_STATUS_LABELS[inquiry.inquiry_status] || inquiry.inquiry_status;
   return create("option", {
@@ -29,7 +46,8 @@ function sourceSummary(inquiry) {
     ["Kierunek", inquiry.broad_goal],
     ["Własne zdanie", inquiry.person_words || "Nie podano"],
     ["Status kontaktu", CONTACT_STATUS_LABELS[inquiry.contact_status] || inquiry.contact_status],
-    ["Status zgłoszenia", INQUIRY_STATUS_LABELS[inquiry.inquiry_status] || inquiry.inquiry_status]
+    ["Status zgłoszenia", INQUIRY_STATUS_LABELS[inquiry.inquiry_status] || inquiry.inquiry_status],
+    ["Następny krok", formatNextAction(inquiry)]
   ];
   return create("div", { className: "summary-grid" }, rows.map(([label, value], index) =>
     create("div", { className: `summary-item ${index >= 3 ? "wide" : ""}` }, [
@@ -176,6 +194,7 @@ function decisionHistory(decisions) {
     create("strong", { text: `v${item.decision_version} · ${item.decision}${item.decision_status === "active" ? " · aktualna" : ""}` }),
     create("p", { text: item.goal_in_person_words }),
     create("p", { className: "muted", text: item.rationale }),
+    item.next_action_type ? create("p", { className: "muted", text: `Następny krok: ${formatNextAction(item)}` }) : null,
     item.boundary_note ? create("p", { className: "muted", text: `Granica: ${item.boundary_note}` }) : null
   ]), "Nie zapisano jeszcze decyzji trenera.");
 }
