@@ -1,6 +1,7 @@
 -- STAGING / QA ONLY.
--- Installed only on canonical staging as migration history entry
--- 20260901121951_staging_only_stage2_inquiry_e2e_fixture.
+-- Installed only on canonical staging as migration history entries:
+-- 20260901121951_staging_only_stage2_inquiry_e2e_fixture
+-- 20260901123031_staging_only_stage2_inquiry_e2e_fixture_fix
 -- MUST NOT be promoted as a production migration.
 
 create or replace function public.create_stage2_synthetic_inquiry_e2e(p_marker text)
@@ -64,6 +65,7 @@ declare
   v_inquiry public.inquiries%rowtype;
   v_marker text := btrim(coalesce(p_marker, ''));
   v_client_id uuid;
+  v_decision_id uuid;
   v_decisions integer := 0;
 begin
   if coalesce(auth.jwt() ->> 'aal', '') <> 'aal2' then
@@ -88,13 +90,20 @@ begin
   if v_client_id is not null then
     if exists (select 1 from public.sessions where client_id = v_client_id and deleted_at is null)
        or exists (select 1 from public.home_plans where client_id = v_client_id and deleted_at is null)
-       or exists (select 1 from public.client_users where client_id = v_client_id and revoked_at is null) then
+       or exists (select 1 from public.client_users where client_id = v_client_id and status = 'active') then
       raise exception 'synthetic converted client acquired process data; refusing cleanup' using errcode = '42501';
     end if;
   end if;
 
-  delete from public.inquiry_decisions where inquiry_id = p_inquiry_id;
-  get diagnostics v_decisions = row_count;
+  for v_decision_id in
+    select id from public.inquiry_decisions
+    where inquiry_id = p_inquiry_id
+    order by decision_version desc
+  loop
+    delete from public.inquiry_decisions where id = v_decision_id;
+    v_decisions := v_decisions + 1;
+  end loop;
+
   delete from public.inquiries where id = p_inquiry_id;
 
   if v_client_id is not null then
