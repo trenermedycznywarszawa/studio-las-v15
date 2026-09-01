@@ -33,26 +33,26 @@ export class InquiryController {
       : [];
   }
 
-  render(workspace, { loadTrainer, onError }) {
+  render(workspace, { rerender, loadTrainer, onError }) {
     renderInquirySection(workspace, {
       inquiries: this.inquiries,
       activeInquiryId: this.activeInquiryId,
       inquiryDecisions: this.decisions,
-      onSelectInquiry: inquiryId => this.select(inquiryId).then(() => this.render(workspace, { loadTrainer, onError })).catch(onError),
+      onSelectInquiry: inquiryId => this.select(inquiryId).then(rerender).catch(onError),
       onSetContactState: async (inquiryId, values) => {
         await this.withWrite("Zapisywanie stanu kontaktu", () => this.repository.setContactState(inquiryId, values));
         await this.refresh(inquiryId);
-        await loadTrainer(null, { preserveInquiry: true });
+        rerender();
       },
       onSaveDecision: async (inquiryId, values) => {
         await this.withWrite("Zapisywanie decyzji po rozmowie", () => this.repository.saveDecision(inquiryId, values));
         await this.refresh(inquiryId);
-        await loadTrainer(null, { preserveInquiry: true });
+        rerender();
       },
       onConvertInquiry: async inquiryId => {
         const result = await this.withWrite("Tworzenie klienta do PWD", () => this.repository.convertToPwdClient(inquiryId));
         await this.refresh(inquiryId);
-        await loadTrainer(result?.clientId || "", { preserveInquiry: true });
+        await loadTrainer(result?.clientId || "");
       }
     });
   }
