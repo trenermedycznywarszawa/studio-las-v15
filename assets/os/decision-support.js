@@ -59,7 +59,6 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
   const sessionDate = session?.date || session?.created_at;
   const trainingLoadDate = trainingLoad?.observed_at || trainingLoad?.created_at;
   const preSessionCheckDate = preSessionCheck?.check_date || preSessionCheck?.created_at;
-  const clientDate = client?.updated_at || client?.created_at;
 
   const painBefore = numberOrNull(session?.vas_before ?? session?.vasBefore);
   const painAfter = numberOrNull(session?.vas_after ?? session?.vasAfter);
@@ -148,19 +147,6 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       label: SIGNAL_LABELS["new-symptoms"],
       context: "Program nie interpretuje charakteru ani znaczenia objawów.",
       trainerQuestion: "Jakie dodatkowe informacje trzeba zebrać przed dalszą pracą?"
-    });
-  }
-
-  const redFlagsText = String(client?.red_flags_text ?? client?.redFlagsText ?? "").trim();
-  if (redFlagsText) {
-    addSignal(signals, {
-      id: "client-record-has-risk-context",
-      level: "information",
-      source: "client-record",
-      sourceDate: clientDate,
-      label: SIGNAL_LABELS["client-record-has-risk-context"],
-      context: "Treść pozostaje notatką trenera i nie jest interpretowana automatycznie.",
-      trainerQuestion: "Czy obecny plan uwzględnia tę informację i czy nadal jest aktualna?"
     });
   }
 

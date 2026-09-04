@@ -17,7 +17,7 @@ const workspace = {
   client: {
     id: "client-fixture", name: "Anna Przykładowa", engagement_type: "twelve_week_process", stage: 4,
     goal: "Swobodniej wejść po schodach", next_review_date: "2026-09-12", next_milestone: "Omówić kolejny model pracy",
-    created_at: "2026-06-01T09:00:00Z", updated_at: "2026-09-04T09:00:00Z"
+    start_date: "2026-08-15", created_at: "2026-06-01T09:00:00Z", updated_at: "2026-09-04T09:00:00Z"
   },
   intakes: [], preSessionChecks: [], postSessionObservations: [], tasks: [], documents: [],
   sessions: [
@@ -38,9 +38,13 @@ const workspace = {
   guidanceEvents: [],
   reports: [
     { id: "report-12", type: "twelveWeeks", audience: "trainer", status: "draft", title: "Raport 12 tygodni", content: "Wzorzec z całego cyklu.", created_at: "2026-09-04T08:00:00Z" },
+    { id: "report-old-12", type: "twelveWeeks", audience: "trainer", status: "archived", title: "Stary raport 12 tygodni", content: "Wzorzec z poprzedniego cyklu.", created_at: "2026-07-10T08:00:00Z" },
     { id: "report-old", type: "fourWeeks", audience: "client", status: "published", title: "Starszy raport", content: "Wcześniejszy zapis.", created_at: "2026-08-01T08:00:00Z" }
   ],
-  cycleDecisions: [], signalReviews: []
+  cycleDecisions: [
+    { id: "decision-old", decision: "continue_1_to_1", rationale: "Decyzja z poprzedniego cyklu.", decided_at: "2026-07-05T12:00:00Z" }
+  ],
+  signalReviews: []
 };
 
 function currentSignals() {
@@ -79,6 +83,10 @@ window.advanceDecisionSignalDate = sourceDate => {
 };
 window.setDecisionFixtureDraftVisible = visible => {
   workspace.homePlans = visible ? [activePlan, draftPlan] : [activePlan];
+  render();
+};
+window.setDecisionFixtureStage = stage => {
+  workspace.client.stage = stage;
   render();
 };
 window.decisionFixtureWorkspace = workspace;

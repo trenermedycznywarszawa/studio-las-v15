@@ -128,14 +128,14 @@ jobs:
           cat /tmp/studio-las-e2e-server.log
           exit 1
 
+      - name: Run trainer decision-state browser E2E
+        run: node scripts/e2e_decision_state_integrity_local.mjs
+
       - name: Run trainer PWD browser E2E
         env:
           STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
           STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
         run: node scripts/e2e_pwd_staging.mjs
-
-      - name: Run trainer decision-state browser E2E
-        run: node scripts/e2e_decision_state_integrity_local.mjs
 
       - name: Run Stage 2 inquiry browser E2E
         env:

@@ -1,7 +1,9 @@
 import {
+  currentCycleDecision,
   cycleDecisionLabel,
   guidanceChannelLabel,
-  latestCycleDecision,
+  isCycleDecisionStage,
+  isInCurrentCycle,
   reportAudienceLabel,
   reportStatusLabel,
   reportTypeLabel,
@@ -85,15 +87,15 @@ export function cycleDecisionSection(workspace, model) {
   const decisions = [...(workspace.cycleDecisions || [])].sort((left, right) =>
     String(right.decided_at || right.created_at || "").localeCompare(String(left.decided_at || left.created_at || ""))
   );
-  const latest = latestCycleDecision(decisions);
-  const previousDecisions = decisions.filter(decision => decision.id !== latest?.id);
+  const current = currentCycleDecision(workspace);
+  const previousDecisions = decisions.filter(decision => decision.id !== current?.id);
   const content = [
-    latest
+    current
       ? create("div", { className: "latest-cycle-decision" }, [
           create("span", { text: "Aktualna decyzja" }),
-          create("strong", { text: cycleDecisionLabel(latest.decision) }),
-          create("p", { text: latest.rationale }),
-          create("p", { className: "muted", text: formatDate(latest.decided_at) })
+          create("strong", { text: cycleDecisionLabel(current.decision) }),
+          create("p", { text: current.rationale }),
+          create("p", { className: "muted", text: formatDate(current.decided_at) })
         ])
       : create("p", { className: "muted", text: "Nie zapisano jeszcze decyzji zamykającej cykl." }),
     previousDecisions.length
@@ -101,10 +103,12 @@ export function cycleDecisionSection(workspace, model) {
           recordList(previousDecisions, cycleDecisionRecord, "Brak wcześniejszych decyzji.")
         ])
       : null,
-    detailsForm(
-      latest ? "Dodaj nową decyzję co dalej" : "Zapisz decyzję co dalej",
-      cycleDecisionForm(model.onSaveCycleDecision)
-    )
+    isCycleDecisionStage(workspace)
+      ? detailsForm(
+          current ? "Dodaj nową decyzję co dalej" : "Zapisz decyzję co dalej",
+          cycleDecisionForm(model.onSaveCycleDecision)
+        )
+      : null
   ];
   return panel("Decyzja co dalej", create("div", {}, content));
 }
@@ -144,16 +148,16 @@ export function signalsSection(workspace, attentionSignals, model) {
   ]), "Domyślnie widoczne są tylko otwarte sygnały");
 }
 
-function reportRecord(report, cycleDecision) {
+function reportRecord(report, cycleDecision, isCurrentTwelveWeekReport) {
   const typeLabel = reportTypeLabel(report.type);
-  const decision = report.type === "twelveWeeks" ? cycleDecision : null;
+  const decision = isCurrentTwelveWeekReport ? cycleDecision : null;
   const content = String(report.content || "");
   return create("article", { className: "record report-record" }, [
     create("strong", { text: report.title || typeLabel }),
     create("p", { className: "muted", text: typeLabel }),
     create("p", { text: `${content.slice(0, 260)}${content.length > 260 ? "…" : ""}` }),
     create("p", { className: "muted", text: `${reportAudienceLabel(report.audience)} · ${reportStatusLabel(report.status)}` }),
-    report.type === "twelveWeeks"
+    isCurrentTwelveWeekReport
       ? create("div", { className: "report-decision" }, decision ? [
           create("span", { text: "Decyzja co dalej" }),
           create("strong", { text: cycleDecisionLabel(decision.decision) }),
@@ -173,9 +177,16 @@ export function reportsSection(workspace, model) {
     if (right.type === "twelveWeeks" && left.type !== "twelveWeeks") return 1;
     return String(right.created_at || "").localeCompare(String(left.created_at || ""));
   });
-  const decision = latestCycleDecision(workspace.cycleDecisions || []);
+  const currentReport = reports.find(report =>
+    report.type === "twelveWeeks" && isInCurrentCycle(workspace, report.created_at)
+  ) || null;
+  const decision = currentCycleDecision(workspace);
   return panel("Raporty", create("div", {}, [
-    recordList(reports, report => reportRecord(report, decision), "Brak raportów."),
+    recordList(reports, report => reportRecord(
+      report,
+      decision,
+      report === currentReport
+    ), "Brak raportów."),
     detailsForm("Dodaj raport", reportForm(model.onSaveReport))
   ]), "Raport pokazuje wzorzec; nie tworzy decyzji automatycznie");
 }

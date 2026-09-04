@@ -92,3 +92,28 @@ export function latestCycleDecision(rows = []) {
     return rightTime - leftTime;
   })[0] || null;
 }
+
+function timestamp(value) { const parsed = Date.parse(String(value || "")); return Number.isFinite(parsed) ? parsed : 0; }
+
+function currentCycleBoundary(workspace) {
+  const client = workspace?.client || {};
+  const latestPwdTime = Math.max(0, ...(workspace?.sessions || [])
+    .filter(session => session.session_type === "pwd")
+    .map(session => timestamp(session.date || session.created_at)));
+  const explicitBoundary = Math.max(timestamp(client.start_date), latestPwdTime);
+  return explicitBoundary || timestamp(client.created_at);
+}
+
+export function currentCycleDecision(workspace = {}) {
+  return latestCycleDecision((workspace.cycleDecisions || []).filter(decision =>
+    isInCurrentCycle(workspace, decision.decided_at || decision.created_at)
+  ));
+}
+
+export function isInCurrentCycle(workspace = {}, value) {
+  const boundary = currentCycleBoundary(workspace);
+  const valueTime = timestamp(value);
+  return Boolean(boundary && valueTime >= boundary);
+}
+
+export function isCycleDecisionStage(workspace = {}) { return Number(workspace.client?.stage) === 4; }

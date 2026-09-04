@@ -30,6 +30,8 @@ try {
   await page.getByRole("heading", { name: "Teraz" }).waitFor();
   assert(await page.getByRole("heading", { name: "Anna Przykładowa", exact: true }).isVisible(), "client identity is not immediately visible");
   assert(await page.getByText("Wymaga decyzji co dalej", { exact: true }).isVisible(), "cycle closure decision is not surfaced");
+  assert(!(await page.getByText("Decyzja z poprzedniego cyklu.", { exact: true }).isVisible()),
+    "historical cycle decision leaked into the current decision summary");
   assert(await page.locator(".now-item").filter({ hasText: "Otwarty sygnał wymagający uwagi" }).count() === 1,
     "Teraz must expose at most one open signal");
   assert(await page.getByText("Aktywna", { exact: true }).isVisible(), "human Guidance status is missing");
@@ -60,6 +62,10 @@ try {
   await page.evaluate(() => window.advanceDecisionSignalDate("2026-09-05"));
   assert(await page.locator(".signal-list > .record-list article.signal").count() === 1, "same signal type with a new source date did not reopen");
 
+  await page.evaluate(() => window.setDecisionFixtureStage(3));
+  assert(!(await page.locator('select[name="decision"]').count()),
+    "cycle decision write form remained active outside the decision stage");
+  await page.evaluate(() => window.setDecisionFixtureStage(4));
   await page.locator("summary").filter({ hasText: "Zapisz decyzję co dalej" }).click();
   await page.locator('select[name="decision"]').selectOption("independent");
   await page.getByLabel("Krótkie uzasadnienie trenera").fill("Klient ma jasny kierunek samodzielnej pracy.");
@@ -70,6 +76,11 @@ try {
   assert(await twelveWeekReport.getByText("Raport 12 tygodni", { exact: true }).first().isVisible(), "12-week report is not exposed before older reports");
   assert(await twelveWeekReport.getByText("Decyzja co dalej", { exact: true }).isVisible(), "12-week report omits the decision heading");
   assert(await twelveWeekReport.getByText("Klient ma jasny kierunek samodzielnej pracy.", { exact: true }).isVisible(), "12-week report omits decision rationale");
+  const oldTwelveWeekReport = page.locator(".report-record").filter({ hasText: "Stary raport 12 tygodni" });
+  assert(!(await oldTwelveWeekReport.getByText("Samodzielność", { exact: true }).count()),
+    "older 12-week report inherited the later-cycle decision outcome");
+  assert(!(await oldTwelveWeekReport.getByText("Klient ma jasny kierunek samodzielnej pracy.", { exact: true }).count()),
+    "older 12-week report inherited a later-cycle decision");
 
   await page.evaluate(() => window.setDecisionFixtureDraftVisible(false));
   assert(!(await page.getByRole("button", { name: "Potwierdź wycofanie poprzedniej kopii papierowej" }).count()),

@@ -1,4 +1,4 @@
-import { cycleDecisionLabel, latestCycleDecision } from "./decision-state.js";
+import { currentCycleDecision, cycleDecisionLabel, isCycleDecisionStage } from "./decision-state.js";
 
 function text(value) {
   return String(value ?? "").trim();
@@ -83,14 +83,13 @@ function buildCurrentFocus(workspace, activePlan) {
   );
 }
 
-function buildLastDecision(workspace) {
+function buildLastDecision(workspace, cycleDecision) {
   const session = latest(
     (workspace.sessions || []).filter(item => text(item.trainer_decision)),
     "date",
     "updated_at",
     "created_at"
   );
-  const cycleDecision = latestCycleDecision(workspace.cycleDecisions || []);
   const sessionTime = timestamp(sourceDate(session, "date", "updated_at", "created_at"));
   const cycleTime = timestamp(sourceDate(cycleDecision, "decided_at", "created_at"));
   if (cycleDecision && cycleTime >= sessionTime) {
@@ -184,16 +183,17 @@ export function buildTrainerSessionBrief(workspace = {}) {
   );
   const client = workspace.client || {};
   const clientDate = sourceDate(client, "updated_at", "created_at");
+  const cycleDecision = currentCycleDecision(workspace);
 
   return Object.freeze({
     safety: Object.freeze(buildSafetyFacts(workspace)),
     currentFocus: buildCurrentFocus(workspace, activePlan),
-    lastDecision: buildLastDecision(workspace),
+    lastDecision: buildLastDecision(workspace, cycleDecision),
     latestClientSignal: buildLatestClientSignal(workspace),
     activeGuidance: Object.freeze(buildActiveGuidance(workspace, activePlan)),
     activePlan,
     nextStep: buildNextStep(workspace),
-    requiresCycleDecision: Number(client.stage) === 4 && !(workspace.cycleDecisions || []).length,
+    requiresCycleDecision: isCycleDecisionStage(workspace) && !cycleDecision,
     nextSession: fact("Następna sesja", client.next_session_date, "Karta klienta", clientDate),
     reviewPoint: fact("Następny przegląd", client.next_review_date, "Karta klienta", clientDate)
   });

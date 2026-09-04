@@ -9,7 +9,10 @@ import {
 } from "../assets/os/decision-support.js";
 import {
   CYCLE_DECISION_OPTIONS,
+  currentCycleDecision,
   cycleDecisionLabel,
+  isCycleDecisionStage,
+  isInCurrentCycle,
   latestCycleDecision,
   reportAudienceLabel,
   reportStatusLabel,
@@ -40,6 +43,29 @@ assert.equal(latestCycleDecision([
   { id: "new", decided_at: "2026-08-01T10:00:00Z" }
 ]).id, "new");
 
+const laterCycleWorkspace = {
+  client: { stage: 4, start_date: "2026-09-01", created_at: "2026-06-01T08:00:00Z" },
+  sessions: [{ id: "pwd-current", session_type: "pwd", date: "2026-09-03" }],
+  cycleDecisions: [
+    { id: "previous-cycle", decision: "continue_1_to_1", decided_at: "2026-08-20T12:00:00Z" },
+    { id: "before-current-pwd", decision: "hybrid", decided_at: "2026-09-02T12:00:00Z" }
+  ]
+};
+assert.equal(currentCycleDecision(laterCycleWorkspace), null,
+  "historical decision or a decision before the current PWD must not satisfy the later cycle");
+assert.equal(buildTrainerSessionBrief(laterCycleWorkspace).requiresCycleDecision, true,
+  "stage 4 must remain unresolved when only historical decisions exist");
+laterCycleWorkspace.cycleDecisions.push({
+  id: "current-cycle", decision: "independent", decided_at: "2026-09-03T12:00:00Z"
+});
+assert.equal(currentCycleDecision(laterCycleWorkspace)?.id, "current-cycle");
+assert.equal(buildTrainerSessionBrief(laterCycleWorkspace).requiresCycleDecision, false);
+assert.equal(isInCurrentCycle(laterCycleWorkspace, "2026-07-10T08:00:00Z"), false,
+  "a report from the previous cycle must not be treated as the current report");
+assert.equal(isInCurrentCycle(laterCycleWorkspace, "2026-09-04T08:00:00Z"), true);
+assert.equal(isCycleDecisionStage({ ...laterCycleWorkspace, client: { ...laterCycleWorkspace.client, stage: 3 } }), false,
+  "decision write eligibility must not be inferred from decision history");
+
 const dayOneKey = signalInstanceKey({ id: "low-readiness", source: "session", sourceDate: "2026-09-01" });
 const dayTwoKey = signalInstanceKey({ id: "low-readiness", source: "session", sourceDate: "2026-09-02" });
 assert.notEqual(dayOneKey, dayTwoKey, "a new source date must create a new signal instance");
@@ -61,6 +87,14 @@ const laterSignals = collectAttentionSignals({ session: { date: "2026-09-02", re
 const laterFiltered = withoutReviewedSignals(laterSignals, [{ signal_key: dayOneKey }]);
 assert.equal(laterFiltered.signals.length, 1, "same signal type on a new date must reopen");
 assert.equal(laterFiltered.signals[0].signalKey, dayTwoKey);
+
+for (const updatedAt of ["2026-09-01T10:00:00Z", "2026-09-04T10:00:00Z"]) {
+  const persistentRiskContext = collectAttentionSignals({
+    client: { red_flags_text: "Prywatny kontekst trenera", updated_at: updatedAt }
+  });
+  assert.ok(!persistentRiskContext.signals.some(signal => signal.id === "client-record-has-risk-context"),
+    "persistent risk context must stay in the safety brief, outside the review queue");
+}
 
 const briefWithSession = buildTrainerSessionBrief({
   client: { stage: 4, next_session_date: "2026-09-10", next_review_date: "2026-09-20" },
@@ -121,6 +155,8 @@ assert.match(trainerState, /openSignal = attentionSignals\?\.signals\?\.\[0\]/);
 assert.match(trainerState, /Pokaż historię przejrzanych sygnałów/);
 assert.match(trainerState, /Raport pokazuje wzorzec; nie tworzy decyzji automatycznie/);
 assert.match(trainerState, /report\.type === "twelveWeeks"/);
+assert.match(trainerState, /isCycleDecisionStage\(workspace\)/);
+assert.match(trainerState, /report === currentReport/);
 assert.match(trainer, /Pokaż pełną historię sesji/);
 assert.match(trainer, /previousSessions = sessions\.slice\(1\)/);
 assert.match(pwdSection, /Dodaj korektę \/ nową iterację PWD/);
