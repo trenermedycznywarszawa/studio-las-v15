@@ -4,8 +4,6 @@ const MAX_BODY_BYTES = 8 * 1024;
 const SOURCE_VERSION = "public-ingress-v1";
 const ALLOWED_ORIGINS = new Set([
   "https://trenermedycznywarszawa.github.io",
-  "https://studiolas.pl",
-  "https://www.studiolas.pl",
   "http://127.0.0.1:8790",
   "http://localhost:8790"
 ]);
