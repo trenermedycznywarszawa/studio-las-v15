@@ -73,9 +73,8 @@ footer{background:#16211c;color:rgba(255,255,255,.7);padding:38px 0}.footer-grid
     <h2 class="form-title" id="contactTitle">Zostaw kontakt</h2>
     <p class="form-intro">Kilka krótkich informacji wystarczy, żebym przygotował się do rozmowy.</p>
 
-    <form id="mainForm" name="pierwszy-kontakt" action="https://formspree.io/f/xgorealz" method="POST" novalidate>
-      <input type="hidden" name="_subject" value="Nowy pierwszy kontakt – Studio Las" />
-      <input type="text" name="_gotcha" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
+    <form id="mainForm" name="pierwszy-kontakt" action="https://ufcumhbnuyernuwepcij.supabase.co/functions/v1/public-inquiry-ingress" method="POST" novalidate>
+      <input type="text" name="honeypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
 
       <div class="form-row">
         <div class="form-group">
@@ -185,6 +184,10 @@ toggle.addEventListener('click',()=>setMenu(!mobile.classList.contains('open')))
 mobile.querySelectorAll('a').forEach(a=>a.addEventListener('click',()=>setMenu(false)));
 document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});
 
+const INGRESS_URL='https://ufcumhbnuyernuwepcij.supabase.co/functions/v1/public-inquiry-ingress';
+const REQUEST_STORAGE_KEY='studio-las-first-contact-request-id';
+const FORM_VERSION='first-contact-v1';
+const PRIVACY_NOTICE_VERSION='first-contact-consent-v1';
 const form=document.getElementById('mainForm');
 const statusEl=document.getElementById('formStatus');
 const successEl=document.getElementById('formSuccess');
@@ -192,87 +195,27 @@ const byId=id=>document.getElementById(id);
 function showError(id,show){byId(id)?.classList.toggle('show',show)}
 function validateField(id,errorId,invalid){const el=byId(id);el.classList.toggle('err',invalid);showError(errorId,invalid);return !invalid}
 function setStatus(message,error=false){statusEl.textContent=message;statusEl.classList.add('show');statusEl.classList.toggle('err',error)}
-
-const callBriefTemplates={
-  'Swobodniejsze poruszanie się na co dzień':{
-    purpose:'Zrozumieć, co konkretnie w codziennym życiu jest dziś trudniejsze i jaką swobodę klient chce odzyskać.',
-    questions:[
-      'Co konkretnie jest dziś trudniejsze niż kiedyś?',
-      'W jakich sytuacjach najbardziej to zauważasz?',
-      'Co chciałbyś móc robić bez zastanawiania się nad ciałem?',
-      'Dlaczego chcesz zająć się tym właśnie teraz?'
-    ]
-  },
-  'Powrót do aktywności lub sportu':{
-    purpose:'Ustalić konkretną aktywność, znaczenie powrotu oraz to, co obecnie stoi między klientem a bezpiecznym powrotem.',
-    questions:[
-      'Do czego konkretnie chcesz wrócić?',
-      'Na jakim poziomie robiłeś to wcześniej?',
-      'Co obecnie najbardziej zatrzymuje Cię przed powrotem?',
-      'Po czym poznasz, że powrót się udał?'
-    ]
-  },
-  'Siła i kondycja po przerwie':{
-    purpose:'Zrozumieć punkt odniesienia sprzed przerwy, najważniejszy brak dzisiaj i realny efekt, którego klient chce w najbliższych miesiącach.',
-    questions:[
-      'Jak wyglądała Twoja aktywność przed przerwą?',
-      'Co chciałbyś odzyskać jako pierwsze?',
-      'Co sprawiło, że do tej pory trudno było wrócić?',
-      'Co chciałbyś móc zrobić za 3 miesiące, czego dziś nie robisz?'
-    ]
-  },
-  'Większa pewność w ruchu':{
-    purpose:'Zrozumieć sytuacje, w których klient nie ufa swojemu ciału, oraz czego potrzebuje, żeby odzyskać poczucie bezpieczeństwa w ruchu.',
-    questions:[
-      'W jakich sytuacjach najbardziej brakuje Ci pewności?',
-      'Czy są ruchy lub aktywności, których dziś unikasz?',
-      'Co musiałoby się zmienić, żebyś znowu ufał swojemu ciału?',
-      'Czy wydarzyło się coś, po czym ta pewność się zmniejszyła?'
-    ]
-  },
-  'Chcę najpierw porozmawiać':{
-    purpose:'Pomóc klientowi nazwać właściwy cel bez wciskania go w gotową kategorię i sprawdzić, dlaczego szuka pomocy właśnie teraz.',
-    questions:[
-      'Co sprawiło, że zostawiłeś dziś kontakt?',
-      'Co chciałbyś, żeby za kilka miesięcy było inne?',
-      'Czy jest coś, co obecnie ogranicza Cię w życiu lub aktywności?',
-      'Dlaczego pomyślałeś właśnie o Studio Las?'
-    ]
-  }
-};
-
-function buildCallBrief(goalValue,sentence){
-  const template=callBriefTemplates[goalValue];
-  if(!template)return '';
-  return [
-    'BRIEF PIERWSZEJ ROZMOWY — STUDIO LAS',
-    `Kierunek klienta: ${goalValue}`,
-    `Własne zdanie klienta: ${sentence||'brak'}`,
-    '',
-    `Cel rozmowy: ${template.purpose}`,
-    '',
-    'Pytania prowadzące:',
-    ...template.questions.map((question,index)=>`${index+1}. ${question}`),
-    '',
-    'Podsumuj: „Czyli dobrze rozumiem, że najbardziej zależy Ci na ___, a obecnie zatrzymuje Cię przede wszystkim ___?”',
-    'Jeśli jest dopasowanie: przedstaw PWD jako sposób ustalenia spokojnego i rozsądnego punktu startowego — nie jako sprzedaż treningu.',
-    'Nie zakładaj: diagnozy, źródła bólu, przyczyny przerwy ani gotowości klienta do zakupu programu.'
-  ].join('\n');
+function requestId(){
+  let value=sessionStorage.getItem(REQUEST_STORAGE_KEY);
+  if(value)return value;
+  value=crypto.randomUUID();
+  sessionStorage.setItem(REQUEST_STORAGE_KEY,value);
+  return value;
 }
-
-function buildSubmissionData(){
-  const data=new FormData(form);
-  const goal=form.querySelector('input[name="Główny cel"]:checked');
-  const sentence=byId('zdanie').value.trim();
-  if(!sentence)data.delete('Co chce znowu móc robić');
-  if(goal){
-    data.set('Brief pierwszej rozmowy',buildCallBrief(goal.value,sentence));
-    data.set('_subject',`Studio Las — nowy kontakt: ${byId('imie').value.trim()} — ${goal.value}`);
-  }
-  return data;
-}
-
-function buildMailto(){const data=buildSubmissionData();const lines=[];for(const [key,value] of data.entries()){if(!value||key==='_subject'||key==='_gotcha')continue;lines.push(`${key}: ${value}`)}return 'mailto:trenermedycznywarszawa@gmail.com?subject='+encodeURIComponent(data.get('_subject')||'Pierwszy kontakt – Studio Las')+'&body='+encodeURIComponent(lines.join('\n\n'))}
+function clearRequestId(){sessionStorage.removeItem(REQUEST_STORAGE_KEY)}
+function buildPayload(goal){return {
+  requestId:requestId(),
+  name:byId('imie').value.trim(),
+  phone:byId('telefon').value.trim(),
+  email:byId('email').value.trim()||null,
+  preferredContactWindow:byId('pora').value,
+  broadGoal:goal.value,
+  personWords:byId('zdanie').value.trim()||null,
+  contactConsent:byId('zgoda').checked,
+  privacyNoticeVersion:PRIVACY_NOTICE_VERSION,
+  formVersion:FORM_VERSION,
+  honeypot:String(form.elements.honeypot?.value||'').trim()
+}}
 
 form.addEventListener('submit',async event=>{
   event.preventDefault();
@@ -288,11 +231,11 @@ form.addEventListener('submit',async event=>{
 
   const submit=form.querySelector('button[type="submit"]');const oldText=submit.textContent;submit.disabled=true;submit.textContent='Wysyłam...';setStatus('Wysyłam prośbę o kontakt...');
   try{
-    const response=await fetch(form.action,{method:'POST',body:buildSubmissionData(),headers:{Accept:'application/json'}});
-    if(!response.ok)throw new Error(`Formspree ${response.status}`);
-    form.reset();form.style.display='none';statusEl.classList.remove('show');successEl.classList.add('show');successEl.scrollIntoView({behavior:'smooth',block:'center'});
+    const response=await fetch(INGRESS_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(buildPayload(goal))});
+    if(!response.ok)throw new Error(`Ingress ${response.status}`);
+    clearRequestId();form.reset();form.style.display='none';statusEl.classList.remove('show');successEl.classList.add('show');successEl.scrollIntoView({behavior:'smooth',block:'center'});
   }catch(error){
-    statusEl.innerHTML='Nie udało się wysłać formularza automatycznie. <a style="text-decoration:underline" href="'+buildMailto()+'">Wyślij tę samą treść e-mailem</a> albo zadzwoń pod <a style="text-decoration:underline" href="tel:+48503975998">503 975 998</a>.';statusEl.classList.add('show','err');
+    setStatus('Nie udało się wysłać formularza. Spróbuj ponownie za chwilę albo zadzwoń pod 503 975 998.',true);
   }finally{submit.disabled=false;submit.textContent=oldText}
 });
 </script>
