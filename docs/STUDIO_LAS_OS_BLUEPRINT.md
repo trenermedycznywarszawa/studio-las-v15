@@ -1,31 +1,21 @@
-# Studio Las OS Blueprint
+# Studio Las OS Blueprint — superseded
 
-This document is an OS-level blueprint for Studio Las OS.
+This file is retained only as a compatibility pointer for older links.
 
-It is not the product constitution.
+It is not an active source of architecture, package naming, process stages, authentication rules, data policy, or implementation scope.
 
-It is subordinate to:
+The former blueprint mixed product principles with implementation details and historical commercial labels. Keeping it active would create a second source of truth.
+
+## Current authority
+
+Read in this order:
 
 1. `docs/constitution/README.md`
-2. `docs/product/README.md`
-3. `docs/product/00_PRODUCT_MODEL.md`
-4. `docs/product/02_STUDIO_LAS_METHOD.md`
-
-Studio Las OS must protect the Studio Las process from feature chaos. Every future feature should be checked against the Constitution and Product layers before this blueprint is used for implementation decisions.
-
-## 1. OS role
-
-Studio Las OS is a private operating system for the Studio Las 1:1 client process.
-
-It exists to support:
-
-- the trainer's memory,
-- the trainer's decisions,
-- the client's clarity,
-- the long-term report,
-- the continuity of the 1:1 relationship.
-
-Studio Las OS does not exist to increase screen time, create dependency on the app, gamify health, replace professional judgment, or sell an app as a separate product.
+2. `docs/governance/00_SOURCE_OF_TRUTH_REGISTRY.md`
+3. `docs/product/README.md`
+4. `docs/architecture/README.md`
+5. `docs/architecture/09_SECURITY_RUNTIME_ARCHITECTURE.md`
+6. relevant PRD and implementation documents
 
 Core rule:
 
@@ -34,257 +24,38 @@ Core rule:
 > App records the signal.  
 > Report shows the pattern.
 
-## 2. Philosophy: guidance instead of fitness app
+## Canonical cooperation vocabulary
 
-Most fitness apps push the client toward more tracking, more screens, more comparison, more goals, and more pressure.
+- `diagnostic_visit` — Pierwsza Wizyta Diagnostyczna
+- `twelve_week_process` — Proces 12-tygodniowy
+- `continuation` — Prowadzenie kontynuacyjne
 
-Studio Las OS should do the opposite.
+## Canonical process stages
 
-The system should:
+1. Diagnostyka i punkt startowy
+2. Plan i pierwsze decyzje
+3. Prowadzona praca 1:1
+4. Raport i decyzja co dalej
 
-- simplify what the client has to do,
-- reduce uncertainty,
-- support calm consistency,
-- help the trainer see the process clearly,
-- make the 12-week journey visible,
-- turn scattered observations into useful patterns.
+## Stable product boundary
 
-The app is not the coach. The trainer is the coach.
+Studio Las OS:
 
-The app is not the morning ritual. Paper is the morning ritual.
+- supports the private trainer-led Studio Las Method,
+- stores only information needed for the process,
+- keeps the trainer responsible for interpretation and decisions,
+- gives the client only a calm, narrow, published view,
+- minimizes screen time,
+- treats paper guidance as primary and the app record as secondary.
 
-The app is not the diagnosis. The app is a process record.
+Studio Las OS is not:
 
-## 3. Definition of the client
+- a public fitness product,
+- a standalone subscription,
+- a medical diagnostic system,
+- an automated coach,
+- a gamified habit tracker,
+- a wearable dashboard,
+- an AI replacement for the trainer.
 
-A Studio Las OS client is an active Studio Las client in:
-
-- FUNDAMENT,
-- ROZWÓJ,
-- continued individual 1:1 guidance.
-
-Typical client context:
-
-- adult client, often 35-60+,
-- returning to movement after pain, injury, treatment, fear, break, or long inactivity,
-- needs structure, safety, and interpretation,
-- does not need another noisy fitness app,
-- benefits from personal guidance and a calm process.
-
-Access is part of the service. It is not a separate product.
-
-After cooperation ends, access should be revoked.
-
-## 4. Anti-client
-
-Studio Las OS is not designed for:
-
-- people looking for a mass fitness app,
-- people wanting leaderboards, streaks, badges, or points,
-- people wanting automated coaching instead of a trainer,
-- people wanting wearable dashboards,
-- people wanting medical diagnosis from software,
-- people outside the Studio Las 1:1 process,
-- people who want the app as a standalone subscription.
-
-This anti-client definition protects the product from becoming a generic wellness tool.
-
-## 5. System 4 Kroków
-
-The public and private process should stay aligned around the System 4 Kroków:
-
-1. Diagnostic entry point  
-   The client starts with a diagnostic form and First Diagnostic Visit.
-
-2. Plan and first decisions  
-   The trainer creates an initial direction, identifies risks, and chooses the first process focus.
-
-3. Guided 1:1 process  
-   The client trains with the trainer and receives simple between-session guidance.
-
-4. Report and next decision  
-   The process is summarized. Patterns are reviewed. The next step is chosen.
-
-The app should support these steps. It should not create a parallel process.
-
-## 6. Paper-first principle
-
-The client should not begin the morning from the phone.
-
-The paper guide/checklist should carry the morning.
-
-The app should be used later for a short record of the signal, not as the ritual itself.
-
-Paper-first means:
-
-- offline instructions are primary,
-- digital check-in is secondary,
-- the protocol is clear without the app,
-- the client can complete the morning without a screen,
-- the app records only what matters for trainer review and future reports.
-
-## 7. Role of the app
-
-The app records the signal.
-
-It should help capture:
-
-- whether the assigned paper protocol was completed,
-- basic perceived energy,
-- basic symptom level,
-- a short optional note,
-- trainer-visible process context,
-- report-ready trends.
-
-The app should not:
-
-- guide every minute of the protocol,
-- send motivational pressure,
-- create daily guilt,
-- become a quantified-self dashboard,
-- replace trainer review,
-- create automatic medical conclusions.
-
-## 8. Role of the trainer
-
-The trainer gives meaning.
-
-The trainer:
-
-- assigns protocols,
-- explains why they matter,
-- decides what to change,
-- reads the client's signal in context,
-- protects the client from overinterpretation,
-- writes summaries and reports,
-- decides whether to progress, maintain, regress, observe, or consult.
-
-The system must strengthen trainer judgment, not hide it behind automation.
-
-## 9. Role of reports
-
-Reports show the pattern.
-
-Future reports should support:
-
-- 4-week review,
-- 8-week review,
-- 12-week review,
-- continuation decisions.
-
-Reports should not pretend certainty. They should show:
-
-- adherence pattern,
-- energy pattern,
-- symptom pattern,
-- trainer interpretation,
-- relevant context,
-- decision for the next stage.
-
-AI may later support the trainer in analysis, but the trainer remains responsible for interpretation and communication.
-
-## 10. UX rules
-
-The UX should be:
-
-- calm,
-- minimal,
-- warm,
-- low-pressure,
-- readable,
-- client-safe,
-- easy for older or anxious clients,
-- free from fitness-app noise.
-
-The client interface should avoid:
-
-- dashboards full of numbers,
-- streaks,
-- red warning-heavy screens,
-- guilt-based copy,
-- comparison,
-- excessive choices,
-- medical-sounding interpretation.
-
-The trainer interface can contain more detail, but it must remain usable during real 1:1 work.
-
-## 11. Copy rules
-
-Use language that is:
-
-- simple,
-- human,
-- calm,
-- specific,
-- non-medical unless necessary,
-- free from hype,
-- free from fake certainty.
-
-Preferred copy direction:
-
-- "Zapisz krótki sygnał z dzisiaj."
-- "To pomoże zobaczyć wzorzec w raporcie."
-- "Nie musisz oceniać dnia idealnie. Wystarczy przybliżenie."
-- "Trener omówi to z Tobą w kontekście całego procesu."
-
-Avoid:
-
-- "Twój wynik zdrowia"
-- "Diagnoza"
-- "AI zaleca"
-- "Nie przerwij serii"
-- "Musisz wykonać"
-- "Spal więcej"
-- "Zoptymalizuj ciało"
-
-## 12. Feature rules
-
-A feature is allowed only if it supports the 1:1 Studio Las process and does not conflict with the Constitution or Product layers.
-
-Allowed direction:
-
-- trainer decision support,
-- minimal client check-ins,
-- client-safe instructions,
-- report-ready summaries,
-- paper-first protocols,
-- manual data entry,
-- process history,
-- access control.
-
-Forbidden direction:
-
-- standalone app monetization,
-- gamification,
-- community,
-- wearable integrations,
-- push notifications,
-- client-facing AI coach,
-- medical diagnosis automation,
-- supplement advice as medical advice,
-- broad life tracking.
-
-## 13. Decision filter for every new feature
-
-Every future feature must pass these questions:
-
-1. Does it reduce client chaos?
-2. Does it lower fear of movement?
-3. Does it help the trainer make a better decision?
-4. Does it support a 4/8/12-week report?
-5. Can it be completed without morning phone use?
-6. Does it avoid unnecessary tracking?
-7. Does it avoid pretending to be medical diagnosis?
-8. Does it preserve or strengthen the trainer's role?
-9. Does it avoid exposing sensitive data to the wrong person?
-10. Is it small enough to test safely?
-
-If the answer is unclear, the feature should be treated as an OPEN QUESTION, not implemented by guesswork.
-
-## 14. Product guardrail
-
-When in doubt, choose the simpler path.
-
-Studio Las OS should not become more impressive. It should become more useful.
-
-The highest-quality feature is often the one that removes confusion, not the one that adds capability.
+Security and runtime decisions must follow the current Architecture documents, not historical content recoverable from Git history.

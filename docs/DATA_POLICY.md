@@ -1,256 +1,411 @@
-# Studio Las OS Data Policy
+# Studio Las OS — Internal Data Safety Policy
 
-This is a practical internal operating policy for Studio Las.
+## Status
 
-It is not a final legal document. It does not replace RODO/GDPR review, legal consultation, client consent documents, or a formal privacy policy.
+This is an internal technical and operational safety policy.
 
-The goal is to keep implementation decisions safe while Studio Las OS is developed.
+It is **not** a privacy notice, consent form, record of processing activities,
+legal opinion, or confirmation of RODO/GDPR compliance.
 
-## 1. Purpose
+Real client health or process data must not be entered into Studio Las OS until:
 
-Studio Las OS collects data only to support the private Studio Las 1:1 process.
+1. PR #9 live Supabase rollout passes,
+2. mandatory trainer MFA is enforced,
+3. the legal/privacy gate in the repository is approved by a qualified person,
+4. the actual production data flows match the approved documentation.
 
-Data should help:
+## 1. Purpose limitation
+
+Studio Las OS exists only to support the private trainer-led Studio Las 1:1
+process.
+
+Data may be used to:
 
 - understand the client's starting point,
-- document the process,
+- document sessions and relevant process context,
 - support trainer decisions,
-- prepare 4/8/12-week reports,
+- provide assigned guidance,
+- prepare trainer-approved reports,
 - maintain continuity between sessions,
-- avoid relying on memory alone.
+- protect the client from relying on memory or disconnected notes.
 
-Data should not be collected for curiosity, gamification, marketing manipulation, mass profiling, or standalone app analytics.
+Data must not be collected or reused for:
 
-## 2. Data we may collect
+- curiosity,
+- gamification,
+- advertising profiling,
+- social proof,
+- automated medical decisions,
+- mass analytics,
+- sale of an app or dataset,
+- unrelated AI training,
+- employee or client surveillance.
 
-Studio Las OS may contain the following categories.
+Every production field needs a documented operational purpose. A field without a
+current, approved purpose must not be collected.
 
-### Client identity and contact data
+## 2. Data categories currently represented by the schema
+
+### Identity and contact
 
 - name,
 - email,
 - phone,
-- contact notes,
-- package/process status,
-- access status.
+- contact note,
+- account and access state,
+- cooperation type and process status.
 
-### Process data
+### Process and coaching
 
-- start date,
-- current stage,
-- next session date,
-- next review date,
-- goals,
-- fears,
-- motivation,
-- process notes,
+- start and review dates,
+- current process stage,
+- goals and milestones,
+- motivation and fears when relevant,
 - trainer decisions,
-- next milestone.
+- session summaries,
+- assigned home guidance,
+- client-safe summaries,
+- reports.
 
-### Health-related process data
+### Health-related process context
 
-The system may include sensitive process context when it is relevant to training guidance:
+The system can contain information that may be special-category health data or
+closely related sensitive context, including:
 
-- pain notes,
-- symptom notes,
-- readiness,
-- sleep quality notes,
-- contraindications,
-- red flag notes,
+- pain and symptom notes,
+- readiness and sleep-quality observations,
 - health history summaries,
 - treatment context,
-- supplementation context when relevant to the process,
+- contraindications,
+- red-flag notes,
 - movement limitations,
 - intake flags,
-- trainer observations.
+- trainer observations and hypotheses,
+- body-composition measurements,
+- heart-rate and perceived-exertion values.
 
-### Session and training data
+The existence of a database field does not automatically authorize collection.
+The legal basis, information duty, necessity and retention period must be approved
+before real data is entered.
 
-- session date,
-- exercises performed,
-- RPE,
-- HR values entered manually,
-- training load observations,
-- trainer decision,
-- client-safe summary,
-- home plan / between-session plan.
+### Authentication and security metadata
 
-### Measurement data
+- Supabase Auth identity,
+- role and client/trainer relationship,
+- session and factor state managed by Supabase Auth,
+- metadata-only audit events,
+- object paths and publication state for private documents.
 
-- body measurement values entered manually,
-- device-derived values entered manually when used in the studio process,
-- trainer interpretation,
-- client-safe summary.
+Passwords, password-reset tokens, invitation tokens, TOTP secrets and TOTP codes
+must never enter Studio Las application tables, audit rows, GitHub, logs,
+screenshots, support messages or prompts.
 
-### Paper-first protocol data
+## 3. Approved production storage boundaries
 
-Future paper-first check-ins should be minimal:
+### Structured data
 
-- date,
-- client_id,
-- protocol_id,
-- protocol_done yes/no,
-- energy_score 0-10,
-- symptom_score 0-10,
-- optional note,
-- created_at.
+Supabase PostgreSQL is the only production source of truth for structured Studio
+Las OS data.
 
-No broad daily questionnaire should be added to the check-in.
+Production must not use:
 
-## 3. Why we collect data
+- `localStorage` for health, process, client, report or plan data,
+- browser fallback databases,
+- offline queues,
+- public JSON files,
+- GitHub files,
+- spreadsheets as an ungoverned parallel client record.
 
-Data is collected to support:
+Historical browser data may be read only by the dedicated local export tool for a
+controlled migration. The tool does not upload or delete data automatically.
 
-- better trainer decisions,
-- safer process adjustments,
-- continuity between sessions,
-- client-specific guidance,
-- future reports,
-- internal process learning.
+### Authentication session
 
-Every field needs a clear operational reason.
+The authenticated browser session is stored only in `sessionStorage` for the
+current browser tab. It is not a health-data store.
 
-If a field does not help the trainer, the client, or the report, it should not be collected.
+The production Content Security Policy, RLS, MFA gate and Supabase session
+configuration are part of the security boundary. Session storage alone is never
+an authorization decision.
 
-## 4. Who has access
+### Documents
 
-Trainer access:
+Client documents belong only in the private Supabase Storage bucket:
 
-- The trainer may see full process records for active clients.
-- Trainer notes are trainer-facing by default.
-- Trainer interpretation remains contextual and human-led.
+`studio-las-client-documents`
 
-Client access:
+Current technical contract:
 
-- The client may see assigned instructions.
-- The client may see client-safe summaries.
-- The client may see published reports or materials intended for the client.
-- The client should not see full trainer notes, internal reasoning, raw risk notes, or private decision logic unless explicitly converted into a client-safe summary.
+- bucket is private,
+- PDF only,
+- maximum object size 10 MB,
+- object path begins with the related client UUID,
+- trainers remain client-scoped,
+- clients cannot upload, update or delete,
+- a client may read only a document explicitly published to that client in
+  `client_documents` metadata.
 
-Technical/admin access:
+Document upload UI remains disabled until the live Storage tests pass.
 
-- Technical access should be limited to what is necessary for maintenance.
-- Production data should not be used for casual testing.
-- Debugging should use minimal data and avoid exposing sensitive content.
+### Audit metadata
 
-## 5. What the client does not see
+`security_audit_events` is a metadata-only incident-investigation trail.
 
-The client should not see by default:
+It may contain:
 
-- full trainer notes,
-- internal risk notes,
-- raw intake flags,
-- private hypotheses,
-- internal decision logic,
-- other clients' data,
-- unpublished reports,
-- draft summaries,
-- technical identifiers,
-- raw logs.
+- actor Auth user and profile identifiers,
+- time,
+- operation,
+- table,
+- row identifier,
+- related client identifier,
+- changed column names.
 
-Client visibility should be explicit, not accidental.
+It must not contain:
 
-## 6. Where data is stored
+- field values,
+- health notes,
+- report text,
+- contact data,
+- passwords,
+- tokens,
+- TOTP secrets or codes,
+- raw intake payloads,
+- document contents.
 
-Current intended storage layers:
+## 4. Access model
 
-- Supabase for structured process data.
-- Browser localStorage fallback may still exist for legacy/dev operation and must not be removed without a separate migration plan.
-- GitHub repository must never contain real client data or secrets.
+### Trainer
 
-Sensitive process data should not be stored in:
+A trainer may access full process records only for clients allowed by ownership or
+an explicit trainer assignment.
 
-- URLs,
-- query strings,
-- browser console logs,
-- push-style messages,
-- commit history,
-- public test fixtures,
-- screenshots shared publicly,
-- issue descriptions,
-- pull request comments,
-- static public files.
+Before real data is allowed, trainer access must require:
 
-## 7. Working retention principle
+- Supabase Auth,
+- an active trainer profile,
+- mandatory TOTP MFA,
+- an AAL2 session,
+- passing RLS and Storage policies.
 
-This is an operational principle, not a final legal retention policy.
+Assistant access, if used later, must be explicit, minimal and reviewable.
 
-Working rule:
+### Client
 
-- Active clients: keep data needed to conduct the current process.
-- Recently finished clients: keep data needed for final report, continuity, and legitimate studio operations.
-- Long-term history: keep only what has a clear operational, legal, accounting, or client-continuity reason.
-- Access should be revoked when cooperation ends, even if internal records are retained for a justified period.
+A client may access only their own intentionally published projection:
 
-A final retention schedule requires later RODO/legal consultation.
+- assigned active guidance,
+- their own short signal entry,
+- trainer-approved summaries,
+- published reports,
+- explicitly published private documents.
 
-## 8. Data minimization
+A client must not receive direct access to sensitive base process tables, raw
+trainer notes, private hypotheses, risk reasoning, drafts, other clients' data,
+technical identifiers or internal audit records.
 
-Collect the smallest amount of data that supports the process.
+### Technical and administrative access
 
-For daily paper-first check-ins, do not collect:
+Service-role access is allowed only in trusted server-side operations and must
+never appear in browser code.
 
-- full mood diary,
-- nutrition diary,
-- sleep tracker details,
-- step count,
-- HRV,
-- wearable data,
-- long symptom inventories,
-- generic wellness scores,
-- unrelated lifestyle surveillance.
+Administrative account operations must:
 
-Minimal daily signal is enough:
+- verify the owner trainer,
+- fail on account/client conflicts,
+- be attributed to the initiating trainer in audit metadata,
+- never silently move an account between clients,
+- never weaken RLS or make data public.
 
-- done yes/no,
-- energy 0-10,
-- symptoms 0-10,
+Production data must not be used for casual debugging, demos, screenshots, AI
+prompts or automated testing.
+
+## 5. Client-facing publication boundary
+
+Client-facing does not mean raw.
+
+A record is visible to a client only after an explicit publication decision and
+only through the approved RPC/Storage projection.
+
+Trainer notes must not be automatically converted into client summaries.
+Automated software must not publish interpretations, diagnoses, treatment advice,
+progression decisions or alarming risk language.
+
+## 6. Data minimization
+
+Collect the smallest amount that supports the current trainer-led process.
+
+The minimal between-session signal is currently limited to:
+
+- assigned item,
+- completion yes/no,
+- energy 0–10,
+- symptom level 0–10,
 - short optional note.
 
-## 9. Confidentiality rules
+Do not add without an approved purpose and legal review:
 
-- Treat all health-related process data as confidential.
-- Share client-facing summaries only when intentionally written for the client.
-- Do not expose private notes through accidental UI reuse.
-- Do not use real client data in examples, seeds, screenshots, prompts, or demos.
-- Do not put real client cases into development tasks unless they are anonymized and necessary.
+- continuous location,
+- broad mood diaries,
+- nutrition diaries,
+- step counts,
+- HRV streams,
+- continuous wearable ingestion,
+- contact lists,
+- microphone or camera data,
+- social-media data,
+- unrelated lifestyle surveillance,
+- passive background tracking.
 
-## 10. Forbidden technical patterns
+## 7. Forbidden data paths
 
-Do not put sensitive data in:
+Sensitive or authentication data must not appear in:
 
-- URL paths,
-- query parameters,
-- hash fragments,
-- browser logs,
+- URL paths or query parameters,
+- persistent URL fragments,
+- browser console logs,
 - analytics events,
-- push-style messages,
-- local test screenshots,
-- public GitHub files,
-- raw frontend error messages shown to clients.
-
-Do not implement:
-
+- GitHub issues or pull requests,
+- commit history,
+- public fixtures,
+- public screenshots,
+- chat or email without an approved secure channel,
 - push notifications,
-- wearable ingestion,
-- automatic diagnostic conclusions,
-- client-facing AI recommendations,
-- broad daily tracking without a report/trainer decision purpose.
+- static GitHub Pages files,
+- third-party AI prompts,
+- unencrypted local backup folders.
 
-## 11. RODO/legal open question
+Authentication callback tokens must be removed from the address bar immediately
+after consumption.
 
-OPEN QUESTION:
+## 8. Retention and deletion — unresolved legal gate
 
-A lawyer/RODO consultant should later review:
+No final retention period is approved in this document.
 
-- consent wording,
-- privacy notice,
-- data retention schedule,
-- client access/revocation process,
-- data export/deletion process,
-- processor relationships,
-- Supabase configuration and region implications,
-- handling of sensitive process data,
-- incident response procedure.
+Until a qualified privacy/legal review defines the schedule:
 
-Until that review, this document is an internal product safety policy, not a final legal compliance document.
+- do not enable real production data,
+- do not claim that soft deletion satisfies a legal deletion request,
+- do not create automatic purge jobs based on guessed periods,
+- do not promise indefinite retention,
+- do not promise immediate deletion where another legal obligation may apply.
+
+The approved retention schedule must define at least:
+
+- active-client records,
+- completed-process records,
+- health-related notes,
+- reports,
+- documents,
+- authentication accounts and relationships,
+- security audit metadata,
+- backups,
+- migration exports,
+- accounting records outside Studio Las OS.
+
+It must distinguish:
+
+- revoking client portal access,
+- soft deletion from normal application views,
+- legal restriction of processing,
+- irreversible deletion from primary storage,
+- expiry from backups and disaster-recovery copies.
+
+## 9. Data-subject rights — unresolved operational gate
+
+Before production, Studio Las needs tested procedures for:
+
+- identity verification of a requesting person,
+- access request,
+- copy/export in an understandable format,
+- correction,
+- restriction,
+- objection where applicable,
+- deletion where applicable,
+- withdrawal of consent where consent is used,
+- account revocation,
+- documenting the request and response without exposing data.
+
+A raw database dump is not an acceptable client export.
+
+No browser or public endpoint may execute an irreversible deletion request without
+trainer/admin review and an approved legal workflow.
+
+## 10. Processors, region and transfers — unresolved legal gate
+
+The final documentation must identify the actual production providers and roles,
+including at least:
+
+- Supabase project entity, region and contractual terms,
+- email/SMTP provider,
+- GitHub Pages as the static application host,
+- domain/DNS provider if applicable,
+- backup provider,
+- any support, monitoring or error-reporting service,
+- any AI provider that may receive data.
+
+It must verify:
+
+- data-processing agreements,
+- subprocessor information,
+- international transfer mechanism where relevant,
+- access and deletion behavior,
+- breach notification obligations,
+- production region actually selected.
+
+No provider may be silently added through a frontend library, analytics script,
+CDN, form endpoint or support tool.
+
+## 11. Security operations
+
+Before production, Studio Las must have:
+
+- verified backups and restore procedure,
+- incident owner and contact path,
+- credential rotation procedure,
+- trainer MFA recovery procedure,
+- account revocation procedure,
+- audit-review procedure,
+- vulnerability and dependency review process,
+- defined response to a lost device or compromised email,
+- process for notifying affected persons and authorities where legally required.
+
+A failed security test is a stop condition. The response must not be to disable
+RLS, JWT verification, MFA, CSP, private Storage or audit controls.
+
+## 12. Demo, test and development
+
+Only fictional data may be used in:
+
+- demos,
+- seeds,
+- screenshots,
+- automated tests,
+- GitHub discussions,
+- Codex or ChatGPT prompts,
+- development databases.
+
+The demo runtime must remain technically isolated from production configuration,
+network data calls and browser persistence.
+
+## 13. Required legal/privacy decision before real data
+
+A qualified reviewer must approve and document:
+
+- controller identity and contact details,
+- purposes and legal bases for each data category,
+- Article 9 condition for health-related data where applicable,
+- necessity of each field,
+- information duties and privacy notice,
+- whether and where explicit consent is needed,
+- retention and deletion schedule,
+- data-subject rights workflow,
+- processor agreements and transfer safeguards,
+- production region,
+- incident and breach procedure,
+- use of email for invitations and recovery,
+- whether a data-protection impact assessment is required,
+- actual Studio Las business form and applicable Polish obligations.
+
+Until this approval is recorded, Studio Las OS remains a technical staging system
+for fictional data only.

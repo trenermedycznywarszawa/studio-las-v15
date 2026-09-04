@@ -1,0 +1,4 @@
+project_id = "studio-las-v15"
+
+[functions.client-access]
+verify_jwt = true

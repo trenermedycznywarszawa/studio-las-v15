@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Las OS — dostęp klientów</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <meta name="referrer" content="no-referrer" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src https://ufcumhbnuyernuwepcij.supabase.co; object-src 'none'; base-uri 'none'; form-action 'self'; frame-src 'none'; worker-src 'none'; manifest-src 'none'" />
+  <meta http-equiv="Permissions-Policy" content="camera=(), microphone=(), geolocation=(), payment=(), usb=()" />
+  <link rel="stylesheet" href="../assets/os/styles.css" />
+  <script src="../studio-las-config.js"></script>
+  <script type="module" src="./client-access-admin.js"></script>
+</head>
+<body>
+  <div id="access-admin" aria-live="polite">
+    <main class="center-screen">
+      <div class="loading-card">Ładowanie bezpiecznego narzędzia dostępu…</div>
+    </main>
+  </div>
+  <noscript>
+    <main class="center-screen">
+      <section class="fatal-card">
+        <h1>JavaScript jest wymagany</h1>
+        <p>Narzędzie administracyjne nie uruchomi się bez JavaScript.</p>
+      </section>
+    </main>
+  </noscript>
+</body>
+</html>
