@@ -2,6 +2,10 @@ import { createClient } from "npm:@supabase/supabase-js@^2";
 
 const MAX_BODY_BYTES = 8 * 1024;
 const SOURCE_VERSION = "public-ingress-v1";
+const PRODUCTION_SUPABASE_ORIGIN = "https://ufcumhbnuyernuwepcij.supabase.co";
+const TRAINER_NOTIFICATION_URL = "https://formspree.io/f/xgorealz";
+const TRAINER_NOTIFICATION_SUBJECT = "Studio Las — nowy pierwszy kontakt";
+const TRAINER_NOTIFICATION_TEXT = "Nowy pierwszy kontakt w Studio Las OS";
 const ALLOWED_ORIGINS = new Set([
   "https://trenermedycznywarszawa.github.io",
   "http://127.0.0.1:8790",
@@ -81,6 +85,32 @@ function getClientAddress(req: Request) {
   const direct = String(req.headers.get("cf-connecting-ip") || req.headers.get("x-real-ip") || "").trim();
   if (direct) return direct;
   return String(req.headers.get("x-forwarded-for") || "").split(",")[0].trim();
+}
+
+function isProductionRuntime(supabaseUrl: string) {
+  return supabaseUrl.replace(/\/+$/, "") === PRODUCTION_SUPABASE_ORIGIN;
+}
+
+async function notifyTrainerNoPii() {
+  const form = new FormData();
+  form.set("_subject", TRAINER_NOTIFICATION_SUBJECT);
+  form.set("Powiadomienie", TRAINER_NOTIFICATION_TEXT);
+
+  try {
+    const notification = await fetch(TRAINER_NOTIFICATION_URL, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body: form,
+      signal: AbortSignal.timeout(2500)
+    });
+    if (!notification.ok) {
+      console.error("trainer-inquiry-notification delivery_failed", { status: notification.status });
+    }
+  } catch (error) {
+    console.error("trainer-inquiry-notification delivery_failed", {
+      name: error instanceof Error ? error.name : "UnknownError"
+    });
+  }
 }
 
 async function hmacHex(secret: string, value: string) {
@@ -216,7 +246,13 @@ Deno.serve(async (req: Request) => {
 
     if (error) throw error;
     const status = String((data as { status?: string } | null)?.status || "");
-    if (status === "created" || status === "duplicate") {
+    if (status === "created") {
+      if (isProductionRuntime(supabaseUrl)) {
+        await notifyTrainerNoPii();
+      }
+      return response(origin, { ok: true }, 202);
+    }
+    if (status === "duplicate") {
       return response(origin, { ok: true }, 202);
     }
     if (status === "rate_limited") {
