@@ -2,6 +2,7 @@ tmp/
 *.local
 .env
 .env.*
+.deploy/
 
 # Studio Las target backup and local restore evidence — never commit.
 studio-las-target-backup-*/
