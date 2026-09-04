@@ -28,6 +28,7 @@ def main() -> None:
 
     cleanup = cleanup_path.read_text(encoding="utf-8")
     browser = read("scripts/e2e_pwd_staging.mjs")
+    decision_browser = read("scripts/e2e_decision_state_integrity_local.mjs")
     mfa = read("scripts/e2e_mfa_bootstrap.mjs")
     workflow = read(".github/workflows/studio-las-browser-e2e.yml")
 
@@ -51,6 +52,11 @@ def main() -> None:
     require(browser, ':scope > article.record', "PWD reload checks must target top-level session records only")
     require(browser, 'rpcRequests.length === 2', "browser E2E must enforce exact successful PWD RPC count")
     require(browser, 'directPwdWrites.length === 0', "browser E2E must reject direct PWD table writes")
+    require(decision_browser, "advanceDecisionSignalDate", "decision E2E must prove dated signal instances reopen")
+    require(decision_browser, "Uwzględniono — bez zmiany", "decision E2E must retain reviewed-signal history")
+    require(decision_browser, "setDecisionFixtureDraftVisible(false)", "decision E2E must test paper-retirement action legality")
+    require(decision_browser, "width: 360, height: 900", "decision E2E must use the exact mobile viewport")
+    require(decision_browser, "externalRequests.length === 0", "decision E2E fixture must stay local")
 
     require(mfa, f'const STAGING_REF = "{STAGING_REF}"', "MFA bootstrap must be pinned to canonical staging")
     require(mfa, 'FACTOR_PREFIX = "Studio Las · QA E2E"', "MFA bootstrap must namespace its own factors")
@@ -63,9 +69,10 @@ def main() -> None:
     require(workflow, "permissions:\n  contents: read", "workflow token must remain read-only")
     require(workflow, "persist-credentials: false", "checkout credentials must not persist")
     require(workflow, '"supabase/dev/staging_browser_e2e_cleanup.sql"', "workflow must rerun when staging cleanup infrastructure changes")
+    require(workflow, "node scripts/e2e_decision_state_integrity_local.mjs", "workflow does not run decision-state browser E2E")
     forbid(workflow, "secrets.STUDIO_LAS_QA_TOTP_SECRET", "workflow must not depend on a long-lived TOTP secret")
 
-    combined = "\n".join((cleanup, browser, mfa, workflow)).lower()
+    combined = "\n".join((cleanup, browser, decision_browser, mfa, workflow)).lower()
     forbid(combined, "service_role", "browser E2E infrastructure must not use service_role")
 
     print("BROWSER_E2E_INFRA_CONTRACT_SUCCESS")

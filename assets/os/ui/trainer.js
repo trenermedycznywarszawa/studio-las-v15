@@ -9,56 +9,22 @@ import {
 } from "./common.js";
 import {
   assessmentForm,
-  homePlanForm,
-  homePlanItemForm,
   measurementForm,
   newClientForm,
-  reportForm,
   sessionForm,
   trainingLoadForm
 } from "./forms.js";
-import {
-  CANONICAL_ENGAGEMENTS,
-  runtimeEnvironmentLabel,
-  CANONICAL_STAGES
-} from "../runtime.js";
+import { runtimeEnvironmentLabel } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
 import { pwdSection } from "./pwd-section.js";
-
-function summaryGrid(client) {
-  const values = [
-    ["Typ współpracy", CANONICAL_ENGAGEMENTS[client.engagement_type] || "Archiwalny typ współpracy"],
-    ["Etap", CANONICAL_STAGES[client.stage] || "Proces Studio Las"],
-    ["Następna sesja", formatDate(client.next_session_date)],
-    ["Następny przegląd", formatDate(client.next_review_date)],
-    ["Cel procesu", client.goal || "Nie zapisano"],
-    ["Następny kamień milowy", client.next_milestone || "Nie zapisano"]
-  ];
-
-  return create("div", { className: "summary-grid" }, values.map(([label, value], index) =>
-    create("div", { className: `summary-item ${index > 3 ? "wide" : ""}` }, [
-      create("span", { text: label }),
-      create("strong", { text: value })
-    ])
-  ));
-}
-
-function signalPanel(result) {
-  const body = create("div", { className: "signal-list" });
-  if (!result?.signals?.length) {
-    body.append(create("div", { className: "status ok", text: "Brak automatycznych sygnałów do przeglądu. Decyzję nadal podejmuje trener." }));
-  } else {
-    result.signals.forEach(signal => {
-      body.append(create("article", { className: `signal ${signal.level}` }, [
-        create("strong", { text: signal.label }),
-        signal.context ? create("p", { text: signal.context }) : null,
-        create("p", { className: "muted", text: `Pytanie dla trenera: ${signal.trainerQuestion}` })
-      ]));
-    });
-  }
-  body.append(create("p", { className: "disclaimer", text: result?.disclaimer || "Program nie podejmuje decyzji medycznych." }));
-  return body;
-}
+import { plansSection } from "./trainer-guidance.js";
+import {
+  clientIdentityPanel,
+  cycleDecisionSection,
+  nowPanel,
+  reportsSection,
+  signalsSection
+} from "./trainer-state.js";
 
 function sourceLine(item) {
   return create("p", {
@@ -89,10 +55,15 @@ function briefListCard(title, items, emptyText, className = "brief-card") {
 
 function sessionBriefPanel(workspace) {
   const brief = buildTrainerSessionBrief(workspace);
-  const timing = create("div", { className: "brief-timing" }, [
-    briefFactCard("Następna sesja", brief.nextSession, "Nie zapisano terminu następnej sesji."),
-    briefFactCard("Punkt przeglądu", brief.reviewPoint, "Nie zapisano terminu przeglądu.")
-  ]);
+  const title = brief.nextSession
+    ? "Przed następną sesją"
+    : brief.reviewPoint
+      ? "Do kolejnego przeglądu"
+      : "Aktualny kontekst";
+  const timingCards = [
+    brief.nextSession ? briefFactCard("Następna sesja", brief.nextSession, "") : null,
+    brief.reviewPoint ? briefFactCard("Punkt przeglądu", brief.reviewPoint, "") : null
+  ].filter(Boolean);
   const context = create("div", { className: "brief-grid" }, [
     briefListCard(
       "Bezpieczeństwo i ograniczenia",
@@ -110,24 +81,39 @@ function sessionBriefPanel(workspace) {
     )
   ]);
 
-  return panel("Przed następną sesją", create("div", { className: "session-brief" }, [
+  return panel(title, create("div", { className: "session-brief" }, [
     create("p", {
       className: "brief-intro",
-      text: "Krótki kontekst z istniejących zapisów. System nie interpretuje go i nie podejmuje decyzji za trenera."
+      text: "Kontekst z istniejących zapisów. System nie interpretuje go i nie podejmuje decyzji za trenera."
     }),
-    timing,
+    timingCards.length ? create("div", { className: "brief-timing" }, timingCards) : null,
     context
   ]), "Tylko odczyt · każdy fakt pokazuje źródło i datę");
 }
 
+function sessionRecord(session) {
+  return create("article", { className: "record" }, [
+    create("strong", { text: formatDate(session.date) }),
+    create("p", { text: session.trainer_observation || "Brak obserwacji" }),
+    create("p", { className: "muted", text: session.trainer_decision || "Brak zapisanej decyzji trenera" })
+  ]);
+}
 
 function sessionsSection(workspace, model) {
+  const sessions = (workspace.sessions || []).filter(session => session.session_type !== "pwd");
+  const latest = sessions[0] || null;
+  const previousSessions = sessions.slice(1);
+  const history = previousSessions.length
+    ? create("details", { className: "details-card" }, [
+        create("summary", { text: "Pokaż pełną historię sesji" }),
+        create("div", { className: "details-content" }, [
+          recordList(previousSessions, sessionRecord, "Brak wcześniejszych sesji.")
+        ])
+      ])
+    : null;
   return panel("Sesje", create("div", {}, [
-    recordList((workspace.sessions || []).filter(session => session.session_type !== "pwd"), session => create("article", { className: "record" }, [
-      create("strong", { text: formatDate(session.date) }),
-      create("p", { text: session.trainer_observation || "Brak obserwacji" }),
-      create("p", { className: "muted", text: session.trainer_decision || "Brak zapisanej decyzji trenera" })
-    ]), "Brak sesji."),
+    latest ? sessionRecord(latest) : create("p", { className: "muted", text: "Brak sesji." }),
+    history,
     detailsForm("Dodaj sesję", sessionForm(model.onSaveSession))
   ]));
 }
@@ -167,72 +153,8 @@ function assessmentsSection(workspace, model) {
   ]));
 }
 
-function guidancePlanCard(plan, model) {
-  const paperChannel = ["paper", "hybrid"].includes(plan.guidance_channel);
-  const retirementConfirmed = plan.delivery_status === "paper_retirement_confirmed";
-  const retirementRequired = paperChannel && !retirementConfirmed;
-  const delivery = create("select", { "aria-label": "Status dostarczenia wskazówki" }, [
-    { value: "pending", text: "Dostarczenie oczekuje" },
-    { value: "recorded", text: "Dostarczenie zapisane" },
-    { value: "paper_retirement_unresolved", text: "Papier: wycofanie kopii przed następcą niepotwierdzone" }
-  ].map(option => create("option", option)));
-  delivery.value = retirementConfirmed ? "recorded" : (plan.delivery_status || "pending");
-  const actions = [];
-  if (plan.status === "draft") actions.push(button("Opublikuj jako aktualną wskazówkę", { className: "button primary", onclick: () => model.onPublishHomePlan(plan.id) }));
-  if (plan.status === "active") {
-    if (retirementRequired) actions.push(button("Potwierdź wycofanie poprzedniej kopii papierowej", { onclick: () => model.onConfirmHomePlanPaperRetirement(plan.id) }));
-    if (!retirementConfirmed) actions.push(button("Zapisz dostarczenie", { onclick: () => model.onRecordGuidanceDelivery(plan.id, delivery.value) }));
-    actions.push(button("Wycofaj wskazówkę", { className: "button danger", onclick: () => model.onWithdrawHomePlan(plan.id) }));
-  }
-  return create("article", { className: "record" }, [
-    create("strong", { text: plan.title || "Wskazówka" }),
-    create("p", { text: plan.focus || "Brak celu wskazówki" }),
-    create("p", { className: "muted", text: `Wersja ${plan.release_version || 1} · ${plan.status} · kanał: ${plan.guidance_channel || "brak"}` }),
-    create("p", { className: "muted", text: `Dostarczenie: ${plan.delivery_status || "oczekuje"}` }),
-    retirementRequired ? create("p", { className: "muted", text: "Przed publikacją następcy Damian musi potwierdzić wycofanie poprzedniej kopii papierowej." }) : null,
-    paperChannel && retirementConfirmed ? create("p", { className: "muted", text: "Wycofanie poprzedniej kopii papierowej: potwierdzone." }) : null,
-    plan.status === "active" && !retirementConfirmed ? delivery : null,
-    actions.length ? create("div", { className: "form-actions" }, actions) : null
-  ]);
-}
-function plansSection(workspace, model) {
-  const plans = [...(workspace.homePlans || [])].sort((left, right) => {
-    if (left.status === "active") return -1;
-    if (right.status === "active") return 1;
-    return String(right.created_at || "").localeCompare(String(left.created_at || ""));
-  });
-  const drafts = plans.filter(plan => plan.status === "draft");
-  const planColumn = create("div", {}, [
-    create("h3", { text: "Aktualne prowadzenie i historia" }),
-    create("p", { className: "muted", text: "Damian podejmuje decyzję o publikacji, zastąpieniu, wycofaniu i kanale. System nie rekomenduje decyzji medycznej." }),
-    recordList(plans, plan => guidancePlanCard(plan, model), "Brak wskazówki."),
-    detailsForm("Utwórz szkic wskazówki", homePlanForm(model.onSaveHomePlan))
-  ]);
-  const items = create("div", {}, [
-    create("h3", { text: "Działania w szkicu" }),
-    recordList(workspace.homePlanItems, item => create("article", { className: "record" }, [
-      create("strong", { text: item.name }),
-      create("p", { text: [item.dosage, item.frequency].filter(Boolean).join(" · ") || "Brak dawkowania" }),
-      create("p", { className: "muted", text: [item.client_cue, item.stop_criteria].filter(Boolean).join(" · ") || "Brak celu lub granicy" })
-    ]), "Brak działań w szkicu."),
-    detailsForm("Dodaj działanie do szkicu", homePlanItemForm(drafts, model.onSaveHomePlanItem))
-  ]);
-  return panel("Prowadzenie klienta", create("div", { className: "two-column" }, [planColumn, items]));
-}
-function reportsSection(workspace, model) {
-  return panel("Raporty", create("div", {}, [
-    recordList(workspace.reports, report => create("article", { className: "record" }, [
-      create("strong", { text: report.title || report.type }),
-      create("p", { text: `${report.content.slice(0, 260)}${report.content.length > 260 ? "…" : ""}` }),
-      create("p", { className: "muted", text: `${report.audience} · ${report.status}` })
-    ]), "Brak raportów."),
-    detailsForm("Dodaj raport", reportForm(model.onSaveReport))
-  ]));
-}
-
 export function renderTrainer(root, model) {
   clear(root);
-
   const clientSelect = create("select", { className: "client-select", "aria-label": "Wybierz klienta" }, [
     create("option", { value: "", text: "Wybierz klienta" }),
     ...model.clients.map(client => create("option", { value: client.id, text: client.name }))
@@ -269,17 +191,21 @@ export function renderTrainer(root, model) {
     content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Po wyborze zobaczysz proces i formularze zapisujące bezpośrednio do Supabase." })));
   } else {
     const workspace = model.workspace;
-    content.append(
-      panel(workspace.client.name, summaryGrid(workspace.client)),
+    content.append(...[
+      clientIdentityPanel(workspace.client),
+      nowPanel(workspace, model.attentionSignals),
+      Number(workspace.client.stage) === 4 || workspace.cycleDecisions?.length
+        ? cycleDecisionSection(workspace, model)
+        : null,
       pwdSection(workspace, model),
+      signalsSection(workspace, model.attentionSignals, model),
       sessionBriefPanel(workspace),
-      panel("Sygnały do przeglądu", signalPanel(model.attentionSignals), "Program nie podejmuje decyzji za trenera."),
       sessionsSection(workspace, model),
       measurementsSection(workspace, model),
       assessmentsSection(workspace, model),
       plansSection(workspace, model),
       reportsSection(workspace, model)
-    );
+    ].filter(Boolean));
   }
 
   root.append(header, create("div", { className: "app-layout" }, [sidebar, content]));

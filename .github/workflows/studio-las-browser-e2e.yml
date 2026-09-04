@@ -15,6 +15,8 @@ on:
       - "supabase/dev/staging_public_inquiry_ingress_e2e.sql"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
+      - "scripts/e2e_decision_state_integrity_local.mjs"
+      - "scripts/fixtures/decision-state-integrity.*"
       - "scripts/e2e_stage2_staging.mjs"
       - "scripts/e2e_public_inquiry_ingress_staging.mjs"
       - ".github/workflows/studio-las-browser-e2e.yml"
@@ -131,6 +133,9 @@ jobs:
           STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
           STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
         run: node scripts/e2e_pwd_staging.mjs
+
+      - name: Run trainer decision-state browser E2E
+        run: node scripts/e2e_decision_state_integrity_local.mjs
 
       - name: Run Stage 2 inquiry browser E2E
         env:
