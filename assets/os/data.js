@@ -300,6 +300,8 @@ const WRITE_TABLES = new Set([
   "guidance_pilots",
   "guidance_pilot_feedback",
   "reports",
+  "client_cycle_decisions",
+  "trainer_signal_reviews",
   "legacy_import_batches",
   "legacy_import_records"
 ]);
@@ -404,7 +406,9 @@ export class StudioLasRepository {
       homePlans,
       homePlanItems,
       guidanceEvents,
-      reports
+      reports,
+      cycleDecisions,
+      signalReviews
     ] = await Promise.all([
       this.getClient(clientId),
       this.rest("client_intakes", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
@@ -419,7 +423,9 @@ export class StudioLasRepository {
       this.rest("home_plans", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
       this.rest("home_plan_items", { query: { ...byClient, select: "*", order: "sort_order.asc" } }),
       this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_at,updated_at", order: "event_date.desc,created_at.desc", limit: 1 } }),
-      this.rest("reports", { query: { ...byClient, select: "*", order: "created_at.desc" } })
+      this.rest("reports", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
+      this.rest("client_cycle_decisions", { query: { client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc" } }),
+      this.rest("trainer_signal_reviews", { query: { client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc" } })
     ]);
 
     if (!client) throw new SupabaseHttpError("Client not found or access denied", 404);
@@ -438,7 +444,9 @@ export class StudioLasRepository {
       homePlans,
       homePlanItems,
       guidanceEvents,
-      reports
+      reports,
+      cycleDecisions,
+      signalReviews
     };
   }
 
@@ -761,6 +769,14 @@ export class StudioLasRepository {
       p_delivery_status: deliveryStatus
     });
     return Array.isArray(rows) ? rows[0] : rows;
+  }
+
+  async saveCycleDecision(profileId, clientId, input) {
+    return this.insert("client_cycle_decisions", { client_id: clientId, decision: input.decision, rationale: String(input.rationale || "").trim(), actor_profile_id: profileId });
+  }
+
+  async saveSignalReview(profileId, clientId, signalKey, outcome) {
+    return this.insert("trainer_signal_reviews", { client_id: clientId, signal_key: signalKey, outcome, actor_profile_id: profileId });
   }
   async saveReport(profileId, clientId, input) {
     const published = Boolean(input.published);
