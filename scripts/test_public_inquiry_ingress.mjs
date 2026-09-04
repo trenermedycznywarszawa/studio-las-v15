@@ -32,7 +32,6 @@ for (const fragment of [
 assert(!edge.includes('"*"'), "Wildcard origin found in public ingress Edge Function");
 assert(!edge.includes('studiolas.pl'), "Unapproved future custom domain present in current origin allowlist");
 assert(!/console\.(log|error)\([^\n]*(phone|email|clientAddress|rateKey|payload)/i.test(edge), "Sensitive ingress values may be logged");
-assert(!edge.includes("service_role") && !edge.includes("SERVICE_ROLE_KEY\") || false), "placeholder");
 
 for (const fragment of [
   "create table private.inquiry_ingress_config",
