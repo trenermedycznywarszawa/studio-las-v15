@@ -1,4 +1,6 @@
 -- STAGING / QA ONLY.
+-- Installed on canonical staging as:
+-- 20260904082943_staging_only_public_inquiry_ingress_e2e_fixture
 -- Configures the canonical staging public-ingress owner for an AAL2 trainer and
 -- cleans only exact synthetic request-key prefixes. MUST NOT be promoted.
 
