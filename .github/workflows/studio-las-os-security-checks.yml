@@ -15,15 +15,19 @@ on:
       - "supabase/migrations/**"
       - "supabase/tests/**"
       - "supabase/dev/staging_browser_e2e_cleanup.sql"
+      - "supabase/dev/staging_stage2_inquiry_e2e.sql"
       - "scripts/verify_studio_las_os.py"
       - "scripts/verify_access_lifecycle.py"
       - "scripts/verify_trainer_mfa.py"
       - "scripts/test_trainer_mfa.mjs"
       - "scripts/test_pwd_trainer_workflow.mjs"
+      - "scripts/test_guidance_release_workflow.mjs"
+      - "scripts/test_stage2_production_runtime.mjs"
       - "scripts/test_session_brief.mjs"
       - "scripts/verify_target_preflight_read_only.py"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
+      - "scripts/e2e_stage2_staging.mjs"
       - "scripts/verify_browser_e2e_infra.py"
       - ".github/workflows/studio-las-browser-e2e.yml"
       - ".github/workflows/studio-las-os-security-checks.yml"
@@ -62,6 +66,13 @@ jobs:
       - name: Parse ES modules
         run: python3 -c "import scripts.verify_studio_las_os as v; v.check_js_syntax()"
 
+      - name: Parse Stage 2 modules
+        run: |
+          node --input-type=module --check < assets/os/inquiries.js
+          node --input-type=module --check < assets/os/inquiries-data.js
+          node --input-type=module --check < assets/os/inquiries-controller.js
+          node --input-type=module --check < assets/os/ui/inquiries-section.js
+
       - name: Parse client access admin module
         run: node --input-type=module --check < tools/client-access-admin.js
 
@@ -94,6 +105,12 @@ jobs:
 
       - name: Verify atomic trainer PWD workflow
         run: node scripts/test_pwd_trainer_workflow.mjs
+
+      - name: Verify Guidance Release regression
+        run: node scripts/test_guidance_release_workflow.mjs
+
+      - name: Verify Stage 2 production runtime
+        run: node scripts/test_stage2_production_runtime.mjs
 
       - name: Verify Trainer Session Brief composition
         run: node scripts/test_session_brief.mjs

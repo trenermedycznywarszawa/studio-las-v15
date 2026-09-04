@@ -1,28 +1,9 @@
-import {
-  assertNoPersistentHealthData,
-  clearAuthArtifactsFromUrl,
-  getPasswordSetupContext,
-  getRuntimeConfig,
-  submitPasswordLogin,
-  userSafeError
-} from "./runtime.js";
-import {
-  StudioLasRepository,
-  SupabaseAuth
-} from "./data.js";
+import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
+import { StudioLasRepository, SupabaseAuth } from "./data.js";
+import { InquiryController } from "./inquiries-controller.js";
 import { collectAttentionSignals } from "./decision-support.js";
-import {
-  consumePasswordCallback,
-  renderPasswordSetup,
-  renderRecoveryRequest,
-  requestPasswordRecovery,
-  updatePassword
-} from "./password-auth.js";
-import {
-  renderFatal,
-  renderLoading,
-  renderLogin
-} from "./ui/common.js";
+import { consumePasswordCallback, renderPasswordSetup, renderRecoveryRequest, requestPasswordRecovery, updatePassword } from "./password-auth.js";
+import { renderFatal, renderLoading, renderLogin } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
 import { renderClient } from "./ui/client.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
@@ -35,6 +16,7 @@ const state = {
   config: null,
   auth: null,
   repository: null,
+  inquiryController: null,
   mfa: null,
   mfaView: null,
   profile: null,
@@ -47,6 +29,7 @@ const state = {
 const { announce, withWrite } = createRuntimeFeedback(() => state.config?.mode);
 async function logout() {
   state.mfa?.clear();
+  state.inquiryController?.reset();
   renderLoading(root, "Wylogowywanie…");
   await state.auth.logout();
   state.profile = null;
@@ -138,15 +121,15 @@ function renderMfaView(view, message = "") {
     message,
     onStartEnrollment: () => advanceMfa(
       () => state.mfa.beginEnrollment(),
-      "Przygotowywanie konfiguracji TOTP\u2026"
+      "Przygotowywanie konfiguracji TOTP…"
     ),
     onVerify: code => advanceMfa(
       () => state.mfa.verify(code),
-      "Weryfikowanie kodu TOTP\u2026"
+      "Weryfikowanie kodu TOTP…"
     ),
     onRetry: () => advanceMfa(
       () => state.mfa.prepare(),
-      "Tworzenie nowego wyzwania\u2026"
+      "Tworzenie nowego wyzwania…"
     ),
     onLogout: () => logout().catch(handleRuntimeError),
     onRemoveFactor: index => removeMfaFactor(index),
@@ -173,13 +156,13 @@ async function advanceMfa(operation, loadingMessage) {
 async function enforceTrainerMfa() {
   await advanceMfa(
     () => state.mfa.prepare(),
-    "Sprawdzanie drugiego sk\u0142adnika\u2026"
+    "Sprawdzanie drugiego składnika…"
   );
 }
 
 async function showMfaManagement() {
   try {
-    renderLoading(root, "\u0141adowanie ustawie\u0144 MFA\u2026");
+    renderLoading(root, "Ładowanie ustawień MFA…");
     renderMfaView(await state.mfa.management());
   } catch (error) {
     handleRuntimeError(error);
@@ -187,9 +170,9 @@ async function showMfaManagement() {
 }
 
 async function removeMfaFactor(index) {
-  if (!window.confirm("Usun\u0105\u0107 ten sk\u0142adnik TOTP?")) return;
+  if (!window.confirm("Usunąć ten składnik TOTP?")) return;
   try {
-    renderLoading(root, "Usuwanie sk\u0142adnika TOTP\u2026");
+    renderLoading(root, "Usuwanie składnika TOTP…");
     const next = await state.mfa.removeFactor(index);
     if (next.status === "verified") {
       state.mfaView = null;
@@ -211,7 +194,10 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
-  state.clients = await state.repository.listClients();
+  [state.clients] = await Promise.all([
+    state.repository.listClients(),
+    state.inquiryController.refresh()
+  ]);
   state.activeClientId = preferredClientId && state.clients.some(client => client.id === preferredClientId)
     ? preferredClientId
     : "";
@@ -329,6 +315,12 @@ function renderTrainerState() {
       await reloadWorkspace();
     }
   });
+
+  state.inquiryController.render(root.querySelector(".workspace"), {
+    rerender: renderTrainerState,
+    loadTrainer,
+    onError: handleRuntimeError
+  });
 }
 
 async function loadClientPortal() {
@@ -362,13 +354,9 @@ async function initialize() {
     state.config = getRuntimeConfig();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
+    state.inquiryController = new InquiryController(state.config, state.auth, withWrite);
     state.mfa = new TrainerMfaController(state.auth);
-
-    // Password callbacks are consumed and removed from the address bar before any
-    // other gate can stop the application. The context survives reloads only in
-    // this tab and prevents access until the password has been updated.
     const callback = consumePasswordCallback(state.auth);
-
     assertNoPersistentHealthData();
 
     if (callback) {
