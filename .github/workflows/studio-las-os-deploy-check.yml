@@ -1,0 +1,84 @@
+name: Studio Las OS deploy bundle check
+
+on:
+  pull_request:
+    paths:
+      - "studio-las-os.html"
+      - "studio-las-config.js"
+      - "assets/os/**"
+      - "tools/client-access-admin.html"
+      - "tools/client-access-admin.js"
+      - "scripts/build_studio_las_os_deploy.mjs"
+      - "netlify.toml"
+      - ".github/workflows/studio-las-os-deploy-check.yml"
+  push:
+    branches:
+      - product-recovery
+    paths:
+      - "studio-las-os.html"
+      - "studio-las-config.js"
+      - "assets/os/**"
+      - "tools/client-access-admin.html"
+      - "tools/client-access-admin.js"
+      - "scripts/build_studio_las_os_deploy.mjs"
+      - "netlify.toml"
+      - ".github/workflows/studio-las-os-deploy-check.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  verify-deploy-bundle:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+
+      - name: Build allowlisted app bundle
+        run: node scripts/build_studio_las_os_deploy.mjs
+
+      - name: Verify required runtime files
+        shell: bash
+        run: |
+          set -euo pipefail
+          test -f .deploy/studio-las-os/index.html
+          test -f .deploy/studio-las-os/studio-las-os.html
+          test -f .deploy/studio-las-os/studio-las-config.js
+          test -f .deploy/studio-las-os/assets/os/app.js
+          test -f .deploy/studio-las-os/tools/client-access-admin.html
+          test -f .deploy/studio-las-os/tools/client-access-admin.js
+          test -f .deploy/studio-las-os/_headers
+          test -f .deploy/studio-las-os/deploy-manifest.json
+
+      - name: Reject forbidden public and development surfaces
+        shell: bash
+        run: |
+          set -euo pipefail
+          for path in \
+            ankieta-kontakt.html \
+            ankieta-pelna.html \
+            docs \
+            prototypes \
+            supabase \
+            images \
+            studio-management-os-3.0.html; do
+            if test -e ".deploy/studio-las-os/$path"; then
+              echo "Forbidden deploy content: $path" >&2
+              exit 1
+            fi
+          done
+
+      - name: Verify hosting security headers
+        shell: bash
+        run: |
+          set -euo pipefail
+          grep -F "Cache-Control: no-store" .deploy/studio-las-os/_headers
+          grep -F "X-Frame-Options: DENY" .deploy/studio-las-os/_headers
+          grep -F "X-Content-Type-Options: nosniff" .deploy/studio-las-os/_headers
+          grep -F "Referrer-Policy: no-referrer" .deploy/studio-las-os/_headers
+          grep -F "X-Robots-Tag: noindex, nofollow, noarchive" .deploy/studio-las-os/_headers
