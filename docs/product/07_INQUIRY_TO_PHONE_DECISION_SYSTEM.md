@@ -1,6 +1,7 @@
 # 07 Inquiry to Phone Decision System
 
-**Status:** STAGE 2 CANDIDATE FOR INDEPENDENT DELEGATED PROTOTYPE RE-AUDIT
+**Status:** OWNER ACCEPTED AND MERGED — FICTITIOUS PROTOTYPE CONTRACT ONLY
+**Current record (2026-08-10):** Damian accepted Stage 2 and PR #22 was merged as `040bce6303c9138ba3b1af6366def54c21bd157c`. The human-response policy below is Product-layer truth for a later real service; it does not extend the accepted fictional prototype boundary.
 **Authorization:** contract and fictional workflow prototype only
 **First AI task:** `Prepare the trainer for the first inquiry phone call.`
 
@@ -13,6 +14,23 @@ The workflow helps Damian preserve context, prepare useful questions, conduct a 
 ## Role of the first phone call
 
 The first call is a short, human conversation used to understand the inquiry, clarify uncertainty, and decide what should happen next. It sits between the initial contact and any later full intake, PWD, assessment, or training process.
+
+## Human response and follow-up policy
+
+This section is Product-layer policy for a later, separately approved real service. It does not add contact, booking, messaging, CRM, or automation behavior to the Stage 2 fictional prototype.
+
+| Moment | Studio Las standard |
+| --- | --- |
+| Inquiry received | An approved channel may acknowledge receipt immediately, but the acknowledgement confirms receipt only and never qualifies or promises acceptance. |
+| Personal response | Damian replies on the same working day when practicable and no later than the end of the next working day. |
+| Phone contact | Agree a suitable call time first. Consent to contact does not make an unexpected sales call the default. |
+| Scheduling | Offer the earliest useful times without a universal 48-hour booking limit; fit, travel, readiness, and real availability take priority. |
+| Agreed call unanswered | Send one short context message and ask for a suitable time; do not repeat health-related content. |
+| After the call | Confirm the agreed next step on the same working day; do not use fresh emotion, urgency, or a forced commitment. |
+| No reply | Send at most one respectful reminder after two to three working days. After seven calendar days without a reply, close the inquiry without prejudice and allow the person to return later. |
+| Contact accuracy | Confirm phone and email through the approved contact or booking flow before relying on them. |
+
+Appointment confirmation, a practical reminder around 24 hours before PWD, the trainer-reviewed post-PWD summary, and the seven-day program decision boundary belong to the later approved service flow. Routine reminders contain logistics only and do not expose pain, diagnosis, or other health-related statements.
 
 It is not:
 
@@ -188,6 +206,6 @@ The first inquiry call collects only enough context to choose the next step. It 
 
 ## Stage 2 acceptance boundary
 
-This document is a candidate for independent delegated prototype re-audit. It authorizes neither production implementation nor the use of real client data.
+The independent delegated audit passed and Damian owner accepted Stage 2 on 2026-08-10. PR #22 was merged into `product-recovery` as `040bce6303c9138ba3b1af6366def54c21bd157c`.
 
-Damian delegated fictional-prototype QA to ChatGPT. Stage 2 prototype review remains open until an independent delegated audit records `PASS`, `PASS WITH CORRECTIONS`, or `FAIL`. This delegation does not transfer Damian's authority over product direction or any later schema, provider, real-data, staging, production, merge, or Stage 3 gate.
+That decision accepts only the Stage 2 contract and isolated fictional prototype. It authorizes neither production implementation nor real client data, contact automation, booking, messaging, CRM, schema, provider, Supabase, staging, or deployment. The human-response policy in this document remains Product-layer truth for a later separately approved service projection.
