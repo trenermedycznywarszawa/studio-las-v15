@@ -16,6 +16,7 @@ on:
       - "supabase/tests/**"
       - "supabase/dev/staging_browser_e2e_cleanup.sql"
       - "supabase/dev/staging_stage2_inquiry_e2e.sql"
+      - "supabase/dev/staging_public_inquiry_ingress_e2e.sql"
       - "scripts/verify_studio_las_os.py"
       - "scripts/verify_access_lifecycle.py"
       - "scripts/verify_trainer_mfa.py"
@@ -23,11 +24,13 @@ on:
       - "scripts/test_pwd_trainer_workflow.mjs"
       - "scripts/test_guidance_release_workflow.mjs"
       - "scripts/test_stage2_production_runtime.mjs"
+      - "scripts/test_public_inquiry_ingress.mjs"
       - "scripts/test_session_brief.mjs"
       - "scripts/verify_target_preflight_read_only.py"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
       - "scripts/e2e_stage2_staging.mjs"
+      - "scripts/e2e_public_inquiry_ingress_staging.mjs"
       - "scripts/verify_browser_e2e_infra.py"
       - ".github/workflows/studio-las-browser-e2e.yml"
       - ".github/workflows/studio-las-os-security-checks.yml"
@@ -112,6 +115,9 @@ jobs:
       - name: Verify Stage 2 production runtime
         run: node scripts/test_stage2_production_runtime.mjs
 
+      - name: Verify public inquiry ingress contract
+        run: node scripts/test_public_inquiry_ingress.mjs
+
       - name: Verify Trainer Session Brief composition
         run: node scripts/test_session_brief.mjs
 
@@ -126,6 +132,9 @@ jobs:
 
       - name: Type-check authenticated client access Edge Function
         run: deno check supabase/functions/client-access/index.ts
+
+      - name: Type-check public inquiry ingress Edge Function
+        run: deno check supabase/functions/public-inquiry-ingress/index.ts
 
       - name: Verify complete static contract
         run: python3 scripts/verify_studio_las_os.py

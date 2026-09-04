@@ -8,12 +8,15 @@ on:
       - "studio-las-os.html"
       - "studio-las-config.js"
       - "assets/os/**"
+      - "supabase/functions/public-inquiry-ingress/**"
       - "supabase/migrations/**"
       - "supabase/dev/staging_browser_e2e_cleanup.sql"
       - "supabase/dev/staging_stage2_inquiry_e2e.sql"
+      - "supabase/dev/staging_public_inquiry_ingress_e2e.sql"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
       - "scripts/e2e_stage2_staging.mjs"
+      - "scripts/e2e_public_inquiry_ingress_staging.mjs"
       - ".github/workflows/studio-las-browser-e2e.yml"
   workflow_dispatch:
 
@@ -134,6 +137,12 @@ jobs:
           STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
           STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
         run: node scripts/e2e_stage2_staging.mjs
+
+      - name: Run public inquiry ingress browser E2E
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_public_inquiry_ingress_staging.mjs
 
       - name: Remove ephemeral QA TOTP from staging
         if: always()
