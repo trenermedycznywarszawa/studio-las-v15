@@ -1,3 +1,5 @@
+import { cycleDecisionLabel, latestCycleDecision } from "./decision-state.js";
+
 function text(value) {
   return String(value ?? "").trim();
 }
@@ -88,12 +90,49 @@ function buildLastDecision(workspace) {
     "updated_at",
     "created_at"
   );
+  const cycleDecision = latestCycleDecision(workspace.cycleDecisions || []);
+  const sessionTime = timestamp(sourceDate(session, "date", "updated_at", "created_at"));
+  const cycleTime = timestamp(sourceDate(cycleDecision, "decided_at", "created_at"));
+  if (cycleDecision && cycleTime >= sessionTime) {
+    return fact(
+      "Ostatnia decyzja trenera",
+      cycleDecisionLabel(cycleDecision.decision),
+      "Decyzja co dalej",
+      sourceDate(cycleDecision, "decided_at", "created_at")
+    );
+  }
   return fact(
     "Ostatnia decyzja trenera",
     session?.trainer_decision,
     "Sesja",
     sourceDate(session, "date", "updated_at", "created_at")
   );
+}
+
+function buildNextStep(workspace) {
+  const client = workspace.client || {};
+  const session = latest(
+    (workspace.sessions || []).filter(item => text(item.client_next_step)),
+    "date",
+    "updated_at",
+    "created_at"
+  );
+  const value = text(client.next_milestone) || text(session?.client_next_step) || "Kolejny krok nie został jeszcze zapisany.";
+  if (client.next_session_date) {
+    return Object.freeze({
+      label: "Przed następną sesją",
+      value,
+      date: client.next_session_date
+    });
+  }
+  if (client.next_review_date) {
+    return Object.freeze({
+      label: "Do kolejnego przeglądu",
+      value,
+      date: client.next_review_date
+    });
+  }
+  return Object.freeze({ label: "Aktualny kontekst", value, date: null });
 }
 
 function buildLatestClientSignal(workspace) {
@@ -152,6 +191,9 @@ export function buildTrainerSessionBrief(workspace = {}) {
     lastDecision: buildLastDecision(workspace),
     latestClientSignal: buildLatestClientSignal(workspace),
     activeGuidance: Object.freeze(buildActiveGuidance(workspace, activePlan)),
+    activePlan,
+    nextStep: buildNextStep(workspace),
+    requiresCycleDecision: Number(client.stage) === 4 && !(workspace.cycleDecisions || []).length,
     nextSession: fact("Następna sesja", client.next_session_date, "Karta klienta", clientDate),
     reviewPoint: fact("Następny przegląd", client.next_review_date, "Karta klienta", clientDate)
   });
