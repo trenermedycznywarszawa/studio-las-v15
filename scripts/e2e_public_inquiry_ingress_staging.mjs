@@ -195,7 +195,7 @@ async function main() {
     assert(badOrigin.status === 403, `Disallowed origin did not fail 403: ${badOrigin.status}`);
 
     const oversized = await publicSubmit({}, { rawBody: JSON.stringify({ ...validPayload(`${MARKER}-oversize`), padding: "x".repeat(9000) }) });
-    assert(oversized.status === 413 || oversized.status === 400, `Oversized request was not rejected: ${oversized.status}`);
+    assert(oversized.status === 413, `Oversized request did not fail 413: ${oversized.status}`);
 
     const anonRead = await api(query("inquiries", { select: "id", source_request_key: `eq.${primaryId}` }), { allowFailure: true });
     assert(!Array.isArray(anonRead.payload) || anonRead.payload.length === 0, "Anonymous actor read public inquiry");
