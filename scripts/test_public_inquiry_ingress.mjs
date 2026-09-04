@@ -9,7 +9,7 @@ function assert(condition, message) {
 }
 
 const edge = await read("supabase/functions/public-inquiry-ingress/index.ts");
-const migration = (await read("supabase/migrations/20260904083000_public_inquiry_ingress.sql")).toLowerCase();
+const migration = (await read("supabase/migrations/20260904082927_public_inquiry_ingress.sql")).toLowerCase();
 const fixture = (await read("supabase/dev/staging_public_inquiry_ingress_e2e.sql")).toLowerCase();
 const contract = await read("docs/architecture/21_STAGE_2B_PUBLIC_INQUIRY_INGRESS_CONTRACT.md");
 
@@ -58,6 +58,7 @@ assert(!migration.includes("diagnosis") && !migration.includes("pain_scale") && 
 
 for (const fragment of [
   "staging / qa only",
+  "20260904082943_staging_only_public_inquiry_ingress_e2e_fixture",
   "prepare_public_inquiry_ingress_e2e",
   "cleanup_public_inquiry_ingress_e2e",
   "trainer aal2 required",
