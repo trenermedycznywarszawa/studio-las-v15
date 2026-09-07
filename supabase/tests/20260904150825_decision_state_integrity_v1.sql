@@ -30,12 +30,46 @@ begin
 end;
 $test$;
 
+do $test$
+declare
+  v_trainer_a_auth_user_id uuid;
+  v_trainer_b_auth_user_id uuid;
+  v_client_auth_user_id uuid;
+begin
+  select auth_user_id into v_trainer_a_auth_user_id
+  from public.profiles
+  where id = '11111111-1111-4111-8111-111111111111';
+
+  select auth_user_id into v_trainer_b_auth_user_id
+  from public.profiles
+  where id = '22222222-2222-4222-8222-222222222222';
+
+  select auth_user_id into v_client_auth_user_id
+  from public.profiles
+  where id = '33333333-3333-4333-8333-333333333333';
+
+  if v_trainer_a_auth_user_id is null
+     or v_trainer_b_auth_user_id is null
+     or v_client_auth_user_id is null then
+    raise exception 'ASSERTION FAILED: stable test profiles must have auth_user_id values';
+  end if;
+
+  perform set_config('decision_state.test.trainer_a_auth', v_trainer_a_auth_user_id::text, true);
+  perform set_config('decision_state.test.trainer_b_auth', v_trainer_b_auth_user_id::text, true);
+  perform set_config('decision_state.test.client_auth', v_client_auth_user_id::text, true);
+end;
+$test$;
+
 set local role authenticated;
-select set_config('request.jwt.claim.sub', 'aaaaaaaa-0000-4000-8000-000000000001', true);
+select set_config('request.jwt.claim.sub', current_setting('decision_state.test.trainer_a_auth'), true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config(
   'request.jwt.claims',
-  '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","role":"authenticated","aal":"aal1"}',
+  jsonb_build_object(
+    'sub', current_setting('decision_state.test.trainer_a_auth'),
+    'role', 'authenticated',
+    'aal', 'aal1'
+  )::text,
   true
 );
 
@@ -66,11 +100,15 @@ $test$;
 
 reset role;
 set local role authenticated;
-select set_config('request.jwt.claim.sub', 'aaaaaaaa-0000-4000-8000-000000000001', true);
+select set_config('request.jwt.claim.sub', current_setting('decision_state.test.trainer_a_auth'), true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config(
   'request.jwt.claims',
-  '{"sub":"aaaaaaaa-0000-4000-8000-000000000001","role":"authenticated","aal":"aal2"}',
+  jsonb_build_object(
+    'sub', current_setting('decision_state.test.trainer_a_auth'),
+    'role', 'authenticated',
+    'aal', 'aal2'
+  )::text,
   true
 );
 
@@ -153,11 +191,15 @@ $test$;
 
 reset role;
 set local role authenticated;
-select set_config('request.jwt.claim.sub', 'bbbbbbbb-0000-4000-8000-000000000002', true);
+select set_config('request.jwt.claim.sub', current_setting('decision_state.test.trainer_b_auth'), true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config(
   'request.jwt.claims',
-  '{"sub":"bbbbbbbb-0000-4000-8000-000000000002","role":"authenticated","aal":"aal2"}',
+  jsonb_build_object(
+    'sub', current_setting('decision_state.test.trainer_b_auth'),
+    'role', 'authenticated',
+    'aal', 'aal2'
+  )::text,
   true
 );
 
@@ -176,11 +218,15 @@ $test$;
 
 reset role;
 set local role authenticated;
-select set_config('request.jwt.claim.sub', 'cccccccc-0000-4000-8000-000000000003', true);
+select set_config('request.jwt.claim.sub', current_setting('decision_state.test.client_auth'), true);
 select set_config('request.jwt.claim.role', 'authenticated', true);
 select set_config(
   'request.jwt.claims',
-  '{"sub":"cccccccc-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}',
+  jsonb_build_object(
+    'sub', current_setting('decision_state.test.client_auth'),
+    'role', 'authenticated',
+    'aal', 'aal1'
+  )::text,
   true
 );
 
