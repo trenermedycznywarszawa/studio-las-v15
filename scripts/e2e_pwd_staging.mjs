@@ -259,7 +259,13 @@ async function openPwdForm(page, hasExistingPwd) {
 function pwdSessionArticle(page, marker) {
   const heading = page.getByRole("heading", { name: "Pierwsza Wizyta Diagnostyczna" });
   const section = heading.locator("xpath=ancestor::section[contains(@class, 'panel')]");
-  return section.locator("article.record:has(> .record-list)").filter({ hasText: marker });
+  const body = section.locator(":scope > div").nth(1);
+  const latest = body.locator(":scope > article.record");
+  const history = body.locator("details")
+    .filter({ has: page.locator("summary", { hasText: "Pokaż pełną historię PWD" }) })
+    .locator(".details-content > .record-list")
+    .locator(":scope > article.record");
+  return latest.or(history).filter({ hasText: marker });
 }
 
 async function fillPwdCore(form, marker, decision = "") {
