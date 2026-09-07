@@ -1,5 +1,7 @@
 # 19 Stage 2 Production Runtime Contract
 
+**Status reconciliation 2026-09-07: SUBORDINATE, active detailed production contract as amended.** The original candidate/NOT AUTHORIZED labels below record this document's approval stage, not current implementation status. [ADR 20](20_STAGE_2_PRODUCTION_IMPLEMENTATION_ADR.md) and PR #48 accepted the limited runtime; contracts [21](21_STAGE_2B_PUBLIC_INQUIRY_INGRESS_CONTRACT.md) / [22](22_STAGE_2C_TRAINER_INQUIRY_NOTIFICATION_CONTRACT.md) and PRs #51/#53 resolve ingress and bounded trainer notification. Omitted travel/expanded domain proposals are not approved schema. Merge evidence does not itself verify live rollout.
+
 **Status:** OWNER-APPROVED DIRECTION — PRODUCTION CONTRACT CANDIDATE
 **Authorization:** architecture and runtime contract only
 **Implementation status:** NOT AUTHORIZED

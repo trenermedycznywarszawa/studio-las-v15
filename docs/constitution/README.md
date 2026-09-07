@@ -17,14 +17,14 @@ Technology may analyze, organize, suggest, draft, guide, and record. It may not 
 
 The client and the quality of the process come before loyalty to a medium. Paper, the app, or a deliberate hybrid may carry guidance when that choice serves the person and the task.
 
-## Design heuristic
+## Product philosophy / attention architecture
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
 
-This sentence remains a useful design heuristic, not a mandatory technical sequence. Lower layers must preserve its intent: embodied action before unnecessary tracking, trainer authority over meaning, purposeful data, and a trainer-approved report.
+Per [Owner Decision 2026-09-07](../STUDIO_LAS_OS_MASTER_SPEC.md#owner-decision-2026-09-07--guidance-channel-vs-product-philosophy), these statements are binding product philosophy / attention architecture, not a loose heuristic or mandatory technical sequence. The trainer deliberately selects paper, app, or deliberate hybrid for each Guidance release. App delivery means consciously published trainer Guidance, never autonomous coaching, morning planning, progression, or replacement of the trainer. Lower layers preserve embodied action before unnecessary tracking, trainer authority over meaning, purposeful data, and a trainer-approved report.
 
 ## Reading order
 

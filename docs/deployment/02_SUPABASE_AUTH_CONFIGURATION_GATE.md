@@ -1,5 +1,7 @@
 # Studio Las OS — production Supabase Auth configuration gate
 
+**Evidence scope 2026-09-07: KEEP access gate; historical configuration snapshot.** Any old hosting/callback example below is not a current target-selection instruction. The OS delivery path changed in PR #56; verify exact approved environment configuration in a separately authorized rollout. No redirect, Auth, MFA or production configuration is changed by this reconciliation.
+
 ## Status
 
 This is a mandatory production checklist for the linked Supabase project.

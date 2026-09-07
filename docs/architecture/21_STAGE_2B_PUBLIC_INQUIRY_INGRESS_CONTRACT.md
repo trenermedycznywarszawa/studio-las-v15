@@ -1,5 +1,7 @@
 # Stage 2B — Public Inquiry Ingress Contract
 
+**Scoped reconciliation 2026-09-07: SUBORDINATE, authoritative ingress boundary.** The no-notification restriction below has one explicit successor exception: [Architecture 22](22_STAGE_2C_TRAINER_INQUIRY_NOTIFICATION_CONTRACT.md), implemented by PR #53, permits fixed-content, no-PII trainer notification for a newly created production inquiry. It does not authorize client messaging, payload forwarding or any broader automation.
+
 Status: implementation contract for staging gate
 Issue: #50
 Base: Stage 2 production runtime merged in PR #48

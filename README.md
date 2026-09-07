@@ -17,7 +17,7 @@ All decisions follow this order:
 
 1. Mission
 2. Constitution
-3. Product
+3. [Master Spec 1.1](docs/STUDIO_LAS_OS_MASTER_SPEC.md) — main product and implementation direction; Product contracts elaborate it
 4. Architecture
 5. PRD
 6. Implementation
@@ -25,7 +25,7 @@ All decisions follow this order:
 8. Runtime
 9. Public/client surfaces
 
-A lower layer must never redefine a higher layer.
+A lower layer must never redefine a higher layer. Scoped owner decisions and accepted ADR apply only to their explicit subject; detailed security, provenance and publication contracts retain authority in their scope. See the [source registry](docs/governance/00_SOURCE_OF_TRUTH_REGISTRY.md) and [reconciliation report](docs/reviews/2026-09-07_MASTER_SPEC_1_1_RECONCILIATION.md).
 
 ## Current architecture
 
@@ -36,7 +36,7 @@ The application uses:
 - Supabase Auth,
 - Supabase Postgres and Row Level Security,
 - Supabase REST/RPC,
-- GitHub Pages for static delivery.
+- Netlify for the allowlisted Studio Las OS bundle (PR #56).
 
 No frontend framework or application server is required for the current scope.
 
