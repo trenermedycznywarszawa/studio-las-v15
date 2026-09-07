@@ -5,7 +5,6 @@
   const initialText = root.textContent;
   const state = {
     startedAt: Date.now(),
-    moduleLoaded: false,
     runtimeReady: false,
     failed: false
   };
@@ -32,26 +31,20 @@
           <h1>Narzędzie dostępu nie uruchomiło się</h1>
           <p>Panel zatrzymał się podczas bezpiecznego uruchamiania. Nie wykonano żadnej operacji na koncie klienta.</p>
           <div class="form-actions">
-            <button class="button primary" type="button" id="client-access-retry">Spróbuj ponownie</button>
+            <button class="button primary" type="button" id="client-access-relogin">Zaloguj ponownie</button>
+            <button class="button" type="button" id="client-access-retry">Spróbuj ponownie</button>
             <button class="button" type="button" id="client-access-back">Wróć do OS</button>
           </div>
         </section>
       </main>`;
 
+    document.getElementById("client-access-relogin")?.addEventListener("click", () => {
+      sessionStorage.removeItem("studio-las-auth-session");
+      window.location.reload();
+    });
     document.getElementById("client-access-retry")?.addEventListener("click", () => window.location.reload());
     document.getElementById("client-access-back")?.addEventListener("click", () => window.location.assign("../studio-las-os.html"));
   }
 
-  const startupTimeout = window.setTimeout(renderFailure, 12000);
-
-  import("./client-access-admin.js")
-    .then(() => {
-      state.moduleLoaded = true;
-      window.setTimeout(markReadyIfChanged, 0);
-    })
-    .catch(error => {
-      console.error("client-access bootstrap import failure", error);
-      window.clearTimeout(startupTimeout);
-      renderFailure();
-    });
+  window.setTimeout(renderFailure, 12000);
 })();
