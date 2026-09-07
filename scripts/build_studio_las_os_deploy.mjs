@@ -8,7 +8,8 @@ const files = [
   "studio-las-os.html",
   "studio-las-config.js",
   "tools/client-access-admin.html",
-  "tools/client-access-admin.js"
+  "tools/client-access-admin.js",
+  "tools/client-access-bootstrap.js"
 ];
 
 const directories = ["assets/os"];
