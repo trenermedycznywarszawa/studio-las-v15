@@ -10,6 +10,8 @@ const QA_PASSWORD = String(process.env.STUDIO_LAS_QA_PASSWORD || "");
 const QA_TOTP_SECRET = String(process.env.STUDIO_LAS_QA_TOTP_SECRET || "").trim();
 const PUBLISHABLE_KEY = String(process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY || "").trim();
 const CLIENT_NAME = "QA PWD Client (synthetic)";
+const NEW_PWD_LABEL = "Zapisz PWD";
+const ITERATE_PWD_LABEL = "Dodaj korektę / nową iterację PWD";
 const RUN_MARKER = String(process.env.STUDIO_LAS_E2E_MARKER || `GHA-${Date.now()}`)
   .replace(/[^A-Za-z0-9_-]/g, "-")
   .slice(0, 80);
@@ -139,6 +141,16 @@ async function findPwdSessions(token, clientId, marker) {
   }), { token });
 }
 
+async function getPwdSessions(token, clientId) {
+  return apiRequest(queryPath("sessions", {
+    client_id: `eq.${clientId}`,
+    session_type: "eq.pwd",
+    deleted_at: "is.null",
+    select: "id",
+    order: "created_at.asc"
+  }), { token });
+}
+
 async function getSessionObservations(token, sessionId) {
   return apiRequest(queryPath("assessment_results", {
     session_id: `eq.${sessionId}`,
@@ -148,7 +160,7 @@ async function getSessionObservations(token, sessionId) {
   }), { token });
 }
 
-async function cleanupRun(token, clientId, baseline) {
+async function cleanupRun(token, clientId, baseline, historicalPwdIds) {
   if (!token || !clientId || !baseline) return;
   const cleanupMarker = `E2E-${RUN_MARKER}`;
   const cleanup = await apiRequest("/rest/v1/rpc/cleanup_synthetic_pwd_e2e", {
@@ -169,6 +181,11 @@ async function cleanupRun(token, clientId, baseline) {
     ...(await findPwdSessions(token, clientId, THREE_MARKER))
   ];
   assert(remaining.length === 0, "Browser E2E cleanup left active PWD sessions behind");
+  if (Array.isArray(historicalPwdIds)) {
+    const postCleanupPwdIds = (await getPwdSessions(token, clientId)).map(session => session.id).sort();
+    assert(JSON.stringify(postCleanupPwdIds) === JSON.stringify([...historicalPwdIds].sort()),
+      "Browser E2E cleanup changed the pre-existing PWD history");
+  }
   const restored = await getClientBaseline(token, clientId);
   assert(restored.goal === baseline.goal && restored.motivation === baseline.motivation,
     "Browser E2E cleanup did not restore synthetic client baseline");
@@ -216,11 +233,23 @@ async function selectSyntheticClient(page) {
   return clientId;
 }
 
-async function openPwdForm(page) {
+async function openPwdForm(page, hasExistingPwd) {
   const heading = page.getByRole("heading", { name: "Pierwsza Wizyta Diagnostyczna" });
   const section = heading.locator("xpath=ancestor::section[contains(@class, 'panel')]");
-  const details = section.locator("details").filter({ has: page.locator("summary", { hasText: "Zapisz PWD" }) });
-  const summary = details.locator("summary");
+  const summaries = section.locator("details > summary");
+  const summaryLabels = (await summaries.allTextContents()).map(label => label.trim());
+  const newPwdCount = summaryLabels.filter(label => label === NEW_PWD_LABEL).length;
+  const iterationCount = summaryLabels.filter(label => label === ITERATE_PWD_LABEL).length;
+  if (hasExistingPwd) {
+    assert(iterationCount === 1, "Existing PWD did not offer the correction / new iteration form");
+    assert(newPwdCount === 0, "Existing PWD incorrectly offered the initial Zapisz PWD form");
+  } else {
+    assert(newPwdCount === 1, "Client without PWD did not offer the initial Zapisz PWD form");
+    assert(iterationCount === 0, "Client without PWD incorrectly offered the correction / new iteration form");
+  }
+  const expectedLabel = hasExistingPwd ? ITERATE_PWD_LABEL : NEW_PWD_LABEL;
+  const summary = summaries.filter({ hasText: expectedLabel });
+  const details = summary.locator("xpath=..");
   if (!(await details.evaluate(node => node.open))) await summary.click();
   const form = details.locator("form");
   await form.waitFor({ state: "visible" });
@@ -230,8 +259,7 @@ async function openPwdForm(page) {
 function pwdSessionArticle(page, marker) {
   const heading = page.getByRole("heading", { name: "Pierwsza Wizyta Diagnostyczna" });
   const section = heading.locator("xpath=ancestor::section[contains(@class, 'panel')]");
-  const sessionList = section.locator(".record-list").first();
-  return sessionList.locator(":scope > article.record").filter({ hasText: marker });
+  return section.locator("article.record:has(> .record-list)").filter({ hasText: marker });
 }
 
 async function fillPwdCore(form, marker, decision = "") {
@@ -270,6 +298,7 @@ async function run() {
   let clientId = "";
   let clientBaseline = null;
   let guidanceBaseline = null;
+  let historicalPwdIds = null;
   let primaryError = null;
 
   page.on("console", message => {
@@ -305,9 +334,10 @@ async function run() {
     clientId = await selectSyntheticClient(page);
     clientBaseline = await getClientBaseline(token, clientId);
     guidanceBaseline = await getGuidanceBaseline(token, clientId);
+    historicalPwdIds = (await getPwdSessions(token, clientId)).map(session => session.id);
 
     // PWD #1: zero observations + required-decision validation.
-    let pwd = await openPwdForm(page);
+    let pwd = await openPwdForm(page, historicalPwdIds.length > 0);
     assert(await pwd.form.locator("[data-pwd-observation-card]").count() === 0,
       "New PWD form did not start with zero observations");
     await fillPwdCore(pwd.form, ZERO_MARKER);
@@ -328,6 +358,10 @@ async function run() {
     assert(zeroSessions.length === 1, "Zero-observation PWD did not create exactly one active session");
     assert((await getSessionObservations(token, zeroSessions[0].id)).length === 0,
       "Zero-observation PWD unexpectedly created assessments");
+    const pwdIdsAfterZero = (await getPwdSessions(token, clientId)).map(session => session.id);
+    assert(pwdIdsAfterZero.length === historicalPwdIds.length + 1
+      && historicalPwdIds.every(id => pwdIdsAfterZero.includes(id)),
+    "First test PWD overwrote or removed pre-existing PWD history");
 
     await reloadAndSelect(page);
     const zeroArticle = pwdSessionArticle(page, ZERO_MARKER);
@@ -336,7 +370,7 @@ async function run() {
       "Zero-observation PWD lost its empty-observation state after reload");
 
     // PWD #2: all three structural observation types.
-    pwd = await openPwdForm(page);
+    pwd = await openPwdForm(page, true);
     const addObservation = pwd.form.getByRole("button", { name: "Dodaj obserwację" });
     await addObservation.click();
     await addObservation.click();
@@ -369,6 +403,11 @@ async function run() {
 
     const threeSessions = await findPwdSessions(token, clientId, THREE_MARKER);
     assert(threeSessions.length === 1, "Three-observation PWD did not create exactly one active session");
+    const pwdIdsAfterThree = (await getPwdSessions(token, clientId)).map(session => session.id);
+    assert(pwdIdsAfterThree.length === historicalPwdIds.length + 2
+      && historicalPwdIds.every(id => pwdIdsAfterThree.includes(id)),
+    "Second test PWD overwrote or removed earlier PWD history");
+    assert(threeSessions[0].id !== zeroSessions[0].id, "Second PWD iteration overwrote the first test PWD");
     const observations = await getSessionObservations(token, threeSessions[0].id);
     assert(observations.length === 3, "Three-observation PWD did not persist exactly three assessments");
     const byType = Object.fromEntries(observations.map(item => [item.observation_type, item]));
@@ -415,7 +454,7 @@ async function run() {
     await page.waitForTimeout(100);
     const horizontalOverflow = await page.evaluate(() => document.documentElement.scrollWidth > document.documentElement.clientWidth + 2);
     assert(!horizontalOverflow, "360x900 viewport has horizontal page overflow");
-    const mobilePwd = await openPwdForm(page);
+    const mobilePwd = await openPwdForm(page, true);
     await mobilePwd.summary.focus();
     await page.keyboard.press("Enter");
     assert(!(await mobilePwd.details.evaluate(node => node.open)), "PWD summary did not close from keyboard Enter");
@@ -450,7 +489,7 @@ async function run() {
   } finally {
     let cleanupError = null;
     try {
-      await cleanupRun(token, clientId, clientBaseline);
+      await cleanupRun(token, clientId, clientBaseline, historicalPwdIds);
     } catch (error) {
       cleanupError = error;
     }
