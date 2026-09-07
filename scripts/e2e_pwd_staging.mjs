@@ -268,6 +268,15 @@ function pwdSessionArticle(page, marker) {
   return latest.or(history).filter({ hasText: marker });
 }
 
+async function openPwdHistory(page) {
+  const heading = page.getByRole("heading", { name: "Pierwsza Wizyta Diagnostyczna" });
+  const section = heading.locator("xpath=ancestor::section[contains(@class, 'panel')]");
+  const details = section.locator("details")
+    .filter({ has: page.locator("summary", { hasText: "Pokaż pełną historię PWD" }) });
+  assert(await details.count() === 1, "PWD history was not offered after saving another iteration");
+  if (!(await details.evaluate(node => node.open))) await details.locator("summary").click();
+}
+
 async function fillPwdCore(form, marker, decision = "") {
   const today = new Date().toISOString().slice(0, 10);
   await form.locator('[name="date"]').fill(today);
@@ -428,6 +437,7 @@ async function run() {
 
     await reloadAndSelect(page);
     zeroSessions = await findPwdSessions(token, clientId, ZERO_MARKER);
+    await openPwdHistory(page);
     const zeroAfter = pwdSessionArticle(page, ZERO_MARKER);
     const threeAfter = pwdSessionArticle(page, THREE_MARKER);
     assert(zeroSessions.length === 1 && await zeroAfter.count() === 1, "First PWD was lost or duplicated after second PWD");
