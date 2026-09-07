@@ -1,3 +1,5 @@
+import { currentCycleDecision, cycleDecisionLabel, isCycleDecisionStage } from "./decision-state.js";
+
 function text(value) {
   return String(value ?? "").trim();
 }
@@ -81,19 +83,55 @@ function buildCurrentFocus(workspace, activePlan) {
   );
 }
 
-function buildLastDecision(workspace) {
+function buildLastDecision(workspace, cycleDecision) {
   const session = latest(
     (workspace.sessions || []).filter(item => text(item.trainer_decision)),
     "date",
     "updated_at",
     "created_at"
   );
+  const sessionTime = timestamp(sourceDate(session, "date", "updated_at", "created_at"));
+  const cycleTime = timestamp(sourceDate(cycleDecision, "decided_at", "created_at"));
+  if (cycleDecision && cycleTime >= sessionTime) {
+    return fact(
+      "Ostatnia decyzja trenera",
+      cycleDecisionLabel(cycleDecision.decision),
+      "Decyzja co dalej",
+      sourceDate(cycleDecision, "decided_at", "created_at")
+    );
+  }
   return fact(
     "Ostatnia decyzja trenera",
     session?.trainer_decision,
     "Sesja",
     sourceDate(session, "date", "updated_at", "created_at")
   );
+}
+
+function buildNextStep(workspace) {
+  const client = workspace.client || {};
+  const session = latest(
+    (workspace.sessions || []).filter(item => text(item.client_next_step)),
+    "date",
+    "updated_at",
+    "created_at"
+  );
+  const value = text(client.next_milestone) || text(session?.client_next_step) || "Kolejny krok nie został jeszcze zapisany.";
+  if (client.next_session_date) {
+    return Object.freeze({
+      label: "Przed następną sesją",
+      value,
+      date: client.next_session_date
+    });
+  }
+  if (client.next_review_date) {
+    return Object.freeze({
+      label: "Do kolejnego przeglądu",
+      value,
+      date: client.next_review_date
+    });
+  }
+  return Object.freeze({ label: "Aktualny kontekst", value, date: null });
 }
 
 function buildLatestClientSignal(workspace) {
@@ -145,13 +183,17 @@ export function buildTrainerSessionBrief(workspace = {}) {
   );
   const client = workspace.client || {};
   const clientDate = sourceDate(client, "updated_at", "created_at");
+  const cycleDecision = currentCycleDecision(workspace);
 
   return Object.freeze({
     safety: Object.freeze(buildSafetyFacts(workspace)),
     currentFocus: buildCurrentFocus(workspace, activePlan),
-    lastDecision: buildLastDecision(workspace),
+    lastDecision: buildLastDecision(workspace, cycleDecision),
     latestClientSignal: buildLatestClientSignal(workspace),
     activeGuidance: Object.freeze(buildActiveGuidance(workspace, activePlan)),
+    activePlan,
+    nextStep: buildNextStep(workspace),
+    requiresCycleDecision: isCycleDecisionStage(workspace) && !cycleDecision,
     nextSession: fact("Następna sesja", client.next_session_date, "Karta klienta", clientDate),
     reviewPoint: fact("Następny przegląd", client.next_review_date, "Karta klienta", clientDate)
   });

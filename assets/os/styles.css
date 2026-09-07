@@ -29,8 +29,8 @@ body {
 button, input, select, textarea { font: inherit; }
 button { cursor: pointer; }
 a { color: inherit; }
-h1, h2, h3, p { overflow-wrap: anywhere; }
-h1, h2, h3 { margin-top: 0; }
+h1, h2, h3, h4, p { overflow-wrap: anywhere; }
+h1, h2, h3, h4 { margin-top: 0; }
 h1, h2 { font-family: Georgia, serif; }
 
 .eyebrow {
@@ -161,6 +161,53 @@ h1, h2 { font-family: Georgia, serif; }
 .summary-item span { display: block; color: var(--muted); font-size: 11px; margin-bottom: 5px; }
 .summary-item strong { display: block; font-size: 14px; line-height: 1.4; }
 
+.client-identity { display: flex; align-items: center; gap: 10px; }
+.client-identity strong { color: var(--green-dark); }
+.now-block { display: grid; gap: 12px; }
+.now-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px;
+}
+.now-item {
+  min-width: 0;
+  padding: 15px;
+  border: 1px solid rgba(111, 143, 104, .28);
+  border-radius: 12px;
+  background: #fffdf8;
+}
+.now-item.wide { grid-column: 1 / -1; }
+.now-item span,
+.latest-cycle-decision span,
+.report-decision span {
+  display: block;
+  margin-bottom: 6px;
+  color: var(--green-dark);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.now-item strong { display: block; font-size: 16px; line-height: 1.4; }
+.now-item p { margin: 7px 0 0; font-size: 12px; line-height: 1.4; }
+.cycle-decision-required {
+  padding: 13px 15px;
+  border: 1px solid rgba(184, 137, 77, .45);
+  border-radius: 10px;
+  background: rgba(184, 137, 77, .12);
+  color: #6c4a20;
+  font-weight: 950;
+}
+.latest-cycle-decision,
+.report-decision {
+  padding: 14px;
+  border-left: 4px solid var(--green);
+  border-radius: 10px;
+  background: rgba(111, 143, 104, .08);
+}
+.latest-cycle-decision p,
+.report-decision p { margin: 7px 0 0; }
+
 .session-brief { display: grid; gap: 14px; }
 .brief-intro {
   margin: 0;
@@ -229,6 +276,7 @@ h1, h2 { font-family: Georgia, serif; }
 }
 .details-card[open] > summary { border-bottom: 1px solid var(--line); }
 .details-card form { padding: 14px; }
+.details-content { padding: 14px; }
 
 .form-grid {
   display: grid;
@@ -260,6 +308,7 @@ input:focus, select:focus, textarea:focus {
 .check-field { display: flex; align-items: center; gap: 9px; color: var(--muted); font-size: 13px; }
 .check-field input { width: auto; }
 .form-actions { display: flex; justify-content: flex-end; }
+.guidance-actions { flex-wrap: wrap; gap: 8px; }
 
 .button {
   min-height: 40px;
@@ -295,6 +344,7 @@ input:focus, select:focus, textarea:focus {
 .signal.review { border-left-color: var(--gold); }
 .signal.urgent-review { border-left-color: var(--red); }
 .signal p { margin: 6px 0 0; }
+.signal .details-card { margin-top: 12px; }
 .disclaimer,
 .client-disclaimer {
   padding: 12px;
@@ -306,6 +356,32 @@ input:focus, select:focus, textarea:focus {
 
 .client-stage strong { font-family: Georgia, serif; font-size: 22px; }
 .client-stage p { line-height: 1.55; }
+
+.guidance-state {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 10px;
+}
+.guidance-state span {
+  padding: 5px 8px;
+  border-radius: 999px;
+  background: var(--panel-2);
+  color: var(--muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+.guidance-record > select { margin-top: 10px; }
+.draft-items { display: grid; gap: 12px; }
+.draft-items-group {
+  min-width: 0;
+  padding: 13px;
+  border: 1px solid var(--line);
+  border-radius: 11px;
+  background: rgba(247, 239, 226, .55);
+}
+.draft-items-group h4 { margin-bottom: 10px; }
+.report-record { display: grid; gap: 6px; }
 
 .runtime-message {
   position: fixed;
@@ -351,9 +427,11 @@ input:focus, select:focus, textarea:focus {
   .workspace, .client-workspace { padding: 12px; }
   .panel { padding: 16px; border-radius: 13px; }
   .section-heading { display: grid; gap: 6px; }
-  .summary-grid, .two-column, .form-grid, .form-grid.compact, .brief-timing, .brief-grid { grid-template-columns: 1fr; }
+  .summary-grid, .two-column, .form-grid, .form-grid.compact, .brief-timing, .brief-grid, .now-grid { grid-template-columns: 1fr; }
   .summary-item.wide { grid-column: auto; }
   .brief-card.wide { grid-column: auto; }
+  .now-item.wide { grid-column: auto; }
+  .guidance-actions .button { width: 100%; }
   .center-screen { padding: 14px; }
 }
 

@@ -20,6 +20,7 @@ JS_FILES = [
     ROOT / "assets/os/data-utils.js",
     ROOT / "assets/os/pwd.js",
     ROOT / "assets/os/trainer-mfa.js",
+    ROOT / "assets/os/decision-state.js",
     ROOT / "assets/os/decision-support.js",
     ROOT / "assets/os/session-brief.js",
     ROOT / "assets/os/password-auth.js",
@@ -30,6 +31,8 @@ JS_FILES = [
     ROOT / "assets/os/ui/pwd-form.js",
     ROOT / "assets/os/ui/pwd-section.js",
     ROOT / "assets/os/ui/runtime-feedback.js",
+    ROOT / "assets/os/ui/trainer-guidance.js",
+    ROOT / "assets/os/ui/trainer-state.js",
     ROOT / "assets/os/ui/trainer.js",
     ROOT / "assets/os/ui/client.js",
     ROOT / "demo/studio-las-os-demo.js",
@@ -41,6 +44,7 @@ PRODUCTION_RUNTIME_FILES = [
     ROOT / "assets/os/data-utils.js",
     ROOT / "assets/os/pwd.js",
     ROOT / "assets/os/trainer-mfa.js",
+    ROOT / "assets/os/decision-state.js",
     ROOT / "assets/os/decision-support.js",
     ROOT / "assets/os/session-brief.js",
     ROOT / "assets/os/password-auth.js",
@@ -51,6 +55,8 @@ PRODUCTION_RUNTIME_FILES = [
     ROOT / "assets/os/ui/pwd-form.js",
     ROOT / "assets/os/ui/pwd-section.js",
     ROOT / "assets/os/ui/runtime-feedback.js",
+    ROOT / "assets/os/ui/trainer-guidance.js",
+    ROOT / "assets/os/ui/trainer-state.js",
     ROOT / "assets/os/ui/trainer.js",
     ROOT / "assets/os/ui/client.js",
 ]
@@ -243,6 +249,7 @@ def check_modularity() -> None:
         "assets/os/data-utils.js": 100,
         "assets/os/pwd.js": 180,
         "assets/os/trainer-mfa.js": 180,
+        "assets/os/decision-state.js": 120,
         "assets/os/app.js": 420,
         "assets/os/decision-support.js": 220,
         "assets/os/session-brief.js": 220,
@@ -254,6 +261,8 @@ def check_modularity() -> None:
         "assets/os/ui/pwd-form.js": 220,
         "assets/os/ui/pwd-section.js": 100,
         "assets/os/ui/runtime-feedback.js": 80,
+        "assets/os/ui/trainer-guidance.js": 140,
+        "assets/os/ui/trainer-state.js": 220,
         "assets/os/ui/trainer.js": 300,
         "assets/os/ui/client.js": 180,
     }
@@ -309,8 +318,8 @@ def check_session_brief_contract() -> None:
     require("buildTrainerSessionBrief" in trainer, "trainer UI does not compose the session brief")
     require("sessionBriefPanel(workspace)" in trainer, "trainer UI does not render the session brief")
     require(
-        trainer.find("sessionBriefPanel(workspace)") < trainer.find('panel("Sygnały do przeglądu"'),
-        "session brief is not rendered before the existing workspace sections",
+        trainer.find("sessionBriefPanel(workspace)") < trainer.find("sessionsSection(workspace"),
+        "session brief is not rendered before session history",
     )
     for fragment in [
         "buildSafetyFacts",

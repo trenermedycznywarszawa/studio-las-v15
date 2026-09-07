@@ -8,7 +8,7 @@ function assert(condition, message) {
   passed += 1;
 }
 
-const edge = await read("supabase/functions/public-inquiry-ingress/index.ts");
+const edge = (await read("supabase/functions/public-inquiry-ingress/index.ts")).replace(/\r\n/g, "\n");
 const migration = (await read("supabase/migrations/20260904082927_public_inquiry_ingress.sql")).toLowerCase();
 const fixture = (await read("supabase/dev/staging_public_inquiry_ingress_e2e.sql")).toLowerCase();
 const contract = await read("docs/architecture/21_STAGE_2B_PUBLIC_INQUIRY_INGRESS_CONTRACT.md");

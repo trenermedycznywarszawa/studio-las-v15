@@ -1,5 +1,10 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
+import {
+  guidanceChannelLabel,
+  guidanceDeliveryLabel,
+  guidanceStatusLabel
+} from "../assets/os/decision-state.js";
 
 const read = path => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 const migration = await read("supabase/migrations/022_damian_guidance_release_workflow.sql");
@@ -7,7 +12,8 @@ const releaseVersionFix = await read("supabase/migrations/023_fix_guidance_relea
 const schema = await read("supabase/migrations/001_initial_schema.sql");
 const audit = await read("supabase/migrations/013_access_lifecycle_and_audit.sql");
 const repository = await read("assets/os/data.js");
-const trainer = await read("assets/os/ui/trainer.js");
+const trainerGuidance = await read("assets/os/ui/trainer-guidance.js");
+const trainerState = await read("assets/os/ui/trainer-state.js");
 const forms = await read("assets/os/ui/forms.js");
 
 for (const fragment of [
@@ -42,9 +48,18 @@ assert.match(repository, /withdrawHomePlanGuidance/);
 assert.match(repository, /recordHomePlanGuidanceDelivery/);
 assert.match(repository, /confirmHomePlanPaperRetirement/);
 assert.doesNotMatch(repository.slice(repository.indexOf("async saveHomePlan"), repository.indexOf("async saveHomePlanItem")), /status:\s*published \? "active"/);
-assert.match(trainer, /Damian podejmuje decyzję/);
-assert.match(trainer, /Wycofaj wskazówkę/);
-assert.match(trainer, /Potwierdź wycofanie poprzedniej kopii papierowej/);
+assert.match(trainerGuidance, /Trener podejmuje decyzję/);
+assert.doesNotMatch(trainerGuidance, /Damian podejmuje decyzję/);
+assert.match(trainerGuidance, /Wycofaj wskazówkę/);
+assert.match(trainerGuidance, /Potwierdź wycofanie poprzedniej kopii papierowej/);
+assert.match(trainerGuidance, /paperChannel && hasDraftSuccessor && !retirementConfirmed/);
+assert.match(trainerGuidance, /item\.home_plan_id === plan\.id/);
+assert.match(trainerGuidance, /Szkic: \$\{plan\.title/);
+assert.doesNotMatch(trainerGuidance, /text: `[^`]*\$\{plan\.status\}/);
+assert.doesNotMatch(trainerState, /text: `[^`]*\$\{report\.(audience|status)\}/);
+assert.equal(guidanceStatusLabel("active"), "Aktywna");
+assert.equal(guidanceChannelLabel("hybrid"), "Papier + aplikacja");
+assert.equal(guidanceDeliveryLabel("recorded"), "Dostarczona");
 assert.match(forms, /Cel wskazówki — po co/);
 assert.match(forms, /required: true/);
 console.log("GUIDANCE_RELEASE_WORKFLOW_SUCCESS static contract invariants PASS (does not execute SQL)");

@@ -8,6 +8,10 @@ import {
   CANONICAL_ENGAGEMENTS,
   CANONICAL_STAGES
 } from "../runtime.js";
+import {
+  CYCLE_DECISION_OPTIONS,
+  SIGNAL_REVIEW_OPTIONS
+} from "../decision-state.js";
 
 function today() {
   return new Date().toISOString().slice(0, 10);
@@ -153,7 +157,7 @@ export function homePlanForm(onSubmit) {
 export function homePlanItemForm(homePlans, onSubmit) {
   const plans = (homePlans || []).map(plan => ({
     value: plan.id,
-    label: `${plan.title || "Plan"} · ${plan.status}`
+    label: `Szkic: ${plan.title || "Bez nazwy"}`
   }));
   const hasPlan = plans.length > 0;
 
@@ -176,6 +180,36 @@ export function homePlanItemForm(homePlans, onSubmit) {
     disabled: !hasPlan,
     disabledReason: hasPlan ? "" : "Najpierw utwórz plan domowy. Zadanie nie może istnieć bez planu nadrzędnego."
   });
+}
+
+export function cycleDecisionForm(onSubmit) {
+  return submitForm([
+    field("Decyzja co dalej", "decision", "select", {
+      required: true,
+      options: [
+        { value: "", label: "Wybierz decyzję", disabled: true, selected: true },
+        ...CYCLE_DECISION_OPTIONS
+      ]
+    }),
+    field("Krótkie uzasadnienie trenera", "rationale", "textarea", {
+      required: true,
+      rows: 3,
+      minlength: 1,
+      maxlength: 4000
+    })
+  ], "Zapisz decyzję co dalej", onSubmit);
+}
+
+export function signalReviewForm(signalKey, onSubmit) {
+  return submitForm([
+    field("Wynik przeglądu", "outcome", "select", {
+      required: true,
+      options: [
+        { value: "", label: "Wybierz wynik", disabled: true, selected: true },
+        ...SIGNAL_REVIEW_OPTIONS
+      ]
+    })
+  ], "Zapisz wynik", values => onSubmit(signalKey, values.outcome), "form-grid compact");
 }
 
 export function clientCheckinForm(snapshot, onSubmit) {

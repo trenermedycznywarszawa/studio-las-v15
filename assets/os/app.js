@@ -1,7 +1,7 @@
 import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
 import { StudioLasRepository, SupabaseAuth } from "./data.js";
 import { InquiryController } from "./inquiries-controller.js";
-import { collectAttentionSignals } from "./decision-support.js";
+import { collectAttentionSignals, withoutReviewedSignals } from "./decision-support.js";
 import { consumePasswordCallback, renderPasswordSetup, renderRecoveryRequest, requestPasswordRecovery, updatePassword } from "./password-auth.js";
 import { renderFatal, renderLoading, renderLogin } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
@@ -224,12 +224,13 @@ function renderTrainerState() {
   const latestSession = state.workspace?.sessions?.[0] || null;
   const latestTrainingLoad = state.workspace?.trainingLoad?.[0] || null;
   const latestPreSessionCheck = state.workspace?.preSessionChecks?.[0] || null;
-  const attentionSignals = collectAttentionSignals({
+  const generatedSignals = collectAttentionSignals({
     client: state.workspace?.client,
     session: latestSession,
     trainingLoad: latestTrainingLoad,
     preSessionCheck: latestPreSessionCheck
   });
+  const attentionSignals = withoutReviewedSignals(generatedSignals, state.workspace?.signalReviews);
 
   const reloadWorkspace = async () => {
     if (state.activeClientId) {
@@ -306,6 +307,18 @@ function renderTrainerState() {
       await withWrite("Zapisywanie dostarczenia", () =>
         state.repository.recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus)
       );
+      await reloadWorkspace();
+    },
+    onSaveCycleDecision: async values => {
+      await withWrite("Zapisywanie decyzji co dalej", () => state.repository.saveCycleDecision(
+        state.profile.id, state.activeClientId, values
+      ));
+      await reloadWorkspace();
+    },
+    onReviewSignal: async (signalKey, outcome) => {
+      await withWrite("Zapisywanie przeglądu sygnału", () => state.repository.saveSignalReview(
+        state.profile.id, state.activeClientId, signalKey, outcome
+      ));
       await reloadWorkspace();
     },
     onSaveReport: async values => {
