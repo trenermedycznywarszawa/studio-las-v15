@@ -1,5 +1,7 @@
 ﻿# StudioLasSyncService Design
 
+**Status 2026-09-07: SUPERSEDED — historical sync design.** Browser health/process persistence, offline queues and local fallback described below are not the production contract. [Security Runtime Architecture 09](09_SECURITY_RUNTIME_ARCHITECTURE.md), [DATA_POLICY](../DATA_POLICY.md) and the [Master Spec](../STUDIO_LAS_OS_MASTER_SPEC.md) govern the current remote-only boundary. Preserve this document as history; do not implement its obsolete storage design.
+
 Ten dokument jest kontraktem implementacyjnym dla pierwszego bezpiecznego write layer w Studio Las OS.
 
 Nie implementuje kodu, migracji ani zmian UI. Nie przepisuje aplikacji na Reacta. Nie zmienia obecnego read layer. Nie usuwa fallbacku localStorage.

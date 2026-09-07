@@ -1,5 +1,7 @@
 # Studio Las OS — Product Recovery Execution Plan
 
+**Status 2026-09-07: SUBORDINATE; chronology below is historical through 2026-08-24.** The [Master Spec](../STUDIO_LAS_OS_MASTER_SPEC.md) owns the current roadmap. Subsequent accepted prototype work and merged runtime PRs supersede the old blanket implementation-status statement only in their explicit scope; unimplemented contracts and safety gates remain. See the [baseline and evidence](../reviews/2026-09-07_MASTER_SPEC_1_1_RECONCILIATION.md). This pass does not authorize rollout or cleanup of another checkout.
+
 **Status:** STAGES 0–4 OWNER ACCEPTED, MERGED AND CLOSED; STAGE 5 PRODUCT DECISION BRIEF, ARCHITECTURE CONTRACT, AND PRD 005 OWNER ACCEPTED, MERGED AND CLOSED; PROTOTYPE AND IMPLEMENTATION NOT AUTHORIZED
 **Version:** 2.13
 **Updated:** 2026-08-24

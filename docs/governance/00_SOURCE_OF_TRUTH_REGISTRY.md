@@ -1,5 +1,7 @@
 # 00 Source of Truth Registry
 
+**Reconciled 2026-09-07:** KEEP — registry of scoped ownership. The [Master Spec hierarchy](../STUDIO_LAS_OS_MASTER_SPEC.md#hierarchia-źródeł-prawdy-i-zakres) governs reconciliation within constitutional boundaries. Detailed security, provenance and publication contracts remain authoritative in their scope; the matrix below is not permission to omit their conditions. Architecture 10 controls distinctions between own source visibility and published trainer material. The [complete document classification](../reviews/2026-09-07_MASTER_SPEC_1_1_RECONCILIATION.md#document-classification) records current, subordinate and historical scope; file recency alone does not override authority.
+
 ## Purpose
 
 This document defines where truth lives in the Studio Las project.
@@ -20,16 +22,16 @@ It defines ownership of truth.
 
 ## Core invariant
 
-The trainer remains accountable for interpretation, decisions, and client-safe publication. Guidance uses the channel selected for the client and task. Technology may support analysis, guidance, records, and drafts, but it may not silently become the authority.
+The trainer remains accountable for interpretation, decisions, and client-safe publication. Guidance uses the channel deliberately selected by the trainer for the exact release. Technology may support analysis, guidance, records, and drafts, but it may not silently become the authority.
 
-## Design heuristic
+## Product philosophy / attention architecture
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
 
-Every source of truth must preserve this intent. The sentence is not a mandatory interface order and does not prohibit digital guidance.
+Every source of truth must preserve this binding philosophy. It is not a loose heuristic or mandatory interface order. Digital delivery means consciously published trainer Guidance under the [Owner Decision 2026-09-07](../STUDIO_LAS_OS_MASTER_SPEC.md#owner-decision-2026-09-07--guidance-channel-vs-product-philosophy).
 
 No website page, code file, migration, form, blog post, README, test fixture, or runtime behavior may redefine this rule.
 
@@ -39,7 +41,7 @@ The intended hierarchy of truth is:
 
 1. Mission
 2. Constitution
-3. Product
+3. [Master Spec 1.1](../STUDIO_LAS_OS_MASTER_SPEC.md) — main product and implementation direction; Product documents elaborate it
 4. Architecture
 5. PRD
 6. Implementation

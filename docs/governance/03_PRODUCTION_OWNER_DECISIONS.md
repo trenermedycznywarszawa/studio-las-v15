@@ -1,5 +1,7 @@
 # Studio Las OS — Production Owner Decisions
 
+**Status reconciliation 2026-09-07: KEEP owner controls.** Implementation/readiness observations below are dated evidence, not a current live audit; later MFA and hosting implementation is recorded in the [reconciliation baseline](../reviews/2026-09-07_MASTER_SPEC_1_1_RECONCILIATION.md). Unfulfilled approval and safety conditions are not waived by this annotation.
+
 Status: accepted owner input, production blockers remain
 Date: 2026-07-13
 Owner: Damian / Studio Las

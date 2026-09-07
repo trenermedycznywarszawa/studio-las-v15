@@ -1,5 +1,7 @@
 # Studio Las OS — Security and Runtime Architecture
 
+**Status reconciliation 2026-09-07: SUBORDINATE for product direction; authoritative for security boundaries.** Descriptions of the former local-storage runtime are historical diagnosis, not evidence of a current defect. Current implementation evidence is summarized in the [reconciliation report](../reviews/2026-09-07_MASTER_SPEC_1_1_RECONCILIATION.md); the [Master Spec](../STUDIO_LAS_OS_MASTER_SPEC.md) does not weaken these controls.
+
 Status: implementation authority for the security-hardening branch.
 
 This document is subordinate to Constitution and Product. It defines the technical boundaries required before real client health/process data may be used.

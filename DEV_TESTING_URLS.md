@@ -1,5 +1,7 @@
 # Studio Las OS — testing URLs
 
+**Status 2026-09-07: SUPERSEDED for the production OS delivery target.** The Pages URL below is historical; PR #56 establishes the Netlify allowlisted OS bundle. Do not use this document to select the current production or staging target. Use pinned runtime/environment configuration and the applicable access gates; this documentation pass does not assert a newly verified live URL.
+
 ## Production runtime
 
 Use this address only after migration `012_security_hardening.sql` and both current Supabase test files have passed in the target project:

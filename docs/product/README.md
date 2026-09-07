@@ -1,5 +1,7 @@
 # Studio Las Product
 
+**Authority update 2026-09-07: SUBORDINATE.** The [Master Spec 1.1](../STUDIO_LAS_OS_MASTER_SPEC.md) is the main product and implementation document under Constitution. Product contracts elaborate it; detailed security, provenance and publication rules remain authoritative in their scope. Older references to a design heuristic are read under the binding Owner Decision on philosophy and per-release delivery channel in the Master Spec.
+
 This folder defines the Studio Las product layer.
 
 It does not describe screens, features, database tables, or app behavior.

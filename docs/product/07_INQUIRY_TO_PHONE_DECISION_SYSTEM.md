@@ -1,5 +1,7 @@
 # 07 Inquiry to Phone Decision System
 
+**Status 2026-09-07: HISTORICAL prototype specification.** Preserve trainer-led product invariants; do not copy prototype fields or decision enums into production. The production successor is [Architecture 19](../architecture/19_STAGE_2_PRODUCTION_RUNTIME_CONTRACT.md), narrowed by [ADR 20](../architecture/20_STAGE_2_PRODUCTION_IMPLEMENTATION_ADR.md), with ingress/notification contracts 21–22. The [Master Spec](../STUDIO_LAS_OS_MASTER_SPEC.md) owns current direction.
+
 **Status:** STAGE 2 CANDIDATE FOR INDEPENDENT DELEGATED PROTOTYPE RE-AUDIT
 **Authorization:** contract and fictional workflow prototype only
 **First AI task:** `Prepare the trainer for the first inquiry phone call.`

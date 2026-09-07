@@ -1,5 +1,7 @@
 # Studio Las OS Architecture
 
+**Authority update 2026-09-07: SUBORDINATE for direction.** The [Master Spec 1.1](../STUDIO_LAS_OS_MASTER_SPEC.md) owns product and implementation direction under Constitution. These contracts retain authoritative security, provenance and publication detail in their scope. Prototype acceptance, target design and deployed implementation are distinct; see the [document classification](../reviews/2026-09-07_MASTER_SPEC_1_1_RECONCILIATION.md#document-classification).
+
 This folder defines the Architecture layer for Studio Las OS.
 
 Architecture translates the Studio Las Method into OS decisions.
