@@ -2,16 +2,17 @@
   const root = document.getElementById("access-admin");
   if (!root) return;
 
-  const timeoutMs = 12000;
-  window.__STUDIO_LAS_CLIENT_ACCESS_BOOTSTRAP__ = {
+  const state = {
     startedAt: Date.now(),
-    ready: false
+    moduleLoaded: false,
+    runtimeReady: false,
+    failed: false
   };
+  window.__STUDIO_LAS_CLIENT_ACCESS_BOOTSTRAP__ = state;
 
-  window.setTimeout(() => {
-    const state = window.__STUDIO_LAS_CLIENT_ACCESS_BOOTSTRAP__;
-    if (!state || state.ready) return;
-
+  function renderFailure() {
+    if (state.runtimeReady || state.failed) return;
+    state.failed = true;
     root.innerHTML = `
       <main class="center-screen">
         <section class="fatal-card">
@@ -26,5 +27,21 @@
 
     document.getElementById("client-access-retry")?.addEventListener("click", () => window.location.reload());
     document.getElementById("client-access-back")?.addEventListener("click", () => window.location.assign("../studio-las-os.html"));
-  }, timeoutMs);
+  }
+
+  const timeout = window.setTimeout(renderFailure, 12000);
+
+  import("./client-access-admin.js")
+    .then(() => {
+      state.moduleLoaded = true;
+      window.clearTimeout(timeout);
+      // The module marks runtimeReady once it has rendered a bounded state.
+      if (!state.runtimeReady) {
+        window.setTimeout(renderFailure, 12000);
+      }
+    })
+    .catch(error => {
+      console.error("client-access bootstrap import failure", error);
+      renderFailure();
+    });
 })();
