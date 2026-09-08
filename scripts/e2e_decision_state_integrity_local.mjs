@@ -28,9 +28,15 @@ try {
   await page.goto(FIXTURE_URL, { waitUntil: "networkidle" });
   await page.getByRole("heading", { name: "Panel trenera" }).waitFor();
   await page.getByRole("heading", { name: "Teraz" }).waitFor();
+  const panelByHeading = name => page.getByRole("heading", { name, exact: true })
+    .locator("xpath=ancestor::section[contains(@class, 'panel')]");
+  const nowPanel = panelByHeading("Teraz");
+  const pwdPanel = panelByHeading("Pierwsza Wizyta Diagnostyczna");
+  const sessionsPanel = panelByHeading("Sesje");
+
   assert(await page.getByRole("heading", { name: "Anna Przykładowa", exact: true }).isVisible(), "client identity is not immediately visible");
-  assert(await page.getByText("Wymaga decyzji co dalej", { exact: true }).isVisible(), "cycle closure decision is not surfaced");
-  assert(!(await page.getByText("Decyzja z poprzedniego cyklu.", { exact: true }).isVisible()),
+  assert(await nowPanel.getByText("Wymaga decyzji co dalej", { exact: true }).isVisible(), "cycle closure decision is not surfaced");
+  assert(!(await nowPanel.getByText("Decyzja z poprzedniego cyklu.", { exact: true }).count()),
     "historical cycle decision leaked into the current decision summary");
   assert(await page.locator(".now-item").filter({ hasText: "Otwarty sygnał wymagający uwagi" }).count() === 1,
     "Teraz must expose at most one open signal");
@@ -44,13 +50,13 @@ try {
   assert(await page.getByRole("button", { name: "Potwierdź wycofanie poprzedniej kopii papierowej" }).isVisible(),
     "legal paper-retirement action is missing while a successor draft waits");
 
-  assert(await page.getByText("Najnowsza obserwacja PWD", { exact: true }).first().isVisible(), "latest PWD is not visible");
-  assert(!(await page.getByText("Starsza obserwacja PWD", { exact: true }).isVisible()), "older PWD is expanded by default");
-  assert(await page.getByText("Dodaj korektę / nową iterację PWD", { exact: true }).isVisible(), "PWD iteration copy is missing");
-  assert(await page.getByText("Spokojniejszy rytm.", { exact: true }).first().isVisible(), "latest session is not visible");
-  assert(!(await page.getByText("Wcześniejsza obserwacja.", { exact: true }).isVisible()), "session history is expanded by default");
-  await page.getByText("Pokaż pełną historię sesji", { exact: true }).click();
-  assert(await page.getByText("Wcześniejsza obserwacja.", { exact: true }).isVisible(), "session history cannot be expanded");
+  assert(await pwdPanel.getByText("Najnowsza obserwacja PWD", { exact: true }).first().isVisible(), "latest PWD is not visible");
+  assert(!(await pwdPanel.getByText("Starsza obserwacja PWD", { exact: true }).count()), "older PWD is expanded by default in the PWD section");
+  assert(await pwdPanel.getByText("Dodaj korektę / nową iterację PWD", { exact: true }).isVisible(), "PWD iteration copy is missing");
+  assert(await sessionsPanel.getByText("Spokojniejszy rytm.", { exact: true }).first().isVisible(), "latest session is not visible");
+  assert(!(await sessionsPanel.getByText("Wcześniejsza obserwacja.", { exact: true }).count()), "session history is expanded by default in the Sessions section");
+  await sessionsPanel.getByText("Pokaż pełną historię sesji", { exact: true }).click();
+  assert(await sessionsPanel.getByText("Wcześniejsza obserwacja.", { exact: true }).isVisible(), "session history cannot be expanded");
 
   const openSignal = page.locator(".signal-list > .record-list article.signal").first();
   await openSignal.getByText("Zapisz wynik przeglądu", { exact: true }).click();
