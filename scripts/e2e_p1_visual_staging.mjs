@@ -178,6 +178,11 @@ async function reloadAndSelect(page) {
   return selectSyntheticClient(page);
 }
 
+function identityPanel(page) {
+  return page.getByRole("heading", { name: CLIENT_NAME })
+    .locator("xpath=ancestor::section[contains(@class, 'panel')]");
+}
+
 function indexOfHeading(headings, label) {
   return headings.findIndex(value => value === label);
 }
@@ -235,10 +240,11 @@ async function captureLayout(page, stage, viewportName) {
 
   assert(!metrics.horizontalOverflow, `Stage ${stage} ${viewportName}: horizontal page overflow`);
   assertStageHierarchy(stage, headings);
-  assert(await page.getByText(GOAL_MARKER, { exact: true }).count() === 1,
-    `Stage ${stage} ${viewportName}: canonical client goal is not visible exactly once`);
-  assert(await page.getByText("Cel klienta", { exact: true }).count() === 1,
-    `Stage ${stage} ${viewportName}: client goal label is missing or duplicated`);
+  const identity = identityPanel(page);
+  assert(await identity.getByText(GOAL_MARKER, { exact: true }).count() === 1,
+    `Stage ${stage} ${viewportName}: canonical client goal is missing from identity`);
+  assert(await identity.getByText("Cel klienta", { exact: true }).count() === 1,
+    `Stage ${stage} ${viewportName}: client goal label is missing or duplicated in identity`);
 
   return { headings, ...metrics };
 }
@@ -278,7 +284,7 @@ async function run() {
 
       await page.setViewportSize(VIEWPORTS.desktop);
       await reloadAndSelect(page);
-      await page.getByText(GOAL_MARKER, { exact: true }).waitFor({ state: "visible", timeout: 20_000 });
+      await identityPanel(page).getByText(GOAL_MARKER, { exact: true }).waitFor({ state: "visible", timeout: 20_000 });
       const desktop = await captureLayout(page, stage, "desktop");
       await page.screenshot({
         path: `${ARTIFACT_DIR}/p1-stage${stage}-desktop.png`,
