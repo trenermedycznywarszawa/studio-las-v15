@@ -79,6 +79,18 @@ jobs:
           node --input-type=module --check < assets/os/inquiries-controller.js
           node --input-type=module --check < assets/os/ui/inquiries-section.js
 
+      - name: Parse P1-B timeline modules
+        run: |
+          node --input-type=module --check < assets/os/process-timeline.js
+          node --input-type=module --check < assets/os/ui/process-timeline-section.js
+
+      - name: Verify P1-B timeline remains read-only
+        run: |
+          if grep -En 'localStorage|sessionStorage|fetch\(|\.rest\(|\.insert\(|\.update\(' assets/os/process-timeline.js assets/os/ui/process-timeline-section.js; then
+            echo "P1-B timeline crossed the read-only projection boundary" >&2
+            exit 1
+          fi
+
       - name: Parse client access admin module
         run: node --input-type=module --check < tools/client-access-admin.js
 
