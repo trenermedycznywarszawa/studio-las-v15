@@ -7,19 +7,19 @@ import {
 
 const expected = {
   1: [
-    "identity", "now", "pwd", "sessionBrief", "signals", "sessions",
+    "identity", "now", "pwd", "sessionBrief", "timeline", "signals", "sessions",
     "assessments", "measurements", "guidance", "reports", "cycleDecision"
   ],
   2: [
-    "identity", "now", "sessionBrief", "guidance", "signals", "pwd",
+    "identity", "now", "sessionBrief", "timeline", "guidance", "signals", "pwd",
     "sessions", "assessments", "measurements", "reports", "cycleDecision"
   ],
   3: [
-    "identity", "now", "sessionBrief", "signals", "sessions", "guidance",
+    "identity", "now", "sessionBrief", "timeline", "signals", "sessions", "guidance",
     "assessments", "measurements", "pwd", "reports", "cycleDecision"
   ],
   4: [
-    "identity", "now", "cycleDecision", "reports", "sessionBrief", "signals",
+    "identity", "now", "cycleDecision", "reports", "sessionBrief", "timeline", "signals",
     "sessions", "guidance", "assessments", "measurements", "pwd"
   ]
 };
@@ -38,6 +38,7 @@ const keyedSections = Object.fromEntries(
     pwd: true,
     signals: true,
     sessionBrief: true,
+    timeline: true,
     sessions: true,
     measurements: true,
     assessments: true,
@@ -57,6 +58,10 @@ assert.ok(expected[3].indexOf("sessions") < expected[3].indexOf("pwd"));
 assert.ok(expected[3].indexOf("guidance") < expected[3].indexOf("pwd"));
 assert.ok(expected[4].indexOf("reports") < expected[4].indexOf("pwd"));
 assert.ok(expected[4].indexOf("cycleDecision") < expected[4].indexOf("reports"));
+assert.ok(expected[1].indexOf("sessionBrief") < expected[1].indexOf("timeline"));
+assert.ok(expected[2].indexOf("timeline") < expected[2].indexOf("guidance"));
+assert.ok(expected[3].indexOf("timeline") < expected[3].indexOf("sessions"));
+assert.ok(expected[4].indexOf("sessionBrief") < expected[4].indexOf("timeline"));
 
 const missingOptional = { ...keyedSections, cycleDecision: null };
 assert.deepEqual(
@@ -88,6 +93,7 @@ const inquiryControllerSource = readFileSync(
 assert.match(trainerStateSource, /const goal = String\(client\.goal \|\| ""\)\.trim\(\)/);
 assert.match(trainerStateSource, /"Cel klienta"[\s\S]*goal \|\| "Cel nie został jeszcze zapisany\."/);
 assert.doesNotMatch(trainerStateSource, /life_goal|north_star/);
+assert.match(trainerSource, /timeline: processTimelineSection\(workspace\)/);
 assert.match(trainerSource, /orderTrainerSections\(workspace\.client\.stage, sections\)/);
 assert.match(
   dataSource,
