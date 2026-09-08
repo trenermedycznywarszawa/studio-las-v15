@@ -76,6 +76,14 @@ const dataSource = readFileSync(
   new URL("../assets/os/data.js", import.meta.url),
   "utf8"
 );
+const appSource = readFileSync(
+  new URL("../assets/os/app.js", import.meta.url),
+  "utf8"
+);
+const inquiryControllerSource = readFileSync(
+  new URL("../assets/os/inquiries-controller.js", import.meta.url),
+  "utf8"
+);
 
 assert.match(trainerStateSource, /const goal = String\(client\.goal \|\| ""\)\.trim\(\)/);
 assert.match(trainerStateSource, /"Cel klienta"[\s\S]*goal \|\| "Cel nie został jeszcze zapisany\."/);
@@ -85,5 +93,11 @@ assert.match(
   dataSource,
   /select: "id,name,email,phone,engagement_type,stage,start_date,next_session_date,next_review_date,goal,next_milestone,status,created_at,updated_at"/
 );
+assert.match(
+  appSource,
+  /state\.inquiryController\.render\([\s\S]*activeClientId: state\.activeClientId/
+);
+assert.match(inquiryControllerSource, /render\(workspace, \{ activeClientId = ""/);
+assert.doesNotMatch(inquiryControllerSource, /document\.querySelector\("\.client-select"\)/);
 
 console.log("P1-A phase-aware information architecture tests completed");
