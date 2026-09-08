@@ -1,0 +1,89 @@
+import assert from "node:assert/strict";
+import { readFileSync } from "node:fs";
+import {
+  orderTrainerSections,
+  trainerSectionOrder
+} from "../assets/os/ui/trainer-order.js";
+
+const expected = {
+  1: [
+    "identity", "now", "pwd", "sessionBrief", "signals", "sessions",
+    "assessments", "measurements", "guidance", "reports", "cycleDecision"
+  ],
+  2: [
+    "identity", "now", "sessionBrief", "guidance", "signals", "pwd",
+    "sessions", "assessments", "measurements", "reports", "cycleDecision"
+  ],
+  3: [
+    "identity", "now", "sessionBrief", "signals", "sessions", "guidance",
+    "assessments", "measurements", "pwd", "reports", "cycleDecision"
+  ],
+  4: [
+    "identity", "now", "cycleDecision", "reports", "sessionBrief", "signals",
+    "sessions", "guidance", "assessments", "measurements", "pwd"
+  ]
+};
+
+for (const [stage, order] of Object.entries(expected)) {
+  assert.deepEqual(trainerSectionOrder(stage), order);
+}
+
+assert.deepEqual(trainerSectionOrder("unknown"), expected[1]);
+
+const keyedSections = Object.fromEntries(
+  Object.keys({
+    identity: true,
+    now: true,
+    cycleDecision: true,
+    pwd: true,
+    signals: true,
+    sessionBrief: true,
+    sessions: true,
+    measurements: true,
+    assessments: true,
+    guidance: true,
+    reports: true
+  }).map(key => [key, key])
+);
+
+for (const [stage, order] of Object.entries(expected)) {
+  assert.deepEqual(orderTrainerSections(stage, keyedSections), order);
+}
+
+assert.ok(expected[1].indexOf("pwd") < expected[1].indexOf("sessionBrief"));
+assert.ok(expected[2].indexOf("sessionBrief") < expected[2].indexOf("pwd"));
+assert.ok(expected[2].indexOf("guidance") < expected[2].indexOf("pwd"));
+assert.ok(expected[3].indexOf("sessions") < expected[3].indexOf("pwd"));
+assert.ok(expected[3].indexOf("guidance") < expected[3].indexOf("pwd"));
+assert.ok(expected[4].indexOf("reports") < expected[4].indexOf("pwd"));
+assert.ok(expected[4].indexOf("cycleDecision") < expected[4].indexOf("reports"));
+
+const missingOptional = { ...keyedSections, cycleDecision: null };
+assert.deepEqual(
+  orderTrainerSections(4, missingOptional),
+  expected[4].filter(key => key !== "cycleDecision")
+);
+
+const trainerStateSource = readFileSync(
+  new URL("../assets/os/ui/trainer-state.js", import.meta.url),
+  "utf8"
+);
+const trainerSource = readFileSync(
+  new URL("../assets/os/ui/trainer.js", import.meta.url),
+  "utf8"
+);
+const dataSource = readFileSync(
+  new URL("../assets/os/data.js", import.meta.url),
+  "utf8"
+);
+
+assert.match(trainerStateSource, /const goal = String\(client\.goal \|\| ""\)\.trim\(\)/);
+assert.match(trainerStateSource, /"Cel klienta"[\s\S]*goal \|\| "Cel nie został jeszcze zapisany\."/);
+assert.doesNotMatch(trainerStateSource, /life_goal|north_star/);
+assert.match(trainerSource, /orderTrainerSections\(workspace\.client\.stage, sections\)/);
+assert.match(
+  dataSource,
+  /select: "id,name,email,phone,engagement_type,stage,start_date,next_session_date,next_review_date,goal,next_milestone,status,created_at,updated_at"/
+);
+
+console.log("P1-A phase-aware information architecture tests completed");
