@@ -18,6 +18,7 @@ import { runtimeEnvironmentLabel } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
 import { pwdSection } from "./pwd-section.js";
 import { plansSection } from "./trainer-guidance.js";
+import { orderTrainerSections } from "./trainer-order.js";
 import {
   clientIdentityPanel,
   cycleDecisionSection,
@@ -191,21 +192,22 @@ export function renderTrainer(root, model) {
     content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Po wyborze zobaczysz proces i formularze zapisujące bezpośrednio do Supabase." })));
   } else {
     const workspace = model.workspace;
-    content.append(...[
-      clientIdentityPanel(workspace.client),
-      nowPanel(workspace, model.attentionSignals),
-      Number(workspace.client.stage) === 4 || workspace.cycleDecisions?.length
+    const sections = {
+      identity: clientIdentityPanel(workspace.client),
+      now: nowPanel(workspace, model.attentionSignals),
+      cycleDecision: Number(workspace.client.stage) === 4 || workspace.cycleDecisions?.length
         ? cycleDecisionSection(workspace, model)
         : null,
-      pwdSection(workspace, model),
-      signalsSection(workspace, model.attentionSignals, model),
-      sessionBriefPanel(workspace),
-      sessionsSection(workspace, model),
-      measurementsSection(workspace, model),
-      assessmentsSection(workspace, model),
-      plansSection(workspace, model),
-      reportsSection(workspace, model)
-    ].filter(Boolean));
+      pwd: pwdSection(workspace, model),
+      signals: signalsSection(workspace, model.attentionSignals, model),
+      sessionBrief: sessionBriefPanel(workspace),
+      sessions: sessionsSection(workspace, model),
+      measurements: measurementsSection(workspace, model),
+      assessments: assessmentsSection(workspace, model),
+      guidance: plansSection(workspace, model),
+      reports: reportsSection(workspace, model)
+    };
+    content.append(...orderTrainerSections(workspace.client.stage, sections));
   }
 
   root.append(header, create("div", { className: "app-layout" }, [sidebar, content]));

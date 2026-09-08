@@ -330,6 +330,7 @@ function renderTrainerState() {
   });
 
   state.inquiryController.render(root.querySelector(".workspace"), {
+    activeClientId: state.activeClientId,
     rerender: renderTrainerState,
     loadTrainer,
     onError: handleRuntimeError

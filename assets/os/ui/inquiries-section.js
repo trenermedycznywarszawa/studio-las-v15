@@ -250,9 +250,15 @@ export function renderInquirySection(workspace, model) {
     );
   }
 
-  workspace.prepend(panel(
+  const inquiryPanel = panel(
     "Pierwszy kontakt",
     body,
     "Źródło → rozmowa → jawna decyzja → ewentualne PWD"
-  ));
+  );
+
+  // First contact is a pre-client work surface. When a client is actively
+  // selected, keep the client's identity, goal and current state dominant and
+  // place first-contact work below the active client process instead.
+  if (model.activeClientId) workspace.append(inquiryPanel);
+  else workspace.prepend(inquiryPanel);
 }

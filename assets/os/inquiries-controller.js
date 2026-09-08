@@ -33,8 +33,9 @@ export class InquiryController {
       : [];
   }
 
-  render(workspace, { rerender, loadTrainer, onError }) {
+  render(workspace, { activeClientId = "", rerender, loadTrainer, onError }) {
     renderInquirySection(workspace, {
+      activeClientId,
       inquiries: this.inquiries,
       activeInquiryId: this.activeInquiryId,
       inquiryDecisions: this.decisions,
