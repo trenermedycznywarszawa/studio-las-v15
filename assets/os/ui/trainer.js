@@ -18,6 +18,7 @@ import { runtimeEnvironmentLabel } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
 import { pwdSection } from "./pwd-section.js";
 import { plansSection } from "./trainer-guidance.js";
+import { processTimelineSection } from "./process-timeline-section.js";
 import { orderTrainerSections } from "./trainer-order.js";
 import {
   clientIdentityPanel,
@@ -201,6 +202,7 @@ export function renderTrainer(root, model) {
       pwd: pwdSection(workspace, model),
       signals: signalsSection(workspace, model.attentionSignals, model),
       sessionBrief: sessionBriefPanel(workspace),
+      timeline: processTimelineSection(workspace),
       sessions: sessionsSection(workspace, model),
       measurements: measurementsSection(workspace, model),
       assessments: assessmentsSection(workspace, model),
