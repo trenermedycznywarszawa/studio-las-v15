@@ -34,8 +34,11 @@ export class InquiryController {
   }
 
   render(workspace, { activeClientId = "", rerender, loadTrainer, onError }) {
+    const resolvedActiveClientId = activeClientId
+      || document.querySelector(".client-select")?.value
+      || "";
     renderInquirySection(workspace, {
-      activeClientId,
+      activeClientId: resolvedActiveClientId,
       inquiries: this.inquiries,
       activeInquiryId: this.activeInquiryId,
       inquiryDecisions: this.decisions,
