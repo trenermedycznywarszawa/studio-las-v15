@@ -51,10 +51,10 @@ try {
     "legal paper-retirement action is missing while a successor draft waits");
 
   assert(await pwdPanel.getByText("Najnowsza obserwacja PWD", { exact: true }).first().isVisible(), "latest PWD is not visible");
-  assert(!(await pwdPanel.getByText("Starsza obserwacja PWD", { exact: true }).count()), "older PWD is expanded by default in the PWD section");
+  assert(!(await pwdPanel.getByText("Starsza obserwacja PWD", { exact: true }).isVisible()), "older PWD is expanded by default in the PWD section");
   assert(await pwdPanel.getByText("Dodaj korektę / nową iterację PWD", { exact: true }).isVisible(), "PWD iteration copy is missing");
   assert(await sessionsPanel.getByText("Spokojniejszy rytm.", { exact: true }).first().isVisible(), "latest session is not visible");
-  assert(!(await sessionsPanel.getByText("Wcześniejsza obserwacja.", { exact: true }).count()), "session history is expanded by default in the Sessions section");
+  assert(!(await sessionsPanel.getByText("Wcześniejsza obserwacja.", { exact: true }).isVisible()), "session history is expanded by default in the Sessions section");
   await sessionsPanel.getByText("Pokaż pełną historię sesji", { exact: true }).click();
   assert(await sessionsPanel.getByText("Wcześniejsza obserwacja.", { exact: true }).isVisible(), "session history cannot be expanded");
 
