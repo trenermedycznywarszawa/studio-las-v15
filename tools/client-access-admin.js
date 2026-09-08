@@ -1,6 +1,6 @@
 import {
   assertNoPersistentHealthData,
-  getProductionRuntimeConfig,
+  getRuntimeConfig,
   userSafeError
 } from "../assets/os/runtime.js";
 import {
@@ -306,7 +306,7 @@ function handleError(error) {
 
 async function initialize() {
   try {
-    state.config = getProductionRuntimeConfig();
+    state.config = getRuntimeConfig();
     assertNoPersistentHealthData();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
