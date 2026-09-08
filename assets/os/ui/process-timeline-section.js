@@ -30,14 +30,14 @@ function timelineEntry(item) {
   const sourceRef = `${item.sourceType}:${item.sourceId || "no-id"}`;
 
   return create("article", {
-    className: `record timeline-entry semantic-${item.semantic.toLowerCase()}`,
+    className: "record timeline-entry",
     "data-source-type": item.sourceType,
     "data-source-id": item.sourceId,
     "data-semantic": item.semantic
   }, [
-    create("div", { className: "timeline-entry-heading" }, [
-      create("span", { className: "timeline-semantic", text: semanticLabel }),
-      create("strong", { text: item.label })
+    create("strong", { text: item.label }),
+    create("div", { className: "guidance-state" }, [
+      create("span", { text: semanticLabel })
     ]),
     create("p", { text: item.value }),
     item.meta ? create("p", { className: "muted", text: item.meta }) : null,
@@ -54,18 +54,18 @@ export function processTimelineSection(workspace, { previewLimit = 12 } = {}) {
   const recent = timeline.slice(0, previewLimit);
   const older = timeline.slice(previewLimit);
 
-  const body = create("div", { className: "timeline-block" }, [
+  const body = create("div", {}, [
     create("p", {
       className: "brief-intro",
       text: "Chronologia jest projekcją istniejących zapisów. Nie tworzy nowych zdarzeń i nie dopowiada brakujących faktów."
     }),
     recent.length
-      ? create("div", { className: "timeline-list" }, recent.map(timelineEntry))
+      ? create("div", { className: "record-list timeline-list" }, recent.map(timelineEntry))
       : create("p", { className: "muted", text: "Brak rekordów z datą, które można bezpiecznie pokazać w historii procesu." }),
     older.length
       ? create("details", { className: "details-card" }, [
           create("summary", { text: `Pokaż starsze wpisy (${older.length})` }),
-          create("div", { className: "details-content timeline-list" }, older.map(timelineEntry))
+          create("div", { className: "details-content record-list timeline-list" }, older.map(timelineEntry))
         ])
       : null
   ]);
