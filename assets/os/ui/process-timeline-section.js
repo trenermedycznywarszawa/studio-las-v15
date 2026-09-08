@@ -49,7 +49,7 @@ function timelineEntry(item) {
   ]);
 }
 
-export function processTimelineSection(workspace, { previewLimit = 12 } = {}) {
+export function processTimelineSection(workspace, { previewLimit = 5 } = {}) {
   const timeline = buildProcessTimeline(workspace);
   const recent = timeline.slice(0, previewLimit);
   const older = timeline.slice(previewLimit);
@@ -73,6 +73,6 @@ export function processTimelineSection(workspace, { previewLimit = 12 } = {}) {
   return panel(
     "Historia procesu",
     body,
-    "Tylko odczyt · najnowsze → najstarsze · FAKT / INTERPRETACJA / DECYZJA"
+    "Tylko odczyt · 5 najnowszych · FAKT / INTERPRETACJA / DECYZJA"
   );
 }
