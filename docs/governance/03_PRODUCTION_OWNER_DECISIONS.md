@@ -1,9 +1,52 @@
 # Studio Las OS — Production Owner Decisions
 
+## Status reconciliation — 2026-09-08
+
+**Current accepted direction:** preserve the core and selectively rebuild the integrity boundary and main interaction flows.
+
+The canonical rationale, product decisions and implementation priorities accepted after the September 8 read-only audit are recorded in:
+
+[`04_POST_AUDIT_PRODUCT_AND_INTEGRITY_DECISIONS_2026-09-08.md`](04_POST_AUDIT_PRODUCT_AND_INTEGRITY_DECISIONS_2026-09-08.md).
+
+That decision record is authoritative for the following scoped questions:
+
+- publication completeness and immutability,
+- preservation of original client observations and historical meaning,
+- production/release reconstructability,
+- client current-action / „Dzisiaj” hierarchy,
+- trainer „Teraz” decision hierarchy,
+- data minimisation and the legacy broad questionnaire,
+- non-mandatory guidance variants,
+- evidence-to-report strategy,
+- rebuild sequencing and features explicitly deferred.
+
+Existing Constitution, security, provenance, approval, lifecycle and privacy contracts remain authoritative in their own scope. The new decision record does not weaken them; it makes the intended product behavior more explicit where the audit found implementation gaps.
+
+### Current implementation principle
+
+Do not rebuild Studio Las OS from scratch.
+
+Preserve the useful Supabase + small frontend foundation, RLS/AAL2, PWD, explicit trainer judgment, controlled client projections, Guidance Release lineage and cycle decisions. Rebuild selected boundaries in dependency order, with **publication/historical integrity and recovery proof before visual polish or new features**.
+
+### Current product principle
+
+The application exists to strengthen the 1:1 service:
+
+- client understands the current agreed action,
+- Damian sees what changed and what may alter today's decision,
+- the historical record preserves what was actually reported/prescribed,
+- the report can credibly show meaningful regained capability.
+
+Do not optimize for screen time, streaks, feature count or generic engagement.
+
+---
+
+## Historical accepted owner input — 2026-07-13
+
 **Status reconciliation 2026-09-07: KEEP owner controls.** Implementation/readiness observations below are dated evidence, not a current live audit; later MFA and hosting implementation is recorded in the [reconciliation baseline](../reviews/2026-09-07_MASTER_SPEC_1_1_RECONCILIATION.md). Unfulfilled approval and safety conditions are not waived by this annotation.
 
-Status: accepted owner input, production blockers remain
-Date: 2026-07-13
+Status: accepted owner input, production blockers remain  
+Date: 2026-07-13  
 Owner: Damian / Studio Las
 
 ## Accepted completion definition
@@ -48,6 +91,8 @@ Studio Las OS is considered complete only when:
 
 ## Hosting, domain and email
 
+The bullets in this subsection describe the unresolved state as of 2026-07-13 and are retained as historical evidence. Later reconciliation established Netlify as the production OS hosting surface; current release/source identity must be taken from the latest governance/release evidence, not from these dated bullets.
+
 - Final production application address: not yet chosen.
 - Custom email domain: not yet chosen.
 - SMTP provider: not yet chosen.
@@ -91,7 +136,9 @@ The following remain unresolved owner/legal inputs:
 
 No AI-generated text alone may close these decisions.
 
-## Current production blockers
+## Current production blockers — historical 2026-07-13 list
+
+This list is retained as dated evidence. Later implementation may have resolved individual items; Codex/developers must verify current state rather than treating every bullet as still open.
 
 1. Initialize and validate the free staging project.
 2. Rehearse migrations and security tests locally and on staging.
