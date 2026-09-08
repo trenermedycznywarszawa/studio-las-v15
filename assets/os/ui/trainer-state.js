@@ -39,10 +39,16 @@ function nowItem(label, value, meta = "", className = "now-item") {
 }
 
 export function clientIdentityPanel(client) {
-  return panel(client.name, create("div", { className: "client-identity" }, [
-    create("strong", {
-      text: CANONICAL_ENGAGEMENTS[client.engagement_type] || "Współpraca Studio Las"
-    })
+  const goal = String(client.goal || "").trim();
+  return panel(client.name, create("div", { className: "now-grid" }, [
+    nowItem(
+      "Współpraca",
+      CANONICAL_ENGAGEMENTS[client.engagement_type] || "Współpraca Studio Las"
+    ),
+    nowItem(
+      "Cel klienta",
+      goal || "Cel nie został jeszcze zapisany."
+    )
   ]));
 }
 
