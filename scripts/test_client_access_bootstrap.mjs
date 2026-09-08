@@ -1,12 +1,17 @@
 import { readFile } from "node:fs/promises";
 
 const html = await readFile("tools/client-access-admin.html", "utf8");
+const admin = await readFile("tools/client-access-admin.js", "utf8");
+const runtime = await readFile("assets/os/runtime.js", "utf8");
 const bootstrap = await readFile("tools/client-access-bootstrap.js", "utf8");
 const build = await readFile("scripts/build_studio_las_os_deploy.mjs", "utf8");
 
 const required = [
   [html.includes('type="module" src="./client-access-admin.js"'), "admin html preserves ES module contract"],
   [html.includes('client-access-bootstrap.js'), "admin html loads independent watchdog"],
+  [admin.includes("getRuntimeConfig"), "admin imports canonical runtime config helper"],
+  [!admin.includes("getProductionRuntimeConfig"), "admin does not import removed runtime config helper"],
+  [runtime.includes("export function getRuntimeConfig()"), "runtime exports canonical config helper"],
   [bootstrap.includes("MutationObserver"), "watchdog detects successful render"],
   [bootstrap.includes("12000"), "watchdog has bounded startup timeout"],
   [bootstrap.includes('sessionStorage.removeItem("studio-las-auth-session")'), "watchdog offers safe re-login path"],
