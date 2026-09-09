@@ -140,3 +140,28 @@ content has no editors; publication remains separate. Screenshots at
 `output/playwright/semantic-history-*.png`, with 390/1440 visually inspected.
 Transport and static security/modularity checks passed. Hosted concurrency is
 still an OPEN RELEASE GATE; no new claim of a passing concurrency test.
+
+## Client projection and narrative response contract
+
+Inspection: current portal filtered published/active items correctly but omitted
+release ID/revision and today's saved response. Existing form forced binary
+completion plus energy/symptom scores without a client-specific measurement purpose.
+
+Chosen minimum: optional submission of a short original statement (1-500 chars),
+attached to the immutable item and exact release. Free text preserves what happened
+(reduced, stopped, not attempted, not applicable) without five durable statuses or
+an inferred success/failure score. A deliberate reduced alternative must already
+be prescribed; the response itself does not approve one. Existing historical
+binary/score fields and statements are untouched; older RPC remains compatible.
+
+Migration `20260909113836_client_guidance_response_contract.sql` adds controlled
+projection identity/server date/today response and an idempotent narrative RPC.
+The RPC derives client/actor from active Auth, locks access/client and applicable
+plan during validation/write, and returns the original on duplicate submissions.
+The existing per-item/server-day uniqueness remains. A changed retry payload under
+the same submission UUID fails rather than rewriting history.
+
+Local fictional test `client_response_contract.sql`: `CLIENT_RESPONSE_CONTRACT_SQL_PASS`.
+Covers projection identity, initial/saved state, repeat/second-tab writes, stale
+release, no inferred failure score, client A/B, revocation, trainer and anonymous.
+Hosted verification and client UI integration pending at this checkpoint.
