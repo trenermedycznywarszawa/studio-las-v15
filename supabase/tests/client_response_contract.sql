@@ -69,7 +69,7 @@ do $$ declare snapshot jsonb; saved jsonb; repeated jsonb; begin
  perform pg_temp.assert_true(repeated->>'text'=saved->>'text' and repeated->>'alreadySaved'='true','second tab cannot overwrite today');
  perform pg_temp.expect_error($q$select public.save_client_guidance_response('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Changed retry','f1000000-0000-4000-8000-000000000001')$q$,'22023');
  snapshot:=public.client_portal_snapshot();
- perform pg_temp.assert_true(snapshot->'homePlan'->'items'->0->'todayResponse'->>'id'=saved->>'id','saved state visible after reload');
+ perform pg_temp.assert_true(exists(select 1 from jsonb_array_elements(snapshot->'homePlan'->'items') item where item->>'id'='e1000000-0000-4000-8000-000000000001' and item->'todayResponse'->>'id'=saved->>'id'),'saved state visible after reload');
  perform pg_temp.assert_true(not ((snapshot->'homePlan'->'items'->0) ? 'trainer_note'),'trainer context excluded');
 end $$;
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}',true);

@@ -165,3 +165,12 @@ Local fictional test `client_response_contract.sql`: `CLIENT_RESPONSE_CONTRACT_S
 Covers projection identity, initial/saved state, repeat/second-tab writes, stale
 release, no inferred failure score, client A/B, revocation, trainer and anonymous.
 Hosted verification and client UI integration pending at this checkpoint.
+
+### Hosted client response contract
+
+Database source commit `232577c`, logical staging mapping:
+`20260909113836_client_guidance_response_contract.sql` -> `20260909114233`.
+First hosted test exposed an incorrect assumption that tied item sort keys implied
+array position zero. Corrected the assertion to select the immutable item ID;
+local and hosted reruns returned `CLIENT_RESPONSE_CONTRACT_SQL_PASS`. No migration
+change was needed. Post-rollback fixture user count is zero.
