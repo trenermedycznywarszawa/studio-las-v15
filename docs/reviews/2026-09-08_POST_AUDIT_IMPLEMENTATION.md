@@ -92,3 +92,15 @@ No production-sensitive project was accessed during this checkpoint.
   remaining fixture Auth users: zero. Direct concurrent-session proof remains a
   release gate; sequential hosted SQL assertions passed independently.
 - No production-sensitive project access or production deployment occurred.
+
+## Observation history — guidance responses
+
+Migration `20260909060432_client_observation_history.sql` freezes original
+`client_checkin`/`daily_step` events, including soft deletion and reclassification.
+An owner/AAL2 RPC adds correction or trainer-interpretation notes with exact
+source, actor and time; corrections require a reason. Notes are append-only and
+trainer-only; they do not replace original payloads or become client material.
+No old statement is reconstructed or backfilled. This is deliberately a bounded
+first history change; other client-origin records and the trainer UI remain to verify.
+Local PostgreSQL regression: `CLIENT_OBSERVATION_HISTORY_SQL_PASS`.
+Existing static security verifier passed. Hosted history verification pending.
