@@ -335,6 +335,7 @@ export class StudioLasRepository {
       "approve_home_plan_guidance",
       "clone_home_plan_guidance",
       "trainer_guidance_snapshot",
+      "add_guidance_observation_note",
       "withdraw_home_plan_guidance",
       "record_home_plan_guidance_delivery",
       "confirm_home_plan_paper_retirement",
@@ -424,7 +425,7 @@ export class StudioLasRepository {
       this.rest("training_load_observations", { query: { ...byClient, select: "*", order: "observed_at.desc" } }),
       this.rest("assessment_results", { query: { ...byClient, select: "*", order: "performed_at.desc" } }),
       this.rpc("trainer_guidance_snapshot", { p_client_id: clientId }),
-      this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_at,updated_at", order: "event_date.desc,created_at.desc", limit: 1 } }),
+      this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_by,created_at,updated_at,guidance_observation_notes(*)", order: "event_date.desc,created_at.desc", limit: 100 } }),
       this.rest("reports", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
       this.rest("client_cycle_decisions", { query: { client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc" } }),
       this.rest("trainer_signal_reviews", { query: { client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc" } })
@@ -829,6 +830,10 @@ export class StudioLasRepository {
 
   async getClientPortalSnapshot() {
     return this.rpc("client_portal_snapshot");
+  }
+  async addGuidanceObservationNote(id, values) {
+    return this.rpc("add_guidance_observation_note", { p_observation_id: id,
+      p_kind: values.kind, p_body: values.body, p_reason: values.reason || null });
   }
 
   async saveClientCheckin(input) {

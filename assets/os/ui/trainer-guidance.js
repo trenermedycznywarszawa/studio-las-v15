@@ -1,3 +1,4 @@
+import { observationHistory } from "./observation-history.js";
 import { planEditForm, itemEditForm } from "./guidance-edit-forms.js";
 import {
   guidanceChannelLabel,
@@ -124,9 +125,13 @@ export function plansSection(workspace, model) {
       : null
   ]);
   const section = panel("Prowadzenie klienta", create("div", { className: "two-column" }, [planColumn, items]));
-  section.addEventListener("input", () => section.querySelectorAll(".guidance-approve").forEach(action => {
+  section.addEventListener("input", event => {
+    if (!event.target.closest(".guidance-record, .draft-items")) return;
+    section.querySelectorAll(".guidance-approve").forEach(action => {
     action.disabled = true;
     action.textContent = "Najpierw zapisz zmiany w szkicu";
-  }));
+    });
+  });
+  section.append(observationHistory(workspace, model));
   return section;
 }

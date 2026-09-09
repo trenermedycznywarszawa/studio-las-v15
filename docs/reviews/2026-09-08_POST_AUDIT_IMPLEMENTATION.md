@@ -104,3 +104,22 @@ No old statement is reconstructed or backfilled. This is deliberately a bounded
 first history change; other client-origin records and the trainer UI remain to verify.
 Local PostgreSQL regression: `CLIENT_OBSERVATION_HISTORY_SQL_PASS`.
 Existing static security verifier passed. Hosted history verification pending.
+
+### Guidance observation hosted and UI evidence
+
+- Database commit `b5353c1`; staging logical migration mapping:
+  `20260909060432_client_observation_history.sql` -> `20260909060834`.
+- Exact committed SQL test returned `CLIENT_OBSERVATION_HISTORY_SQL_PASS` on staging;
+  rollback verified with zero fixture Auth users remaining.
+- Trainer history shows original response and its historical prescription alongside
+  separate correction and interpretation notes. Correction requires a reason.
+- Repository transport regression checks exact source/kind/body/reason arguments;
+  forged attribution is not sent. Static security and modularity checks passed.
+- Microsoft Edge fictional fixture verified separate approval/publication controls,
+  hidden approved-content editors, and correction submission preserving the visible
+  original. Responsive checks at 390/768/1440 found no horizontal overflow; 390px
+  screenshot visually inspected. Local screenshots: output/playwright/publication-history-*.png.
+- Browser fixture uses in-memory callbacks; it is UI evidence, not hosted Auth E2E.
+  Hosted SQL role enforcement was tested separately. Only console error was missing
+  fixture favicon (404). Other historical sources, full authenticated preview and
+  concurrent hosted publication remain explicit outstanding release checks.

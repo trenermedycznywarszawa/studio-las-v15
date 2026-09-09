@@ -1,5 +1,9 @@
 export function guidanceActions(repository, clientId, withWrite, reloadWorkspace) {
   return {
+    onAddObservationNote: async (id, values) => {
+      await withWrite("Zapisywanie uzupełnienia", () => repository.addGuidanceObservationNote(id, values));
+      await reloadWorkspace();
+    },
     onApproveHomePlan: async (planId, revision) => {
       await withWrite("Zatwierdzanie treści", () => repository.approveHomePlanGuidance(planId, revision));
       await reloadWorkspace();

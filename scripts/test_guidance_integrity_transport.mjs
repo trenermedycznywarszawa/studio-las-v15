@@ -27,6 +27,8 @@ assert.deepEqual(workspace.homePlans, []);
 assert.deepEqual(workspace.homePlanItems, []);
 assert.equal(calls.filter(call => call.path.includes("trainer_guidance_snapshot")).length, 1);
 assert.ok(!calls.some(call => call.options?.method === "GET" && /home_plans|home_plan_items/.test(call.path)));
+await repo.addGuidanceObservationNote("observation-a", {kind:"correction",body:"Clarified",reason:"Client explained",created_by:"forged"});
+assert.deepEqual(calls.at(-1).options.body, {p_observation_id:"observation-a",p_kind:"correction",p_body:"Clarified",p_reason:"Client explained"});
 auth.request = async () => [];
 await assert.rejects(repo.editGuidanceDraft("client-a","plan-a",{}), /Szkic/);
 console.log("GUIDANCE_TRANSPORT_PASS: exact RPC payloads, guarded edits, consistent review snapshot");
