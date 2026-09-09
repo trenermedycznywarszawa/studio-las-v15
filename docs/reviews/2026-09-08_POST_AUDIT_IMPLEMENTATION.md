@@ -174,3 +174,28 @@ First hosted test exposed an incorrect assumption that tied item sort keys impli
 array position zero. Corrected the assertion to select the immutable item ID;
 local and hosted reruns returned `CLIENT_RESPONSE_CONTRACT_SQL_PASS`. No migration
 change was needed. Post-rollback fixture user count is zero.
+
+### Client current-action and already-saved UI
+
+Client UI now leads with applicable guidance, purpose, general instructions, dose,
+existing trainer-written alternatives/boundary, then an optional original narrative.
+No new mandatory energy/symptom bundle or inferred completion flag is sent.
+Next meeting and existing public telephone contact follow; published reports and
+measurements are available deeper. No guidance means no invented response task.
+
+`ClientPortalController` retains only ephemeral in-memory write identity/text and
+receipt state. Confirmed saves prevent another submit even when refresh fails;
+uncertain network outcomes offer a deliberate check/retry using the same UUID and
+text. Read failures retain useful context, authorization loss clears it, and late
+reads cannot overwrite newer results. No response text is added to browser storage.
+
+Evidence: `test_client_response_state.mjs` passed saved, failed, saved/refresh-failed,
+lost receipt, lost request with same-ID retry, initial retry, revocation and read
+ordering. Exact transport and static security/modularity checks passed.
+`client-response.browser.js` exercised six modes at 390/768/1440 with the actual
+renderer/controller and fictional network outcomes; all assertions passed. It
+verified guidance before collection, no wellness spinbuttons, readable contact,
+retained failed text, saved-form suppression, no duplicate write after lost receipt,
+and no rest-day form. Saved and refresh-failed screenshots captured; 390px failure
+and 1440px success visually inspected. This remains fixture UI evidence separate
+from the passing hosted SQL role test, not a claim of full hosted Auth E2E.

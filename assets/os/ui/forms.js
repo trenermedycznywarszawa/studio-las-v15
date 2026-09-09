@@ -211,25 +211,3 @@ export function signalReviewForm(signalKey, onSubmit) {
     })
   ], "Zapisz wynik", values => onSubmit(signalKey, values.outcome), "form-grid compact");
 }
-
-export function clientCheckinForm(snapshot, onSubmit) {
-  const items = snapshot?.homePlan?.items || [];
-  const hasItem = items.length > 0;
-
-  return submitForm([
-    field("Zadanie", "homePlanItemId", "select", {
-      required: true,
-      disabled: !hasItem,
-      options: hasItem
-        ? items.map(item => ({ value: item.id, label: item.name }))
-        : [{ value: "", label: "Brak aktywnego zadania" }]
-    }),
-    checkbox("Wykonane", "protocolDone", false, { disabled: !hasItem }),
-    field("Energia 0–10", "energyScore", "number", { min: 0, max: 10, required: true, disabled: !hasItem }),
-    field("Dolegliwości 0–10", "symptomScore", "number", { min: 0, max: 10, required: true, disabled: !hasItem }),
-    field("Krótka notatka — opcjonalnie", "note", "textarea", { rows: 2, maxlength: 500, disabled: !hasItem })
-  ], "Zapisz krótki sygnał", onSubmit, "form-grid client-checkin", {
-    disabled: !hasItem,
-    disabledReason: hasItem ? "" : "Nie ma aktywnego, opublikowanego zadania, do którego można zapisać sygnał."
-  });
-}

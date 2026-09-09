@@ -331,6 +331,7 @@ export class StudioLasRepository {
     const allowed = new Set([
       "client_portal_snapshot",
       "save_client_checkin",
+      "save_client_guidance_response",
       "publish_home_plan_guidance",
       "approve_home_plan_guidance",
       "clone_home_plan_guidance",
@@ -837,14 +838,9 @@ export class StudioLasRepository {
   }
 
   async saveClientCheckin(input) {
-    const rows = await this.rpc("save_client_checkin", {
-      p_client_id: input.clientId,
-      p_home_plan_item_id: input.homePlanItemId,
-      p_protocol_done: Boolean(input.protocolDone),
-      p_energy_score: Number(input.energyScore),
-      p_symptom_score: Number(input.symptomScore),
-      p_note: String(input.note || "").trim() || null
+    return this.rpc("save_client_guidance_response", {
+      p_home_plan_item_id: input.homePlanItemId, p_home_plan_id: input.homePlanId,
+      p_response: input.response, p_submission_id: input.submissionId
     });
-    return Array.isArray(rows) ? rows[0] : rows;
   }
 }

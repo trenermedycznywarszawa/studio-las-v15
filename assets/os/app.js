@@ -1,3 +1,4 @@
+import { ClientPortalController } from "./client-portal-controller.js";
 import { guidanceActions } from "./guidance-actions.js";
 import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
 import { StudioLasRepository, SupabaseAuth } from "./data.js";
@@ -23,11 +24,14 @@ const state = {
   clients: [],
   activeClientId: "",
   workspace: null,
+  clientPortal: null,
   snapshot: null
 };
 
 const { announce, withWrite } = createRuntimeFeedback(() => state.config?.mode);
 async function logout() {
+  state.clientPortal?.reset();
+  state.clientPortal = null;
   state.mfa?.clear();
   state.inquiryController?.reset();
   renderLoading(root, "Wylogowywanie…");
@@ -339,18 +343,14 @@ function renderTrainerState() {
 }
 
 async function loadClientPortal() {
-  renderLoading(root, "Ładowanie panelu klienta…");
-  state.snapshot = await state.repository.getClientPortalSnapshot();
-  renderClient(root, {
-    profile: state.profile,
-    snapshot: state.snapshot,
-    onReload: () => loadClientPortal().catch(handleRuntimeError),
+  state.clientPortal ||= new ClientPortalController(state.repository, view => renderClient(root, {
+    ...view, profile: state.profile,
+    onReload: () => state.clientPortal.load(),
     onLogout: () => logout().catch(handleRuntimeError),
-    onSaveCheckin: async values => {
-      await withWrite("Zapisywanie sygnału", () => state.repository.saveClientCheckin(values));
-      await loadClientPortal();
-    }
-  });
+    onSaveCheckin: (id, text) => state.clientPortal.submit(id, text),
+    onRetryResponse: id => state.clientPortal.retry(id)
+  }));
+  await state.clientPortal.load();
 }
 
 function handleRuntimeError(error) {
