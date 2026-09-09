@@ -69,3 +69,26 @@ Positive outcomes are assertions, not merely printed booleans.
 This proves database behavior; the local harness does not prove hosted Auth or
 Storage services. Hosted staging and concurrent-session verification remain pending.
 No production-sensitive project was accessed during this checkpoint.
+
+### Remote and hosted staging checkpoint
+
+- Database implementation commit: `17423c0a6cc99402080f49384d51aab5be36a860`.
+- UI/transport commit: `7301d6aa674cb76e745523869187134d4c4c9742`.
+- Draft PR #66 remote head and files verified using `gh pr view`: all 11 files,
+  including the migration and executable SQL tests, are present.
+- Staging `ulauyoqjoetjqktegeuq` preflight: migration absent, table owner and
+  function execution role both postgres, fictional UUID collision count zero.
+- Applied exact committed SQL as hosted migration `20260909055855`,
+  `guidance_integrity_boundary` (logical source identity:
+  `20260908131947_guidance_integrity_boundary.sql`). No timestamp renaming in source.
+- Executed exact committed `supabase/tests/post_audit_guidance_integrity.sql`:
+  hosted result `GUIDANCE_INTEGRITY_SQL_PASS` on 2026-09-09.
+- Post-rollback verification: zero fixture Auth users and zero original fixture plans.
+- Publication/edit concurrency attempts through separate connector calls did not
+  overlap, including a simultaneous dispatch attempt. The expected lock-timeout
+  assertion failed because the publication transaction had already rolled back.
+  This is inconclusive concurrency evidence, not a database-invariant pass.
+  Dedicated concurrency fixtures were removed after both rollback-only attempts;
+  remaining fixture Auth users: zero. Direct concurrent-session proof remains a
+  release gate; sequential hosted SQL assertions passed independently.
+- No production-sensitive project access or production deployment occurred.
