@@ -41,3 +41,31 @@ original prescription content, or original client statements.
 
 NO-GO while implementation and staging evidence remain incomplete.
 Production additionally requires owner approval and a verified protected recovery package.
+
+## Publication checkpoint — 2026-09-09
+
+Recovered the uncommitted implementation from the interrupted session at HEAD
+`11552ce02240b4dca07060c639d0f09f16ce88bf`; no implementation was recreated from a stale checkout.
+
+Migration `20260908131947_guidance_integrity_boundary.sql`:
+- validates every included action under the shared parent lock;
+- requires separate approval of the viewed draft revision before publication;
+- freezes approved/published content and blocks ordinary lifecycle writes;
+- preserves legacy records without invented approval metadata;
+- creates editable successor drafts with fresh approval requirements;
+- supplies plan revision/items in one SQL snapshot for review;
+- records withdrawal actor and the deliberate withdrawal/replacement operation;
+- reconciles the verified production cleanup in source, without touching production.
+
+Local evidence: PostgreSQL 17.10 on localhost, a fresh disposable database rebuilt
+from every source migration using the explicitly test-only Auth/Storage SQL harness.
+`post_audit_guidance_integrity.sql` passed with fictional fixtures and ROLLBACK.
+It covers empty/partial/complete sets, stale revisions, edits after approval,
+lifecycle bypass (including a spoofed custom GUC), one-action publication,
+replacement lineage, client A/B, revoked access, owner AAL1/AAL2, unrelated trainer,
+anonymous execution, historical response references, paper retirement and withdrawal.
+Positive outcomes are assertions, not merely printed booleans.
+
+This proves database behavior; the local harness does not prove hosted Auth or
+Storage services. Hosted staging and concurrent-session verification remain pending.
+No production-sensitive project was accessed during this checkpoint.
