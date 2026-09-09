@@ -1,3 +1,4 @@
+import { guidanceActions } from "./guidance-actions.js";
 import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
 import { StudioLasRepository, SupabaseAuth } from "./data.js";
 import { InquiryController } from "./inquiries-controller.js";
@@ -10,7 +11,6 @@ import { TrainerMfaController } from "./trainer-mfa.js";
 import { savePwdWorkflow } from "./pwd.js";
 import { renderTrainerMfa } from "./ui/trainer-mfa.js";
 import { createRuntimeFeedback } from "./ui/runtime-feedback.js";
-
 const root = document.getElementById("app");
 const state = {
   config: null,
@@ -289,6 +289,7 @@ function renderTrainerState() {
       );
       await reloadWorkspace();
     },
+    ...guidanceActions(state.repository, state.activeClientId, withWrite, reloadWorkspace),
     onPublishHomePlan: async homePlanId => {
       await withWrite("Publikowanie wskazówki", () => state.repository.publishHomePlanGuidance(homePlanId));
       await reloadWorkspace();

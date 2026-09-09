@@ -1,3 +1,4 @@
+import * as guidance from "./guidance-data.js";
 import {
   clearAuthSession,
   loadAuthSession,
@@ -331,6 +332,9 @@ export class StudioLasRepository {
       "client_portal_snapshot",
       "save_client_checkin",
       "publish_home_plan_guidance",
+      "approve_home_plan_guidance",
+      "clone_home_plan_guidance",
+      "trainer_guidance_snapshot",
       "withdraw_home_plan_guidance",
       "record_home_plan_guidance_delivery",
       "confirm_home_plan_paper_retirement",
@@ -403,8 +407,7 @@ export class StudioLasRepository {
       measurements,
       trainingLoad,
       assessments,
-      homePlans,
-      homePlanItems,
+      guidanceSnapshot,
       guidanceEvents,
       reports,
       cycleDecisions,
@@ -420,14 +423,14 @@ export class StudioLasRepository {
       this.rest("body_measurements", { query: { ...byClient, select: "*", order: "measured_at.desc" } }),
       this.rest("training_load_observations", { query: { ...byClient, select: "*", order: "observed_at.desc" } }),
       this.rest("assessment_results", { query: { ...byClient, select: "*", order: "performed_at.desc" } }),
-      this.rest("home_plans", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("home_plan_items", { query: { ...byClient, select: "*", order: "sort_order.asc" } }),
+      this.rpc("trainer_guidance_snapshot", { p_client_id: clientId }),
       this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_at,updated_at", order: "event_date.desc,created_at.desc", limit: 1 } }),
       this.rest("reports", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
       this.rest("client_cycle_decisions", { query: { client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc" } }),
       this.rest("trainer_signal_reviews", { query: { client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc" } })
     ]);
 
+    const { plans: homePlans, items: homePlanItems } = guidanceSnapshot;
     if (!client) throw new SupabaseHttpError("Client not found or access denied", 404);
 
     return {
@@ -713,19 +716,7 @@ export class StudioLasRepository {
     });
   }
 
-  async saveHomePlan(clientId, input) {
-    return this.insert("home_plans", {
-      client_id: clientId,
-      title: input.title || null,
-      focus: input.focus || null,
-      frequency: input.frequency || null,
-      duration: input.duration || null,
-      instructions: input.instructions || null,
-      guidance_channel: input.guidanceChannel || null,
-      status: "draft",
-      published_at: null
-    });
-  }
+  saveHomePlan(clientId, input) { return guidance.saveHomePlan(this, clientId, input); }
 
   async saveHomePlanItem(clientId, homePlanId, input) {
     return this.insert("home_plan_items", {
@@ -748,6 +739,10 @@ export class StudioLasRepository {
     });
   }
 
+  approveHomePlanGuidance(id, revision) { return guidance.approveHomePlanGuidance(this, id, revision); }
+  cloneHomePlanGuidance(id) { return guidance.cloneHomePlanGuidance(this, id); }
+  editGuidanceDraft(clientId, id, input) { return guidance.editGuidanceDraft(this, clientId, id, input); }
+  editGuidanceDraftItem(clientId, id, input) { return guidance.editGuidanceDraftItem(this, clientId, id, input); }
 
   async publishHomePlanGuidance(homePlanId) {
     const rows = await this.rpc("publish_home_plan_guidance", { p_home_plan_id: homePlanId });
