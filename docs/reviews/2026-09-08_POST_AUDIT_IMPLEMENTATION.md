@@ -199,3 +199,20 @@ retained failed text, saved-form suppression, no duplicate write after lost rece
 and no rest-day form. Saved and refresh-failed screenshots captured; 390px failure
 and 1440px success visually inspected. This remains fixture UI evidence separate
 from the passing hosted SQL role test, not a claim of full hosted Auth E2E.
+
+## Exact-source trainer signal follow-through
+
+New signal keys include source record ID and source revision, preserving same-day
+observations separately. Coarse legacy keys remain historical; no ambiguous review
+is backfilled onto an exact observation. The existing phase-aware surface now
+receives all loaded source observations, including original client narratives.
+Narratives are review context, not automatically scored or interpreted.
+
+Migration `20260909115632_trainer_signal_contact_followthrough.sql` adds explicit
+contact completion time/actor/note to the existing review. Owner/AAL2 RPC only;
+original review and completed contact metadata cannot silently change. Contact
+required stays actionable until that explicit completion, even when its source is
+not in the current loaded source set. No generic task engine or new state enum.
+Local `SIGNAL_CONTACT_SQL_PASS` and `SIGNAL_FOLLOWTHROUGH_PASS`; existing decision
+state regression passed with its stale pre-approval add-item assumption corrected.
+Hosted and browser evidence pending at this checkpoint.
