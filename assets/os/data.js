@@ -425,7 +425,7 @@ export class StudioLasRepository {
       this.rest("training_load_observations", { query: { ...byClient, select: "*", order: "observed_at.desc" } }),
       this.rest("assessment_results", { query: { ...byClient, select: "*", order: "performed_at.desc" } }),
       this.rpc("trainer_guidance_snapshot", { p_client_id: clientId }),
-      this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_by,created_at,updated_at,guidance_observation_notes(*)", order: "event_date.desc,created_at.desc", limit: 100 } }),
+      this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_by,created_at,updated_at,guidance_observation_notes(*,profiles(display_name))", order: "event_date.desc,created_at.desc", limit: 100 } }),
       this.rest("reports", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
       this.rest("client_cycle_decisions", { query: { client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc" } }),
       this.rest("trainer_signal_reviews", { query: { client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc" } })

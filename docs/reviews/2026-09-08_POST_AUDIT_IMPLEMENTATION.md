@@ -123,3 +123,20 @@ Existing static security verifier passed. Hosted history verification pending.
   Hosted SQL role enforcement was tested separately. Only console error was missing
   fixture favicon (404). Other historical sources, full authenticated preview and
   concurrent hosted publication remain explicit outstanding release checks.
+
+### Resumed semantic UI checkpoint — 2026-09-09
+
+Recovery confirmed clean status/diff at `6c8ebfba070d720643bc7ffd69cff435b9e757d1`,
+matching remote Draft PR #66. The prior guard fix and responsive evidence were
+already committed; nothing was recreated or discarded.
+
+Added visible author and precise timestamp to later records, with source actor
+identifier available for attribution. Reproducible CLI browser scenario:
+`scripts/fixtures/publication-history.browser.js` against its fictional HTML fixture.
+Passed all seven semantic conditions at 390/768/1440: original, correction and
+interpretation distinct; historical prescription readable; unrelated note typing
+leaves approval enabled; unsaved prescription editing disables approval; approved
+content has no editors; publication remains separate. Screenshots at
+`output/playwright/semantic-history-*.png`, with 390/1440 visually inspected.
+Transport and static security/modularity checks passed. Hosted concurrency is
+still an OPEN RELEASE GATE; no new claim of a passing concurrency test.

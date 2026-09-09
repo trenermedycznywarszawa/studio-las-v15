@@ -23,6 +23,8 @@ export function observationHistory(workspace, model) {
         item ? create("p", { className: "muted", text: `Ówczesna wskazówka: ${[item.dosage, item.stop_criteria].filter(Boolean).join(" · ")}` }) : null,
         recordList([...(event.guidance_observation_notes || [])].sort((a,b) => a.created_at.localeCompare(b.created_at)), note => create("div", { className: "record" }, [
           create("strong", { text: `${note.kind === "correction" ? "Korekta / wyjaśnienie" : "Interpretacja trenera"} · ${formatDate(note.created_at)}` }),
+          create("p", { className: "muted", text: `Autor: ${note.profiles?.display_name || "Trener"} · ${new Date(note.created_at).toLocaleString("pl-PL")}` }),
+          detailsForm("Identyfikator autora zapisu", create("p", { text: note.created_by })),
           create("p", { text: note.body }),
           note.reason ? create("p", { text: `Powód: ${note.reason}` }) : null
         ]), "Brak osobnych uzupełnień."),

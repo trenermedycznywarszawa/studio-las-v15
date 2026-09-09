@@ -9,7 +9,7 @@ const model = {
  async onPublishHomePlan() { if(!plan.approved_at) throw Error("Unapproved"); plan.status="active"; plan.published_at=new Date().toISOString(); render(); },
  async onEditGuidanceDraft(id, values) { Object.assign(plan,values); render(); },
  async onEditGuidanceDraftItem(id, values) { Object.assign(item,values); render(); },
- async onAddObservationNote(id, values) { if(id!==original.id) throw Error("Wrong source"); original.guidance_observation_notes.push({...values,created_by:"fictional-trainer",created_at:new Date().toISOString()}); render(); },
+ async onAddObservationNote(id, values) { if(id!==original.id) throw Error("Wrong source"); original.guidance_observation_notes.push({...values,created_by:"fictional-trainer",profiles:{display_name:"Trener testowy"},created_at:new Date().toISOString()}); render(); },
  onCloneHomePlan(){},onSaveHomePlan(){},onSaveHomePlanItem(){},onWithdrawHomePlan(){},onRecordGuidanceDelivery(){}
 };
 function render(){root.replaceChildren(plansSection(workspace,model));}
