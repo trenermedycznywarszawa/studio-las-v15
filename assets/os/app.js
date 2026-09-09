@@ -1,9 +1,10 @@
+import { collectWorkspaceSignals } from "./trainer-signals.js";
 import { ClientPortalController } from "./client-portal-controller.js";
 import { guidanceActions } from "./guidance-actions.js";
 import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
 import { StudioLasRepository, SupabaseAuth } from "./data.js";
 import { InquiryController } from "./inquiries-controller.js";
-import { collectAttentionSignals, withoutReviewedSignals } from "./decision-support.js";
+import { withoutReviewedSignals } from "./decision-support.js";
 import { consumePasswordCallback, renderPasswordSetup, renderRecoveryRequest, requestPasswordRecovery, updatePassword } from "./password-auth.js";
 import { renderFatal, renderLoading, renderLogin } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
@@ -225,15 +226,7 @@ async function selectClient(clientId) {
 }
 
 function renderTrainerState() {
-  const latestSession = state.workspace?.sessions?.[0] || null;
-  const latestTrainingLoad = state.workspace?.trainingLoad?.[0] || null;
-  const latestPreSessionCheck = state.workspace?.preSessionChecks?.[0] || null;
-  const generatedSignals = collectAttentionSignals({
-    client: state.workspace?.client,
-    session: latestSession,
-    trainingLoad: latestTrainingLoad,
-    preSessionCheck: latestPreSessionCheck
-  });
+  const generatedSignals = collectWorkspaceSignals(state.workspace || {});
   const attentionSignals = withoutReviewedSignals(generatedSignals, state.workspace?.signalReviews);
 
   const reloadWorkspace = async () => {

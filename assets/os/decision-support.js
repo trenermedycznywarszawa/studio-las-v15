@@ -2,6 +2,7 @@ const DISCLAIMER =
   "To są sygnały do przeglądu przez trenera, nie diagnoza ani automatyczna decyzja o progresji, regresji lub leczeniu.";
 
 const SIGNAL_LABELS = Object.freeze({
+  "client-observation": "Odpowiedź klienta do przeglądu",
   "symptom-increase-after-session": "Zgłoszony poziom dolegliwości wzrósł po sesji.",
   "low-readiness": "Klient zgłosił niską gotowość lub energię.",
   "poor-sleep": "Sen został opisany jako słaby.",
@@ -23,17 +24,17 @@ function normalizedSourceDate(value) {
   return raw ? raw.slice(0, 10) : "brak-daty-źródła";
 }
 
-export function signalInstanceKey({ id, source, sourceDate }) {
-  return [id, source, normalizedSourceDate(sourceDate)]
+export function signalInstanceKey({ id, source, sourceDate, sourceId, sourceRevision }) {
+  return [id, source, normalizedSourceDate(sourceDate), ...(sourceId ? [sourceId, sourceRevision || ""] : [])]
     .map(value => encodeURIComponent(String(value || "")))
     .join("::");
 }
 
 export function signalIdentity(signalKey) {
-  const [id = "", source = "", sourceDate = ""] = String(signalKey || "")
+  const [id = "", source = "", sourceDate = "", sourceId, sourceRevision] = String(signalKey || "")
     .split("::")
-    .map(value => decodeURIComponent(value));
-  return Object.freeze({ id, source, sourceDate });
+    .map(value => { try { return decodeURIComponent(value); } catch { return value; } });
+  return Object.freeze({ id, source, sourceDate, ...(sourceId ? {sourceId,sourceRevision} : {}) });
 }
 
 export function signalTypeLabel(signalKey) {
@@ -46,7 +47,7 @@ function addSignal(signals, signal) {
     id: signal.id,
     level: signal.level || "review",
     source: signal.source || "process",
-    sourceDate,
+    sourceDate, sourceId: signal.sourceId, sourceRevision: signal.sourceRevision,
     signalKey: signalInstanceKey({ ...signal, sourceDate }),
     label: signal.label,
     context: signal.context,
@@ -67,7 +68,7 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       id: "symptom-increase-after-session",
       level: "review",
       source: "session",
-      sourceDate: sessionDate,
+      sourceDate: sessionDate, sourceId:session.id, sourceRevision:session.updated_at || session.created_at,
       label: SIGNAL_LABELS["symptom-increase-after-session"],
       context: `Przed: ${painBefore}/10, po: ${painAfter}/10.`,
       trainerQuestion: "Czy reakcja była spodziewana, przejściowa i zgodna z kontekstem tej osoby?"
@@ -80,7 +81,7 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       id: "low-readiness",
       level: "review",
       source: "session",
-      sourceDate: sessionDate,
+      sourceDate: sessionDate, sourceId:session.id, sourceRevision:session.updated_at || session.created_at,
       label: SIGNAL_LABELS["low-readiness"],
       context: `${readiness}/10.`,
       trainerQuestion: "Co działo się tego dnia i czy plan wymaga spokojniejszej interpretacji?"
@@ -93,7 +94,7 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       id: "poor-sleep",
       level: "review",
       source: "session",
-      sourceDate: sessionDate,
+      sourceDate: sessionDate, sourceId:session.id, sourceRevision:session.updated_at || session.created_at,
       label: SIGNAL_LABELS["poor-sleep"],
       context: session?.sleep_quality ?? session?.sleepQuality,
       trainerQuestion: "Czy słabszy sen był pojedynczym zdarzeniem, czy częścią szerszego wzorca?"
@@ -106,7 +107,7 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       id: "very-high-perceived-effort",
       level: "review",
       source: "training-load",
-      sourceDate: trainingLoadDate,
+      sourceDate: trainingLoadDate, sourceId:trainingLoad.id, sourceRevision:trainingLoad.updated_at || trainingLoad.created_at,
       label: SIGNAL_LABELS["very-high-perceived-effort"],
       context: `RPE ${rpe}/10.`,
       trainerQuestion: "Czy wysoki wysiłek był zamierzony i dobrze tolerowany w całym kontekście sesji?"
@@ -119,7 +120,7 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       id: "high-zone-present",
       level: "information",
       source: "training-load",
-      sourceDate: trainingLoadDate,
+      sourceDate: trainingLoadDate, sourceId:trainingLoad.id, sourceRevision:trainingLoad.updated_at || trainingLoad.created_at,
       label: SIGNAL_LABELS["high-zone-present"],
       context: `${highZone} min.`,
       trainerQuestion: "Czy ten fragment był planowany i zgodny z reakcją klienta?"
@@ -131,7 +132,7 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       id: "trainer-marked-red-flag-concern",
       level: "urgent-review",
       source: "trainer-check",
-      sourceDate: preSessionCheckDate,
+      sourceDate: preSessionCheckDate, sourceId:preSessionCheck.id, sourceRevision:preSessionCheck.updated_at || preSessionCheck.created_at,
       label: SIGNAL_LABELS["trainer-marked-red-flag-concern"],
       context: "Sygnał pochodzi z ręcznego sprawdzenia przed sesją.",
       trainerQuestion: "Czy należy przerwać planowany proces i skierować klienta do odpowiedniej konsultacji?"
@@ -143,7 +144,7 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       id: "new-symptoms",
       level: "urgent-review",
       source: "trainer-check",
-      sourceDate: preSessionCheckDate,
+      sourceDate: preSessionCheckDate, sourceId:preSessionCheck.id, sourceRevision:preSessionCheck.updated_at || preSessionCheck.created_at,
       label: SIGNAL_LABELS["new-symptoms"],
       context: "Program nie interpretuje charakteru ani znaczenia objawów.",
       trainerQuestion: "Jakie dodatkowe informacje trzeba zebrać przed dalszą pracą?"
@@ -159,8 +160,11 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
 }
 
 export function withoutReviewedSignals(result, reviews = []) {
-  const reviewed = new Set((reviews || []).map(item => item.signal_key));
-  const signals = (result?.signals || []).filter(signal => !reviewed.has(signal.signalKey));
+  const reviewed = new Map((reviews || []).map(item => [item.signal_key,item]));
+  const signals = (result?.signals || []).filter(signal => {
+    const review = reviewed.get(signal.signalKey);
+    return !review || (review.outcome === "contact_required" && !review.contact_resolved_at);
+  }).map(signal => ({...signal, contactReviewId:reviewed.get(signal.signalKey)?.id}));
   return Object.freeze({
     requiresTrainerReview: signals.some(signal => signal.level === "urgent-review" || signal.level === "review"),
     urgent: signals.some(signal => signal.level === "urgent-review"),

@@ -216,3 +216,17 @@ not in the current loaded source set. No generic task engine or new state enum.
 Local `SIGNAL_CONTACT_SQL_PASS` and `SIGNAL_FOLLOWTHROUGH_PASS`; existing decision
 state regression passed with its stale pre-approval add-item assumption corrected.
 Hosted and browser evidence pending at this checkpoint.
+
+### Signal follow-through verification
+
+Source DB commit `c437a68`; hosted exact SQL test returned `SIGNAL_CONTACT_SQL_PASS`
+with rollback-only fictional fixtures. Local domain and existing decision-state
+regressions plus static security/modularity checks passed.
+
+`signal-followthrough.browser.js` passed at 390/768/1440: two same-day sources
+stay distinct; contact-required remains visible after a newer source replaces the
+loaded source; deliberate contact confirmation removes it from the open view and
+retains the dated outcome in history. New source timestamps are shown for context.
+Pending contact is prioritized below urgent review and above ordinary information.
+No duplicate trainer dashboard was introduced. Browser fixture callbacks are
+separate from the hosted SQL authorization proof.

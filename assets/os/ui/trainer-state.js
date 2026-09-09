@@ -13,13 +13,14 @@ import { signalIdentity, signalTypeLabel } from "../decision-support.js";
 import { CANONICAL_ENGAGEMENTS, CANONICAL_STAGES } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
 import { cycleDecisionForm, reportForm, signalReviewForm } from "./forms.js";
-import { create, detailsForm, formatDate, panel, recordList } from "./common.js";
+import { create, detailsForm, field, formatDate, panel, recordList, submitForm } from "./common.js";
 
 const SIGNAL_SOURCE_LABELS = Object.freeze({
   session: "Sesja",
   "training-load": "Tolerancja obciążenia",
   "trainer-check": "Sprawdzenie trenera",
   "client-record": "Karta klienta",
+  "client-response": "Odpowiedź klienta",
   process: "Proces"
 });
 
@@ -120,7 +121,9 @@ export function cycleDecisionSection(workspace, model) {
 }
 
 function signalSourceLine(signal) {
-  return `${SIGNAL_SOURCE_LABELS[signal.source] || "Źródło procesu"} · ${formatDate(signal.sourceDate)}`;
+  const revision = signal.sourceRevision ? new Date(signal.sourceRevision) : null;
+  const time = revision && !Number.isNaN(revision.getTime()) ? ` · zapis ${revision.toLocaleString("pl-PL")}` : "";
+  return `${SIGNAL_SOURCE_LABELS[signal.source] || "Źródło procesu"} · ${formatDate(signal.sourceDate)}${time}`;
 }
 
 export function signalsSection(workspace, attentionSignals, model) {
@@ -131,7 +134,12 @@ export function signalsSection(workspace, attentionSignals, model) {
     signal.context ? create("p", { text: signal.context }) : null,
     create("p", { className: "muted", text: signalSourceLine(signal) }),
     create("p", { className: "muted", text: `Pytanie dla trenera: ${signal.trainerQuestion}` }),
-    detailsForm("Zapisz wynik przeglądu", signalReviewForm(signal.signalKey, model.onReviewSignal))
+    signal.contactReviewId ? create("div", {}, [
+      create("strong", {text:"Kontakt nadal wymagany"}),
+      detailsForm("Potwierdź wykonany kontakt", submitForm([
+        field("Co ustalono po kontakcie?", "note", "textarea", {required:true,maxlength:1000})
+      ], "Zapisz potwierdzenie kontaktu", values=>model.onResolveSignalContact(signal.contactReviewId,values.note)))
+    ]) : detailsForm("Zapisz wynik przeglądu", signalReviewForm(signal.signalKey, model.onReviewSignal))
   ]), "Brak otwartych sygnałów wymagających przeglądu.");
 
   const history = reviews.length
@@ -141,6 +149,7 @@ export function signalsSection(workspace, attentionSignals, model) {
           return create("article", { className: "record" }, [
             create("strong", { text: signalTypeLabel(review.signal_key) }),
             create("p", { text: signalReviewOutcomeLabel(review.outcome) }),
+            review.contact_resolved_at ? create("p", {text:`Kontakt potwierdzony: ${formatDate(review.contact_resolved_at)} · ${review.contact_resolution_note}`}) : null,
             create("p", { className: "muted", text: `Źródło: ${SIGNAL_SOURCE_LABELS[identity.source] || "Proces"} · ${formatDate(identity.sourceDate)} · Przegląd: ${formatDate(review.reviewed_at)}` })
           ]);
         }, "Brak historii przeglądu.")

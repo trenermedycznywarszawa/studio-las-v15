@@ -1,5 +1,9 @@
 export function guidanceActions(repository, clientId, withWrite, reloadWorkspace) {
   return {
+    onResolveSignalContact: async (id, note) => {
+      await withWrite("Zapisywanie kontaktu", () => repository.rpc("resolve_trainer_signal_contact", {p_review_id:id,p_note:note}));
+      await reloadWorkspace();
+    },
     onAddObservationNote: async (id, values) => {
       await withWrite("Zapisywanie uzupełnienia", () => repository.addGuidanceObservationNote(id, values));
       await reloadWorkspace();

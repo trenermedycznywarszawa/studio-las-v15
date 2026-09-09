@@ -337,6 +337,7 @@ export class StudioLasRepository {
       "clone_home_plan_guidance",
       "trainer_guidance_snapshot",
       "add_guidance_observation_note",
+      "resolve_trainer_signal_contact",
       "withdraw_home_plan_guidance",
       "record_home_plan_guidance_delivery",
       "confirm_home_plan_paper_retirement",
