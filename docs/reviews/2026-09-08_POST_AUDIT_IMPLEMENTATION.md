@@ -230,3 +230,36 @@ retains the dated outcome in history. New source timestamps are shown for contex
 Pending contact is prioritized below urgent review and above ordinary information.
 No duplicate trainer dashboard was introduced. Browser fixture callbacks are
 separate from the hosted SQL authorization proof.
+
+## Hosted overlapping concurrency gate — CLOSED with evidence
+
+At `2026-09-09T12:10:04.562491Z`, real concurrent HTTP requests reached distinct
+hosted staging PostgreSQL backends. The fixture authenticated through password
+and a real TOTP challenge to AAL2 (no forged JWT / relaxed MFA).
+
+- Publisher PID `1450671` called the actual approval and publication functions,
+  then held the transaction during `pg_sleep`.
+- Editor PID `1450681` observed that live publisher and attempted to change its
+  item. It hit `lock_not_available` under a 500ms lock timeout.
+- Publisher returned deliberate `EXPECTED_PROBE_ROLLBACK pid 1450671`.
+- Runner returned `HOSTED_PUBLICATION_OVERLAP_PASS`.
+- Post-test SQL asserted draft revision 2, no approval/publication and original
+  dose `3 repetitions`, proving neither test transaction changed the prescription.
+- Temporary probe function removed; fixture client/plan/item/profile/Auth user
+  and sessions removed. Verified zero users/plans and absent probe.
+- Local temporary credential file removed. No production-sensitive access.
+
+Reproducible runner: `scripts/test_hosted_publication_overlap.py`.
+Scoped temporary harness: `supabase/dev/staging_publication_overlap_probe.sql`.
+The harness requires the exact fictional fixture owner and AAL2, and is outside
+production migrations. Its staging-only create/remove ledger entries are test
+infrastructure, not product migrations. Earlier connector attempts remain recorded
+as inconclusive; this proof supersedes their OPEN gate status.
+
+Security advisor reviewed after product DDL: new controlled SECURITY DEFINER RPCs
+are intentional owner/AAL2 or Auth-derived client boundaries with explicit grants
+and passing negative-role tests. Existing audit table with no public policies is
+intentionally inaccessible. Staging leaked-password protection remains disabled;
+no plan/configuration change was made. Advisor remediation references:
+https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable
+and https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
