@@ -317,7 +317,7 @@ export function renderInquirySection(workspace, model) {
   if (!inquiry) {
     body.append(create("p", { className: "muted", text: model.inquiries?.length ? "Wybierz zgłoszenie." : "Brak zapisanych zgłoszeń." }));
   } else {
-    body.append(
+    const sections = [
       sourceSummary(inquiry),
       create("h3", { text: "Przed rozmową" }),
       callBrief(inquiry),
@@ -328,7 +328,8 @@ export function renderInquirySection(workspace, model) {
       prePwdPreparation(inquiry, model),
       create("h3", { text: "Historia decyzji" }),
       decisionHistory(model.inquiryDecisions)
-    );
+    ].filter(Boolean);
+    body.append(...sections);
   }
 
   const inquiryPanel = panel(
