@@ -75,6 +75,7 @@ if (staging) {
 
 const headers = `/*
   Cache-Control: no-store, max-age=0
+  Content-Security-Policy: frame-ancestors 'none'
   X-Content-Type-Options: nosniff
   X-Frame-Options: DENY
   Referrer-Policy: no-referrer
@@ -86,9 +87,9 @@ const headers = `/*
 `;
 await writeFile(join(output, "_headers"), headers, "utf8");
 
-const git = (...args) => execFileSync("git", args, {cwd: root, encoding: "utf8"}).trim();
+const git = (...args) => execFileSync("git", args, {cwd: root, encoding:"utf8"}).trim();
 const sha256 = data => createHash("sha256").update(data).digest("hex");
-const payloadFiles = (await readdir(output, {recursive: true, withFileTypes: true}))
+const payloadFiles = (await readdir(output, {recursive:true, withFileTypes:true}))
   .filter(entry => entry.isFile()).map(entry => join(entry.parentPath, entry.name)).sort();
 const hashes = {};
 for (const path of payloadFiles) hashes[relative(output, path).split(sep).join("/")] = sha256(await readFile(path));
