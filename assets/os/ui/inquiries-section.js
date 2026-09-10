@@ -215,6 +215,86 @@ function conversionAction(inquiry, decisions, model) {
   ]);
 }
 
+function formatDateTime(value) {
+  if (!value) return "—";
+  const date = new Date(value);
+  return Number.isNaN(date.getTime()) ? value : date.toLocaleString("pl-PL", { dateStyle: "short", timeStyle: "short" });
+}
+
+function prePwdPreparation(inquiry, model) {
+  if (inquiry.inquiry_status !== "converted" || !inquiry.converted_client_id) return null;
+
+  const requests = model.prePwdRequests || [];
+  const latest = requests[0] || null;
+  const expired = latest?.expires_at && new Date(latest.expires_at).getTime() <= Date.now();
+  const completed = requests.find(item => item.status === "completed") || null;
+  const statusText = completed
+    ? `Wypełniona · ${formatDateTime(completed.completed_at)}`
+    : !latest
+      ? "Nie utworzono jeszcze ankiety"
+      : expired && latest.status !== "completed"
+        ? "Link wygasł — utwórz nowy"
+        : latest.status === "sent"
+          ? "Wysłana — czekamy na odpowiedzi"
+          : latest.status === "ready"
+            ? "Gotowa do wysłania"
+            : "Poprzedni link został wycofany";
+
+  const box = create("div", { className: "session-brief" }, [
+    create("p", { className: "brief-intro", text: "Przygotowanie do Pierwszej Wizyty Diagnostycznej" }),
+    create("p", { text: "Najpierw wyślij klientowi ankietę. Odpowiedzi mają pomóc przygotować spotkanie i ograniczyć powtarzanie tych samych pytań podczas wizyty." }),
+    create("p", {}, [create("strong", { text: "Status ankiety: " }), document.createTextNode(statusText)])
+  ]);
+
+  if (completed) {
+    box.append(create("p", { className: "muted", text: "Odpowiedzi są zapisane przy kliencie i gotowe do przejrzenia przed rozpoczęciem WPD." }));
+    return box;
+  }
+
+  if (model.prePwdLink) {
+    const linkInput = create("input", {
+      type: "text",
+      value: model.prePwdLink,
+      readOnly: true,
+      "aria-label": "Link do ankiety przed Pierwszą Wizytą Diagnostyczną"
+    });
+    linkInput.addEventListener("focus", () => linkInput.select());
+    box.append(
+      create("p", { className: "muted", text: "Wyślij ten link klientowi SMS-em lub wiadomością. Link jest jednorazowy i ważny maksymalnie 7 dni." }),
+      linkInput,
+      create("div", { className: "form-actions" }, [
+        button("Kopiuj link", {
+          onclick: async () => {
+            try {
+              await navigator.clipboard.writeText(model.prePwdLink);
+            } catch {
+              linkInput.focus();
+              linkInput.select();
+            }
+          }
+        }),
+        latest?.status === "ready" ? button("Oznacz jako wysłaną", {
+          onclick: () => model.onMarkPrePwdSent(latest.id)
+        }) : null
+      ])
+    );
+  } else {
+    box.append(
+      create("p", { className: "muted", text: latest && !expired && latest.status === "sent"
+        ? "Link został już oznaczony jako wysłany. Jeżeli klient go nie ma, wygeneruj nowy — poprzedni zostanie wycofany."
+        : "Wygeneruj bezpieczny link, a następnie wyślij go klientowi." }),
+      create("div", { className: "form-actions" }, [
+        button(latest ? "Wygeneruj nowy link" : "Utwórz ankietę przed WPD", {
+          className: "button primary",
+          onclick: () => model.onCreatePrePwdLink(inquiry.id)
+        })
+      ])
+    );
+  }
+
+  return box;
+}
+
 export function renderInquirySection(workspace, model) {
   if (!workspace) return;
 
@@ -245,6 +325,7 @@ export function renderInquirySection(workspace, model) {
       create("h3", { text: "Po rozmowie" }),
       decisionForm(inquiry, model),
       conversionAction(inquiry, model.inquiryDecisions, model),
+      prePwdPreparation(inquiry, model),
       create("h3", { text: "Historia decyzji" }),
       decisionHistory(model.inquiryDecisions)
     );
@@ -256,9 +337,6 @@ export function renderInquirySection(workspace, model) {
     "Źródło → rozmowa → jawna decyzja → ewentualne PWD"
   );
 
-  // First contact is a pre-client work surface. When a client is actively
-  // selected, keep the client's identity, goal and current state dominant and
-  // place first-contact work below the active client process instead.
   if (model.activeClientId) workspace.append(inquiryPanel);
   else workspace.prepend(inquiryPanel);
 }
