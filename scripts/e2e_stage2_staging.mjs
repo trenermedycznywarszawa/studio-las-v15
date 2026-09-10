@@ -120,6 +120,13 @@ async function rpc(token, name, body) {
   return result.payload;
 }
 
+async function waitForAppIdle(page) {
+  await page.waitForFunction(() => {
+    const app = document.getElementById("app");
+    return Boolean(app) && !app.hasAttribute("inert") && app.getAttribute("aria-busy") !== "true";
+  }, null, { timeout: 20_000 });
+}
+
 async function main() {
   assert(QA_EMAIL && QA_PASSWORD && QA_TOTP_SECRET, "QA credentials/TOTP are missing");
   await mkdir(ARTIFACT_DIR, { recursive: true });
@@ -137,6 +144,7 @@ async function main() {
   let inquiryId = "";
   let convertedClientId = "";
   let token = "";
+  let primaryError = null;
 
   page.on("console", message => {
     if (message.type() === "error") consoleErrors.push(message.text());
@@ -176,8 +184,10 @@ async function main() {
     await page.getByText("Do czego konkretnie chcesz wrócić?", { exact: true }).waitFor({ state: "visible" });
     assert(await page.getByText("Nie zakładaj diagnozy", { exact: false }).isVisible(), "Call Brief guardrail missing");
 
+    const contactStatusSummary = page.locator(".summary-grid .summary-item").filter({ hasText: "Status kontaktu" });
     await page.getByRole("button", { name: "Kontakt w toku" }).click();
-    await page.getByText("Kontakt w toku", { exact: true }).first().waitFor({ state: "visible" });
+    await contactStatusSummary.getByText("Kontakt w toku", { exact: true }).waitFor({ state: "visible", timeout: 20_000 });
+    await waitForAppIdle(page);
 
     const clientBefore = (await api(query("clients", { name: `eq.${SYNTHETIC_NAME}`, select: "id" }), { token })).payload;
     assert(Array.isArray(clientBefore) && clientBefore.length === 0, "Synthetic conversion client existed before PWD decision");
@@ -189,7 +199,8 @@ async function main() {
     await page.getByLabel("Kiedy?").fill("2026-09-03T18:00");
     await page.getByLabel("Decyzja i powód").fill("Potrzebujemy jeszcze krótkiego kontaktu przed decyzją o PWD.");
     await page.getByRole("button", { name: "Zapisz decyzję" }).click();
-    await page.getByText("v1 · FOLLOW_UP · aktualna", { exact: true }).waitFor({ state: "visible" });
+    await page.getByText("v1 · FOLLOW_UP · aktualna", { exact: true }).waitFor({ state: "visible", timeout: 20_000 });
+    await waitForAppIdle(page);
     const nextActionSummary = page.locator(".summary-grid .summary-item").filter({ hasText: "Następny krok" });
     await nextActionSummary.getByText("Wiadomość", { exact: false }).waitFor({ state: "visible" });
     await nextActionSummary.getByText("18:00", { exact: false }).waitFor({ state: "visible" });
@@ -207,8 +218,9 @@ async function main() {
     await page.getByLabel("Jaki jest właściwy kolejny krok?").selectOption("PWD");
     await page.getByLabel("Decyzja i powód").fill("PWD jest właściwym następnym krokiem po rozmowie.");
     await page.getByRole("button", { name: "Zapisz decyzję" }).click();
-    await page.getByText("v2 · PWD · aktualna", { exact: true }).waitFor({ state: "visible" });
+    await page.getByText("v2 · PWD · aktualna", { exact: true }).waitFor({ state: "visible", timeout: 20_000 });
     await page.getByText("v1 · FOLLOW_UP", { exact: false }).waitFor({ state: "visible" });
+    await waitForAppIdle(page);
 
     const clientAfterDecision = (await api(query("clients", { name: `eq.${SYNTHETIC_NAME}`, select: "id" }), { token })).payload;
     assert(Array.isArray(clientAfterDecision) && clientAfterDecision.length === 0,
@@ -217,6 +229,7 @@ async function main() {
     page.once("dialog", dialog => dialog.accept());
     await page.getByRole("button", { name: "Utwórz klienta do PWD" }).click();
     await page.getByRole("heading", { name: SYNTHETIC_NAME }).waitFor({ state: "visible", timeout: 20_000 });
+    await waitForAppIdle(page);
 
     const converted = (await api(query("inquiries", {
       id: `eq.${inquiryId}`,
@@ -248,6 +261,9 @@ async function main() {
 
     assert(consoleErrors.length === 0, `Browser console errors: ${consoleErrors.join(" | ")}`);
     assert(failedRequests.length === 0, `Browser request failures: ${failedRequests.join(" | ")}`);
+  } catch (error) {
+    primaryError = error;
+    await page.screenshot({ path: `${ARTIFACT_DIR}/stage2-failure.png`, fullPage: true }).catch(() => {});
   } finally {
     if (token && inquiryId) {
       await rpc(token, "cleanup_stage2_synthetic_inquiry_e2e", {
@@ -267,12 +283,14 @@ async function main() {
       failedRequests,
       viewport: { width: 360, height: 900 },
       timezoneId: "Europe/Warsaw",
-      status: consoleErrors.length || protectedDirectWrites.length || failedRequests.length ? "FAIL" : "PASS"
+      status: primaryError || consoleErrors.length || protectedDirectWrites.length || failedRequests.length ? "FAIL" : "PASS",
+      reason: primaryError ? String(primaryError?.message || primaryError) : null
     };
     await writeFile(`${ARTIFACT_DIR}/stage2-result.json`, JSON.stringify(result, null, 2));
     await browser.close();
   }
 
+  if (primaryError) throw primaryError;
   const remaining = token && inquiryId
     ? (await api(query("inquiries", { id: `eq.${inquiryId}`, select: "id" }), { token })).payload
     : [];
