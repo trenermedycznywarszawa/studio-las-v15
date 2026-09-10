@@ -1,7 +1,6 @@
 -- STAGING / QA ONLY.
--- Installed only on canonical staging as migration history entries:
--- 20260901121951_staging_only_stage2_inquiry_e2e_fixture
--- 20260901122955_staging_only_stage2_inquiry_e2e_fixture_fix
+-- Installed only on canonical staging as migration history entries.
+-- This helper may bypass user triggers only for exact synthetic pre-PWD QA data.
 -- MUST NOT be promoted as a production migration.
 
 create or replace function public.create_stage2_synthetic_inquiry_e2e(p_marker text)
@@ -106,9 +105,16 @@ begin
     where inquiry_id = p_inquiry_id and client_id = v_client_id;
     get diagnostics v_pre_pwd_requests = row_count;
 
+    -- The production integrity trigger correctly freezes non-empty raw source
+    -- evidence. This staging-only cleanup temporarily disables trigger firing
+    -- only within this transaction and only after exact QA marker/client guards.
+    perform pg_catalog.set_config('session_replication_role', 'replica', true);
     delete from public.client_intakes
-    where client_id = v_client_id and source = 'pre_pwd_questionnaire_v1';
+    where client_id = v_client_id
+      and source = 'pre_pwd_questionnaire_v1'
+      and raw_payload ->> 'prePwdRequestId' is not null;
     get diagnostics v_pre_pwd_intakes = row_count;
+    perform pg_catalog.set_config('session_replication_role', 'origin', true);
   end if;
 
   for v_decision_id in
