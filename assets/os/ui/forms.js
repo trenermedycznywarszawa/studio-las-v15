@@ -43,12 +43,17 @@ export function newClientForm(onSubmit) {
 export function sessionForm(onSubmit) {
   return submitForm([
     field("Data", "date", "date", { value: today(), required: true }),
+    create("details", {className: "details-card"}, [
+      create("summary", {text: "Dodatkowe obserwacje — tylko gdy wpływają na decyzję"}),
+      create("div", {className: "form-grid"}, [
     field("Gotowość 1–10", "readiness", "number", { min: 1, max: 10 }),
     field("Dolegliwość przed 0–10", "vasBefore", "number", { min: 0, max: 10 }),
     field("Dolegliwość po 0–10", "vasAfter", "number", { min: 0, max: 10 }),
     field("Sen", "sleepQuality", "select", {
-      options: ["Bardzo słaby", "Słaby", "Przeciętny", "Dobry", "Bardzo dobry"].map(value => ({ value, label: value }))
+      options: [{ value: "", label: "Nie podano" }, ...["Bardzo słaby", "Słaby", "Przeciętny", "Dobry", "Bardzo dobry"].map(value => ({ value, label: value }))]
     }),
+      ])
+    ]),
     field("Ćwiczenia — po jednym w linii", "exercises", "textarea", { maxlength: 8000 }),
     field("Obserwacja trenera", "trainerObservation", "textarea", { maxlength: 12000 }),
     field("Decyzja trenera", "trainerDecision", "textarea", { maxlength: 8000 }),
@@ -65,9 +70,6 @@ export function measurementForm(onSubmit) {
     field("Waga kg", "weightKg", "number", { step: 0.1, min: 0 }),
     field("Tłuszcz %", "fatPercent", "number", { step: 0.1, min: 0, max: 100 }),
     field("Masa mięśniowa kg", "muscleMassKg", "number", { step: 0.1, min: 0 }),
-    field("Woda %", "bodyWaterPercent", "number", { step: 0.1, min: 0, max: 100 }),
-    field("Visceral fat rating", "visceralFatRating", "number", { step: 0.1, min: 0 }),
-    field("BMI", "bmi", "number", { step: 0.1, min: 0 }),
     field("Interpretacja trenera", "trainerInterpretation", "textarea", { maxlength: 8000 }),
     field("Podsumowanie dla klienta", "clientSummary", "textarea", { maxlength: 4000 }),
     checkbox("Opublikuj klientowi", "clientVisible")
@@ -105,35 +107,11 @@ export function assessmentForm(onSubmit) {
     field("Dolegliwość przed", "painBefore", "number", { min: 0, max: 10 }),
     field("Dolegliwość po", "painAfter", "number", { min: 0, max: 10 }),
     field("Jakość/tolerancja", "quality", "select", {
-      options: ["dobrze tolerowane", "ograniczone", "do obserwacji", "przerwać i skonsultować"].map(value => ({ value, label: value }))
+      options: [{ value: "", label: "Nie podano" }, ...["dobrze tolerowane", "ograniczone", "do obserwacji", "przerwać i skonsultować"].map(value => ({ value, label: value }))]
     }),
     field("Interpretacja trenera", "interpretation", "textarea", { maxlength: 8000 }),
     field("Następny krok", "nextStep", "textarea", { maxlength: 4000 })
   ], "Zapisz obserwację", onSubmit);
-}
-
-export function reportForm(onSubmit) {
-  return submitForm([
-    field("Typ raportu", "type", "select", {
-      required: true,
-      options: [
-        { value: "startMap", label: "Mapa startowa" },
-        { value: "fourWeeks", label: "Przegląd 4 tygodni" },
-        { value: "twelveWeeks", label: "Raport 12 tygodni" },
-        { value: "continuation", label: "Decyzja o kontynuacji" }
-      ]
-    }),
-    field("Odbiorca", "audience", "select", {
-      required: true,
-      options: [
-        { value: "trainer", label: "Tylko trener" },
-        { value: "client", label: "Klient" }
-      ]
-    }),
-    field("Tytuł", "title", "text", { maxlength: 240 }),
-    field("Treść", "content", "textarea", { rows: 8, required: true, maxlength: 50000 }),
-    checkbox("Opublikuj", "published")
-  ], "Zapisz raport", onSubmit);
 }
 
 export function homePlanForm(onSubmit) {
@@ -210,26 +188,4 @@ export function signalReviewForm(signalKey, onSubmit) {
       ]
     })
   ], "Zapisz wynik", values => onSubmit(signalKey, values.outcome), "form-grid compact");
-}
-
-export function clientCheckinForm(snapshot, onSubmit) {
-  const items = snapshot?.homePlan?.items || [];
-  const hasItem = items.length > 0;
-
-  return submitForm([
-    field("Zadanie", "homePlanItemId", "select", {
-      required: true,
-      disabled: !hasItem,
-      options: hasItem
-        ? items.map(item => ({ value: item.id, label: item.name }))
-        : [{ value: "", label: "Brak aktywnego zadania" }]
-    }),
-    checkbox("Wykonane", "protocolDone", false, { disabled: !hasItem }),
-    field("Energia 0–10", "energyScore", "number", { min: 0, max: 10, required: true, disabled: !hasItem }),
-    field("Dolegliwości 0–10", "symptomScore", "number", { min: 0, max: 10, required: true, disabled: !hasItem }),
-    field("Krótka notatka — opcjonalnie", "note", "textarea", { rows: 2, maxlength: 500, disabled: !hasItem })
-  ], "Zapisz krótki sygnał", onSubmit, "form-grid client-checkin", {
-    disabled: !hasItem,
-    disabledReason: hasItem ? "" : "Nie ma aktywnego, opublikowanego zadania, do którego można zapisać sygnał."
-  });
 }

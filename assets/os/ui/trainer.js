@@ -5,7 +5,8 @@ import {
   detailsForm,
   formatDate,
   panel,
-  recordList
+  recordList,
+  statusBox
 } from "./common.js";
 import {
   assessmentForm,
@@ -188,6 +189,8 @@ export function renderTrainer(root, model) {
   ]);
 
   const content = create("main", { className: "workspace" });
+  if (model.loading || model.loadError) content.append(statusBox(
+    model.loadError || "Ładowanie procesu…", model.loadError ? "error" : "info"));
   if (!model.workspace) {
     content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Po wyborze zobaczysz proces i formularze zapisujące bezpośrednio do Supabase." })));
   } else {
@@ -207,8 +210,21 @@ export function renderTrainer(root, model) {
       guidance: plansSection(workspace, model),
       reports: reportsSection(workspace, model)
     };
+    for (const section of ["measurements", "reports"]) {
+      const status = workspace.sectionStatus?.[section];
+      if (status && status !== "ready") sections[section] = panel(
+        section === "reports" ? "Raporty" : "Pomiary",
+        create("div", {}, [
+          statusBox(status === "loading" ? "Ładowanie sekcji…" : "Nie udało się wczytać tej sekcji. Pozostały proces jest dostępny.", status === "failed" ? "error" : "info"),
+          status === "failed" ? button("Ponów odczyt sekcji", {onclick: () => model.onRetrySection(section)}) : null
+        ]));
+    }
     content.append(...orderTrainerSections(workspace.client.stage, sections));
   }
 
+  if (model.loading || model.loadError) {
+    for (const scope of [sidebar, content]) scope.querySelectorAll("form input, form select, form textarea, form button, .workspace button").forEach(node => { node.disabled = true; });
+    content.querySelectorAll("button").forEach(node => { node.disabled = true; });
+  }
   root.append(header, create("div", { className: "app-layout" }, [sidebar, content]));
 }

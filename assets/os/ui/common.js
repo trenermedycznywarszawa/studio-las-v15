@@ -22,10 +22,13 @@ export function create(tag, options = {}, children = []) {
   return node;
 }
 
+let fieldSerial = 0;
 export function field(label, name, type = "text", options = {}) {
+  const labelId = `field-label-${++fieldSerial}`;
   let input;
   const shared = {
     name,
+    "aria-labelledby": labelId,
     required: options.required,
     disabled: options.disabled,
     autocomplete: options.autocomplete
@@ -61,7 +64,7 @@ export function field(label, name, type = "text", options = {}) {
   }
 
   if (options.value !== undefined && options.value !== null) input.value = options.value;
-  return create("label", { className: "field" }, [create("span", { text: label }), input]);
+  return create("label", { className: "field" }, [create("span", { id: labelId, text: label }), input]);
 }
 
 export function checkbox(label, name, checked = false, options = {}) {
@@ -94,7 +97,7 @@ export function button(label, options = {}) {
 }
 
 export function statusBox(message, kind = "info") {
-  return create("div", { className: `status ${kind}`, text: message });
+  return create("div", { className: `status ${kind}`, role: kind === "error" ? "alert" : "status", text: message });
 }
 
 export function panel(title, body, note = "") {
@@ -147,11 +150,23 @@ export function submitForm(fields, label, onSubmit, className = "form-grid", opt
 
     const submit = form.querySelector('button[type="submit"]');
     submit.disabled = true;
+    let blocked = false;
+    const oldError = form.querySelector(".form-error");
+    oldError?.remove();
     try {
       await onSubmit(formValues(form));
       form.reset();
+    } catch (error) {
+      blocked = Boolean(error?.writeConfirmed || error?.writeUncertain);
+      if (error?.writeConfirmed) form.reset();
+      const message = statusBox(error?.displayMessage || "Nie udało się zapisać. Sprawdź pola i komunikat powyżej.", "error");
+      message.classList.add("form-error");
+      message.tabIndex = -1;
+      form.append(message);
+      message.focus();
+      throw error;
     } finally {
-      submit.disabled = Boolean(options.disabled);
+      submit.disabled = blocked || Boolean(options.disabled);
     }
   });
   return form;
@@ -161,8 +176,8 @@ export function renderFatal(root, message) {
   clear(root);
   root.append(create("main", { className: "center-screen" }, [
     create("section", { className: "fatal-card" }, [
-      create("p", { className: "eyebrow", text: "Studio Las OS" }),
-      create("h1", { text: "Produkcja zatrzymana" }),
+      create("p", { className: "eyebrow", text: "Studio Las" }),
+      create("h1", { text: "Nie udało się otworzyć panelu" }),
       create("p", { text: message }),
       create("p", { className: "muted", text: "Dane nie zostały zapisane lokalnie." })
     ])
@@ -172,7 +187,7 @@ export function renderFatal(root, message) {
 export function renderLoading(root, message = "Ładowanie bezpiecznego środowiska…") {
   clear(root);
   root.append(create("main", { className: "center-screen" }, [
-    create("div", { className: "loading-card", text: message })
+    create("div", { className: "loading-card", role: "status", "aria-live": "polite", text: message })
   ]));
 }
 
@@ -180,9 +195,9 @@ export function renderLogin(root, { environment, onSubmit, onRecover, message = 
   clear(root);
   const environmentLabel = runtimeEnvironmentLabel(environment);
   const form = submitForm([
-    create("p", { className: "eyebrow", text: `Studio Las OS · ${environmentLabel}` }),
+    create("p", { className: "eyebrow", text: `Studio Las · ${environmentLabel}` }),
     create("h1", { text: "Bezpieczne logowanie" }),
-    create("p", { className: "muted", text: "Konto trenera lub klienta w Supabase Auth. Lokalne kody dostępu nie są obsługiwane." }),
+    create("p", { className: "muted", text: "Zaloguj się swoim adresem e-mail i hasłem." }),
     message ? statusBox(message, "error") : null,
     field("Email", "email", "email", { required: true, maxlength: 254, autocomplete: "email" }),
     field("Hasło", "password", "password", { required: true, maxlength: 1024, autocomplete: "current-password" })

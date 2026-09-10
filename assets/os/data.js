@@ -1,3 +1,4 @@
+import * as guidance from "./guidance-data.js";
 import {
   clearAuthSession,
   loadAuthSession,
@@ -329,8 +330,16 @@ export class StudioLasRepository {
   async rpc(name, args = {}) {
     const allowed = new Set([
       "client_portal_snapshot",
+      "create_evidence_report",
+      "transition_evidence_report",
       "save_client_checkin",
+      "save_client_guidance_response",
       "publish_home_plan_guidance",
+      "approve_home_plan_guidance",
+      "clone_home_plan_guidance",
+      "trainer_guidance_snapshot",
+      "add_guidance_observation_note",
+      "resolve_trainer_signal_contact",
       "withdraw_home_plan_guidance",
       "record_home_plan_guidance_delivery",
       "confirm_home_plan_paper_retirement",
@@ -386,68 +395,45 @@ export class StudioLasRepository {
     return Array.isArray(rows) ? rows[0] || null : null;
   }
 
-  async getClientWorkspace(clientId) {
-    const byClient = {
-      client_id: `eq.${clientId}`,
-      deleted_at: "is.null"
-    };
-
-    const [
-      client,
-      intakes,
-      sessions,
-      preSessionChecks,
-      postSessionObservations,
-      tasks,
-      documents,
-      measurements,
-      trainingLoad,
-      assessments,
-      homePlans,
-      homePlanItems,
-      guidanceEvents,
-      reports,
-      cycleDecisions,
-      signalReviews
-    ] = await Promise.all([
+  async getClientWorkspace(clientId, onCore = () => {}) {
+    const byClient = {client_id: `eq.${clientId}`, deleted_at: "is.null"};
+    const read = (table, order) => this.rest(table, {query: {...byClient, select: "*", order}});
+    // Decision context is required. Deep report/measurement reads cannot erase it.
+    const [client, intakes, sessions, preSessionChecks, trainingLoad, assessments,
+      guidanceSnapshot, guidanceEvents, cycleDecisions, signalReviews] = await Promise.all([
       this.getClient(clientId),
-      this.rest("client_intakes", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("sessions", { query: { ...byClient, select: "*", order: "date.desc" } }),
-      this.rest("pre_session_checks", { query: { ...byClient, select: "*", order: "check_date.desc" } }),
-      this.rest("post_session_observations", { query: { ...byClient, select: "*", order: "date.desc" } }),
-      this.rest("client_tasks", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("client_documents", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("body_measurements", { query: { ...byClient, select: "*", order: "measured_at.desc" } }),
-      this.rest("training_load_observations", { query: { ...byClient, select: "*", order: "observed_at.desc" } }),
-      this.rest("assessment_results", { query: { ...byClient, select: "*", order: "performed_at.desc" } }),
-      this.rest("home_plans", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("home_plan_items", { query: { ...byClient, select: "*", order: "sort_order.asc" } }),
-      this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_at,updated_at", order: "event_date.desc,created_at.desc", limit: 1 } }),
-      this.rest("reports", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("client_cycle_decisions", { query: { client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc" } }),
-      this.rest("trainer_signal_reviews", { query: { client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc" } })
+      read("client_intakes", "created_at.desc"),
+      read("sessions", "date.desc"),
+      read("pre_session_checks", "check_date.desc"),
+      read("training_load_observations", "observed_at.desc"),
+      read("assessment_results", "performed_at.desc"),
+      this.rpc("trainer_guidance_snapshot", {p_client_id: clientId}),
+      this.rest("guidance_events", {query: {...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_by,created_at,updated_at,guidance_observation_notes(*,profiles(display_name))", order: "event_date.desc,created_at.desc", limit: 100}}),
+      this.rest("client_cycle_decisions", {query: {client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc"}}),
+      this.rest("trainer_signal_reviews", {query: {client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc"}})
     ]);
-
     if (!client) throw new SupabaseHttpError("Client not found or access denied", 404);
+    const workspace = {client, intakes, sessions, preSessionChecks, trainingLoad, assessments,
+      homePlans: guidanceSnapshot.plans, homePlanItems: guidanceSnapshot.items,
+      guidanceEvents, cycleDecisions, signalReviews, reports: [], measurements: [],
+      sectionStatus: {reports: "loading", measurements: "loading"}};
+    onCore(workspace);
+    await Promise.all(["reports", "measurements"].map(async section => {
+      try { Object.assign(workspace, await this.getWorkspaceSection(clientId, section)); workspace.sectionStatus[section] = "ready"; }
+      catch (error) {
+        if ([401, 403].includes(Number(error?.status))) throw error;
+        workspace.sectionStatus[section] = "failed";
+      }
+    }));
+    return workspace;
+  }
 
-    return {
-      client,
-      intakes,
-      sessions,
-      preSessionChecks,
-      postSessionObservations,
-      tasks,
-      documents,
-      measurements,
-      trainingLoad,
-      assessments,
-      homePlans,
-      homePlanItems,
-      guidanceEvents,
-      reports,
-      cycleDecisions,
-      signalReviews
-    };
+  async getWorkspaceSection(clientId, section) {
+    const sources = {reports: ["reports", "created_at.desc"], measurements: ["body_measurements", "measured_at.desc"]};
+    if (!sources[section]) throw new Error("Unknown workspace section");
+    const [table, order] = sources[section];
+    const rows = await this.rest(table, {query: {client_id: `eq.${clientId}`, deleted_at: "is.null", select: "*", order}});
+    return {[section]: rows};
   }
 
   async savePwdWorkflow(clientId, input) {
@@ -664,7 +650,7 @@ export class StudioLasRepository {
       result_text: input.resultText || null,
       pain_before: asNullableNumber(input.painBefore),
       pain_after: asNullableNumber(input.painAfter),
-      quality: input.quality || "do obserwacji",
+      quality: input.quality || null,
       interpretation: input.interpretation || null,
       trainer_decision: input.trainerDecision || "obserwuj",
       next_step: input.nextStep || null,
@@ -713,19 +699,7 @@ export class StudioLasRepository {
     });
   }
 
-  async saveHomePlan(clientId, input) {
-    return this.insert("home_plans", {
-      client_id: clientId,
-      title: input.title || null,
-      focus: input.focus || null,
-      frequency: input.frequency || null,
-      duration: input.duration || null,
-      instructions: input.instructions || null,
-      guidance_channel: input.guidanceChannel || null,
-      status: "draft",
-      published_at: null
-    });
-  }
+  saveHomePlan(clientId, input) { return guidance.saveHomePlan(this, clientId, input); }
 
   async saveHomePlanItem(clientId, homePlanId, input) {
     return this.insert("home_plan_items", {
@@ -748,6 +722,10 @@ export class StudioLasRepository {
     });
   }
 
+  approveHomePlanGuidance(id, revision) { return guidance.approveHomePlanGuidance(this, id, revision); }
+  cloneHomePlanGuidance(id) { return guidance.cloneHomePlanGuidance(this, id); }
+  editGuidanceDraft(clientId, id, input) { return guidance.editGuidanceDraft(this, clientId, id, input); }
+  editGuidanceDraftItem(clientId, id, input) { return guidance.editGuidanceDraftItem(this, clientId, id, input); }
 
   async publishHomePlanGuidance(homePlanId) {
     const rows = await this.rpc("publish_home_plan_guidance", { p_home_plan_id: homePlanId });
@@ -779,17 +757,11 @@ export class StudioLasRepository {
     return this.insert("trainer_signal_reviews", { client_id: clientId, signal_key: signalKey, outcome, actor_profile_id: profileId });
   }
   async saveReport(profileId, clientId, input) {
-    const published = Boolean(input.published);
-    return this.insert("reports", {
-      client_id: clientId,
-      type: input.type || "twelveWeeks",
-      audience: input.audience || "trainer",
-      status: published ? "published" : "draft",
-      title: input.title || null,
-      content: String(input.content || "").trim(),
-      published_at: published ? new Date().toISOString() : null,
-      created_by: profileId
-    });
+    return this.rpc("create_evidence_report", {p_client_id: clientId, p_title: input.title, p_report: input.report, p_sources: input.sources});
+  }
+
+  async transitionReport(report, action, reason) {
+    return this.rpc("transition_evidence_report", {p_report_id: report.id, p_action: action, p_expected_updated_at: report.updated_at, p_reason: reason || null});
   }
 
   async saveDocumentMetadata(clientId, input) {
@@ -835,16 +807,15 @@ export class StudioLasRepository {
   async getClientPortalSnapshot() {
     return this.rpc("client_portal_snapshot");
   }
+  async addGuidanceObservationNote(id, values) {
+    return this.rpc("add_guidance_observation_note", { p_observation_id: id,
+      p_kind: values.kind, p_body: values.body, p_reason: values.reason || null });
+  }
 
   async saveClientCheckin(input) {
-    const rows = await this.rpc("save_client_checkin", {
-      p_client_id: input.clientId,
-      p_home_plan_item_id: input.homePlanItemId,
-      p_protocol_done: Boolean(input.protocolDone),
-      p_energy_score: Number(input.energyScore),
-      p_symptom_score: Number(input.symptomScore),
-      p_note: String(input.note || "").trim() || null
+    return this.rpc("save_client_guidance_response", {
+      p_home_plan_item_id: input.homePlanItemId, p_home_plan_id: input.homePlanId,
+      p_response: input.response, p_submission_id: input.submissionId
     });
-    return Array.isArray(rows) ? rows[0] : rows;
   }
 }

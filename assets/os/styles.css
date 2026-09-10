@@ -487,3 +487,19 @@ input:focus, select:focus, textarea:focus {
 @media (max-width: 560px) {
   .mfa-code-form { grid-template-columns: 1fr; }
 }
+
+/* Critical controls remain visible to keyboard and touch users. */
+:where(button, a, summary, input, select, textarea):focus-visible {
+  outline: 3px solid #315e3e;
+  outline-offset: 3px;
+}
+.button, summary { min-height: 44px; }
+summary { padding-block: 10px; }
+.form-grid > details { grid-column: 1 / -1; }
+.runtime-message { position: sticky; bottom: 0; margin: 12px auto; overflow-wrap: anywhere; }
+.runtime-message .button { display: block; margin-top: 10px; }
+
+.preserve-lines { white-space: pre-wrap; overflow-wrap: anywhere; }
+.report-evidence-picker { grid-column: 1 / -1; min-width: 0; border: 1px solid var(--line); border-radius: 9px; }
+.report-evidence-picker .check-field { align-items: flex-start; }
+.report-evidence-picker input[type="checkbox"] { flex-shrink: 0; }

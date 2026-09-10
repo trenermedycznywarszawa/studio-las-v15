@@ -164,7 +164,7 @@ assert.match(pwdSection, /Poprzednia PWD pozostanie w historii/);
 assert.match(pwdSection, /previousSessions = pwdSessions\.slice\(1\)/);
 assert.match(trainerGuidance, /item\.home_plan_id === plan\.id/);
 assert.match(trainerGuidance, /paperChannel && hasDraftSuccessor && !retirementConfirmed/);
-assert.match(trainerGuidance, /drafts\.length\s*\? detailsForm\("Dodaj działanie do szkicu"/);
+assert.match(trainerGuidance, /drafts\.some\(plan => !plan\.approved_at\)/);
 assert.doesNotMatch(trainerGuidance, /Damian podejmuje decyzję/);
 assert.doesNotMatch(clientUi, /client_cycle_decisions|trainer_signal_reviews|rationale|signalReviews/);
 assert.match(styles, /\.now-grid/);

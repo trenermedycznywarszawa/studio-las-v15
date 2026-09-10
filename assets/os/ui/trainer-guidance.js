@@ -1,3 +1,5 @@
+import { observationHistory } from "./observation-history.js";
+import { planEditForm, itemEditForm } from "./guidance-edit-forms.js";
 import {
   guidanceChannelLabel,
   guidanceDeliveryLabel,
@@ -24,10 +26,21 @@ function guidancePlanCard(plan, model, hasDraftSuccessor) {
     ? "Oczekuje na potwierdzenie dostarczenia"
     : guidanceDeliveryLabel(plan.delivery_status);
   const actions = [];
-  if (plan.status === "draft") {
+  if (plan.status === "draft" && !plan.approved_at) {
+    actions.push(button("Zatwierdź tę treść do publikacji", {
+      className: "button guidance-approve",
+      onclick: () => model.onApproveHomePlan(plan.id, plan.content_revision)
+    }));
+  }
+  if (plan.status === "draft" && plan.approved_at) {
     actions.push(button("Opublikuj jako aktualną wskazówkę", {
       className: "button primary",
       onclick: () => model.onPublishHomePlan(plan.id)
+    }));
+  }
+  if (plan.approved_at || plan.published_at) {
+    actions.push(button("Utwórz nowy szkic całej wskazówki", {
+      onclick: () => model.onCloneHomePlan(plan.id)
     }));
   }
   if (plan.status === "active") {
@@ -50,6 +63,13 @@ function guidancePlanCard(plan, model, hasDraftSuccessor) {
   return create("article", { className: "record guidance-record" }, [
     create("strong", { text: plan.title || "Wskazówka" }),
     create("p", { text: plan.focus || "Brak celu wskazówki" }),
+    create("p", { text: [plan.frequency, plan.duration].filter(Boolean).join(" · ") }),
+    create("p", { text: plan.instructions || "" }),
+    plan.status === "draft" ? create("p", { text: plan.approved_at
+      ? "Treść zatwierdzona i zamrożona. Publikacja jest osobną decyzją."
+      : "Przejrzyj wszystkie działania poniżej. Zatwierdzenie zamrozi tę wersję." }) : null,
+    plan.status === "draft" && !plan.approved_at
+      ? detailsForm("Edytuj szkic", planEditForm(plan, model)) : null,
     create("div", { className: "guidance-state" }, [
       create("span", { text: `Wersja ${plan.release_version || 1}` }),
       create("span", { text: guidanceStatusLabel(plan.status) }),
@@ -67,14 +87,17 @@ function guidancePlanCard(plan, model, hasDraftSuccessor) {
   ]);
 }
 
-function draftItemsGroup(plan, items) {
+function draftItemsGroup(plan, items, model) {
   const ownItems = (items || []).filter(item => item.home_plan_id === plan.id);
   return create("section", { className: "draft-items-group" }, [
     create("h4", { text: `Szkic: ${plan.title || "Bez nazwy"}` }),
     recordList(ownItems, item => create("article", { className: "record" }, [
       create("strong", { text: item.name }),
+      create("p", { text: item.status === "active" ? "Uwzględnione w publikacji" : "Wyłączone z publikacji" }),
       create("p", { text: [item.dosage, item.frequency].filter(Boolean).join(" · ") || "Brak dawkowania" }),
-      create("p", { className: "muted", text: [item.client_cue, item.stop_criteria].filter(Boolean).join(" · ") || "Brak celu lub granicy" })
+      create("p", { className: "muted", text: [item.client_cue, item.stop_criteria].filter(Boolean).join(" · ") || "Brak celu lub granicy" }),
+      create("p", { text: item.video_url || "" }),
+      !plan.approved_at ? detailsForm("Edytuj działanie", itemEditForm(item, model)) : null
     ]), "Brak działań w tym szkicu.")
   ]);
 }
@@ -95,11 +118,20 @@ export function plansSection(workspace, model) {
   const items = create("div", {}, [
     create("h3", { text: "Działania w szkicach" }),
     drafts.length
-      ? create("div", { className: "draft-items" }, drafts.map(plan => draftItemsGroup(plan, workspace.homePlanItems)))
+      ? create("div", { className: "draft-items" }, drafts.map(plan => draftItemsGroup(plan, workspace.homePlanItems, model)))
       : create("p", { className: "muted", text: "Brak szkicu, do którego można dodać działanie." }),
-    drafts.length
-      ? detailsForm("Dodaj działanie do szkicu", homePlanItemForm(drafts, model.onSaveHomePlanItem))
+    drafts.some(plan => !plan.approved_at)
+      ? detailsForm("Dodaj działanie do szkicu", homePlanItemForm(drafts.filter(plan => !plan.approved_at), model.onSaveHomePlanItem))
       : null
   ]);
-  return panel("Prowadzenie klienta", create("div", { className: "two-column" }, [planColumn, items]));
+  const section = panel("Prowadzenie klienta", create("div", { className: "two-column" }, [planColumn, items]));
+  section.addEventListener("input", event => {
+    if (!event.target.closest(".guidance-record, .draft-items")) return;
+    section.querySelectorAll(".guidance-approve").forEach(action => {
+    action.disabled = true;
+    action.textContent = "Najpierw zapisz zmiany w szkicu";
+    });
+  });
+  section.append(observationHistory(workspace, model));
+  return section;
 }

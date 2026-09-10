@@ -1,0 +1,37 @@
+import assert from "node:assert/strict";
+import { TrainerWorkspaceLoader } from "../assets/os/trainer-workspace-loader.js";
+import { writeThenRefresh } from "../assets/os/write-outcome.js";
+import { StudioLasRepository } from "../assets/os/data.js";
+const state = {activeClientId:"",workspace:null,clients:[], repository:{
+ listClients:async()=>[{id:"a"},{id:"b"}], getClientWorkspace:async id=>({client:{id}})
+}};
+const loader = new TrainerWorkspaceLoader(state, ()=>{});
+state.repository.getClientWorkspace = async()=>{throw {status:503};};
+await assert.rejects(loader.load("a",true));
+assert.equal(state.workspace,null); assert.match(state.loadError,/wczytać/); assert.equal(state.loading,false);
+state.repository.getClientWorkspace = async id=>({client:{id}});
+await loader.load("a");
+state.repository.getClientWorkspace = async()=>{throw {status:503};};
+await assert.rejects(loader.load("a")); assert.equal(state.workspace.client.id,"a"); assert.match(state.loadError,/poprzedni/);
+await assert.rejects(loader.load("b")); assert.equal(state.workspace,null);
+let release;
+state.repository.getClientWorkspace = id=>id==="a"?new Promise(resolve=>release=resolve):Promise.resolve({client:{id}});
+const late = loader.load("a"); await loader.load("b"); release({client:{id:"a"}}); await late;
+assert.equal(state.workspace.client.id,"b");
+state.repository.getClientWorkspace = async()=>{throw {status:403};};
+await assert.rejects(loader.load("b")); assert.equal(state.workspace,null);
+let writes=0, reads=0;
+const operation=async()=>{writes++;return {id:"saved"};};
+await assert.rejects(writeThenRefresh(operation,async()=>{reads++;throw Error("offline");}), error=>error.writeConfirmed===true && error.writeUncertain===undefined);
+assert.equal(writes,1); assert.equal(reads,1);
+await assert.rejects(writeThenRefresh(async()=>{throw {status:400};}),error=>error.writeUncertain===false);
+await assert.rejects(writeThenRefresh(async()=>{throw TypeError("fetch failed");}),error=>error.writeUncertain===true);
+const result=await writeThenRefresh(operation,async row=>assert.equal(row.id,"saved")); assert.equal(result.id,"saved");
+const repo = new StudioLasRepository({},{}); let core;
+repo.getClient=async()=>({id:"a"}); repo.rpc=async()=>({plans:[],items:[]});
+repo.rest=async table=>{if(table==="reports")throw {status:503};return [];};
+const workspace=await repo.getClientWorkspace("a", value=>{core={...value}; assert.equal(value.sectionStatus.reports,"loading");});
+assert.equal(core.client.id,"a"); assert.equal(workspace.sectionStatus.reports,"failed"); assert.equal(workspace.sectionStatus.measurements,"ready");
+repo.rest=async table=>{if(table==="reports")throw {status:403};return [];};
+await assert.rejects(repo.getClientWorkspace("a"));
+console.log("TRAINER_RECOVERY_PASS: initial/stale/secondary/authorization/race/write/refresh/uncertainty");
