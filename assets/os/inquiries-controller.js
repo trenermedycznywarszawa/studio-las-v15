@@ -91,7 +91,7 @@ export class InquiryController {
         await this.withWrite("Tworzenie ankiety przed PWD", () => this.repository.createPrePwdIntakeRequest(inquiryId), async result => {
           const token = String(result?.token || "");
           this.prePwdLink = token
-            ? `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, "")}ankieta-przed-wpd.html?token=${encodeURIComponent(token)}`
+            ? `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, "")}ankieta-przed-wpd.html#token=${encodeURIComponent(token)}`
             : "";
           await refresh(inquiryId);
         });
