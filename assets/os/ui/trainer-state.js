@@ -1,3 +1,4 @@
+import { manualReportComposer, evidenceReportRecord } from "./report-evidence.js";
 import {
   currentCycleDecision,
   cycleDecisionLabel,
@@ -12,7 +13,7 @@ import {
 import { signalIdentity, signalTypeLabel } from "../decision-support.js";
 import { CANONICAL_ENGAGEMENTS, CANONICAL_STAGES } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
-import { cycleDecisionForm, reportForm, signalReviewForm } from "./forms.js";
+import { cycleDecisionForm, signalReviewForm } from "./forms.js";
 import { create, detailsForm, field, formatDate, panel, recordList, submitForm } from "./common.js";
 
 const SIGNAL_SOURCE_LABELS = Object.freeze({
@@ -197,11 +198,11 @@ export function reportsSection(workspace, model) {
   ) || null;
   const decision = currentCycleDecision(workspace);
   return panel("Raporty", create("div", {}, [
-    recordList(reports, report => reportRecord(
+    recordList(reports, report => report.workflow_version === 1 ? evidenceReportRecord(report, model.onTransitionReport) : reportRecord(
       report,
       decision,
       report === currentReport
     ), "Brak raportów."),
-    detailsForm("Dodaj raport", reportForm(model.onSaveReport))
+    manualReportComposer(workspace, model.onSaveReport)
   ]), "Raport pokazuje wzorzec; nie tworzy decyzji automatycznie");
 }

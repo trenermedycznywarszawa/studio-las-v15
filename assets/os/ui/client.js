@@ -69,7 +69,7 @@ export function renderClient(root, model) {
 
   const reports = recordList(snapshot.reports, report => create("article", { className: "record client-record" }, [
     create("strong", { text: report.title || report.type }),
-    create("p", { text: report.content }),
+    create("p", { className: "preserve-lines", text: report.content }),
     create("p", { className: "muted", text: formatDate(report.publishedAt) })
   ]), "Brak opublikowanych raportów.");
 

@@ -296,6 +296,9 @@ function renderTrainerState() {
         state.profile.id, state.activeClientId, signalKey, outcome
       ), reloadWorkspace);
     },
+    onTransitionReport: (report, action, reason) => withWrite(
+      action === "approve" ? "Zatwierdzanie raportu" : action === "publish" ? "Publikowanie raportu" : "Wycofywanie raportu",
+      () => state.repository.transitionReport(report, action, reason), reloadWorkspace),
     onSaveReport: async values => {
       await withWrite("Zapisywanie raportu", () =>
         state.repository.saveReport(state.profile.id, state.activeClientId, values)

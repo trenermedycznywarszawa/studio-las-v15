@@ -330,6 +330,8 @@ export class StudioLasRepository {
   async rpc(name, args = {}) {
     const allowed = new Set([
       "client_portal_snapshot",
+      "create_evidence_report",
+      "transition_evidence_report",
       "save_client_checkin",
       "save_client_guidance_response",
       "publish_home_plan_guidance",
@@ -755,17 +757,11 @@ export class StudioLasRepository {
     return this.insert("trainer_signal_reviews", { client_id: clientId, signal_key: signalKey, outcome, actor_profile_id: profileId });
   }
   async saveReport(profileId, clientId, input) {
-    const published = Boolean(input.published);
-    return this.insert("reports", {
-      client_id: clientId,
-      type: input.type || "twelveWeeks",
-      audience: input.audience || "trainer",
-      status: published ? "published" : "draft",
-      title: input.title || null,
-      content: String(input.content || "").trim(),
-      published_at: published ? new Date().toISOString() : null,
-      created_by: profileId
-    });
+    return this.rpc("create_evidence_report", {p_client_id: clientId, p_title: input.title, p_report: input.report, p_sources: input.sources});
+  }
+
+  async transitionReport(report, action, reason) {
+    return this.rpc("transition_evidence_report", {p_report_id: report.id, p_action: action, p_expected_updated_at: report.updated_at, p_reason: reason || null});
   }
 
   async saveDocumentMetadata(clientId, input) {

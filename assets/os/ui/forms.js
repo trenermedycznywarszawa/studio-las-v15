@@ -114,30 +114,6 @@ export function assessmentForm(onSubmit) {
   ], "Zapisz obserwację", onSubmit);
 }
 
-export function reportForm(onSubmit) {
-  return submitForm([
-    field("Typ raportu", "type", "select", {
-      required: true,
-      options: [
-        { value: "startMap", label: "Mapa startowa" },
-        { value: "fourWeeks", label: "Przegląd 4 tygodni" },
-        { value: "twelveWeeks", label: "Raport 12 tygodni" },
-        { value: "continuation", label: "Decyzja o kontynuacji" }
-      ]
-    }),
-    field("Odbiorca", "audience", "select", {
-      required: true,
-      options: [
-        { value: "trainer", label: "Tylko trener" },
-        { value: "client", label: "Klient" }
-      ]
-    }),
-    field("Tytuł", "title", "text", { maxlength: 240 }),
-    field("Treść", "content", "textarea", { rows: 8, required: true, maxlength: 50000 }),
-    checkbox("Opublikuj", "published")
-  ], "Zapisz raport", onSubmit);
-}
-
 export function homePlanForm(onSubmit) {
   return submitForm([
     field("Tytuł", "title", "text", { required: true, maxlength: 240 }),

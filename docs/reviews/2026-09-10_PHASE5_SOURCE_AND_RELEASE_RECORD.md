@@ -32,6 +32,8 @@ The public questionnaire retirement is outside the OS bundle allowlist; its sepa
 | `20260909113836_client_guidance_response_contract.sql` | `20260909114233` |
 | `20260909115632_trainer_signal_contact_followthrough.sql` | `20260909120128` |
 | `20260910072238_unanswered_assessment_tolerance.sql` | `20260910072337` |
+| `20260910073724_imported_intake_source_integrity.sql` | `20260910073921` |
+| `20260910074800_manual_report_evidence_boundary.sql` | `20260910122352` |
 
 `20260910073724_imported_intake_source_integrity.sql` → hosted `20260910073921`; local and hosted `IMPORTED_INTAKE_SOURCE_SQL_PASS`. Older migration identity differences already exist (historical numeric names, duplicate numeric prefixes, separately applied staging fixtures). Do not blindly run CLI migration repair or push the whole chain against an existing hosted project. Compare names/content and recorded mapping first. Local fresh-schema replay is ordered lexicographically using the checked-in files; the minimal local Auth/Storage shim is test infrastructure, not cloud recovery.
 
