@@ -15,8 +15,12 @@ export class ClientPortalController {
       this.snapshot = snapshot;
       for (const [id, entry] of Object.entries(this.responses)) {
         const saved = snapshot.homePlan?.items?.find(item => item.id === id)?.todayResponse;
-        if (saved) { entry.status = "saved"; entry.receipt = saved; }
-        else if (entry.receipt && entry.receipt.eventDate !== snapshot.serverDate) delete this.responses[id];
+        if (saved) { entry.status = "saved"; entry.receipt = saved; continue; }
+        if (entry.receipt && entry.receipt.eventDate !== snapshot.serverDate) { delete this.responses[id]; continue; }
+        if (!entry.receipt && entry.serverDate && entry.serverDate !== snapshot.serverDate) {
+          entry.status = "failed";
+          entry.message = "Nie udało się potwierdzić odpowiedzi z poprzedniego dnia. Nie wysyłamy jej jako dzisiejszej. Jeśli chcesz odpowiedzieć dziś, sprawdź treść i zapisz ją ponownie.";
+        }
       }
     } catch (error) {
       if (this.disposed || version !== this.readVersion) return;
@@ -37,7 +41,7 @@ export class ClientPortalController {
     if (!item && existing?.status !== "uncertain") return;
     const entry = existing?.status === "uncertain" ? existing : {
       homePlanItemId:itemId, homePlanId:this.snapshot.homePlan.id,
-      response:String(text || "").trim(), submissionId:this.makeId()
+      response:String(text || "").trim(), submissionId:this.makeId(), serverDate:this.snapshot.serverDate
     };
     entry.status = "saving"; entry.message = ""; this.responses[itemId] = entry; this.emit();
     try {
