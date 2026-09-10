@@ -12,9 +12,9 @@ function setStatus(message, kind = "info") {
 
 function readToken() {
   const url = new URL(window.location.href);
-  const token = String(url.searchParams.get("token") || "").trim().toLowerCase();
-  url.searchParams.delete("token");
-  history.replaceState(null, "", `${url.pathname}${url.search}${url.hash}`);
+  const params = new URLSearchParams(url.hash.replace(/^#/, ""));
+  const token = String(params.get("token") || "").trim().toLowerCase();
+  history.replaceState(null, "", `${url.pathname}${url.search}`);
   return /^[0-9a-f]{64}$/.test(token) ? token : "";
 }
 
