@@ -67,6 +67,8 @@ declare
   v_client_id uuid;
   v_decision_id uuid;
   v_decisions integer := 0;
+  v_pre_pwd_requests integer := 0;
+  v_pre_pwd_intakes integer := 0;
 begin
   if coalesce(auth.jwt() ->> 'aal', '') <> 'aal2' then
     raise exception 'trainer AAL2 required' using errcode = '42501';
@@ -93,6 +95,20 @@ begin
        or exists (select 1 from public.client_users where client_id = v_client_id and status = 'active') then
       raise exception 'synthetic converted client acquired process data; refusing cleanup' using errcode = '42501';
     end if;
+    if exists (
+      select 1 from public.client_intakes
+      where client_id = v_client_id and deleted_at is null and source <> 'pre_pwd_questionnaire_v1'
+    ) then
+      raise exception 'synthetic converted client acquired unrelated intake data; refusing cleanup' using errcode = '42501';
+    end if;
+
+    delete from public.pre_pwd_intake_requests
+    where inquiry_id = p_inquiry_id and client_id = v_client_id;
+    get diagnostics v_pre_pwd_requests = row_count;
+
+    delete from public.client_intakes
+    where client_id = v_client_id and source = 'pre_pwd_questionnaire_v1';
+    get diagnostics v_pre_pwd_intakes = row_count;
   end if;
 
   for v_decision_id in
@@ -119,6 +135,8 @@ begin
   return jsonb_build_object(
     'inquiryDeleted', true,
     'decisionCount', v_decisions,
+    'prePwdRequestCount', v_pre_pwd_requests,
+    'prePwdIntakeCount', v_pre_pwd_intakes,
     'clientDeleted', v_client_id is not null
   );
 end;
