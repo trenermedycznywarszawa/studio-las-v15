@@ -7,6 +7,7 @@ on:
     paths:
       - "studio-las-os.html"
       - "studio-las-config.js"
+      - "ankieta-przed-wpd.html"
       - "assets/os/**"
       - "supabase/functions/public-inquiry-ingress/**"
       - "supabase/migrations/**"
@@ -20,6 +21,7 @@ on:
       - "scripts/fixtures/decision-state-integrity.*"
       - "scripts/e2e_stage2_staging.mjs"
       - "scripts/e2e_public_inquiry_ingress_staging.mjs"
+      - "scripts/e2e_pre_pwd_questionnaire_staging.mjs"
       - ".github/workflows/studio-las-browser-e2e.yml"
   workflow_dispatch:
 
@@ -87,11 +89,12 @@ jobs:
           '''
           Path("studio-las-config.js").write_text(config, encoding="utf-8")
 
-          html_path = Path("studio-las-os.html")
-          html = html_path.read_text(encoding="utf-8")
-          if production_origin not in html:
-              raise SystemExit("Canonical production CSP origin not found; refusing ambiguous staging rewrite")
-          html_path.write_text(html.replace(production_origin, staging_origin), encoding="utf-8")
+          for filename in ("studio-las-os.html", "ankieta-przed-wpd.html"):
+              html_path = Path(filename)
+              html = html_path.read_text(encoding="utf-8")
+              if production_origin not in html:
+                  raise SystemExit(f"Canonical production CSP origin not found in {filename}; refusing ambiguous staging rewrite")
+              html_path.write_text(html.replace(production_origin, staging_origin), encoding="utf-8")
           PY
 
       - name: Verify preview is pinned to canonical staging
@@ -100,7 +103,8 @@ jobs:
           grep -q 'projectRef: "ulauyoqjoetjqktegeuq"' studio-las-config.js
           grep -q 'https://ulauyoqjoetjqktegeuq.supabase.co' studio-las-config.js
           grep -q 'connect-src https://ulauyoqjoetjqktegeuq.supabase.co' studio-las-os.html
-          if grep -q 'connect-src https://ufcumhbnuyernuwepcij.supabase.co' studio-las-os.html; then
+          grep -q 'connect-src https://ulauyoqjoetjqktegeuq.supabase.co' ankieta-przed-wpd.html
+          if grep -q 'connect-src https://ufcumhbnuyernuwepcij.supabase.co' studio-las-os.html ankieta-przed-wpd.html; then
             echo "Production Supabase origin remains in the E2E CSP" >&2
             exit 1
           fi
@@ -149,6 +153,12 @@ jobs:
           STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
           STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
         run: node scripts/e2e_stage2_staging.mjs
+
+      - name: Run pre-WPD questionnaire browser E2E
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_pre_pwd_questionnaire_staging.mjs
 
       - name: Run public inquiry ingress browser E2E
         env:
