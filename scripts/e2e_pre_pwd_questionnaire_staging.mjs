@@ -4,7 +4,6 @@ import { chromium } from "playwright";
 
 const ORIGIN = "https://ulauyoqjoetjqktegeuq.supabase.co";
 const APP = process.env.STUDIO_LAS_E2E_URL || "http://127.0.0.1:8790/studio-las-os.html";
-const FORM = new URL("ankieta-przed-wpd.html", APP).toString();
 const KEY = String(process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY || "");
 const EMAIL = String(process.env.STUDIO_LAS_QA_EMAIL || "");
 const PASSWORD = String(process.env.STUDIO_LAS_QA_PASSWORD || "");
@@ -111,6 +110,8 @@ try {
   await trainer.getByRole("button", { name: "Odśwież" }).click();
   await trainer.getByLabel("Wybierz pierwszy kontakt").selectOption(inquiryId);
   await trainer.getByText("Status ankiety: Wypełniona", { exact: false }).waitFor({ state: "visible", timeout: 20000 });
+  await trainer.getByText("Ładowanie procesu...", { exact: true }).waitFor({ state: "hidden", timeout: 20000 }).catch(() => {});
+  await trainer.waitForTimeout(700);
   await trainer.screenshot({ path: `${OUT}/pre-pwd-trainer-completed.png`, fullPage: true });
   assert(consoleErrors.length === 0, `Console errors: ${consoleErrors.join(" | ")}`);
   assert(failedRequests.length === 0, `Request failures: ${failedRequests.join(" | ")}`);
