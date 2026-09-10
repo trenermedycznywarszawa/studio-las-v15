@@ -6,6 +6,7 @@ on:
       - "studio-las-os.html"
       - "studio-management-os-3.0.html"
       - "studio-las-config.js"
+      - "ankieta-przed-wpd.html"
       - "assets/os/**"
       - "demo/**"
       - "tools/export-legacy-browser-data.*"
@@ -26,6 +27,7 @@ on:
       - "scripts/test_decision_state_integrity.mjs"
       - "scripts/test_stage2_production_runtime.mjs"
       - "scripts/test_public_inquiry_ingress.mjs"
+      - "scripts/test_pre_pwd_questionnaire.mjs"
       - "scripts/test_session_brief.mjs"
       - "scripts/test_p1_phase_aware_ia.mjs"
       - "scripts/verify_target_preflight_read_only.py"
@@ -77,6 +79,7 @@ jobs:
           node --input-type=module --check < assets/os/inquiries-data.js
           node --input-type=module --check < assets/os/inquiries-controller.js
           node --input-type=module --check < assets/os/ui/inquiries-section.js
+          node --input-type=module --check < assets/os/pre-pwd-intake-public.js
 
       - name: Parse client access admin module
         run: node --input-type=module --check < tools/client-access-admin.js
@@ -122,6 +125,9 @@ jobs:
 
       - name: Verify public inquiry ingress contract
         run: node scripts/test_public_inquiry_ingress.mjs
+
+      - name: Verify pre-PWD questionnaire contract
+        run: node scripts/test_pre_pwd_questionnaire.mjs
 
       - name: Verify Trainer Session Brief composition
         run: node scripts/test_session_brief.mjs
