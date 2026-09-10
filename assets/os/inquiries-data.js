@@ -30,11 +30,24 @@ export class InquiryRepository {
     return Array.isArray(rows) ? rows : [];
   }
 
+  async listPrePwdIntakeRequests(inquiryId) {
+    const path = buildUrl(this.config.supabaseUrl, "/rest/v1/pre_pwd_intake_requests", {
+      inquiry_id: `eq.${inquiryId}`,
+      select: "id,inquiry_id,client_id,status,expires_at,sent_at,completed_at,revoked_at,created_at",
+      order: "created_at.desc",
+      limit: "10"
+    }).replace(this.config.supabaseUrl, "");
+    const rows = await this.request(path, { method: "GET" });
+    return Array.isArray(rows) ? rows : [];
+  }
+
   async rpc(name, args = {}) {
     const allowed = new Set([
       "set_inquiry_contact_state",
       "save_inquiry_decision",
-      "convert_inquiry_to_pwd_client"
+      "convert_inquiry_to_pwd_client",
+      "create_pre_pwd_intake_request",
+      "mark_pre_pwd_intake_sent"
     ]);
     if (!allowed.has(name)) throw new Error(`Inquiry RPC is not allowed: ${name}`);
     return this.request(`/rest/v1/rpc/${name}`, {
@@ -70,5 +83,16 @@ export class InquiryRepository {
 
   async convertToPwdClient(inquiryId) {
     return this.rpc("convert_inquiry_to_pwd_client", { p_inquiry_id: inquiryId });
+  }
+
+  async createPrePwdIntakeRequest(inquiryId, validDays = 7) {
+    return this.rpc("create_pre_pwd_intake_request", {
+      p_inquiry_id: inquiryId,
+      p_valid_days: validDays
+    });
+  }
+
+  async markPrePwdIntakeSent(requestId) {
+    return this.rpc("mark_pre_pwd_intake_sent", { p_request_id: requestId });
   }
 }
