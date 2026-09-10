@@ -1,3 +1,4 @@
+// Production release gate rerun: no runtime behavior change.
 import { mkdir } from "node:fs/promises";
 import { chromium } from "playwright";
 
