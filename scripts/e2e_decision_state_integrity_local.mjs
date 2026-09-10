@@ -35,6 +35,7 @@ try {
   assert(await page.locator(".now-item").filter({ hasText: "Otwarty sygnał wymagający uwagi" }).count() === 1,
     "Teraz must expose at most one open signal");
   assert(await page.getByText("Aktywna", { exact: true }).isVisible(), "human Guidance status is missing");
+  // Scope to the rendered Guidance state: the same human label also exists in the editable select option.
   assert(await page.locator(".guidance-record .guidance-state").getByText("Papier + aplikacja", { exact: true }).first().isVisible(), "human Guidance channel is missing");
   assert(!(await page.getByText("active · hybrid", { exact: false }).count()), "technical Guidance enums leaked to the UI");
 
