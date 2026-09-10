@@ -47,7 +47,7 @@ export function sessionForm(onSubmit) {
     field("Dolegliwość przed 0–10", "vasBefore", "number", { min: 0, max: 10 }),
     field("Dolegliwość po 0–10", "vasAfter", "number", { min: 0, max: 10 }),
     field("Sen", "sleepQuality", "select", {
-      options: ["Bardzo słaby", "Słaby", "Przeciętny", "Dobry", "Bardzo dobry"].map(value => ({ value, label: value }))
+      options: [{ value: "", label: "Nie podano" }, ...["Bardzo słaby", "Słaby", "Przeciętny", "Dobry", "Bardzo dobry"].map(value => ({ value, label: value }))]
     }),
     field("Ćwiczenia — po jednym w linii", "exercises", "textarea", { maxlength: 8000 }),
     field("Obserwacja trenera", "trainerObservation", "textarea", { maxlength: 12000 }),
@@ -105,7 +105,7 @@ export function assessmentForm(onSubmit) {
     field("Dolegliwość przed", "painBefore", "number", { min: 0, max: 10 }),
     field("Dolegliwość po", "painAfter", "number", { min: 0, max: 10 }),
     field("Jakość/tolerancja", "quality", "select", {
-      options: ["dobrze tolerowane", "ograniczone", "do obserwacji", "przerwać i skonsultować"].map(value => ({ value, label: value }))
+      options: [{ value: "", label: "Nie podano" }, ...["dobrze tolerowane", "ograniczone", "do obserwacji", "przerwać i skonsultować"].map(value => ({ value, label: value }))]
     }),
     field("Interpretacja trenera", "interpretation", "textarea", { maxlength: 8000 }),
     field("Następny krok", "nextStep", "textarea", { maxlength: 4000 })

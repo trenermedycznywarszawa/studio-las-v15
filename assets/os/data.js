@@ -670,7 +670,7 @@ export class StudioLasRepository {
       result_text: input.resultText || null,
       pain_before: asNullableNumber(input.painBefore),
       pain_after: asNullableNumber(input.painAfter),
-      quality: input.quality || "do obserwacji",
+      quality: input.quality || null,
       interpretation: input.interpretation || null,
       trainer_decision: input.trainerDecision || "obserwuj",
       next_step: input.nextStep || null,

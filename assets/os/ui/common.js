@@ -94,7 +94,7 @@ export function button(label, options = {}) {
 }
 
 export function statusBox(message, kind = "info") {
-  return create("div", { className: `status ${kind}`, text: message });
+  return create("div", { className: `status ${kind}`, role: kind === "error" ? "alert" : "status", text: message });
 }
 
 export function panel(title, body, note = "") {
@@ -172,7 +172,7 @@ export function renderFatal(root, message) {
 export function renderLoading(root, message = "Ładowanie bezpiecznego środowiska…") {
   clear(root);
   root.append(create("main", { className: "center-screen" }, [
-    create("div", { className: "loading-card", text: message })
+    create("div", { className: "loading-card", role: "status", "aria-live": "polite", text: message })
   ]));
 }
 

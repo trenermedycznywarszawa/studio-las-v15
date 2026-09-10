@@ -263,3 +263,16 @@ intentionally inaccessible. Staging leaked-password protection remains disabled;
 no plan/configuration change was made. Advisor remediation references:
 https://supabase.com/docs/guides/database/database-linter?lint=0029_authenticated_security_definer_function_executable
 and https://supabase.com/docs/guides/auth/password-security#password-strength-and-leaked-password-protection
+
+
+## Phase 5 recovery and first bounded checkpoint — 2026-09-10
+
+Recovery: clean worktree; local and Draft PR #66 both `19d0ebcc02c147569661207fb9b5b421167688af`. No interrupted implementation remained uncommitted. Publication/concurrency work is preserved; its closed gate was not reopened.
+
+Future session sleep and assessment tolerance now default to explicit `Nie podano` (empty transport value serialized to SQL null), rather than very poor / well tolerated. Historical records are unchanged. Numeric observations remain optional; deliberate zero remains distinct from blank. The regression checks the actual repository payloads.
+
+The direct `ankieta-pelna.html` route now serves a noindex retirement notice and a link to the canonical short contact flow. No form, JavaScript, external submission or mailto data fallback remains on that route. Prior source remains in Git at the preceding checkpoint. Targeted HTML/JS link search found no other normal-navigation reference to this retired route; the short contact Formspree path remains unchanged. This is source retirement pending release, not a claim that the live public site has changed or that historical submissions have been deleted. No legal compliance claim.
+
+Shared loading/status regions now expose status/alert semantics. Full keyboard, viewport and error-state checks remain part of the Phase 5 checkpoint, not claimed complete here.
+
+Validation caught a second fabricated default in repository serialization (`do obserwacji`) and a database NOT NULL/default constraint. Both were corrected. Additive migration `20260910072238_unanswered_assessment_tolerance.sql` drops only that column's NOT NULL/default; the existing allowed-value CHECK and RLS remain. No rows are rewritten. Local and hosted staging `UNANSWERED_ASSESSMENT_SQL_PASS` verify omitted null, explicit answer/zero, and invalid-value rejection; fixture Auth users after rollback: 0. Repository payload regression `UNANSWERED_OBSERVATIONS_PASS` and static security checks passed. Staging only; production untouched.
