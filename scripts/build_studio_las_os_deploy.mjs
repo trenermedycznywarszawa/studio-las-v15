@@ -62,6 +62,15 @@ if (staging) {
 }
 const appHtml = await readFile(join(root, "studio-las-os.html"), "utf8");
 await writeFile(join(output, "index.html"), appHtml, "utf8");
+if (staging) {
+  for (const file of ["index.html", "studio-las-os.html", "tools/client-access-admin.html"]) {
+    const path = join(output, file);
+    const html = (await readFile(path, "utf8")).replaceAll(
+      "connect-src https://ufcumhbnuyernuwepcij.supabase.co",
+      "connect-src https://ulauyoqjoetjqktegeuq.supabase.co");
+    await writeFile(path, html, "utf8");
+  }
+}
 
 const headers = `/*
   Cache-Control: no-store, max-age=0
@@ -72,7 +81,7 @@ const headers = `/*
   X-Robots-Tag: noindex, nofollow, noarchive
 
 /assets/*
-  Cache-Control: public, max-age=3600, must-revalidate
+  Cache-Control: no-store, max-age=0
 `;
 await writeFile(join(output, "_headers"), headers, "utf8");
 
@@ -85,7 +94,7 @@ for (const path of payloadFiles) hashes[relative(output, path).split(sep).join("
 const manifest = {
   sourceSha: git("rev-parse", "HEAD"),
   sourceBranch: git("branch", "--show-current"),
-  sourceDirty: Boolean(git("status", "--porcelain", "--untracked-files=no")),
+  sourceDirty: Boolean(git("status", "--porcelain", "--untracked-files=normal")),
   environment: staging ? "staging" : "source-config",
   artifactSha256: sha256(JSON.stringify(hashes)),
   artifactHashDefinition: "SHA256 of JSON file-hash map in sorted absolute-path order; excludes this manifest",
