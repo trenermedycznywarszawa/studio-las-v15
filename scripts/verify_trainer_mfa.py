@@ -151,6 +151,7 @@ def check_browser_flow() -> None:
     # The trainer workspace reads were intentionally moved into TrainerWorkspaceLoader.
     # Verify the app refreshes the MFA gate before delegating to that loader, then
     # separately verify the loader is where protected repository reads occur.
+    # Release CI gate: this check intentionally follows the current delegation boundary.
     load_trainer = app[app.find("async function loadTrainer"):app.find("async function selectClient")]
     factor_gate = load_trainer.find("state.mfa.prepare()")
     loader_read = load_trainer.find("trainerLoader.load(")
