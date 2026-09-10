@@ -224,12 +224,20 @@ async function loginToAal2(page) {
   return session.access_token;
 }
 
+async function waitForTrainerWorkspaceReady(page) {
+  await page.waitForFunction(() => {
+    return !Array.from(document.querySelectorAll(".workspace .status"))
+      .some(node => String(node.textContent || "").includes("Ładowanie procesu"));
+  }, null, { timeout: 20_000 });
+}
+
 async function selectSyntheticClient(page) {
   const select = page.getByLabel("Wybierz klienta");
   await select.selectOption({ label: CLIENT_NAME });
   const clientId = await select.inputValue();
   assert(/^[0-9a-f-]{20,64}$/i.test(clientId), "Synthetic QA client id is invalid");
   await page.getByRole("heading", { name: CLIENT_NAME }).waitFor({ state: "visible" });
+  await waitForTrainerWorkspaceReady(page);
   return clientId;
 }
 
@@ -299,6 +307,7 @@ async function reloadAndSelect(page) {
     if (currentLabel === CLIENT_NAME) {
       assert(/^[0-9a-f-]{20,64}$/i.test(currentClientId), "Restored synthetic QA client id is invalid");
       await page.getByRole("heading", { name: CLIENT_NAME }).waitFor({ state: "visible", timeout: 20_000 });
+      await waitForTrainerWorkspaceReady(page);
       return currentClientId;
     }
   }
