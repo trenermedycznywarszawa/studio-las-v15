@@ -9,6 +9,7 @@ const output = join(root, ".deploy", "studio-las-os");
 const files = [
   "studio-las-os.html",
   "studio-las-config.js",
+  "ankieta-przed-wpd.html",
   "tools/client-access-admin.html",
   "tools/client-access-admin.js",
   "tools/client-access-bootstrap.js"
@@ -63,7 +64,7 @@ if (staging) {
 const appHtml = await readFile(join(root, "studio-las-os.html"), "utf8");
 await writeFile(join(output, "index.html"), appHtml, "utf8");
 if (staging) {
-  for (const file of ["index.html", "studio-las-os.html", "tools/client-access-admin.html"]) {
+  for (const file of ["index.html", "studio-las-os.html", "ankieta-przed-wpd.html", "tools/client-access-admin.html"]) {
     const path = join(output, file);
     const html = (await readFile(path, "utf8")).replaceAll(
       "connect-src https://ufcumhbnuyernuwepcij.supabase.co",
