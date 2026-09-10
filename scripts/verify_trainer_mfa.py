@@ -87,6 +87,7 @@ def check_browser_flow() -> None:
     controller = read("assets/os/trainer-mfa.js")
     ui = read("assets/os/ui/trainer-mfa.js")
     app = read("assets/os/app.js")
+    loader = read("assets/os/trainer-workspace-loader.js")
     admin = read("tools/client-access-admin.js")
     runtime = read("assets/os/runtime.js")
 
@@ -147,10 +148,15 @@ def check_browser_flow() -> None:
             f"{label} does not refresh factors after the mutation",
         )
 
+    # The trainer workspace reads were intentionally moved into TrainerWorkspaceLoader.
+    # Verify the app refreshes the MFA gate before delegating to that loader, then
+    # separately verify the loader is where protected repository reads occur.
     load_trainer = app[app.find("async function loadTrainer"):app.find("async function selectClient")]
     factor_gate = load_trainer.find("state.mfa.prepare()")
-    protected_read = load_trainer.find("state.repository.listClients()")
-    require(0 <= factor_gate < protected_read, "trainer panel reads data before refreshing the MFA gate")
+    loader_read = load_trainer.find("trainerLoader.load(")
+    require(0 <= factor_gate < loader_read, "trainer panel delegates protected reads before refreshing the MFA gate")
+    require("state.repository.listClients()" in loader, "trainer loader no longer owns the protected client-list read")
+    require("state.repository.getClientWorkspace(" in loader, "trainer loader no longer owns the protected workspace read")
     require("qrCode" in ui and "one-time-code" in ui, "TOTP enrollment/challenge UI is incomplete")
 
     safe_session = runtime[runtime.find("const safeSession"):runtime.find(
