@@ -22,10 +22,13 @@ export function create(tag, options = {}, children = []) {
   return node;
 }
 
+let fieldSerial = 0;
 export function field(label, name, type = "text", options = {}) {
+  const labelId = `field-label-${++fieldSerial}`;
   let input;
   const shared = {
     name,
+    "aria-labelledby": labelId,
     required: options.required,
     disabled: options.disabled,
     autocomplete: options.autocomplete
@@ -61,7 +64,7 @@ export function field(label, name, type = "text", options = {}) {
   }
 
   if (options.value !== undefined && options.value !== null) input.value = options.value;
-  return create("label", { className: "field" }, [create("span", { text: label }), input]);
+  return create("label", { className: "field" }, [create("span", { id: labelId, text: label }), input]);
 }
 
 export function checkbox(label, name, checked = false, options = {}) {
@@ -147,11 +150,23 @@ export function submitForm(fields, label, onSubmit, className = "form-grid", opt
 
     const submit = form.querySelector('button[type="submit"]');
     submit.disabled = true;
+    let blocked = false;
+    const oldError = form.querySelector(".form-error");
+    oldError?.remove();
     try {
       await onSubmit(formValues(form));
       form.reset();
+    } catch (error) {
+      blocked = Boolean(error?.writeConfirmed || error?.writeUncertain);
+      if (error?.writeConfirmed) form.reset();
+      const message = statusBox(error?.displayMessage || "Nie udało się zapisać. Sprawdź pola i komunikat powyżej.", "error");
+      message.classList.add("form-error");
+      message.tabIndex = -1;
+      form.append(message);
+      message.focus();
+      throw error;
     } finally {
-      submit.disabled = Boolean(options.disabled);
+      submit.disabled = blocked || Boolean(options.disabled);
     }
   });
   return form;

@@ -393,67 +393,45 @@ export class StudioLasRepository {
     return Array.isArray(rows) ? rows[0] || null : null;
   }
 
-  async getClientWorkspace(clientId) {
-    const byClient = {
-      client_id: `eq.${clientId}`,
-      deleted_at: "is.null"
-    };
-
-    const [
-      client,
-      intakes,
-      sessions,
-      preSessionChecks,
-      postSessionObservations,
-      tasks,
-      documents,
-      measurements,
-      trainingLoad,
-      assessments,
-      guidanceSnapshot,
-      guidanceEvents,
-      reports,
-      cycleDecisions,
-      signalReviews
-    ] = await Promise.all([
+  async getClientWorkspace(clientId, onCore = () => {}) {
+    const byClient = {client_id: `eq.${clientId}`, deleted_at: "is.null"};
+    const read = (table, order) => this.rest(table, {query: {...byClient, select: "*", order}});
+    // Decision context is required. Deep report/measurement reads cannot erase it.
+    const [client, intakes, sessions, preSessionChecks, trainingLoad, assessments,
+      guidanceSnapshot, guidanceEvents, cycleDecisions, signalReviews] = await Promise.all([
       this.getClient(clientId),
-      this.rest("client_intakes", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("sessions", { query: { ...byClient, select: "*", order: "date.desc" } }),
-      this.rest("pre_session_checks", { query: { ...byClient, select: "*", order: "check_date.desc" } }),
-      this.rest("post_session_observations", { query: { ...byClient, select: "*", order: "date.desc" } }),
-      this.rest("client_tasks", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("client_documents", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("body_measurements", { query: { ...byClient, select: "*", order: "measured_at.desc" } }),
-      this.rest("training_load_observations", { query: { ...byClient, select: "*", order: "observed_at.desc" } }),
-      this.rest("assessment_results", { query: { ...byClient, select: "*", order: "performed_at.desc" } }),
-      this.rpc("trainer_guidance_snapshot", { p_client_id: clientId }),
-      this.rest("guidance_events", { query: { ...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_by,created_at,updated_at,guidance_observation_notes(*,profiles(display_name))", order: "event_date.desc,created_at.desc", limit: 100 } }),
-      this.rest("reports", { query: { ...byClient, select: "*", order: "created_at.desc" } }),
-      this.rest("client_cycle_decisions", { query: { client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc" } }),
-      this.rest("trainer_signal_reviews", { query: { client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc" } })
+      read("client_intakes", "created_at.desc"),
+      read("sessions", "date.desc"),
+      read("pre_session_checks", "check_date.desc"),
+      read("training_load_observations", "observed_at.desc"),
+      read("assessment_results", "performed_at.desc"),
+      this.rpc("trainer_guidance_snapshot", {p_client_id: clientId}),
+      this.rest("guidance_events", {query: {...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_by,created_at,updated_at,guidance_observation_notes(*,profiles(display_name))", order: "event_date.desc,created_at.desc", limit: 100}}),
+      this.rest("client_cycle_decisions", {query: {client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc"}}),
+      this.rest("trainer_signal_reviews", {query: {client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc"}})
     ]);
-
-    const { plans: homePlans, items: homePlanItems } = guidanceSnapshot;
     if (!client) throw new SupabaseHttpError("Client not found or access denied", 404);
+    const workspace = {client, intakes, sessions, preSessionChecks, trainingLoad, assessments,
+      homePlans: guidanceSnapshot.plans, homePlanItems: guidanceSnapshot.items,
+      guidanceEvents, cycleDecisions, signalReviews, reports: [], measurements: [],
+      sectionStatus: {reports: "loading", measurements: "loading"}};
+    onCore(workspace);
+    await Promise.all(["reports", "measurements"].map(async section => {
+      try { Object.assign(workspace, await this.getWorkspaceSection(clientId, section)); workspace.sectionStatus[section] = "ready"; }
+      catch (error) {
+        if ([401, 403].includes(Number(error?.status))) throw error;
+        workspace.sectionStatus[section] = "failed";
+      }
+    }));
+    return workspace;
+  }
 
-    return {
-      client,
-      intakes,
-      sessions,
-      preSessionChecks,
-      postSessionObservations,
-      tasks,
-      documents,
-      measurements,
-      trainingLoad,
-      assessments,
-      homePlans,
-      homePlanItems,
-      guidanceEvents,
-      reports,
-      cycleDecisions,
-      signalReviews
-    };
+  async getWorkspaceSection(clientId, section) {
+    const sources = {reports: ["reports", "created_at.desc"], measurements: ["body_measurements", "measured_at.desc"]};
+    if (!sources[section]) throw new Error("Unknown workspace section");
+    const [table, order] = sources[section];
+    const rows = await this.rest(table, {query: {client_id: `eq.${clientId}`, deleted_at: "is.null", select: "*", order}});
+    return {[section]: rows};
   }
 
   async savePwdWorkflow(clientId, input) {

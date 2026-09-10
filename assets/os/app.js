@@ -1,3 +1,4 @@
+import { TrainerWorkspaceLoader } from "./trainer-workspace-loader.js";
 import { collectWorkspaceSignals } from "./trainer-signals.js";
 import { ClientPortalController } from "./client-portal-controller.js";
 import { guidanceActions } from "./guidance-actions.js";
@@ -29,8 +30,11 @@ const state = {
   snapshot: null
 };
 
-const { announce, withWrite } = createRuntimeFeedback(() => state.config?.mode);
+const { announce, withWrite, reset: resetFeedback } = createRuntimeFeedback(() => state.config?.mode);
+const trainerLoader = new TrainerWorkspaceLoader(state, renderTrainerState);
 async function logout() {
+  trainerLoader.reset();
+  resetFeedback();
   state.clientPortal?.reset();
   state.clientPortal = null;
   state.mfa?.clear();
@@ -199,43 +203,21 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
-  [state.clients] = await Promise.all([
-    state.repository.listClients(),
-    state.inquiryController.refresh()
-  ]);
-  state.activeClientId = preferredClientId && state.clients.some(client => client.id === preferredClientId)
-    ? preferredClientId
-    : "";
-  state.workspace = state.activeClientId
-    ? await state.repository.getClientWorkspace(state.activeClientId)
-    : null;
+  await trainerLoader.load(preferredClientId, true);
+  await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
   renderTrainerState();
 }
 
 async function selectClient(clientId) {
-  state.activeClientId = clientId || "";
-  if (!state.activeClientId) {
-    state.workspace = null;
-    renderTrainerState();
-    return;
-  }
-
-  renderLoading(root, "Ładowanie procesu klienta…");
-  state.workspace = await state.repository.getClientWorkspace(state.activeClientId);
-  renderTrainerState();
+  await trainerLoader.load(clientId);
 }
 
 function renderTrainerState() {
   const generatedSignals = collectWorkspaceSignals(state.workspace || {});
   const attentionSignals = withoutReviewedSignals(generatedSignals, state.workspace?.signalReviews);
 
-  const reloadWorkspace = async () => {
-    if (state.activeClientId) {
-      state.workspace = await state.repository.getClientWorkspace(state.activeClientId);
-    }
-    state.clients = await state.repository.listClients();
-    renderTrainerState();
-  };
+  const clientId = state.activeClientId;
+  const reloadWorkspace = () => trainerLoader.load(clientId);
 
   renderTrainer(root, {
     environment: state.config?.mode,
@@ -243,87 +225,75 @@ function renderTrainerState() {
     clients: state.clients,
     activeClientId: state.activeClientId,
     workspace: state.workspace,
+    loading: state.loading,
+    loadError: state.loadError,
+    onRetrySection: section => trainerLoader.section(section).catch(handleRuntimeError),
     attentionSignals,
     onSelectClient: clientId => selectClient(clientId).catch(handleRuntimeError),
     onReload: () => loadTrainer(state.activeClientId).catch(handleRuntimeError),
     onLogout: () => logout().catch(handleRuntimeError),
     onManageMfa: () => showMfaManagement(),
     onCreateClient: async values => {
-      const client = await withWrite("Dodawanie klienta", () =>
-        state.repository.createClient(state.profile.id, values)
+      await withWrite("Dodawanie klienta", () =>
+        state.repository.createClient(state.profile.id, values), result => trainerLoader.load(result?.id || "", true)
       );
-      await loadTrainer(client.id);
     },
     onSavePwd: async values => {
       await withWrite("Zapisywanie PWD", () =>
         savePwdWorkflow(state.repository, state.activeClientId, values)
-      );
-      await reloadWorkspace();
+      , reloadWorkspace);
     },
     onSaveSession: async values => {
-      await withWrite("Zapisywanie sesji", () => state.repository.saveSession(state.activeClientId, values));
-      await reloadWorkspace();
+      await withWrite("Zapisywanie sesji", () => state.repository.saveSession(state.activeClientId, values), reloadWorkspace);
     },
     onSaveMeasurement: async values => {
-      await withWrite("Zapisywanie pomiaru", () => state.repository.saveMeasurement(state.activeClientId, values));
-      await reloadWorkspace();
+      await withWrite("Zapisywanie pomiaru", () => state.repository.saveMeasurement(state.activeClientId, values), reloadWorkspace);
     },
     onSaveTrainingLoad: async values => {
-      await withWrite("Zapisywanie odczytu", () => state.repository.saveTrainingLoad(state.activeClientId, values));
-      await reloadWorkspace();
+      await withWrite("Zapisywanie odczytu", () => state.repository.saveTrainingLoad(state.activeClientId, values), reloadWorkspace);
     },
     onSaveAssessment: async values => {
-      await withWrite("Zapisywanie obserwacji", () => state.repository.saveAssessment(state.activeClientId, values));
-      await reloadWorkspace();
+      await withWrite("Zapisywanie obserwacji", () => state.repository.saveAssessment(state.activeClientId, values), reloadWorkspace);
     },
     onSaveHomePlan: async values => {
-      await withWrite("Zapisywanie planu", () => state.repository.saveHomePlan(state.activeClientId, values));
-      await reloadWorkspace();
+      await withWrite("Zapisywanie planu", () => state.repository.saveHomePlan(state.activeClientId, values), reloadWorkspace);
     },
     onSaveHomePlanItem: async (homePlanId, values) => {
       await withWrite("Zapisywanie zadania", () =>
         state.repository.saveHomePlanItem(state.activeClientId, homePlanId, values)
-      );
-      await reloadWorkspace();
+      , reloadWorkspace);
     },
     ...guidanceActions(state.repository, state.activeClientId, withWrite, reloadWorkspace),
     onPublishHomePlan: async homePlanId => {
-      await withWrite("Publikowanie wskazówki", () => state.repository.publishHomePlanGuidance(homePlanId));
-      await reloadWorkspace();
+      await withWrite("Publikowanie wskazówki", () => state.repository.publishHomePlanGuidance(homePlanId), reloadWorkspace);
     },
     onWithdrawHomePlan: async homePlanId => {
-      await withWrite("Wycofywanie wskazówki", () => state.repository.withdrawHomePlanGuidance(homePlanId));
-      await reloadWorkspace();
+      await withWrite("Wycofywanie wskazówki", () => state.repository.withdrawHomePlanGuidance(homePlanId), reloadWorkspace);
     },
     onConfirmHomePlanPaperRetirement: async homePlanId => {
       await withWrite("Potwierdzanie wycofania poprzedniej kopii papierowej", () =>
         state.repository.confirmHomePlanPaperRetirement(homePlanId)
-      );
-      await reloadWorkspace();
+      , reloadWorkspace);
     },
     onRecordGuidanceDelivery: async (homePlanId, deliveryStatus) => {
       await withWrite("Zapisywanie dostarczenia", () =>
         state.repository.recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus)
-      );
-      await reloadWorkspace();
+      , reloadWorkspace);
     },
     onSaveCycleDecision: async values => {
       await withWrite("Zapisywanie decyzji co dalej", () => state.repository.saveCycleDecision(
         state.profile.id, state.activeClientId, values
-      ));
-      await reloadWorkspace();
+      ), reloadWorkspace);
     },
     onReviewSignal: async (signalKey, outcome) => {
       await withWrite("Zapisywanie przeglądu sygnału", () => state.repository.saveSignalReview(
         state.profile.id, state.activeClientId, signalKey, outcome
-      ));
-      await reloadWorkspace();
+      ), reloadWorkspace);
     },
     onSaveReport: async values => {
       await withWrite("Zapisywanie raportu", () =>
         state.repository.saveReport(state.profile.id, state.activeClientId, values)
-      );
-      await reloadWorkspace();
+      , reloadWorkspace);
     }
   });
 
@@ -347,8 +317,8 @@ async function loadClientPortal() {
 }
 
 function handleRuntimeError(error) {
-  const message = userSafeError(error, state.config?.mode);
-  announce(message, "error");
+  const message = error?.displayMessage || userSafeError(error, state.config?.mode);
+  announce(message, "error", error?.retryRefresh);
   const status = Number(error?.status || 0);
   if (status === 401) showLogin(message);
   else if (status === 403 && state.profile?.role === "trainer"

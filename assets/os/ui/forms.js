@@ -43,12 +43,17 @@ export function newClientForm(onSubmit) {
 export function sessionForm(onSubmit) {
   return submitForm([
     field("Data", "date", "date", { value: today(), required: true }),
+    create("details", {className: "details-card"}, [
+      create("summary", {text: "Dodatkowe obserwacje — tylko gdy wpływają na decyzję"}),
+      create("div", {className: "form-grid"}, [
     field("Gotowość 1–10", "readiness", "number", { min: 1, max: 10 }),
     field("Dolegliwość przed 0–10", "vasBefore", "number", { min: 0, max: 10 }),
     field("Dolegliwość po 0–10", "vasAfter", "number", { min: 0, max: 10 }),
     field("Sen", "sleepQuality", "select", {
       options: [{ value: "", label: "Nie podano" }, ...["Bardzo słaby", "Słaby", "Przeciętny", "Dobry", "Bardzo dobry"].map(value => ({ value, label: value }))]
     }),
+      ])
+    ]),
     field("Ćwiczenia — po jednym w linii", "exercises", "textarea", { maxlength: 8000 }),
     field("Obserwacja trenera", "trainerObservation", "textarea", { maxlength: 12000 }),
     field("Decyzja trenera", "trainerDecision", "textarea", { maxlength: 8000 }),
@@ -65,9 +70,6 @@ export function measurementForm(onSubmit) {
     field("Waga kg", "weightKg", "number", { step: 0.1, min: 0 }),
     field("Tłuszcz %", "fatPercent", "number", { step: 0.1, min: 0, max: 100 }),
     field("Masa mięśniowa kg", "muscleMassKg", "number", { step: 0.1, min: 0 }),
-    field("Woda %", "bodyWaterPercent", "number", { step: 0.1, min: 0, max: 100 }),
-    field("Visceral fat rating", "visceralFatRating", "number", { step: 0.1, min: 0 }),
-    field("BMI", "bmi", "number", { step: 0.1, min: 0 }),
     field("Interpretacja trenera", "trainerInterpretation", "textarea", { maxlength: 8000 }),
     field("Podsumowanie dla klienta", "clientSummary", "textarea", { maxlength: 4000 }),
     checkbox("Opublikuj klientowi", "clientVisible")
