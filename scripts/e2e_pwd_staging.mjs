@@ -291,6 +291,17 @@ async function fillPwdCore(form, marker, decision = "") {
 async function reloadAndSelect(page) {
   await page.reload({ waitUntil: "domcontentloaded" });
   await page.getByRole("heading", { name: "Panel trenera" }).waitFor({ state: "visible", timeout: 20_000 });
+  const select = page.getByLabel("Wybierz klienta");
+  await select.waitFor({ state: "visible", timeout: 20_000 });
+  const currentClientId = await select.inputValue();
+  if (currentClientId) {
+    const currentLabel = (await select.locator("option:checked").textContent())?.trim();
+    if (currentLabel === CLIENT_NAME) {
+      assert(/^[0-9a-f-]{20,64}$/i.test(currentClientId), "Restored synthetic QA client id is invalid");
+      await page.getByRole("heading", { name: CLIENT_NAME }).waitFor({ state: "visible", timeout: 20_000 });
+      return currentClientId;
+    }
+  }
   return selectSyntheticClient(page);
 }
 
