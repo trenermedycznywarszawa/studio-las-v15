@@ -9,6 +9,8 @@ export class InquiryController {
     this.inquiries = [];
     this.activeInquiryId = "";
     this.decisions = [];
+    this.prePwdRequests = [];
+    this.prePwdLink = "";
     this.error = null;
   }
 
@@ -16,7 +18,26 @@ export class InquiryController {
     this.inquiries = [];
     this.activeInquiryId = "";
     this.decisions = [];
+    this.prePwdRequests = [];
+    this.prePwdLink = "";
     this.error = null;
+  }
+
+  async loadInquiryDetail(inquiryId) {
+    if (!inquiryId) {
+      this.decisions = [];
+      this.prePwdRequests = [];
+      return;
+    }
+    const inquiry = this.inquiries.find(item => item.id === inquiryId);
+    const [decisions, prePwdRequests] = await Promise.all([
+      this.repository.listDecisions(inquiryId),
+      inquiry?.inquiry_status === "converted"
+        ? this.repository.listPrePwdIntakeRequests(inquiryId)
+        : Promise.resolve([])
+    ]);
+    this.decisions = decisions;
+    this.prePwdRequests = prePwdRequests;
   }
 
   async refresh(preferredInquiryId = this.activeInquiryId) {
@@ -25,17 +46,13 @@ export class InquiryController {
     this.activeInquiryId = preferredInquiryId && this.inquiries.some(item => item.id === preferredInquiryId)
       ? preferredInquiryId
       : "";
-    this.decisions = this.activeInquiryId
-      ? await this.repository.listDecisions(this.activeInquiryId)
-      : [];
+    await this.loadInquiryDetail(this.activeInquiryId);
   }
 
   async select(inquiryId) {
-    this.decisions = [];
     this.activeInquiryId = inquiryId || "";
-    this.decisions = this.activeInquiryId
-      ? await this.repository.listDecisions(this.activeInquiryId)
-      : [];
+    this.prePwdLink = "";
+    await this.loadInquiryDetail(this.activeInquiryId);
   }
 
   render(workspace, { activeClientId = "", rerender, loadTrainer, onError }) {
@@ -55,6 +72,8 @@ export class InquiryController {
       inquiries: this.inquiries,
       activeInquiryId: this.activeInquiryId,
       inquiryDecisions: this.decisions,
+      prePwdRequests: this.prePwdRequests,
+      prePwdLink: this.prePwdLink,
       onSelectInquiry: inquiryId => this.select(inquiryId).then(rerender).catch(error => { this.error = error; rerender(); onError(error); }),
       onSetContactState: async (inquiryId, values) => {
         await this.withWrite("Zapisywanie stanu kontaktu", () => this.repository.setContactState(inquiryId, values), () => refresh(inquiryId));
@@ -67,6 +86,18 @@ export class InquiryController {
           await refresh(inquiryId);
           await loadTrainer(result?.clientId || "");
         });
+      },
+      onCreatePrePwdLink: async inquiryId => {
+        await this.withWrite("Tworzenie ankiety przed PWD", () => this.repository.createPrePwdIntakeRequest(inquiryId), async result => {
+          const token = String(result?.token || "");
+          this.prePwdLink = token
+            ? `${window.location.origin}${window.location.pathname.replace(/[^/]*$/, "")}ankieta-przed-wpd.html?token=${encodeURIComponent(token)}`
+            : "";
+          await refresh(inquiryId);
+        });
+      },
+      onMarkPrePwdSent: async requestId => {
+        await this.withWrite("Oznaczanie ankiety jako wysłanej", () => this.repository.markPrePwdIntakeSent(requestId), () => refresh(this.activeInquiryId));
       }
     });
   }
