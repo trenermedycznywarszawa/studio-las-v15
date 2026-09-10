@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex, nofollow, noarchive">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'unsafe-inline'; connect-src https://ufcumhbnuyernuwepcij.supabase.co; img-src 'self' data:; base-uri 'none'; frame-ancestors 'none'; form-action 'self'">
+  <meta name="referrer" content="no-referrer">
+  <title>Ankieta przed Pierwszą Wizytą Diagnostyczną — Studio Las</title>
+  <style>
+    :root { color-scheme: light; font-family: Inter, system-ui, sans-serif; }
+    * { box-sizing: border-box; }
+    body { margin:0; background:#f4f2eb; color:#20362d; }
+    main { width:min(760px, calc(100% - 32px)); margin:40px auto 72px; }
+    .card { background:#fff; border:1px solid #d8ddd8; border-radius:18px; padding:clamp(20px,4vw,36px); box-shadow:0 12px 34px rgba(18,42,32,.06); }
+    .eyebrow { margin:0 0 8px; font-weight:700; letter-spacing:.08em; text-transform:uppercase; font-size:.78rem; }
+    h1 { margin:.15rem 0 1rem; line-height:1.15; font-size:clamp(1.8rem,4vw,2.7rem); }
+    .lead { font-size:1.05rem; line-height:1.65; margin-bottom:28px; }
+    .field { display:grid; gap:8px; margin:0 0 22px; }
+    label { font-weight:700; line-height:1.35; }
+    .hint { margin:0; color:#5f6d66; font-size:.93rem; line-height:1.5; }
+    textarea { width:100%; min-height:92px; resize:vertical; padding:12px 14px; border:1px solid #aeb8b2; border-radius:10px; font:inherit; color:inherit; background:#fff; }
+    textarea:focus-visible, button:focus-visible, input:focus-visible { outline:3px solid #2f6d51; outline-offset:3px; }
+    .consent { display:flex; gap:10px; align-items:flex-start; margin:26px 0; line-height:1.5; }
+    .consent input { width:20px; height:20px; margin-top:2px; flex:0 0 auto; }
+    button { min-height:48px; border:0; border-radius:10px; padding:12px 18px; background:#244d3d; color:#fff; font:inherit; font-weight:700; cursor:pointer; }
+    button:disabled { opacity:.55; cursor:wait; }
+    #form-status { margin:20px 0 0; padding:14px 16px; border-radius:10px; background:#eef1ef; line-height:1.5; }
+    #form-status[data-kind="error"] { background:#f8e9e7; color:#6c251d; }
+    #form-status[data-kind="success"] { background:#e6f2eb; color:#204d35; }
+    .privacy { margin-top:26px; color:#65736c; font-size:.86rem; line-height:1.55; }
+  </style>
+</head>
+<body>
+<main>
+  <section class="card">
+    <p class="eyebrow">Studio Las</p>
+    <h1>Ankieta przed Pierwszą Wizytą Diagnostyczną</h1>
+    <p class="lead">Dzięki tym odpowiedziom Damian może przygotować się do spotkania i nie pytać ponownie o rzeczy, które możesz spokojnie opisać wcześniej. Nie musisz znać diagnozy ani używać medycznych określeń — napisz własnymi słowami.</p>
+
+    <form id="pre-pwd-form">
+      <div class="field">
+        <label for="mainGoal">Co przede wszystkim chcesz znów móc robić swobodniej?</label>
+        <p class="hint">Np. wrócić do biegania, ćwiczyć bez obawy, wejść po schodach bez ograniczeń, mieć więcej siły.</p>
+        <textarea id="mainGoal" name="mainGoal" maxlength="1000" required></textarea>
+      </div>
+
+      <div class="field">
+        <label for="whyNow">Dlaczego jest to dla Ciebie ważne właśnie teraz?</label>
+        <textarea id="whyNow" name="whyNow" maxlength="1500"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="currentBarrier">Co dziś najbardziej utrudnia Ci zrobienie kolejnego kroku?</label>
+        <textarea id="currentBarrier" name="currentBarrier" maxlength="1500"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="recentHistory">Co się wydarzyło i od kiedy zauważasz problem lub ograniczenie?</label>
+        <textarea id="recentHistory" name="recentHistory" maxlength="1500"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="previousAttempts">Czego już próbowałeś/próbowałaś i jak organizm na to reagował?</label>
+        <textarea id="previousAttempts" name="previousAttempts" maxlength="1500"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="symptomsContext">Czy są ruchy, pozycje albo sytuacje, które wyraźnie pogarszają lub poprawiają samopoczucie?</label>
+        <textarea id="symptomsContext" name="symptomsContext" maxlength="1500"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="healthContext">Czy jest coś ze zdrowia, przebytych urazów, operacji lub leczenia, o czym powinienem wiedzieć przed spotkaniem?</label>
+        <p class="hint">Wpisz tylko to, co uważasz za istotne dla bezpiecznego rozpoczęcia ruchu.</p>
+        <textarea id="healthContext" name="healthContext" maxlength="1500"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="treatmentContext">Czy obecnie jesteś pod opieką lekarza/fizjoterapeuty albo stosujesz coś, co może mieć znaczenie dla wysiłku?</label>
+        <textarea id="treatmentContext" name="treatmentContext" maxlength="1500"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="concerns">Czego najbardziej obawiasz się przy powrocie do ruchu lub aktywności?</label>
+        <textarea id="concerns" name="concerns" maxlength="1500"></textarea>
+      </div>
+
+      <div class="field">
+        <label for="firstVisitUseful">Po czym poznasz, że pierwsze spotkanie było dla Ciebie naprawdę użyteczne?</label>
+        <textarea id="firstVisitUseful" name="firstVisitUseful" maxlength="1500"></textarea>
+      </div>
+
+      <label class="consent">
+        <input type="checkbox" name="privacyAccepted" required>
+        <span>Rozumiem, że podaję informacje dobrowolnie w celu przygotowania Pierwszej Wizyty Diagnostycznej. Ankieta nie służy do nagłych sytuacji medycznych ani do stawiania diagnozy.</span>
+      </label>
+
+      <button type="submit">Wyślij odpowiedzi</button>
+    </form>
+    <p id="form-status" role="status" aria-live="polite" hidden></p>
+    <p class="privacy">Link jest jednorazowy i ma ograniczony czas ważności. Po zapisaniu odpowiedzi nie można użyć go ponownie.</p>
+  </section>
+</main>
+<script src="./studio-las-config.js"></script>
+<script type="module" src="./assets/os/pre-pwd-intake-public.js"></script>
+</body>
+</html>
