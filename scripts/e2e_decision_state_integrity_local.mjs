@@ -35,7 +35,7 @@ try {
   assert(await page.locator(".now-item").filter({ hasText: "Otwarty sygnał wymagający uwagi" }).count() === 1,
     "Teraz must expose at most one open signal");
   assert(await page.getByText("Aktywna", { exact: true }).isVisible(), "human Guidance status is missing");
-  assert(await page.getByText("Papier + aplikacja", { exact: true }).isVisible(), "human Guidance channel is missing");
+  assert(await page.locator(".guidance-record .guidance-state").getByText("Papier + aplikacja", { exact: true }).first().isVisible(), "human Guidance channel is missing");
   assert(!(await page.getByText("active · hybrid", { exact: false }).count()), "technical Guidance enums leaked to the UI");
 
   const draftGroup = page.locator(".draft-items-group").filter({ hasText: "Szkic: Kolejny spokojny kierunek" });
