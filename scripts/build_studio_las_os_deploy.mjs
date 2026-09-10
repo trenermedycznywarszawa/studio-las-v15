@@ -1,4 +1,6 @@
-import { cp, mkdir, readFile, rm, writeFile } from "node:fs/promises";
+import { execFileSync } from "node:child_process";
+import { createHash } from "node:crypto";
+import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
 
 const root = resolve(process.cwd());
@@ -36,6 +38,7 @@ async function copyFile(sourcePath, targetPath) {
   await cp(sourcePath, targetPath, { force: true });
 }
 
+assertInsideRoot(output);
 await rm(output, { recursive: true, force: true });
 await mkdir(output, { recursive: true });
 
@@ -49,6 +52,14 @@ for (const path of directories) {
   await cp(sourcePath, join(output, path), { recursive: true, force: true });
 }
 
+const staging = process.argv.includes("--staging");
+if (staging) {
+  const config = {mode: "staging", supabase: {
+    projectRef: "ulauyoqjoetjqktegeuq", url: "https://ulauyoqjoetjqktegeuq.supabase.co",
+    publishableKey: "sb_publishable_5IVYDd1a02rye5szV80sLA_UWzwjZRk"
+  }};
+  await writeFile(join(output, "studio-las-config.js"), `window.STUDIO_LAS_CONFIG = Object.freeze(${JSON.stringify(config, null, 2)});\n`);
+}
 const appHtml = await readFile(join(root, "studio-las-os.html"), "utf8");
 await writeFile(join(output, "index.html"), appHtml, "utf8");
 
@@ -65,7 +76,20 @@ const headers = `/*
 `;
 await writeFile(join(output, "_headers"), headers, "utf8");
 
+const git = (...args) => execFileSync("git", args, {cwd: root, encoding: "utf8"}).trim();
+const sha256 = data => createHash("sha256").update(data).digest("hex");
+const payloadFiles = (await readdir(output, {recursive: true, withFileTypes: true}))
+  .filter(entry => entry.isFile()).map(entry => join(entry.parentPath, entry.name)).sort();
+const hashes = {};
+for (const path of payloadFiles) hashes[relative(output, path).split(sep).join("/")] = sha256(await readFile(path));
 const manifest = {
+  sourceSha: git("rev-parse", "HEAD"),
+  sourceBranch: git("branch", "--show-current"),
+  sourceDirty: Boolean(git("status", "--porcelain", "--untracked-files=no")),
+  environment: staging ? "staging" : "source-config",
+  artifactSha256: sha256(JSON.stringify(hashes)),
+  artifactHashDefinition: "SHA256 of JSON file-hash map in sorted absolute-path order; excludes this manifest",
+  filesSha256: hashes,
   generatedAt: new Date().toISOString(),
   purpose: "Studio Las OS static application bundle",
   source: "allowlisted runtime files only",

@@ -152,7 +152,7 @@ async function advanceMfa(operation, loadingMessage) {
     const next = await operation();
     if (next.status === "verified") {
       state.mfaView = null;
-      await loadTrainer(state.activeClientId);
+      await loadTrainer(state.activeClientId).catch(handleRuntimeError);
       return;
     }
     renderMfaView(next);
@@ -185,7 +185,7 @@ async function removeMfaFactor(index) {
     const next = await state.mfa.removeFactor(index);
     if (next.status === "verified") {
       state.mfaView = null;
-      await loadTrainer(state.activeClientId);
+      await loadTrainer(state.activeClientId).catch(handleRuntimeError);
       return;
     }
     renderMfaView(next);
@@ -196,8 +196,14 @@ async function removeMfaFactor(index) {
 }
 
 async function loadTrainer(preferredClientId = state.activeClientId) {
-  renderLoading(root, "Ładowanie panelu trenera…");
-  const mfaView = await state.mfa.prepare();
+  let mfaView;
+  try { mfaView = await state.mfa.prepare(); }
+  catch (error) {
+    state.loading = false;
+    state.loadError = "Nie udało się sprawdzić dostępu. Odśwież przed kolejnym zapisem.";
+    renderTrainerState();
+    throw error;
+  }
   if (mfaView.status !== "verified") {
     renderMfaView(mfaView);
     return;

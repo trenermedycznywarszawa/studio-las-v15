@@ -176,8 +176,8 @@ export function renderFatal(root, message) {
   clear(root);
   root.append(create("main", { className: "center-screen" }, [
     create("section", { className: "fatal-card" }, [
-      create("p", { className: "eyebrow", text: "Studio Las OS" }),
-      create("h1", { text: "Produkcja zatrzymana" }),
+      create("p", { className: "eyebrow", text: "Studio Las" }),
+      create("h1", { text: "Nie udało się otworzyć panelu" }),
       create("p", { text: message }),
       create("p", { className: "muted", text: "Dane nie zostały zapisane lokalnie." })
     ])
@@ -195,9 +195,9 @@ export function renderLogin(root, { environment, onSubmit, onRecover, message = 
   clear(root);
   const environmentLabel = runtimeEnvironmentLabel(environment);
   const form = submitForm([
-    create("p", { className: "eyebrow", text: `Studio Las OS · ${environmentLabel}` }),
+    create("p", { className: "eyebrow", text: `Studio Las · ${environmentLabel}` }),
     create("h1", { text: "Bezpieczne logowanie" }),
-    create("p", { className: "muted", text: "Konto trenera lub klienta w Supabase Auth. Lokalne kody dostępu nie są obsługiwane." }),
+    create("p", { className: "muted", text: "Zaloguj się swoim adresem e-mail i hasłem." }),
     message ? statusBox(message, "error") : null,
     field("Email", "email", "email", { required: true, maxlength: 254, autocomplete: "email" }),
     field("Hasło", "password", "password", { required: true, maxlength: 1024, autocomplete: "current-password" })

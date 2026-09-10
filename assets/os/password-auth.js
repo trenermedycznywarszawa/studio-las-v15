@@ -21,16 +21,16 @@ function clearCallbackUrl() {
 function passwordSetupCopy(context) {
   if (context === "recovery") {
     return {
-      eyebrow: "Studio Las OS · odzyskiwanie dostępu",
+      eyebrow: "Studio Las · odzyskiwanie dostępu",
       title: "Ustaw nowe hasło",
-      description: "Link odzyskiwania został zweryfikowany przez Supabase. Ustaw nowe hasło, którego nie używasz w innych usługach."
+      description: "Link odzyskiwania został zweryfikowany. Ustaw nowe hasło, którego nie używasz w innych usługach."
     };
   }
 
   return {
-    eyebrow: "Studio Las OS · aktywacja konta",
+    eyebrow: "Studio Las · aktywacja konta",
     title: "Ustaw własne hasło",
-    description: "Zaproszenie zostało zweryfikowane przez Supabase. Ustaw hasło, którego nie używasz w innych usługach."
+    description: "Zaproszenie zostało zweryfikowane. Ustaw hasło, którego nie używasz w innych usługach."
   };
 }
 
@@ -182,7 +182,7 @@ export function renderRecoveryRequest(root, { onSubmit, onCancel, sent = false, 
   clear(root);
 
   const form = create("form", { className: "login-card" }, [
-    create("p", { className: "eyebrow", text: "Studio Las OS · odzyskiwanie dostępu" }),
+    create("p", { className: "eyebrow", text: "Studio Las · odzyskiwanie dostępu" }),
     create("h1", { text: "Zresetuj hasło" }),
     create("p", {
       className: "muted",
