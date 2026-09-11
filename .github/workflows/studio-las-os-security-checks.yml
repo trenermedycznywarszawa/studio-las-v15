@@ -30,6 +30,9 @@ on:
       - "scripts/test_pre_pwd_v3_definition.mjs"
       - "scripts/test_questionnaire_v3_data_foundation.mjs"
       - "scripts/test_client_questionnaire_portal.mjs"
+      - "scripts/test_questionnaire_assignment_authority.mjs"
+      - "scripts/questionnaire_definition_hash.mjs"
+      - "scripts/print_pre_pwd_v3_definition_hash.mjs"
       - "scripts/test_p1_phase_aware_ia.mjs"
       - "scripts/verify_target_preflight_read_only.py"
       - "scripts/e2e_mfa_bootstrap.mjs"
@@ -140,6 +143,12 @@ jobs:
 
       - name: Verify client questionnaire portal integration
         run: node scripts/test_client_questionnaire_portal.mjs
+
+      - name: Verify questionnaire assignment authority
+        run: node scripts/test_questionnaire_assignment_authority.mjs
+
+      - name: Compute pre-PWD v3 canonical definition hash
+        run: node scripts/print_pre_pwd_v3_definition_hash.mjs
 
       - name: Verify P1-A phase-aware trainer hierarchy
         run: node scripts/test_p1_phase_aware_ia.mjs
