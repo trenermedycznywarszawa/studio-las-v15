@@ -28,6 +28,7 @@ on:
       - "scripts/test_public_inquiry_ingress.mjs"
       - "scripts/test_session_brief.mjs"
       - "scripts/test_pre_pwd_v3_definition.mjs"
+      - "scripts/test_questionnaire_v3_data_foundation.mjs"
       - "scripts/test_p1_phase_aware_ia.mjs"
       - "scripts/verify_target_preflight_read_only.py"
       - "scripts/e2e_mfa_bootstrap.mjs"
@@ -132,6 +133,9 @@ jobs:
 
       - name: Verify pre-PWD v3 questionnaire contract
         run: node scripts/test_pre_pwd_v3_definition.mjs
+
+      - name: Verify questionnaire v3 data foundation
+        run: node scripts/test_questionnaire_v3_data_foundation.mjs
 
       - name: Verify P1-A phase-aware trainer hierarchy
         run: node scripts/test_p1_phase_aware_ia.mjs
