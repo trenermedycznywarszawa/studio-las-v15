@@ -14,6 +14,28 @@ function guidanceVideo(value) {
   try { const url = new URL(value); return url.protocol === "https:" ? create("a", {href:url.href,text:"Film do wskazówki",target:"_blank",rel:"noopener noreferrer"}) : null; }
   catch { return null; }
 }
+
+function questionnaireStatusLabel(status) {
+  return ({
+    assigned: "Do wypełnienia",
+    in_progress: "W trakcie",
+    submitted: "Wypełniona"
+  })[String(status || "")] || "Status do sprawdzenia";
+}
+
+function questionnaireList(items) {
+  return recordList(items, item => create("article", { className: "record client-record" }, [
+    create("strong", { text: item.title || "Ankieta" }),
+    create("p", { text: questionnaireStatusLabel(item.status) }),
+    create("p", {
+      className: "muted",
+      text: item.submittedAt
+        ? `Przekazano: ${formatDate(item.submittedAt)}`
+        : `Przypisano: ${formatDate(item.assignedAt)}`
+    })
+  ]), "Brak przypisanych ankiet.");
+}
+
 export function renderClient(root, model) {
   clear(root);
   const snapshot = model.snapshot;
@@ -85,6 +107,7 @@ export function renderClient(root, model) {
     ...Object.entries(model.responseStates || {}).filter(([id]) => !snapshot.homePlan?.items?.some(item=>item.id===id)).map(([id]) =>
       panel("Odpowiedź do poprzedniej wskazówki",clientResponseForm({id},model))),
     panel("Następne spotkanie i kierunek", stage),
+    snapshot.questionnaires?.length ? panel("ANKIETY", questionnaireList(snapshot.questionnaires)) : null,
     panel("Ostatnie ustalenie", agreement),
     snapshot.reports?.length ? detailsForm("Podsumowania postępu", reports) : null,
     snapshot.measurements?.length ? detailsForm("Pomiary do omówienia", measurements) : null,
