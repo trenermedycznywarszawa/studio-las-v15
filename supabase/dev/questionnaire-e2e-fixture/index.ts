@@ -7,6 +7,12 @@ const QA_CLIENT_EMAIL = "release-e2e-client-a-20260910@example.invalid";
 const MARKER_PATTERN = /^E2E-GHA-[A-Za-z0-9_-]{1,80}$/;
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
+type ActorProfile = { id: string; role: string };
+type RpcResult = { data: unknown; error: unknown };
+type QaRpcClient = {
+  rpc(name: string, args: Record<string, unknown>): Promise<RpcResult>;
+};
+
 function response(body: Record<string, unknown>, status = 200) {
   return Response.json(body, {
     status,
@@ -23,6 +29,13 @@ function randomPassword() {
   return `Qa!${Array.from(bytes, byte => byte.toString(16).padStart(2, "0")).join("")}9a`;
 }
 
+function asRecord(value: unknown, label: string): Record<string, unknown> {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error(`${label} returned an invalid payload`);
+  }
+  return value as Record<string, unknown>;
+}
+
 export default {
   fetch: withSupabase({ auth: "user" }, async (req, ctx) => {
     if (req.method !== "POST") return response({ error: "method_not_allowed" }, 405);
@@ -34,16 +47,18 @@ export default {
     }
 
     try {
-      const { data: actorProfile, error: profileError } = await ctx.supabaseAdmin
+      const { data: rawActorProfile, error: profileError } = await ctx.supabaseAdmin
         .from("profiles")
         .select("id,role")
         .eq("auth_user_id", actorAuthUserId)
         .maybeSingle();
       if (profileError) throw profileError;
+      const actorProfile = rawActorProfile as unknown as ActorProfile | null;
       if (actorProfile?.id !== QA_TRAINER_PROFILE_ID || actorProfile?.role !== "trainer") {
         return response({ error: "qa_trainer_profile_required" }, 403);
       }
 
+      const qaDb = ctx.supabase as unknown as QaRpcClient;
       const body = await req.json();
       const action = String(body?.action || "");
       const marker = String(body?.marker || "");
@@ -59,10 +74,11 @@ export default {
           throw passwordError || new Error("QA client auth identity mismatch");
         }
 
-        const { data: fixture, error: fixtureError } = await ctx.supabase.rpc("prepare_questionnaire_e2e_db", {
+        const { data: rawFixture, error: fixtureError } = await qaDb.rpc("prepare_questionnaire_e2e_db", {
           p_marker: marker
         });
         if (fixtureError) throw fixtureError;
+        const fixture = asRecord(rawFixture, "prepare_questionnaire_e2e_db");
 
         return response({
           fixture: {
@@ -77,7 +93,7 @@ export default {
         const assignmentId = String(body?.assignmentId || "");
         if (!UUID_PATTERN.test(assignmentId)) return response({ error: "invalid_assignment_id" }, 400);
 
-        const { data: cleanup, error: cleanupError } = await ctx.supabase.rpc("cleanup_questionnaire_e2e_db", {
+        const { data: cleanup, error: cleanupError } = await qaDb.rpc("cleanup_questionnaire_e2e_db", {
           p_assignment_id: assignmentId,
           p_marker: marker
         });
