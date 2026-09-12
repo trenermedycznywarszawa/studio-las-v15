@@ -29,6 +29,7 @@ on:
       - "scripts/test_session_brief.mjs"
       - "scripts/test_pre_pwd_v3_definition.mjs"
       - "scripts/test_pre_pwd_v31_definition.mjs"
+      - "scripts/test_pre_pwd_v31_renderer.mjs"
       - "scripts/test_questionnaire_v3_data_foundation.mjs"
       - "scripts/test_questionnaire_v31_health_consent.mjs"
       - "scripts/test_client_questionnaire_portal.mjs"
@@ -89,10 +90,11 @@ jobs:
           node --input-type=module --check < assets/os/inquiries-controller.js
           node --input-type=module --check < assets/os/ui/inquiries-section.js
 
-      - name: Parse pre-PWD questionnaire definitions
+      - name: Parse pre-PWD questionnaire modules
         run: |
           node --input-type=module --check < assets/os/questionnaires/pre-pwd-v3-definition.js
           node --input-type=module --check < assets/os/questionnaires/pre-pwd-v31-definition.js
+          node --input-type=module --check < assets/os/ui/pre-pwd-v31-form.js
 
       - name: Parse client access admin module
         run: node --input-type=module --check < tools/client-access-admin.js
@@ -147,6 +149,9 @@ jobs:
 
       - name: Verify pre-PWD v3.1 questionnaire contract
         run: node scripts/test_pre_pwd_v31_definition.mjs
+
+      - name: Verify pre-PWD v3.1 renderer boundary
+        run: node scripts/test_pre_pwd_v31_renderer.mjs
 
       - name: Verify questionnaire v3 data foundation
         run: node scripts/test_questionnaire_v3_data_foundation.mjs
