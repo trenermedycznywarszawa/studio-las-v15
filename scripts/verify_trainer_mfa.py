@@ -148,14 +148,19 @@ def check_browser_flow() -> None:
             f"{label} does not refresh factors after the mutation",
         )
 
-    # The trainer workspace reads were intentionally moved into TrainerWorkspaceLoader.
-    # Verify the app refreshes the MFA gate before delegating to that loader, then
-    # separately verify the loader is where protected repository reads occur.
-    # Release CI gate: this check intentionally follows the current delegation boundary.
+    # The trainer workspace reads are delegated in two layers:
+    # loadTrainer refreshes the MFA gate before calling loadTrainerWorkspace,
+    # and loadTrainerWorkspace delegates protected reads to TrainerWorkspaceLoader.
+    # This keeps the AAL2 boundary explicit even as final workspace enrichment evolves.
     load_trainer = app[app.find("async function loadTrainer"):app.find("async function selectClient")]
     factor_gate = load_trainer.find("state.mfa.prepare()")
-    loader_read = load_trainer.find("trainerLoader.load(")
-    require(0 <= factor_gate < loader_read, "trainer panel delegates protected reads before refreshing the MFA gate")
+    workspace_delegate = load_trainer.find("loadTrainerWorkspace(")
+    require(0 <= factor_gate < workspace_delegate, "trainer panel delegates protected reads before refreshing the MFA gate")
+
+    load_workspace = app[
+        app.find("async function loadTrainerWorkspace"):app.find("async function loadTrainer(")
+    ]
+    require("trainerLoader.load(" in load_workspace, "trainer workspace helper no longer delegates protected reads to the loader")
     require("state.repository.listClients()" in loader, "trainer loader no longer owns the protected client-list read")
     require("state.repository.getClientWorkspace(" in loader, "trainer loader no longer owns the protected workspace read")
     require("qrCode" in ui and "one-time-code" in ui, "TOTP enrollment/challenge UI is incomplete")
