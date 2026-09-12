@@ -17,6 +17,8 @@ on:
       - "supabase/dev/staging_browser_e2e_cleanup.sql"
       - "supabase/dev/staging_stage2_inquiry_e2e.sql"
       - "supabase/dev/staging_public_inquiry_ingress_e2e.sql"
+      - "supabase/dev/staging_questionnaire_e2e.sql"
+      - "supabase/dev/questionnaire-e2e-fixture/**"
       - "scripts/verify_studio_las_os.py"
       - "scripts/verify_access_lifecycle.py"
       - "scripts/verify_trainer_mfa.py"
@@ -37,6 +39,7 @@ on:
       - "scripts/test_questionnaire_submission_authority.mjs"
       - "scripts/test_client_questionnaire_portal.mjs"
       - "scripts/test_questionnaire_assignment_authority.mjs"
+      - "scripts/test_questionnaire_e2e_fixture.mjs"
       - "scripts/test_pre_pwd_v3_registration.mjs"
       - "scripts/test_pre_pwd_v31_registration.mjs"
       - "scripts/questionnaire_definition_hash.mjs"
@@ -46,6 +49,7 @@ on:
       - "scripts/verify_target_preflight_read_only.py"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
+      - "scripts/e2e_questionnaire_staging.mjs"
       - "scripts/e2e_stage2_staging.mjs"
       - "scripts/e2e_public_inquiry_ingress_staging.mjs"
       - "scripts/verify_browser_e2e_infra.py"
@@ -178,6 +182,9 @@ jobs:
       - name: Verify questionnaire assignment authority
         run: node scripts/test_questionnaire_assignment_authority.mjs
 
+      - name: Verify questionnaire staging E2E fixture boundary
+        run: node scripts/test_questionnaire_e2e_fixture.mjs
+
       - name: Compute pre-PWD v3 canonical definition hash
         run: node scripts/print_pre_pwd_v3_definition_hash.mjs
 
@@ -207,6 +214,9 @@ jobs:
 
       - name: Type-check public inquiry ingress Edge Function
         run: deno check supabase/functions/public-inquiry-ingress/index.ts
+
+      - name: Type-check staging questionnaire E2E fixture
+        run: deno check supabase/dev/questionnaire-e2e-fixture/index.ts
 
       - name: Verify complete static contract
         run: python3 scripts/verify_studio_las_os.py
