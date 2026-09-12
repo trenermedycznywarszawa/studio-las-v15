@@ -30,6 +30,7 @@ on:
       - "scripts/test_pre_pwd_v3_definition.mjs"
       - "scripts/test_pre_pwd_v31_definition.mjs"
       - "scripts/test_questionnaire_v3_data_foundation.mjs"
+      - "scripts/test_questionnaire_v31_health_consent.mjs"
       - "scripts/test_client_questionnaire_portal.mjs"
       - "scripts/test_questionnaire_assignment_authority.mjs"
       - "scripts/test_pre_pwd_v3_registration.mjs"
@@ -148,6 +149,9 @@ jobs:
 
       - name: Verify questionnaire v3 data foundation
         run: node scripts/test_questionnaire_v3_data_foundation.mjs
+
+      - name: Verify questionnaire v3.1 health-consent contract
+        run: node scripts/test_questionnaire_v31_health_consent.mjs
 
       - name: Verify client questionnaire portal integration
         run: node scripts/test_client_questionnaire_portal.mjs
