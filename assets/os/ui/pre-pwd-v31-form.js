@@ -17,6 +17,7 @@ export const PRE_PWD_V31_SUPPORTED_TYPES = Object.freeze([
 const HEALTH_SECTION_IDS = new Set(
   PRE_PWD_V31_DEFINITION.persistenceContract.serverDraft.healthSectionIds
 );
+const PROFILE_FIELD_IDS = new Set(PRE_PWD_V31_DEFINITION.profileFields.map(field => field.id));
 
 function asArray(value) {
   return Array.isArray(value) ? value : [];
@@ -28,20 +29,33 @@ function answerPresent(question, value) {
   return value !== undefined && value !== null && String(value).trim() !== "";
 }
 
-function allQuestions() {
-  return [
-    ...PRE_PWD_V31_DEFINITION.profileFields,
-    ...PRE_PWD_V31_DEFINITION.sections.flatMap(section => section.questions || [])
-  ];
+function questionnaireQuestions() {
+  return PRE_PWD_V31_DEFINITION.sections.flatMap(section => section.questions || []);
+}
+
+export function normalizePrePwdV31ProfileContext(input = {}) {
+  return Object.fromEntries(
+    Object.entries(input || {}).filter(([key]) => PROFILE_FIELD_IDS.has(key))
+  );
+}
+
+export function validatePrePwdV31ProfileContext(profileContext = {}) {
+  const normalized = normalizePrePwdV31ProfileContext(profileContext);
+  const missing = PRE_PWD_V31_DEFINITION.profileFields
+    .filter(question => question.required && !answerPresent(question, normalized[question.id]))
+    .map(question => question.id);
+  return { valid: missing.length === 0, missing, profileContext: normalized };
 }
 
 export function normalizePrePwdV31Answers(input = {}) {
-  const next = { ...input };
+  const next = Object.fromEntries(
+    Object.entries(input || {}).filter(([key]) => !PROFILE_FIELD_IDS.has(key))
+  );
   let changed = true;
 
   while (changed) {
     changed = false;
-    for (const question of allQuestions()) {
+    for (const question of questionnaireQuestions()) {
       if (question.visibleWhen && !evaluatePrePwdV31Visibility(question.visibleWhen, next)) {
         if (Object.prototype.hasOwnProperty.call(next, question.id)) {
           delete next[question.id];
@@ -85,7 +99,7 @@ export function visiblePrePwdV31Questions(answers = {}, { consentAccepted = fals
 export function validatePrePwdV31VisibleAnswers(answers = {}, { consentAccepted = false } = {}) {
   const normalized = normalizePrePwdV31Answers(answers);
   const missing = [];
-  for (const question of [...PRE_PWD_V31_DEFINITION.profileFields, ...visiblePrePwdV31Questions(normalized, { consentAccepted })]) {
+  for (const question of visiblePrePwdV31Questions(normalized, { consentAccepted })) {
     if (question.required && !answerPresent(question, normalized[question.id])) missing.push(question.id);
   }
   return { valid: missing.length === 0, missing, answers: normalized };
@@ -128,16 +142,16 @@ function choiceInput(question, option, answers, onAnswerChange, multi = false) {
   return create("label", { className: "check-field" }, [input, create("span", { text: option.label })]);
 }
 
-function textQuestion(question, answers, onAnswerChange, textarea = false) {
+function textQuestion(question, values, onChange, textarea = false) {
   const input = create(textarea ? "textarea" : "input", {
     name: question.id,
     type: textarea ? null : question.type === "tel" ? "tel" : "text",
     rows: textarea ? 4 : null,
     required: question.required,
-    value: answers[question.id] ?? ""
+    value: values[question.id] ?? ""
   });
-  input.value = answers[question.id] ?? "";
-  input.addEventListener("input", () => onAnswerChange(question.id, input.value));
+  input.value = values[question.id] ?? "";
+  input.addEventListener("input", () => onChange(question.id, input.value));
   return input;
 }
 
@@ -155,14 +169,14 @@ function confirmationQuestion(question, answers, onAnswerChange) {
   ]);
 }
 
-function renderQuestion(question, answers, onAnswerChange) {
+function renderQuestion(question, values, onChange) {
   if (!PRE_PWD_V31_SUPPORTED_TYPES.includes(question.type)) {
     throw new Error(`Unsupported pre-PWD v3.1 field type: ${question.type}`);
   }
 
   if (question.type === "confirmation") {
     return create("fieldset", { className: "record client-record" }, [
-      confirmationQuestion(question, answers, onAnswerChange),
+      confirmationQuestion(question, values, onChange),
       question.help ? create("p", { className: "muted", text: question.help }) : null
     ]);
   }
@@ -173,21 +187,21 @@ function renderQuestion(question, answers, onAnswerChange) {
   ];
 
   if (question.type === "short_text" || question.type === "tel") {
-    content.push(textQuestion(question, answers, onAnswerChange));
+    content.push(textQuestion(question, values, onChange));
   } else if (question.type === "long_text") {
-    content.push(textQuestion(question, answers, onAnswerChange, true));
+    content.push(textQuestion(question, values, onChange, true));
   } else if (question.type === "single_choice") {
     content.push(create("div", { className: "record-list" }, (question.options || []).map(option =>
-      choiceInput(question, option, answers, onAnswerChange)
+      choiceInput(question, option, values, onChange)
     )));
   } else if (question.type === "multi_choice") {
     content.push(create("div", { className: "record-list" }, (question.options || []).map(option =>
-      choiceInput(question, option, answers, onAnswerChange, true)
+      choiceInput(question, option, values, onChange, true)
     )));
   } else if (question.type === "scale_0_10") {
     const options = Array.from({ length: 11 }, (_, value) => ({ value: String(value), label: String(value) }));
     content.push(create("div", { className: "record-list" }, options.map(option =>
-      choiceInput(question, option, answers, onAnswerChange)
+      choiceInput(question, option, values, onChange)
     )));
     if (question.endpoints) {
       content.push(create("p", { className: "muted", text: `0 — ${question.endpoints.min} · 10 — ${question.endpoints.max}` }));
@@ -197,7 +211,7 @@ function renderQuestion(question, answers, onAnswerChange) {
   return create("fieldset", { className: "record client-record" }, content);
 }
 
-function healthGate(consentAccepted, onConsentChange) {
+function healthGate(consentAccepted, onConsentChange, note) {
   const input = create("input", { type: "checkbox", name: PRE_PWD_V31_DEFINITION.preHealthGate.id });
   input.checked = Boolean(consentAccepted);
   input.addEventListener("change", () => onConsentChange(Boolean(input.checked)));
@@ -205,17 +219,21 @@ function healthGate(consentAccepted, onConsentChange) {
     create("h3", { text: "Dane dotyczące zdrowia" }),
     create("p", { text: PRE_PWD_V31_DEFINITION.preHealthGate.label }),
     create("label", { className: "check-field" }, [input, create("span", { text: "Potwierdzam" })]),
-    create("p", { className: "muted", text: "Ta treść wymaga finalnej weryfikacji prawnej przed uruchomieniem zapisu danych zdrowotnych." })
+    note ? create("p", { className: "muted", text: note }) : null
   ]);
 }
 
 export function prePwdV31Form({
   answers = {},
+  profileContext = {},
   consentAccepted = false,
   onAnswerChange = () => {},
-  onConsentChange = () => {}
+  onProfileChange = () => {},
+  onConsentChange = () => {},
+  healthGateNote = "Ta treść wymaga finalnej weryfikacji prawnej przed uruchomieniem produkcyjnym."
 } = {}) {
-  const normalized = normalizePrePwdV31Answers(answers);
+  const normalizedAnswers = normalizePrePwdV31Answers(answers);
+  const normalizedProfile = normalizePrePwdV31ProfileContext(profileContext);
   const root = create("div", { className: "questionnaire-form" }, [
     create("div", { className: "section-heading" }, [
       create("h2", { text: "Ankieta przed pierwszą wizytą" }),
@@ -224,14 +242,13 @@ export function prePwdV31Form({
     statusBox("Formularz nie diagnozuje i nie podejmuje decyzji za trenera.", "info")
   ]);
 
-  const profile = create("section", {}, [
+  root.append(create("section", {}, [
     create("h3", { text: "Dane potrzebne do przygotowania wizyty" }),
-    ...PRE_PWD_V31_DEFINITION.profileFields.map(question => renderQuestion(question, normalized, onAnswerChange))
-  ]);
-  root.append(profile);
+    ...PRE_PWD_V31_DEFINITION.profileFields.map(question => renderQuestion(question, normalizedProfile, onProfileChange))
+  ]));
 
   for (const section of PRE_PWD_V31_DEFINITION.sections) {
-    if (section.id === "health_safety") root.append(healthGate(consentAccepted, onConsentChange));
+    if (section.id === "health_safety") root.append(healthGate(consentAccepted, onConsentChange, healthGateNote));
     if (HEALTH_SECTION_IDS.has(section.id) && !consentAccepted) {
       if (section.id === "health_safety") {
         root.append(statusBox("Pytania dotyczące zdrowia pozostają ukryte do czasu świadomego potwierdzenia powyżej.", "info"));
@@ -239,14 +256,13 @@ export function prePwdV31Form({
       continue;
     }
     const questions = (section.questions || []).filter(question =>
-      !question.visibleWhen || evaluatePrePwdV31Visibility(question.visibleWhen, normalized)
+      !question.visibleWhen || evaluatePrePwdV31Visibility(question.visibleWhen, normalizedAnswers)
     );
-    const sectionNode = create("section", { className: "questionnaire-section" }, [
+    root.append(create("section", { className: "questionnaire-section" }, [
       create("h3", { text: section.title }),
       section.clientIntro ? create("p", { className: "muted", text: section.clientIntro }) : null,
-      ...questions.map(question => renderQuestion(question, normalized, onAnswerChange))
-    ]);
-    root.append(sectionNode);
+      ...questions.map(question => renderQuestion(question, normalizedAnswers, onAnswerChange))
+    ]));
   }
 
   return root;
