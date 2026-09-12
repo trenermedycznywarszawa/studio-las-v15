@@ -75,6 +75,20 @@ assert(validation.missing.includes("q2_goal_current"));
 assert(!validation.missing.includes("q7_exertion_symptoms"),
   "Health answer cannot be required before the consent gate is accepted");
 
+const confirmationFalse = validatePrePwdV31VisibleAnswers({
+  confirm_best_knowledge: false,
+  confirm_trainer_not_doctor: false
+}, { consentAccepted: false });
+assert(confirmationFalse.missing.includes("confirm_best_knowledge"));
+assert(confirmationFalse.missing.includes("confirm_trainer_not_doctor"));
+
+const confirmationTrue = validatePrePwdV31VisibleAnswers({
+  confirm_best_knowledge: true,
+  confirm_trainer_not_doctor: true
+}, { consentAccepted: false });
+assert(!confirmationTrue.missing.includes("confirm_best_knowledge"));
+assert(!confirmationTrue.missing.includes("confirm_trainer_not_doctor"));
+
 assert.equal(PRE_PWD_V31_DEFINITION.preHealthGate.legalReviewRequired, true,
   "Renderer work must not silently clear the legal-review blocker");
 assert.equal(PRE_PWD_V31_DEFINITION.architecture.productionRelease, "blocked_pending_health_data_consent_legal_review");
