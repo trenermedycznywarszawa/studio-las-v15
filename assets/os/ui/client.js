@@ -9,6 +9,7 @@ import {
   detailsForm
 } from "./common.js";
 import { clientResponseForm } from "./client-response.js";
+import { prePwdV31Form } from "./pre-pwd-v31-form.js";
 
 function guidanceVideo(value) {
   try { const url = new URL(value); return url.protocol === "https:" ? create("a", {href:url.href,text:"Film do wskazówki",target:"_blank",rel:"noopener noreferrer"}) : null; }
@@ -23,7 +24,7 @@ function questionnaireStatusLabel(status) {
   })[String(status || "")] || "Status do sprawdzenia";
 }
 
-function questionnaireList(items) {
+function questionnaireList(items, questionnaire) {
   return recordList(items, item => create("article", { className: "record client-record" }, [
     create("strong", { text: item.title || "Ankieta" }),
     create("p", { text: questionnaireStatusLabel(item.status) }),
@@ -32,13 +33,69 @@ function questionnaireList(items) {
       text: item.submittedAt
         ? `Przekazano: ${formatDate(item.submittedAt)}`
         : `Przypisano: ${formatDate(item.assignedAt)}`
-    })
+    }),
+    ["assigned", "in_progress"].includes(item.status) && item.canOpen
+      ? button(item.status === "in_progress" ? "Kontynuuj" : "Wypełnij", {
+          onclick: () => questionnaire.open(item),
+          disabled: questionnaire.loading || questionnaire.submitting
+        })
+      : ["assigned", "in_progress"].includes(item.status)
+        ? create("p", { className: "muted", text: "Ta wersja ankiety nie jest jeszcze dostępna do bezpiecznego wypełnienia." })
+        : null
   ]), "Brak przypisanych ankiet.");
+}
+
+function activeQuestionnaire(questionnaire) {
+  if (!questionnaire?.assignment) return null;
+  if (questionnaire.loading && !questionnaire.snapshot) {
+    return panel("Ankieta przed pierwszą wizytą", statusBox("Wczytywanie ankiety…", "info"));
+  }
+
+  const content = create("div", { className: "questionnaire-workspace" }, [
+    questionnaire.error ? statusBox(questionnaire.error, "error") : null,
+    questionnaire.conflict
+      ? create("div", {}, [
+          statusBox("W innej karcie istnieje nowszy zapis. Niczego nie nadpisaliśmy.", "error"),
+          button("Wczytaj zapis z serwera", { onclick: questionnaire.onReloadFromServer })
+        ])
+      : null,
+    questionnaire.validationMissing?.length
+      ? statusBox("Uzupełnij wymagane informacje przed przekazaniem ankiety trenerowi.", "error")
+      : null,
+    questionnaire.validationInvalid?.length
+      ? statusBox("Część odpowiedzi ma nieprawidłowy format. Sprawdź formularz.", "error")
+      : null,
+    prePwdV31Form({
+      answers: questionnaire.answers,
+      profileContext: questionnaire.profileContext,
+      consentAccepted: questionnaire.consentAccepted,
+      onAnswerChange: questionnaire.onAnswerChange,
+      onProfileChange: questionnaire.onProfileChange,
+      onConsentChange: questionnaire.onConsentChange,
+      healthGateNote: "Zapis odpowiedzi zdrowotnych rozpoczyna się dopiero po świadomym potwierdzeniu."
+    }),
+    create("div", { className: "top-actions" }, [
+      button("Zamknij", { onclick: questionnaire.close, disabled: questionnaire.submitting || questionnaire.consentBusy }),
+      questionnaire.snapshot?.submissionEnabled
+        ? button("Przekaż ankietę trenerowi", {
+            onclick: questionnaire.onSubmit,
+            disabled: questionnaire.submitting || questionnaire.consentBusy || questionnaire.conflict
+          })
+        : create("p", { className: "muted", text: "Ta wersja nie jest jeszcze dopuszczona do przekazania trenerowi." })
+    ]),
+    create("p", {
+      className: "muted",
+      text: "Przekazanie jest świadomą, końcową czynnością. Dopiero wtedy trener zobaczy odpowiedzi."
+    })
+  ]);
+
+  return panel("ANKIETA · przed pierwszą wizytą", content);
 }
 
 export function renderClient(root, model) {
   clear(root);
   const snapshot = model.snapshot;
+  const questionnaire = model.questionnaire || {};
 
   const header = create("header", { className: "topbar client-topbar" }, [
     create("div", {}, [
@@ -107,7 +164,8 @@ export function renderClient(root, model) {
     ...Object.entries(model.responseStates || {}).filter(([id]) => !snapshot.homePlan?.items?.some(item=>item.id===id)).map(([id]) =>
       panel("Odpowiedź do poprzedniej wskazówki",clientResponseForm({id},model))),
     panel("Następne spotkanie i kierunek", stage),
-    snapshot.questionnaires?.length ? panel("ANKIETY", questionnaireList(snapshot.questionnaires)) : null,
+    snapshot.questionnaires?.length ? panel("ANKIETY", questionnaireList(snapshot.questionnaires, questionnaire)) : null,
+    activeQuestionnaire(questionnaire),
     panel("Ostatnie ustalenie", agreement),
     snapshot.reports?.length ? detailsForm("Podsumowania postępu", reports) : null,
     snapshot.measurements?.length ? detailsForm("Pomiary do omówienia", measurements) : null,
