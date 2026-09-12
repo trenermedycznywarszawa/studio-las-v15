@@ -4,6 +4,8 @@ import { PRE_PWD_V31_DEFINITION } from "../assets/os/questionnaires/pre-pwd-v31-
 import {
   PRE_PWD_V31_SUPPORTED_TYPES,
   normalizePrePwdV31Answers,
+  normalizePrePwdV31ProfileContext,
+  validatePrePwdV31ProfileContext,
   validatePrePwdV31VisibleAnswers,
   visiblePrePwdV31Questions
 } from "../assets/os/ui/pre-pwd-v31-form.js";
@@ -22,7 +24,27 @@ assert.doesNotMatch(rendererSource, /localStorage|sessionStorage|indexedDB/i,
 assert.doesNotMatch(rendererSource, /supabase|\/rest\/v1|rpc\(|fetch\(/i,
   "Questionnaire renderer must not own backend persistence");
 assert.doesNotMatch(rendererSource, /Przekaż ankietę trenerowi|type:\s*["']submit["']/i,
-  "Renderer phase must not expose a submit path before persistence/legal gate is ready");
+  "Renderer must remain presentation-only; conscious submission belongs to the controller boundary");
+
+const separated = normalizePrePwdV31Answers({
+  age: "44",
+  emergency_contact_name: "Test",
+  q2_goal_current: "yes"
+});
+assert.equal(separated.age, undefined, "Profile age must never enter questionnaire answers");
+assert.equal(separated.emergency_contact_name, undefined, "Emergency contact must never enter questionnaire answers");
+assert.equal(separated.q2_goal_current, "yes");
+
+const profile = normalizePrePwdV31ProfileContext({
+  age: "44",
+  emergency_contact_name: "Osoba Testowa",
+  emergency_contact_phone: "+48123456789",
+  emergency_contact_relation: "Bliska osoba",
+  q2_goal_current: "yes"
+});
+assert.equal(profile.q2_goal_current, undefined, "Questionnaire answers must never enter profile context");
+assert.equal(validatePrePwdV31ProfileContext(profile).valid, true);
+assert(validatePrePwdV31ProfileContext({}).missing.includes("age"));
 
 const noPain = normalizePrePwdV31Answers({
   q13_pain: "no",
@@ -70,8 +92,8 @@ assert.deepEqual(capped.q4_main_barriers, ["pain", "stiffness"],
 
 const validation = validatePrePwdV31VisibleAnswers({}, { consentAccepted: false });
 assert.equal(validation.valid, false);
-assert(validation.missing.includes("age"));
 assert(validation.missing.includes("q2_goal_current"));
+assert(!validation.missing.includes("age"), "Profile requirements belong to the separate profile validator");
 assert(!validation.missing.includes("q7_exertion_symptoms"),
   "Health answer cannot be required before the consent gate is accepted");
 
