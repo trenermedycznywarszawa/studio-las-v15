@@ -151,15 +151,18 @@ def check_browser_flow() -> None:
     # The trainer workspace reads are delegated in two layers:
     # loadTrainer refreshes the MFA gate before calling loadTrainerWorkspace,
     # and loadTrainerWorkspace delegates protected reads to TrainerWorkspaceLoader.
-    # This keeps the AAL2 boundary explicit even as final workspace enrichment evolves.
-    load_trainer = app[app.find("async function loadTrainer"):app.find("async function selectClient")]
+    # Use exact function signatures so loadTrainerWorkspace is not mistaken for loadTrainer.
+    load_trainer_start = app.find("async function loadTrainer(")
+    select_client_start = app.find("async function selectClient(")
+    require(0 <= load_trainer_start < select_client_start, "trainer load function boundary is missing")
+    load_trainer = app[load_trainer_start:select_client_start]
     factor_gate = load_trainer.find("state.mfa.prepare()")
     workspace_delegate = load_trainer.find("loadTrainerWorkspace(")
     require(0 <= factor_gate < workspace_delegate, "trainer panel delegates protected reads before refreshing the MFA gate")
 
-    load_workspace = app[
-        app.find("async function loadTrainerWorkspace"):app.find("async function loadTrainer(")
-    ]
+    load_workspace_start = app.find("async function loadTrainerWorkspace(")
+    require(0 <= load_workspace_start < load_trainer_start, "trainer workspace helper boundary is missing")
+    load_workspace = app[load_workspace_start:load_trainer_start]
     require("trainerLoader.load(" in load_workspace, "trainer workspace helper no longer delegates protected reads to the loader")
     require("state.repository.listClients()" in loader, "trainer loader no longer owns the protected client-list read")
     require("state.repository.getClientWorkspace(" in loader, "trainer loader no longer owns the protected workspace read")
