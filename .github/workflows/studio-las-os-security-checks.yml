@@ -28,12 +28,14 @@ on:
       - "scripts/test_public_inquiry_ingress.mjs"
       - "scripts/test_session_brief.mjs"
       - "scripts/test_pre_pwd_v3_definition.mjs"
+      - "scripts/test_pre_pwd_v31_definition.mjs"
       - "scripts/test_questionnaire_v3_data_foundation.mjs"
       - "scripts/test_client_questionnaire_portal.mjs"
       - "scripts/test_questionnaire_assignment_authority.mjs"
       - "scripts/test_pre_pwd_v3_registration.mjs"
       - "scripts/questionnaire_definition_hash.mjs"
       - "scripts/print_pre_pwd_v3_definition_hash.mjs"
+      - "scripts/print_pre_pwd_v31_definition_hash.mjs"
       - "scripts/test_p1_phase_aware_ia.mjs"
       - "scripts/verify_target_preflight_read_only.py"
       - "scripts/e2e_mfa_bootstrap.mjs"
@@ -85,8 +87,10 @@ jobs:
           node --input-type=module --check < assets/os/inquiries-controller.js
           node --input-type=module --check < assets/os/ui/inquiries-section.js
 
-      - name: Parse pre-PWD v3 questionnaire definition
-        run: node --input-type=module --check < assets/os/questionnaires/pre-pwd-v3-definition.js
+      - name: Parse pre-PWD questionnaire definitions
+        run: |
+          node --input-type=module --check < assets/os/questionnaires/pre-pwd-v3-definition.js
+          node --input-type=module --check < assets/os/questionnaires/pre-pwd-v31-definition.js
 
       - name: Parse client access admin module
         run: node --input-type=module --check < tools/client-access-admin.js
@@ -139,6 +143,9 @@ jobs:
       - name: Verify pre-PWD v3 questionnaire contract
         run: node scripts/test_pre_pwd_v3_definition.mjs
 
+      - name: Verify pre-PWD v3.1 questionnaire contract
+        run: node scripts/test_pre_pwd_v31_definition.mjs
+
       - name: Verify questionnaire v3 data foundation
         run: node scripts/test_questionnaire_v3_data_foundation.mjs
 
@@ -150,6 +157,9 @@ jobs:
 
       - name: Compute pre-PWD v3 canonical definition hash
         run: node scripts/print_pre_pwd_v3_definition_hash.mjs
+
+      - name: Compute pre-PWD v3.1 canonical definition hash
+        run: node scripts/print_pre_pwd_v31_definition_hash.mjs
 
       - name: Verify pre-PWD v3 draft registration
         run: node scripts/test_pre_pwd_v3_registration.mjs
