@@ -34,6 +34,7 @@ on:
       - "scripts/test_client_questionnaire_portal.mjs"
       - "scripts/test_questionnaire_assignment_authority.mjs"
       - "scripts/test_pre_pwd_v3_registration.mjs"
+      - "scripts/test_pre_pwd_v31_registration.mjs"
       - "scripts/questionnaire_definition_hash.mjs"
       - "scripts/print_pre_pwd_v3_definition_hash.mjs"
       - "scripts/print_pre_pwd_v31_definition_hash.mjs"
@@ -167,6 +168,9 @@ jobs:
 
       - name: Verify pre-PWD v3 draft registration
         run: node scripts/test_pre_pwd_v3_registration.mjs
+
+      - name: Verify pre-PWD v3.1 candidate registration
+        run: node scripts/test_pre_pwd_v31_registration.mjs
 
       - name: Verify P1-A phase-aware trainer hierarchy
         run: node scripts/test_p1_phase_aware_ia.mjs
