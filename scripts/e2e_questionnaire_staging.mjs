@@ -291,8 +291,10 @@ async function run() {
       "Current questionnaire did not add exactly one submitted history entry");
 
     await trainerPage.getByRole("button", { name: "Odśwież" }).click();
+    // The previous brief remains visible while the async workspace refresh is in flight.
+    // Wait for a fact unique to this submission instead of treating the old visible panel as refreshed.
+    await trainerPage.getByText(RUN_MARKER, { exact: true }).waitFor({ state: "visible", timeout: 20_000 });
     const briefHeading = trainerPage.getByRole("heading", { name: "PRZED WIZYTĄ — 60 SEKUND" });
-    await briefHeading.waitFor({ state: "visible", timeout: 20_000 });
     const briefPanel = briefHeading.locator("xpath=ancestor::section[contains(@class,'panel')]");
     const briefText = await briefPanel.innerText();
     assert(briefText.includes(RUN_MARKER), "Trainer brief did not switch to the current submitted assignment");
