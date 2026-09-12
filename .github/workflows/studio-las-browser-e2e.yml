@@ -14,6 +14,7 @@ on:
       - "supabase/dev/staging_stage2_inquiry_e2e.sql"
       - "supabase/dev/staging_public_inquiry_ingress_e2e.sql"
       - "supabase/dev/staging_questionnaire_e2e.sql"
+      - "supabase/dev/questionnaire-e2e-fixture/**"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
       - "scripts/e2e_questionnaire_staging.mjs"
