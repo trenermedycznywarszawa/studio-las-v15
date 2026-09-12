@@ -9,14 +9,17 @@ import {
   detailsForm
 } from "./common.js";
 import { clientResponseForm } from "./client-response.js";
+import { activeQuestionnaire, questionnaireList } from "./client-questionnaires.js";
 
 function guidanceVideo(value) {
   try { const url = new URL(value); return url.protocol === "https:" ? create("a", {href:url.href,text:"Film do wskazówki",target:"_blank",rel:"noopener noreferrer"}) : null; }
   catch { return null; }
 }
+
 export function renderClient(root, model) {
   clear(root);
   const snapshot = model.snapshot;
+  const questionnaire = model.questionnaire || {};
 
   const header = create("header", { className: "topbar client-topbar" }, [
     create("div", {}, [
@@ -33,6 +36,7 @@ export function renderClient(root, model) {
     root.append(header, statusBox(model.error || "Ładowanie Twoich ustaleń…", model.error ? "error" : "info"));
     return;
   }
+
   const stage = create("div", { className: "client-stage" }, [
     create("strong", { text: snapshot.client.stageLabel }),
     create("p", { text: snapshot.client.goal || "Kierunek procesu omawiasz z trenerem." }),
@@ -85,6 +89,8 @@ export function renderClient(root, model) {
     ...Object.entries(model.responseStates || {}).filter(([id]) => !snapshot.homePlan?.items?.some(item=>item.id===id)).map(([id]) =>
       panel("Odpowiedź do poprzedniej wskazówki",clientResponseForm({id},model))),
     panel("Następne spotkanie i kierunek", stage),
+    snapshot.questionnaires?.length ? panel("ANKIETY", questionnaireList(snapshot.questionnaires, questionnaire)) : null,
+    activeQuestionnaire(questionnaire),
     panel("Ostatnie ustalenie", agreement),
     snapshot.reports?.length ? detailsForm("Podsumowania postępu", reports) : null,
     snapshot.measurements?.length ? detailsForm("Pomiary do omówienia", measurements) : null,

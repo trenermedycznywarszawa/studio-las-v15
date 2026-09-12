@@ -1,6 +1,7 @@
 import { TrainerWorkspaceLoader } from "./trainer-workspace-loader.js";
 import { collectWorkspaceSignals } from "./trainer-signals.js";
-import { ClientPortalController } from "./client-portal-controller.js";
+import { loadClientAppRuntime } from "./client-app-runtime.js";
+import { QuestionnaireApi } from "./questionnaire-api.js";
 import { guidanceActions } from "./guidance-actions.js";
 import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
 import { StudioLasRepository, SupabaseAuth } from "./data.js";
@@ -9,16 +10,18 @@ import { withoutReviewedSignals } from "./decision-support.js";
 import { consumePasswordCallback, renderPasswordSetup, renderRecoveryRequest, requestPasswordRecovery, updatePassword } from "./password-auth.js";
 import { renderFatal, renderLoading, renderLogin } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
-import { renderClient } from "./ui/client.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
 import { savePwdWorkflow } from "./pwd.js";
 import { renderTrainerMfa } from "./ui/trainer-mfa.js";
 import { createRuntimeFeedback } from "./ui/runtime-feedback.js";
+
 const root = document.getElementById("app");
 const state = {
   config: null,
   auth: null,
   repository: null,
+  questionnaireApi: null,
+  clientQuestionnaire: null,
   inquiryController: null,
   mfa: null,
   mfaView: null,
@@ -32,11 +35,13 @@ const state = {
 
 const { announce, withWrite, reset: resetFeedback } = createRuntimeFeedback(() => state.config?.mode);
 const trainerLoader = new TrainerWorkspaceLoader(state, renderTrainerState);
+
 async function logout() {
   trainerLoader.reset();
   resetFeedback();
   state.clientPortal?.reset();
   state.clientPortal = null;
+  state.clientQuestionnaire?.reset();
   state.mfa?.clear();
   state.inquiryController?.reset();
   renderLoading(root, "Wylogowywanie…");
@@ -107,19 +112,16 @@ async function loadAuthenticatedRuntime() {
   state.profile = await state.auth.getProfile();
 
   if (state.profile.role === "trainer") {
-    if (state.auth.getAuthenticatorAssuranceLevel() !== "aal2") {
-      state.auth.suspendSessionPersistence();
-    }
+    if (state.auth.getAuthenticatorAssuranceLevel() !== "aal2") state.auth.suspendSessionPersistence();
     await enforceTrainerMfa();
     return;
   }
 
   if (state.profile.role === "client") {
-    await loadClientPortal();
+    await loadClientAppRuntime(root, state, { onLogout: () => logout().catch(handleRuntimeError) });
     state.auth.persistCurrentSession();
     return;
   }
-
   throw new Error("Unsupported profile role");
 }
 
@@ -163,10 +165,7 @@ async function advanceMfa(operation, loadingMessage) {
 }
 
 async function enforceTrainerMfa() {
-  await advanceMfa(
-    () => state.mfa.prepare(),
-    "Sprawdzanie drugiego składnika…"
-  );
+  await advanceMfa(() => state.mfa.prepare(), "Sprawdzanie drugiego składnika…");
 }
 
 async function showMfaManagement() {
@@ -195,6 +194,16 @@ async function removeMfaFactor(index) {
   }
 }
 
+async function loadQuestionnaireSubmissionsForTrainer(workspace, clientId) {
+  if (!workspace || !clientId) return;
+  const submissions = await state.questionnaireApi.trainerSubmissions(clientId);
+  workspace.questionnaireSubmissions = Array.isArray(submissions) ? submissions : [];
+}
+
+async function loadTrainerWorkspace(clientId, refreshClients = false) {
+  await trainerLoader.load(clientId, refreshClients, loadQuestionnaireSubmissionsForTrainer);
+}
+
 async function loadTrainer(preferredClientId = state.activeClientId) {
   let mfaView;
   try { mfaView = await state.mfa.prepare(); }
@@ -209,21 +218,20 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
-  await trainerLoader.load(preferredClientId, true);
+  await loadTrainerWorkspace(preferredClientId, true);
   await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
   renderTrainerState();
 }
 
 async function selectClient(clientId) {
-  await trainerLoader.load(clientId);
+  await loadTrainerWorkspace(clientId);
 }
 
 function renderTrainerState() {
   const generatedSignals = collectWorkspaceSignals(state.workspace || {});
   const attentionSignals = withoutReviewedSignals(generatedSignals, state.workspace?.signalReviews);
-
   const clientId = state.activeClientId;
-  const reloadWorkspace = () => trainerLoader.load(clientId);
+  const reloadWorkspace = () => loadTrainerWorkspace(clientId);
 
   renderTrainer(root, {
     environment: state.config?.mode,
@@ -241,13 +249,11 @@ function renderTrainerState() {
     onManageMfa: () => showMfaManagement(),
     onCreateClient: async values => {
       await withWrite("Dodawanie klienta", () =>
-        state.repository.createClient(state.profile.id, values), result => trainerLoader.load(result?.id || "", true)
+        state.repository.createClient(state.profile.id, values), result => loadTrainerWorkspace(result?.id || "", true)
       );
     },
     onSavePwd: async values => {
-      await withWrite("Zapisywanie PWD", () =>
-        savePwdWorkflow(state.repository, state.activeClientId, values)
-      , reloadWorkspace);
+      await withWrite("Zapisywanie PWD", () => savePwdWorkflow(state.repository, state.activeClientId, values), reloadWorkspace);
     },
     onSaveSession: async values => {
       await withWrite("Zapisywanie sesji", () => state.repository.saveSession(state.activeClientId, values), reloadWorkspace);
@@ -266,8 +272,8 @@ function renderTrainerState() {
     },
     onSaveHomePlanItem: async (homePlanId, values) => {
       await withWrite("Zapisywanie zadania", () =>
-        state.repository.saveHomePlanItem(state.activeClientId, homePlanId, values)
-      , reloadWorkspace);
+        state.repository.saveHomePlanItem(state.activeClientId, homePlanId, values), reloadWorkspace
+      );
     },
     ...guidanceActions(state.repository, state.activeClientId, withWrite, reloadWorkspace),
     onPublishHomePlan: async homePlanId => {
@@ -278,13 +284,13 @@ function renderTrainerState() {
     },
     onConfirmHomePlanPaperRetirement: async homePlanId => {
       await withWrite("Potwierdzanie wycofania poprzedniej kopii papierowej", () =>
-        state.repository.confirmHomePlanPaperRetirement(homePlanId)
-      , reloadWorkspace);
+        state.repository.confirmHomePlanPaperRetirement(homePlanId), reloadWorkspace
+      );
     },
     onRecordGuidanceDelivery: async (homePlanId, deliveryStatus) => {
       await withWrite("Zapisywanie dostarczenia", () =>
-        state.repository.recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus)
-      , reloadWorkspace);
+        state.repository.recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus), reloadWorkspace
+      );
     },
     onSaveCycleDecision: async values => {
       await withWrite("Zapisywanie decyzji co dalej", () => state.repository.saveCycleDecision(
@@ -301,8 +307,8 @@ function renderTrainerState() {
       () => state.repository.transitionReport(report, action, reason), reloadWorkspace),
     onSaveReport: async values => {
       await withWrite("Zapisywanie raportu", () =>
-        state.repository.saveReport(state.profile.id, state.activeClientId, values)
-      , reloadWorkspace);
+        state.repository.saveReport(state.profile.id, state.activeClientId, values), reloadWorkspace
+      );
     }
   });
 
@@ -312,17 +318,6 @@ function renderTrainerState() {
     loadTrainer,
     onError: handleRuntimeError
   });
-}
-
-async function loadClientPortal() {
-  state.clientPortal ||= new ClientPortalController(state.repository, view => renderClient(root, {
-    ...view, profile: state.profile,
-    onReload: () => state.clientPortal.load(),
-    onLogout: () => logout().catch(handleRuntimeError),
-    onSaveCheckin: (id, text) => state.clientPortal.submit(id, text),
-    onRetryResponse: id => state.clientPortal.retry(id)
-  }));
-  await state.clientPortal.load();
 }
 
 function handleRuntimeError(error) {
@@ -341,6 +336,7 @@ async function initialize() {
     state.config = getRuntimeConfig();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
+    state.questionnaireApi = new QuestionnaireApi(state.repository);
     state.inquiryController = new InquiryController(state.config, state.auth, withWrite);
     state.mfa = new TrainerMfaController(state.auth);
     const callback = consumePasswordCallback(state.auth);
@@ -367,19 +363,16 @@ async function initialize() {
       showPasswordSetup(pendingContext);
       return;
     }
-
     await loadAuthenticatedRuntime();
   } catch (error) {
     if (error?.name === "RuntimeConfigurationError") {
       renderFatal(root, error.message);
       return;
     }
-
     if (Number(error?.status || 0) === 401) {
       showLogin(userSafeError(error, state.config?.mode));
       return;
     }
-
     renderFatal(root, userSafeError(error, state.config?.mode));
   }
 }

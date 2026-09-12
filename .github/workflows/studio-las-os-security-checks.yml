@@ -17,6 +17,8 @@ on:
       - "supabase/dev/staging_browser_e2e_cleanup.sql"
       - "supabase/dev/staging_stage2_inquiry_e2e.sql"
       - "supabase/dev/staging_public_inquiry_ingress_e2e.sql"
+      - "supabase/dev/staging_questionnaire_e2e.sql"
+      - "supabase/dev/questionnaire-e2e-fixture/**"
       - "scripts/verify_studio_las_os.py"
       - "scripts/verify_access_lifecycle.py"
       - "scripts/verify_trainer_mfa.py"
@@ -27,10 +29,27 @@ on:
       - "scripts/test_stage2_production_runtime.mjs"
       - "scripts/test_public_inquiry_ingress.mjs"
       - "scripts/test_session_brief.mjs"
+      - "scripts/test_pre_pwd_v3_definition.mjs"
+      - "scripts/test_pre_pwd_v31_definition.mjs"
+      - "scripts/test_pre_pwd_v31_renderer.mjs"
+      - "scripts/test_pre_pwd_v31_trainer_brief.mjs"
+      - "scripts/test_questionnaire_v3_data_foundation.mjs"
+      - "scripts/test_questionnaire_v31_health_consent.mjs"
+      - "scripts/test_questionnaire_response_draft_authority.mjs"
+      - "scripts/test_questionnaire_submission_authority.mjs"
+      - "scripts/test_client_questionnaire_portal.mjs"
+      - "scripts/test_questionnaire_assignment_authority.mjs"
+      - "scripts/test_questionnaire_e2e_fixture.mjs"
+      - "scripts/test_pre_pwd_v3_registration.mjs"
+      - "scripts/test_pre_pwd_v31_registration.mjs"
+      - "scripts/questionnaire_definition_hash.mjs"
+      - "scripts/print_pre_pwd_v3_definition_hash.mjs"
+      - "scripts/print_pre_pwd_v31_definition_hash.mjs"
       - "scripts/test_p1_phase_aware_ia.mjs"
       - "scripts/verify_target_preflight_read_only.py"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
+      - "scripts/e2e_questionnaire_staging.mjs"
       - "scripts/e2e_stage2_staging.mjs"
       - "scripts/e2e_public_inquiry_ingress_staging.mjs"
       - "scripts/verify_browser_e2e_infra.py"
@@ -77,6 +96,13 @@ jobs:
           node --input-type=module --check < assets/os/inquiries-data.js
           node --input-type=module --check < assets/os/inquiries-controller.js
           node --input-type=module --check < assets/os/ui/inquiries-section.js
+
+      - name: Parse pre-PWD questionnaire modules
+        run: |
+          node --input-type=module --check < assets/os/questionnaires/pre-pwd-v3-definition.js
+          node --input-type=module --check < assets/os/questionnaires/pre-pwd-v31-definition.js
+          node --input-type=module --check < assets/os/questionnaires/pre-pwd-v31-trainer-brief.js
+          node --input-type=module --check < assets/os/ui/pre-pwd-v31-form.js
 
       - name: Parse client access admin module
         run: node --input-type=module --check < tools/client-access-admin.js
@@ -126,6 +152,51 @@ jobs:
       - name: Verify Trainer Session Brief composition
         run: node scripts/test_session_brief.mjs
 
+      - name: Verify pre-PWD v3 questionnaire contract
+        run: node scripts/test_pre_pwd_v3_definition.mjs
+
+      - name: Verify pre-PWD v3.1 questionnaire contract
+        run: node scripts/test_pre_pwd_v31_definition.mjs
+
+      - name: Verify pre-PWD v3.1 renderer boundary
+        run: node scripts/test_pre_pwd_v31_renderer.mjs
+
+      - name: Verify pre-PWD v3.1 deterministic trainer brief
+        run: node scripts/test_pre_pwd_v31_trainer_brief.mjs
+
+      - name: Verify questionnaire v3 data foundation
+        run: node scripts/test_questionnaire_v3_data_foundation.mjs
+
+      - name: Verify questionnaire v3.1 health-consent contract
+        run: node scripts/test_questionnaire_v31_health_consent.mjs
+
+      - name: Verify questionnaire draft authority
+        run: node scripts/test_questionnaire_response_draft_authority.mjs
+
+      - name: Verify questionnaire conscious submission authority
+        run: node scripts/test_questionnaire_submission_authority.mjs
+
+      - name: Verify client questionnaire portal integration
+        run: node scripts/test_client_questionnaire_portal.mjs
+
+      - name: Verify questionnaire assignment authority
+        run: node scripts/test_questionnaire_assignment_authority.mjs
+
+      - name: Verify questionnaire staging E2E fixture boundary
+        run: node scripts/test_questionnaire_e2e_fixture.mjs
+
+      - name: Compute pre-PWD v3 canonical definition hash
+        run: node scripts/print_pre_pwd_v3_definition_hash.mjs
+
+      - name: Compute pre-PWD v3.1 canonical definition hash
+        run: node scripts/print_pre_pwd_v31_definition_hash.mjs
+
+      - name: Verify pre-PWD v3 draft registration
+        run: node scripts/test_pre_pwd_v3_registration.mjs
+
+      - name: Verify pre-PWD v3.1 candidate registration
+        run: node scripts/test_pre_pwd_v31_registration.mjs
+
       - name: Verify P1-A phase-aware trainer hierarchy
         run: node scripts/test_p1_phase_aware_ia.mjs
 
@@ -143,6 +214,9 @@ jobs:
 
       - name: Type-check public inquiry ingress Edge Function
         run: deno check supabase/functions/public-inquiry-ingress/index.ts
+
+      - name: Type-check staging questionnaire E2E fixture
+        run: deno check supabase/dev/questionnaire-e2e-fixture/index.ts
 
       - name: Verify complete static contract
         run: python3 scripts/verify_studio_las_os.py
