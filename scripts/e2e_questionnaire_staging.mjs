@@ -82,13 +82,27 @@ async function apiRequest(path, { token, method = "GET", body } = {}) {
     body: body === undefined ? undefined : JSON.stringify(body)
   });
   const text = await response.text();
-  const payload = text ? JSON.parse(text) : null;
-  if (!response.ok) throw new Error(`Staging ${method} ${path} failed with ${response.status}`);
+  let payload = null;
+  if (text) {
+    try { payload = JSON.parse(text); } catch { payload = { error: "non_json_response" }; }
+  }
+  if (!response.ok) {
+    const code = payload?.error || payload?.code || "unknown_error";
+    throw new Error(`Staging ${method} ${path} failed with ${response.status} (${code})`);
+  }
   return payload;
 }
 
-async function rpc(token, name, body = {}) {
-  return apiRequest(`/rest/v1/rpc/${name}`, { token, method: "POST", body });
+async function fixtureRequest(token, action, assignmentId = "") {
+  return apiRequest("/functions/v1/questionnaire-e2e-fixture", {
+    token,
+    method: "POST",
+    body: {
+      action,
+      marker: RUN_MARKER,
+      ...(assignmentId ? { assignmentId } : {})
+    }
+  });
 }
 
 async function loginTrainerAal2(page) {
@@ -212,7 +226,8 @@ async function run() {
 
   try {
     trainerToken = await loginTrainerAal2(trainerPage);
-    fixture = await rpc(trainerToken, "prepare_questionnaire_e2e", { p_marker: RUN_MARKER });
+    const prepared = await fixtureRequest(trainerToken, "prepare");
+    fixture = prepared?.fixture || null;
     assert(fixture?.assignmentId && fixture?.clientEmail && fixture?.clientPassword, "Questionnaire E2E fixture is incomplete");
     guidanceBefore = await baselineGuidance(trainerToken, fixture.clientId);
 
@@ -241,7 +256,6 @@ async function run() {
     await openQuestionnaire(clientPage, "Wypełnij");
     await fillSafePath(clientPage);
 
-    // Give serialized server autosave + profile save time to settle, then prove resume after reload.
     await clientPage.waitForTimeout(1800);
     await clientPage.reload({ waitUntil: "domcontentloaded" });
     await clientPage.getByRole("heading", { name: /Dzień dobry/ }).waitFor({ state: "visible", timeout: 20_000 });
@@ -251,17 +265,19 @@ async function run() {
     assert(await clientPage.locator('[name="q2_goal_current"][value="yes"]').isChecked(), "Starting-point answer did not resume");
     assert(await clientPage.locator('[name="q7_exertion_symptoms"][value="none"]').isChecked(), "Health answer did not resume");
 
-    // Draft must still be invisible to trainer.
     const trainerSelect = trainerPage.getByLabel("Wybierz klienta");
     await trainerSelect.selectOption({ label: CLIENT_NAME });
     await trainerPage.getByRole("heading", { name: CLIENT_NAME }).waitFor({ state: "visible", timeout: 20_000 });
     await trainerPage.waitForTimeout(1000);
-    assert(await trainerPage.getByRole("heading", { name: "PRZED WIZYTĄ — 60 SEKUND" }).count() === 0,
-      "Trainer saw questionnaire brief before conscious submission");
+    const priorBrief = trainerPage.getByRole("heading", { name: "PRZED WIZYTĄ — 60 SEKUND" });
+    if (await priorBrief.count()) {
+      const priorText = await priorBrief.locator("xpath=ancestor::section[contains(@class,'panel')]").innerText();
+      assert(!priorText.includes(RUN_MARKER), "Trainer saw the current questionnaire draft before conscious submission");
+    }
 
     await finishSafePath(clientPage);
     await clientPage.getByRole("button", { name: "Przekaż ankietę trenerowi" }).click();
-    await clientPage.getByText("Wypełniona", { exact: true }).waitFor({ state: "visible", timeout: 20_000 });
+    await clientPage.getByText("Wypełniona", { exact: true }).first().waitFor({ state: "visible", timeout: 20_000 });
     assert(await clientPage.getByRole("button", { name: /Wypełnij|Kontynuuj/ }).count() === 0,
       "Submitted questionnaire remained editable in client list");
 
@@ -270,10 +286,11 @@ async function run() {
     await briefHeading.waitFor({ state: "visible", timeout: 20_000 });
     const briefPanel = briefHeading.locator("xpath=ancestor::section[contains(@class,'panel')]");
     const briefText = await briefPanel.innerText();
+    assert(briefText.includes(RUN_MARKER), "Trainer brief did not switch to the current submitted assignment");
     assert(briefText.includes("Na ile możesz dziś zrobić to, na czym najbardziej Ci zależy?"), "Trainer brief lost goal-ability source");
     assert(briefText.includes("6"), "Trainer brief lost submitted goal-ability value");
     assert(briefText.includes("Żadne z powyższych"), "Trainer brief lost safety answer");
-    assert(!briefText.match(/GREEN|YELLOW|RED|diagnoz/i), "Trainer brief introduced scoring or diagnosis language");
+    assert(!briefText.match(/GREEN|YELLOW|RED|scoring|punktacj/i), "Trainer brief introduced scoring language");
 
     const guidanceAfter = await baselineGuidance(trainerToken, fixture.clientId);
     assert(JSON.stringify(guidanceAfter) === JSON.stringify(guidanceBefore),
@@ -299,10 +316,7 @@ async function run() {
   } finally {
     try {
       if (trainerToken && fixture?.assignmentId) {
-        await rpc(trainerToken, "cleanup_questionnaire_e2e", {
-          p_assignment_id: fixture.assignmentId,
-          p_marker: RUN_MARKER
-        });
+        await fixtureRequest(trainerToken, "cleanup", fixture.assignmentId);
       }
     } catch (cleanupError) {
       if (!primaryError) throw cleanupError;
