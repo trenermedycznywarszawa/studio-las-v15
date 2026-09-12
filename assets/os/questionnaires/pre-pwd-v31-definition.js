@@ -86,7 +86,7 @@ for (const question of pregnancySection.questions.slice(1)) {
     : pregnancyApplies;
 }
 
-const privacySection = findSection("privacy_confirmations");
+const privacySection = findSection("confirmation_privacy");
 privacySection.questions = privacySection.questions.filter(question => question.id !== "consent_health_data");
 privacySection.clientIntro = "Na końcu potwierdzasz poprawność informacji i rozumienie roli trenera. Zgoda dotycząca danych zdrowotnych jest pobierana wcześniej, przed ich pierwszym zapisem.";
 
