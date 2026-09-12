@@ -1,6 +1,8 @@
 import { TrainerWorkspaceLoader } from "./trainer-workspace-loader.js";
 import { collectWorkspaceSignals } from "./trainer-signals.js";
 import { ClientPortalController } from "./client-portal-controller.js";
+import { ClientQuestionnaireController } from "./client-questionnaire-controller.js";
+import { QuestionnaireApi } from "./questionnaire-api.js";
 import { guidanceActions } from "./guidance-actions.js";
 import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
 import { StudioLasRepository, SupabaseAuth } from "./data.js";
@@ -19,6 +21,8 @@ const state = {
   config: null,
   auth: null,
   repository: null,
+  questionnaireApi: null,
+  clientQuestionnaire: null,
   inquiryController: null,
   mfa: null,
   mfaView: null,
@@ -37,6 +41,7 @@ async function logout() {
   resetFeedback();
   state.clientPortal?.reset();
   state.clientPortal = null;
+  state.clientQuestionnaire?.reset();
   state.mfa?.clear();
   state.inquiryController?.reset();
   renderLoading(root, "Wylogowywanie…");
@@ -195,6 +200,20 @@ async function removeMfaFactor(index) {
   }
 }
 
+async function loadQuestionnaireSubmissionsForTrainer() {
+  if (!state.workspace || !state.activeClientId) return;
+  const submissions = await state.questionnaireApi.trainerSubmissions(state.activeClientId);
+  state.workspace.questionnaireSubmissions = Array.isArray(submissions) ? submissions : [];
+}
+
+async function loadTrainerWorkspace(clientId, refreshClients = false) {
+  await trainerLoader.load(clientId, refreshClients);
+  if (state.workspace && state.activeClientId) {
+    await loadQuestionnaireSubmissionsForTrainer();
+    renderTrainerState();
+  }
+}
+
 async function loadTrainer(preferredClientId = state.activeClientId) {
   let mfaView;
   try { mfaView = await state.mfa.prepare(); }
@@ -209,13 +228,13 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
-  await trainerLoader.load(preferredClientId, true);
+  await loadTrainerWorkspace(preferredClientId, true);
   await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
   renderTrainerState();
 }
 
 async function selectClient(clientId) {
-  await trainerLoader.load(clientId);
+  await loadTrainerWorkspace(clientId);
 }
 
 function renderTrainerState() {
@@ -223,7 +242,7 @@ function renderTrainerState() {
   const attentionSignals = withoutReviewedSignals(generatedSignals, state.workspace?.signalReviews);
 
   const clientId = state.activeClientId;
-  const reloadWorkspace = () => trainerLoader.load(clientId);
+  const reloadWorkspace = () => loadTrainerWorkspace(clientId);
 
   renderTrainer(root, {
     environment: state.config?.mode,
@@ -241,7 +260,7 @@ function renderTrainerState() {
     onManageMfa: () => showMfaManagement(),
     onCreateClient: async values => {
       await withWrite("Dodawanie klienta", () =>
-        state.repository.createClient(state.profile.id, values), result => trainerLoader.load(result?.id || "", true)
+        state.repository.createClient(state.profile.id, values), result => loadTrainerWorkspace(result?.id || "", true)
       );
     },
     onSavePwd: async values => {
@@ -314,14 +333,24 @@ function renderTrainerState() {
   });
 }
 
-async function loadClientPortal() {
-  state.clientPortal ||= new ClientPortalController(state.repository, view => renderClient(root, {
-    ...view, profile: state.profile,
+function renderClientState(view) {
+  renderClient(root, {
+    ...view,
+    profile: state.profile,
+    questionnaire: state.clientQuestionnaire?.model || {},
     onReload: () => state.clientPortal.load(),
     onLogout: () => logout().catch(handleRuntimeError),
     onSaveCheckin: (id, text) => state.clientPortal.submit(id, text),
     onRetryResponse: id => state.clientPortal.retry(id)
-  }));
+  });
+}
+
+async function loadClientPortal() {
+  state.clientPortal ||= new ClientPortalController(state.repository, renderClientState);
+  state.clientQuestionnaire ||= new ClientQuestionnaireController(state.questionnaireApi, {
+    onChange: () => state.clientPortal?.emit(),
+    onPortalReload: () => state.clientPortal?.load()
+  });
   await state.clientPortal.load();
 }
 
@@ -341,6 +370,7 @@ async function initialize() {
     state.config = getRuntimeConfig();
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
+    state.questionnaireApi = new QuestionnaireApi(state.repository);
     state.inquiryController = new InquiryController(state.config, state.auth, withWrite);
     state.mfa = new TrainerMfaController(state.auth);
     const callback = consumePasswordCallback(state.auth);
