@@ -14,9 +14,23 @@ function briefItem(item) {
   ]);
 }
 
+function submissionTime(value) {
+  const parsed = Date.parse(String(value || ""));
+  return Number.isFinite(parsed) ? parsed : 0;
+}
+
+export function latestPrePwdV31Submission(submissions = []) {
+  return [...submissions]
+    .filter(item => item?.rendererKey === "pre_pwd_v31" && item?.answers)
+    .sort((left, right) => {
+      const timeDiff = submissionTime(right?.submittedAt) - submissionTime(left?.submittedAt);
+      if (timeDiff) return timeDiff;
+      return String(right?.assignmentId || "").localeCompare(String(left?.assignmentId || ""));
+    })[0] || null;
+}
+
 export function questionnaireBriefPanel(workspace) {
-  const submission = (workspace.questionnaireSubmissions || [])
-    .find(item => item?.rendererKey === "pre_pwd_v31" && item?.answers);
+  const submission = latestPrePwdV31Submission(workspace.questionnaireSubmissions || []);
   if (!submission) return null;
 
   const brief = buildPrePwdV31TrainerBrief(submission);
