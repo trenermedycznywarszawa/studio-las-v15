@@ -33,6 +33,7 @@ on:
       - "scripts/test_questionnaire_v3_data_foundation.mjs"
       - "scripts/test_questionnaire_v31_health_consent.mjs"
       - "scripts/test_questionnaire_response_draft_authority.mjs"
+      - "scripts/test_questionnaire_submission_authority.mjs"
       - "scripts/test_client_questionnaire_portal.mjs"
       - "scripts/test_questionnaire_assignment_authority.mjs"
       - "scripts/test_pre_pwd_v3_registration.mjs"
@@ -162,6 +163,9 @@ jobs:
 
       - name: Verify questionnaire draft authority
         run: node scripts/test_questionnaire_response_draft_authority.mjs
+
+      - name: Verify questionnaire conscious submission authority
+        run: node scripts/test_questionnaire_submission_authority.mjs
 
       - name: Verify client questionnaire portal integration
         run: node scripts/test_client_questionnaire_portal.mjs
