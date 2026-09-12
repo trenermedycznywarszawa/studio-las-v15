@@ -10,7 +10,8 @@ export const PRE_PWD_V31_SUPPORTED_TYPES = Object.freeze([
   "tel",
   "single_choice",
   "multi_choice",
-  "scale_0_10"
+  "scale_0_10",
+  "confirmation"
 ]);
 
 const HEALTH_SECTION_IDS = new Set(
@@ -23,6 +24,7 @@ function asArray(value) {
 
 function answerPresent(question, value) {
   if (question.type === "multi_choice") return asArray(value).length > 0;
+  if (question.type === "confirmation") return value === true;
   return value !== undefined && value !== null && String(value).trim() !== "";
 }
 
@@ -134,15 +136,35 @@ function textQuestion(question, answers, onAnswerChange, textarea = false) {
     required: question.required,
     value: answers[question.id] ?? ""
   });
-  if (!textarea) input.value = answers[question.id] ?? "";
-  else input.value = answers[question.id] ?? "";
+  input.value = answers[question.id] ?? "";
   input.addEventListener("input", () => onAnswerChange(question.id, input.value));
   return input;
+}
+
+function confirmationQuestion(question, answers, onAnswerChange) {
+  const input = create("input", {
+    type: "checkbox",
+    name: question.id,
+    required: question.required
+  });
+  input.checked = answers[question.id] === true;
+  input.addEventListener("change", () => onAnswerChange(question.id, Boolean(input.checked)));
+  return create("label", { className: "check-field" }, [
+    input,
+    create("span", { text: question.label })
+  ]);
 }
 
 function renderQuestion(question, answers, onAnswerChange) {
   if (!PRE_PWD_V31_SUPPORTED_TYPES.includes(question.type)) {
     throw new Error(`Unsupported pre-PWD v3.1 field type: ${question.type}`);
+  }
+
+  if (question.type === "confirmation") {
+    return create("fieldset", { className: "record client-record" }, [
+      confirmationQuestion(question, answers, onAnswerChange),
+      question.help ? create("p", { className: "muted", text: question.help }) : null
+    ]);
   }
 
   const content = [
