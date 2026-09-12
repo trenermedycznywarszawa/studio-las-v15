@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { buildPrePwdV31TrainerBrief } from "../assets/os/questionnaires/pre-pwd-v31-trainer-brief.js";
+import { latestPrePwdV31Submission } from "../assets/os/ui/questionnaire-brief.js";
 
 const migration = readFileSync(
   new URL("../supabase/migrations/20260912072120_questionnaire_trainer_submission_snapshot.sql", import.meta.url),
@@ -57,6 +58,20 @@ for (const item of brief.items) {
     assert.equal(line.sourceDate, "2026-09-12T07:00:00Z");
   }
 }
+
+const newest = latestPrePwdV31Submission([
+  { assignmentId: "b", rendererKey: "pre_pwd_v31", submittedAt: "2026-09-12T07:00:00Z", answers: { q2_goal_current: "yes" } },
+  { assignmentId: "z", rendererKey: "other", submittedAt: "2026-09-12T10:00:00Z", answers: { q2_goal_current: "yes" } },
+  { assignmentId: "c", rendererKey: "pre_pwd_v31", submittedAt: "2026-09-12T09:00:00Z", answers: { q2_goal_current: "yes" } },
+  { assignmentId: "a", rendererKey: "pre_pwd_v31", submittedAt: "2026-09-12T08:00:00Z", answers: { q2_goal_current: "yes" } }
+]);
+assert.equal(newest?.assignmentId, "c", "Trainer brief must choose the latest submitted pre-PWD independently of input order");
+
+const tied = latestPrePwdV31Submission([
+  { assignmentId: "a", rendererKey: "pre_pwd_v31", submittedAt: "2026-09-12T09:00:00Z", answers: { q2_goal_current: "yes" } },
+  { assignmentId: "b", rendererKey: "pre_pwd_v31", submittedAt: "2026-09-12T09:00:00Z", answers: { q2_goal_current: "yes" } }
+]);
+assert.equal(tied?.assignmentId, "b", "Equal timestamps must have a deterministic assignment-id tie breaker");
 
 assert.match(brief.guardrail, /Znaczenie nadaje trener/);
 assert.doesNotMatch(mapperSource, /GREEN|YELLOW|RED|score|risk_score|diagnos/i,
