@@ -124,7 +124,7 @@ begin
   -- A crashed previous QA run may leave an unfinished assignment. Terminate it
   -- using the normal lifecycle; never delete or bypass immutable history.
   update public.questionnaire_assignments qa
-  set status='cancelled'
+  set status='cancelled', cancelled_at=now()
   where qa.client_id=v_client
     and qa.version_id=v_version
     and qa.status in ('assigned','in_progress');
@@ -205,7 +205,7 @@ begin
 
   if v_status in ('assigned','in_progress') then
     update public.questionnaire_assignments
-    set status='cancelled'
+    set status='cancelled', cancelled_at=now()
     where id=p_assignment_id;
   end if;
 
