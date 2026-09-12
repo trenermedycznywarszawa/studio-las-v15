@@ -18,6 +18,7 @@ on:
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
       - "scripts/e2e_questionnaire_staging.mjs"
+      - "scripts/test_questionnaire_e2e_fixture.mjs"
       - "scripts/e2e_p1_visual_staging.mjs"
       - "scripts/e2e_decision_state_integrity_local.mjs"
       - "scripts/fixtures/decision-state-integrity.*"
