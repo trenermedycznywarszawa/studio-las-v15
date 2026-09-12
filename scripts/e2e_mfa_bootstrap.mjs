@@ -11,6 +11,17 @@ const RUN_MARKER = String(process.env.STUDIO_LAS_E2E_MARKER || `GHA-${Date.now()
   .slice(0, 80);
 const GITHUB_ENV = String(process.env.GITHUB_ENV || "");
 const FACTOR_PREFIX = "Studio Las · QA E2E";
+const TRANSIENT_AUTH_STATUSES = new Set([502, 503, 504]);
+const MFA_VERIFY_ATTEMPTS = 3;
+
+class AuthRequestError extends Error {
+  constructor(message, status, code = "") {
+    super(message);
+    this.name = "AuthRequestError";
+    this.status = status;
+    this.code = code;
+  }
+}
 
 function assert(condition, message) {
   if (!condition) throw new Error(message);
@@ -61,6 +72,10 @@ async function freshTotpCode(secret) {
   return totpCode(secret);
 }
 
+function transientAuthError(error) {
+  return error instanceof AuthRequestError && TRANSIENT_AUTH_STATUSES.has(error.status);
+}
+
 async function authRequest(path, { token = "", method = "GET", body = undefined } = {}) {
   assert(PUBLISHABLE_KEY.length >= 40, "Missing canonical staging publishable key");
   const headers = {
@@ -83,7 +98,11 @@ async function authRequest(path, { token = "", method = "GET", body = undefined 
   if (!response.ok) {
     const code = typeof payload === "object" && payload ? String(payload.code || payload.error_code || "") : "";
     const suffix = code ? ` (${code})` : "";
-    throw new Error(`Staging Auth ${method} ${path.split("?")[0]} failed with ${response.status}${suffix}`);
+    throw new AuthRequestError(
+      `Staging Auth ${method} ${path.split("?")[0]} failed with ${response.status}${suffix}`,
+      response.status,
+      code
+    );
   }
   return payload;
 }
@@ -119,22 +138,36 @@ async function enrollTotp(token) {
 }
 
 async function verifyFactor(token, factorId, secret) {
-  const challenge = await authRequest(`/auth/v1/factors/${encodeURIComponent(factorId)}/challenge`, {
-    token,
-    method: "POST",
-    body: { factorId }
-  });
-  assert(challenge?.id, "Staging Auth did not create a TOTP challenge");
-  const code = await freshTotpCode(secret);
-  const verified = await authRequest(`/auth/v1/factors/${encodeURIComponent(factorId)}/verify`, {
-    token,
-    method: "POST",
-    body: { challenge_id: String(challenge.id), code }
-  });
-  const session = verified?.session || verified;
-  assert(session?.access_token, "TOTP verification did not return an AAL2 access token");
-  assert(decodeJwt(session.access_token).aal === "aal2", "Ephemeral TOTP verification did not reach AAL2");
-  return session;
+  let lastError = null;
+  for (let attempt = 1; attempt <= MFA_VERIFY_ATTEMPTS; attempt += 1) {
+    try {
+      // A transient timeout may happen after Supabase committed the previous
+      // challenge/verify request. Start a fresh challenge on each retry rather
+      // than replaying an ambiguous verification request.
+      const challenge = await authRequest(`/auth/v1/factors/${encodeURIComponent(factorId)}/challenge`, {
+        token,
+        method: "POST",
+        body: { factorId }
+      });
+      assert(challenge?.id, "Staging Auth did not create a TOTP challenge");
+      const code = await freshTotpCode(secret);
+      const verified = await authRequest(`/auth/v1/factors/${encodeURIComponent(factorId)}/verify`, {
+        token,
+        method: "POST",
+        body: { challenge_id: String(challenge.id), code }
+      });
+      const session = verified?.session || verified;
+      assert(session?.access_token, "TOTP verification did not return an AAL2 access token");
+      assert(decodeJwt(session.access_token).aal === "aal2", "Ephemeral TOTP verification did not reach AAL2");
+      return session;
+    } catch (error) {
+      lastError = error;
+      if (!transientAuthError(error) || attempt === MFA_VERIFY_ATTEMPTS) throw error;
+      console.warn(`Transient staging Auth MFA failure; retrying fresh challenge (${attempt}/${MFA_VERIFY_ATTEMPTS})`);
+      await new Promise(resolve => setTimeout(resolve, 500 * attempt));
+    }
+  }
+  throw lastError || new Error("TOTP verification failed without an error");
 }
 
 async function deleteFactor(token, factorId) {
