@@ -13,6 +13,7 @@ const RUN_MARKER = `E2E-${String(process.env.STUDIO_LAS_E2E_MARKER || `GHA-${Dat
   .replace(/[^A-Za-z0-9_-]/g, "-")
   .slice(0, 80)}`;
 const CLIENT_NAME = "QA PWD Client (synthetic)";
+const QUESTIONNAIRE_TITLE = "QA · Ankieta przed pierwszą wizytą";
 const ARTIFACT_DIR = process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/browser-e2e";
 
 function assert(condition, message) {
@@ -159,7 +160,11 @@ async function baselineGuidance(token, clientId) {
 }
 
 async function openQuestionnaire(page, label = /Wypełnij|Kontynuuj/) {
-  await page.getByRole("button", { name: label }).click();
+  const action = page.getByRole("button", { name: label });
+  assert(await action.count() === 1, `Expected exactly one current questionnaire action for ${String(label)}`);
+  const card = action.locator("xpath=ancestor::article[1]");
+  await card.getByText(QUESTIONNAIRE_TITLE, { exact: true }).waitFor({ state: "visible", timeout: 20_000 });
+  await action.click();
   await page.getByRole("heading", { name: "ANKIETA · przed pierwszą wizytą" })
     .waitFor({ state: "visible", timeout: 20_000 });
 }
@@ -252,7 +257,6 @@ async function run() {
     });
 
     await loginClient(clientPage, fixture.clientEmail, fixture.clientPassword);
-    await clientPage.getByText("QA · Ankieta przed pierwszą wizytą", { exact: true }).waitFor({ state: "visible" });
     await openQuestionnaire(clientPage, "Wypełnij");
     await fillSafePath(clientPage);
 
