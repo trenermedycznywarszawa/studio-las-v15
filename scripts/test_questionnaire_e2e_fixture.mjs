@@ -15,7 +15,8 @@ assert.match(executableSql, /security definer/i);
 assert.match(executableSql, /v_aal\s*<>\s*'aal2'/i);
 assert.match(executableSql, /QA PWD Client \(synthetic\)/);
 assert.match(executableSql, /qaOnly',true/);
-assert.match(executableSql, /status='cancelled'/);
+assert.match(executableSql, /status='cancelled'\s*,\s*cancelled_at=now\(\)/i,
+  "QA cancellation must satisfy the assignment lifecycle constraint");
 assert.doesNotMatch(executableSql, /session_replication_role/i,
   "QA fixture must never disable product triggers or replication semantics");
 assert.doesNotMatch(executableSql, /auth\.users|encrypted_password|crypt\(/i,
@@ -36,6 +37,8 @@ assert.doesNotMatch(edge, /session_replication_role|auth\.users|encrypted_passwo
 
 assert.match(e2e, /\/functions\/v1\/questionnaire-e2e-fixture/);
 assert.doesNotMatch(e2e, /rpc\(trainerToken,\s*"prepare_questionnaire_e2e"/);
+assert.match(e2e, /Expected exactly one current questionnaire action/,
+  "Browser E2E must target the current open assignment, not a historical title match");
 assert.match(e2e, /draftHiddenFromTrainer:\s*true/);
 assert.match(e2e, /guidanceUnchanged:\s*true/);
 
