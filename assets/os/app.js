@@ -194,18 +194,14 @@ async function removeMfaFactor(index) {
   }
 }
 
-async function loadQuestionnaireSubmissionsForTrainer() {
-  if (!state.workspace || !state.activeClientId) return;
-  const submissions = await state.questionnaireApi.trainerSubmissions(state.activeClientId);
-  state.workspace.questionnaireSubmissions = Array.isArray(submissions) ? submissions : [];
+async function loadQuestionnaireSubmissionsForTrainer(workspace, clientId) {
+  if (!workspace || !clientId) return;
+  const submissions = await state.questionnaireApi.trainerSubmissions(clientId);
+  workspace.questionnaireSubmissions = Array.isArray(submissions) ? submissions : [];
 }
 
 async function loadTrainerWorkspace(clientId, refreshClients = false) {
-  await trainerLoader.load(clientId, refreshClients);
-  if (state.workspace && state.activeClientId) {
-    await loadQuestionnaireSubmissionsForTrainer();
-    renderTrainerState();
-  }
+  await trainerLoader.load(clientId, refreshClients, loadQuestionnaireSubmissionsForTrainer);
 }
 
 async function loadTrainer(preferredClientId = state.activeClientId) {
