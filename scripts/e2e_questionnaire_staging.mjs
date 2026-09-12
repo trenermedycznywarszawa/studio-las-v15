@@ -257,6 +257,7 @@ async function run() {
     });
 
     await loginClient(clientPage, fixture.clientEmail, fixture.clientPassword);
+    const submittedBefore = await clientPage.getByText("Wypełniona", { exact: true }).count();
     await openQuestionnaire(clientPage, "Wypełnij");
     await fillSafePath(clientPage);
 
@@ -281,9 +282,13 @@ async function run() {
 
     await finishSafePath(clientPage);
     await clientPage.getByRole("button", { name: "Przekaż ankietę trenerowi" }).click();
-    await clientPage.getByText("Wypełniona", { exact: true }).first().waitFor({ state: "visible", timeout: 20_000 });
-    assert(await clientPage.getByRole("button", { name: /Wypełnij|Kontynuuj/ }).count() === 0,
-      "Submitted questionnaire remained editable in client list");
+    const openActions = clientPage.getByRole("button", { name: /Wypełnij|Kontynuuj/ });
+    if (await openActions.count()) {
+      await openActions.first().waitFor({ state: "detached", timeout: 20_000 });
+    }
+    assert(await openActions.count() === 0, "Submitted questionnaire remained editable in client list");
+    assert(await clientPage.getByText("Wypełniona", { exact: true }).count() === submittedBefore + 1,
+      "Current questionnaire did not add exactly one submitted history entry");
 
     await trainerPage.getByRole("button", { name: "Odśwież" }).click();
     const briefHeading = trainerPage.getByRole("heading", { name: "PRZED WIZYTĄ — 60 SEKUND" });
