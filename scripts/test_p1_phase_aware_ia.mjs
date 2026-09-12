@@ -7,19 +7,19 @@ import {
 
 const expected = {
   1: [
-    "identity", "now", "pwd", "sessionBrief", "signals", "sessions",
+    "identity", "now", "questionnaireBrief", "pwd", "sessionBrief", "signals", "sessions",
     "assessments", "measurements", "guidance", "reports", "cycleDecision"
   ],
   2: [
-    "identity", "now", "sessionBrief", "guidance", "signals", "pwd",
+    "identity", "now", "sessionBrief", "questionnaireBrief", "guidance", "signals", "pwd",
     "sessions", "assessments", "measurements", "reports", "cycleDecision"
   ],
   3: [
-    "identity", "now", "sessionBrief", "signals", "sessions", "guidance",
+    "identity", "now", "sessionBrief", "questionnaireBrief", "signals", "sessions", "guidance",
     "assessments", "measurements", "pwd", "reports", "cycleDecision"
   ],
   4: [
-    "identity", "now", "cycleDecision", "reports", "sessionBrief", "signals",
+    "identity", "now", "cycleDecision", "reports", "sessionBrief", "questionnaireBrief", "signals",
     "sessions", "guidance", "assessments", "measurements", "pwd"
   ]
 };
@@ -35,6 +35,7 @@ const keyedSections = Object.fromEntries(
     identity: true,
     now: true,
     cycleDecision: true,
+    questionnaireBrief: true,
     pwd: true,
     signals: true,
     sessionBrief: true,
@@ -50,8 +51,12 @@ for (const [stage, order] of Object.entries(expected)) {
   assert.deepEqual(orderTrainerSections(stage, keyedSections), order);
 }
 
+// Stage 1 is the PWD preparation phase: a consciously submitted questionnaire
+// brief must be read before the trainer enters the PWD workflow.
+assert.ok(expected[1].indexOf("questionnaireBrief") < expected[1].indexOf("pwd"));
 assert.ok(expected[1].indexOf("pwd") < expected[1].indexOf("sessionBrief"));
 assert.ok(expected[2].indexOf("sessionBrief") < expected[2].indexOf("pwd"));
+assert.ok(expected[2].indexOf("questionnaireBrief") < expected[2].indexOf("pwd"));
 assert.ok(expected[2].indexOf("guidance") < expected[2].indexOf("pwd"));
 assert.ok(expected[3].indexOf("sessions") < expected[3].indexOf("pwd"));
 assert.ok(expected[3].indexOf("guidance") < expected[3].indexOf("pwd"));
@@ -62,6 +67,12 @@ const missingOptional = { ...keyedSections, cycleDecision: null };
 assert.deepEqual(
   orderTrainerSections(4, missingOptional),
   expected[4].filter(key => key !== "cycleDecision")
+);
+
+const missingQuestionnaire = { ...keyedSections, questionnaireBrief: null };
+assert.deepEqual(
+  orderTrainerSections(1, missingQuestionnaire),
+  expected[1].filter(key => key !== "questionnaireBrief")
 );
 
 const trainerStateSource = readFileSync(
@@ -88,6 +99,8 @@ const inquiryControllerSource = readFileSync(
 assert.match(trainerStateSource, /const goal = String\(client\.goal \|\| ""\)\.trim\(\)/);
 assert.match(trainerStateSource, /"Cel klienta"[\s\S]*goal \|\| "Cel nie został jeszcze zapisany\."/);
 assert.doesNotMatch(trainerStateSource, /life_goal|north_star/);
+assert.match(trainerSource, /questionnaireBrief:\s*questionnaireBriefPanel\(workspace\)/,
+  "Trainer workspace must expose the submitted pre-PWD brief as a phase-aware section.");
 assert.match(trainerSource, /orderTrainerSections\(workspace\.client\.stage, sections\)/);
 assert.match(
   dataSource,
