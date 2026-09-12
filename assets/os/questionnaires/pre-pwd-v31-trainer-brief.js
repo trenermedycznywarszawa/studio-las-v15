@@ -78,6 +78,6 @@ export function buildPrePwdV31TrainerBrief(snapshot = {}) {
     clientId: snapshot.clientId || null,
     submittedAt: snapshot.submittedAt || null,
     items,
-    guardrail: "To są informacje przekazane przez klienta do przygotowania rozmowy. Znaczenie nadaje trener; brief nie diagnozuje, nie kwalifikuje medycznie i nie zmienia planu automatycznie."
+    guardrail: "To są informacje przekazane przez klienta do przygotowania rozmowy. Znaczenie nadaje trener; brief nie stawia rozpoznań, nie kwalifikuje medycznie i nie zmienia planu automatycznie."
   };
 }
