@@ -13,8 +13,12 @@ on:
       - "supabase/dev/staging_browser_e2e_cleanup.sql"
       - "supabase/dev/staging_stage2_inquiry_e2e.sql"
       - "supabase/dev/staging_public_inquiry_ingress_e2e.sql"
+      - "supabase/dev/staging_questionnaire_e2e.sql"
+      - "supabase/dev/questionnaire-e2e-fixture/**"
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
+      - "scripts/e2e_questionnaire_staging.mjs"
+      - "scripts/test_questionnaire_e2e_fixture.mjs"
       - "scripts/e2e_p1_visual_staging.mjs"
       - "scripts/e2e_decision_state_integrity_local.mjs"
       - "scripts/fixtures/decision-state-integrity.*"
@@ -26,16 +30,18 @@ on:
 permissions:
   contents: read
 
+# Every browser run mutates the same canonical staging project. Serialize globally;
+# never cancel a running job before its staging cleanup has a chance to execute.
 concurrency:
-  group: studio-las-browser-e2e-${{ github.workflow }}-${{ github.ref }}
-  cancel-in-progress: true
+  group: studio-las-browser-e2e-canonical-staging
+  cancel-in-progress: false
 
 jobs:
   browser-e2e-staging:
     name: Browser E2E — canonical staging
     if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 20
+    timeout-minutes: 25
 
     env:
       STAGING_REF: ulauyoqjoetjqktegeuq
@@ -137,6 +143,12 @@ jobs:
           STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
           STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
         run: node scripts/e2e_pwd_staging.mjs
+
+      - name: Run integrated pre-PWD questionnaire browser E2E
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_questionnaire_staging.mjs
 
       - name: Run P1 visual hierarchy staging validation
         env:

@@ -1,7 +1,7 @@
 // In-memory view state only. No offline cache and no automatic write retry.
 export class TrainerWorkspaceLoader {
   constructor(state, render) { this.state = state; this.render = render; this.version = 0; }
-  async load(clientId, refreshClients = false) {
+  async load(clientId, refreshClients = false, finalize = null) {
     const version = ++this.version;
     const current = () => version === this.version;
     const state = this.state;
@@ -25,6 +25,10 @@ export class TrainerWorkspaceLoader {
         });
         if (!current()) return;
         state.workspace = workspace;
+        if (typeof finalize === "function") {
+          await finalize(workspace, state.activeClientId);
+          if (!current()) return;
+        }
       }
       state.loading = false;
       this.render();
