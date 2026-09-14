@@ -59,6 +59,27 @@ for (const item of brief.items) {
   }
 }
 
+const overlayBrief = buildPrePwdV31TrainerBrief({
+  assignmentId: "assignment-v33",
+  clientId: "client-1",
+  versionCode: "3.3",
+  rendererKey: "pre_pwd_v31",
+  submittedAt: "2026-09-14T10:00:00Z",
+  answers: { q2_goal_current: "yes" }
+});
+assert.equal(overlayBrief.assignmentId, "assignment-v33",
+  "Versioned release overlays must be accepted through the explicit renderer contract.");
+assert.throws(
+  () => buildPrePwdV31TrainerBrief({ versionCode: "3.3", rendererKey: "other_renderer", answers: {} }),
+  /Unsupported pre-PWD trainer brief renderer/,
+  "An unrelated renderer must remain fail-closed."
+);
+assert.throws(
+  () => buildPrePwdV31TrainerBrief({ versionCode: "3.3", answers: {} }),
+  /Unsupported pre-PWD trainer brief version/,
+  "Legacy callers without rendererKey must not silently widen their historical version contract."
+);
+
 const newest = latestPrePwdV31Submission([
   { assignmentId: "b", rendererKey: "pre_pwd_v31", submittedAt: "2026-09-12T07:00:00Z", answers: { q2_goal_current: "yes" } },
   { assignmentId: "z", rendererKey: "other", submittedAt: "2026-09-12T10:00:00Z", answers: { q2_goal_current: "yes" } },
