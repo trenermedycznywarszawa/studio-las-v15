@@ -1,7 +1,7 @@
 import { button, create, formatDate, panel, recordList, statusBox } from "./common.js";
 import { prePwdV31Form } from "./pre-pwd-v31-form.js";
 
-const FINAL_HEALTH_CONSENT_TEXT = "Wyrażam zgodę na przetwarzanie przez Studio Las danych dotyczących mojego zdrowia, które podaję w tej ankiecie, w celu przygotowania i prowadzenia indywidualnej współpracy treningowej z uwzględnieniem informacji istotnych dla doboru zakresu i obciążeń treningowych. Wiem, że dane są zapisywane podczas wypełniania ankiety, a trener zobaczy je dopiero, gdy wybiorę „Przekaż ankietę trenerowi”. Zgodę mogę w dowolnym momencie wycofać ze skutkiem na przyszłość.";
+const LEGACY_V31_CONSENT_TEXT_VERSION = "pre-pwd-health-draft-gate-v1";
 
 function questionnaireStatusLabel(status) {
   return ({
@@ -38,8 +38,18 @@ export function activeQuestionnaire(questionnaire) {
     return panel("Ankieta przed pierwszą wizytą", statusBox("Wczytywanie ankiety…", "info"));
   }
 
+  const expectedConsentText = String(questionnaire.snapshot?.expectedConsentText || "").trim();
+  const expectedConsentTextVersion = String(questionnaire.snapshot?.expectedConsentTextVersion || "").trim();
+  const legacyV31Consent =
+    questionnaire.snapshot?.versionCode === "3.1"
+    && expectedConsentTextVersion === LEGACY_V31_CONSENT_TEXT_VERSION;
+  const consentContractReady = Boolean(expectedConsentText) || legacyV31Consent;
+
   const content = create("div", { className: "questionnaire-workspace" }, [
     questionnaire.error ? statusBox(questionnaire.error, "error") : null,
+    !consentContractReady
+      ? statusBox("Ta wersja ankiety nie ma kompletnej treści zgody powiązanej z zapisem danych zdrowotnych.", "error")
+      : null,
     questionnaire.conflict
       ? create("div", {}, [
           statusBox("W innej karcie istnieje nowszy zapis. Niczego nie nadpisaliśmy.", "error"),
@@ -59,15 +69,17 @@ export function activeQuestionnaire(questionnaire) {
       onAnswerChange: questionnaire.onAnswerChange,
       onProfileChange: questionnaire.onProfileChange,
       onConsentChange: questionnaire.onConsentChange,
+      healthConsentText: expectedConsentText || undefined,
+      healthConsentEnabled: consentContractReady,
       healthGateNote: "Zapis odpowiedzi zdrowotnych rozpoczyna się dopiero po świadomym potwierdzeniu."
     }),
-    create("p", { text: FINAL_HEALTH_CONSENT_TEXT }),
+    expectedConsentText ? create("p", { text: expectedConsentText }) : null,
     create("div", { className: "top-actions" }, [
       button("Zamknij", { onclick: questionnaire.close, disabled: questionnaire.submitting || questionnaire.consentBusy }),
       questionnaire.snapshot?.submissionEnabled
         ? button("Przekaż ankietę trenerowi", {
             onclick: questionnaire.onSubmit,
-            disabled: questionnaire.submitting || questionnaire.consentBusy || questionnaire.conflict
+            disabled: questionnaire.submitting || questionnaire.consentBusy || questionnaire.conflict || !consentContractReady
           })
         : create("p", { className: "muted", text: "Ta wersja nie jest jeszcze dopuszczona do przekazania trenerowi." })
     ]),

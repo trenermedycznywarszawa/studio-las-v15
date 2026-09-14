@@ -211,13 +211,19 @@ function renderQuestion(question, values, onChange) {
   return create("fieldset", { className: "record client-record" }, content);
 }
 
-function healthGate(consentAccepted, onConsentChange, note) {
-  const input = create("input", { type: "checkbox", name: PRE_PWD_V31_DEFINITION.preHealthGate.id });
+function healthGate(consentAccepted, onConsentChange, note, consentText, enabled) {
+  const input = create("input", {
+    type: "checkbox",
+    name: PRE_PWD_V31_DEFINITION.preHealthGate.id,
+    disabled: !enabled
+  });
   input.checked = Boolean(consentAccepted);
-  input.addEventListener("change", () => onConsentChange(Boolean(input.checked)));
+  input.addEventListener("change", () => {
+    if (enabled) onConsentChange(Boolean(input.checked));
+  });
   return create("section", { className: "record client-record" }, [
     create("h3", { text: "Dane dotyczące zdrowia" }),
-    create("p", { text: PRE_PWD_V31_DEFINITION.preHealthGate.label }),
+    create("p", { text: consentText }),
     create("label", { className: "check-field" }, [input, create("span", { text: "Potwierdzam" })]),
     note ? create("p", { className: "muted", text: note }) : null
   ]);
@@ -230,6 +236,8 @@ export function prePwdV31Form({
   onAnswerChange = () => {},
   onProfileChange = () => {},
   onConsentChange = () => {},
+  healthConsentText = PRE_PWD_V31_DEFINITION.preHealthGate.label,
+  healthConsentEnabled = true,
   healthGateNote = "Ta treść wymaga finalnej weryfikacji prawnej przed uruchomieniem produkcyjnym."
 } = {}) {
   const normalizedAnswers = normalizePrePwdV31Answers(answers);
@@ -248,7 +256,15 @@ export function prePwdV31Form({
   ]));
 
   for (const section of PRE_PWD_V31_DEFINITION.sections) {
-    if (section.id === "health_safety") root.append(healthGate(consentAccepted, onConsentChange, healthGateNote));
+    if (section.id === "health_safety") {
+      root.append(healthGate(
+        consentAccepted,
+        onConsentChange,
+        healthGateNote,
+        healthConsentText,
+        healthConsentEnabled
+      ));
+    }
     if (HEALTH_SECTION_IDS.has(section.id) && !consentAccepted) {
       if (section.id === "health_safety") {
         root.append(statusBox("Pytania dotyczące zdrowia pozostają ukryte do czasu świadomego potwierdzenia powyżej.", "info"));
