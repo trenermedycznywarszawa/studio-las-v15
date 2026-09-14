@@ -59,6 +59,10 @@ begin
     raise exception 'pre-PWD v3.2 has assignments; explicit migration decision required before retirement';
   end if;
 
+  update public.questionnaire_versions
+  set retired_at = coalesce(retired_at, clock_timestamp())
+  where id = v_v32_id;
+
   v_v33_definition := jsonb_build_object(
     'kind', 'release_overlay_manifest',
     'definitionId', 'pre_pwd_first_visit',
@@ -135,10 +139,6 @@ begin
   then
     raise exception 'pre-PWD v3.3 unified health-consent contract mismatch';
   end if;
-
-  update public.questionnaire_versions
-  set retired_at = coalesce(retired_at, clock_timestamp())
-  where id = v_v32_id;
 
   if (
     select count(*)
