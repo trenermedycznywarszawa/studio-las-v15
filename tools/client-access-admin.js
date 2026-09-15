@@ -319,6 +319,10 @@ async function initialize() {
     }
     await loadAuthenticatedTool();
   } catch (error) {
+    if (Number(error?.status || 0) === 401) {
+      showLogin("Sesja wygasła. Zaloguj się ponownie.");
+      return;
+    }
     renderFatal(root, userSafeError(error));
   }
 }
