@@ -270,6 +270,8 @@ async function run() {
     });
     await clientPage.getByRole("heading", { name: "ANKIETA · przed pierwszą wizytą" })
       .waitFor({ state: "detached", timeout: 20_000 });
+    await clientPage.getByRole("button", { name: "Kontynuuj", exact: true })
+      .waitFor({ state: "visible", timeout: 20_000 });
     await openQuestionnaire(clientPage, "Kontynuuj");
     assert(await clientPage.locator('[name="q3_goal_ability"][value="7"]').isChecked(),
       "Immediate Close lost the latest answer when reopening from the server");
