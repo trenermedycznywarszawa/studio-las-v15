@@ -270,9 +270,10 @@ async function run() {
     });
     await clientPage.getByRole("heading", { name: "ANKIETA Â· przed pierwszÄ… wizytÄ…" })
       .waitFor({ state: "detached", timeout: 20_000 });
-    await clientPage.getByRole("button", { name: "Kontynuuj", exact: true })
+    await clientPage.getByRole("button", { name: /Wype³nij|Kontynuuj/ })
       .waitFor({ state: "visible", timeout: 20_000 });
-    await openQuestionnaire(clientPage, "Kontynuuj");
+    const actionAfterClose = await clientPage.getByRole("button", { name: /Wype³nij|Kontynuuj/ }).innerText();
+    await openQuestionnaire(clientPage);
     assert(await clientPage.locator('[name="q3_goal_ability"][value="7"]').isChecked(),
       "Immediate Close lost the latest answer when reopening from the server");
 
@@ -332,6 +333,7 @@ async function run() {
       draftHiddenFromTrainer: true,
       resumeVerified: true,
       immediateCloseVerified: true,
+      actionAfterClose,
       consciousSubmitVerified: true,
       trainerBriefVerified: true,
       guidanceUnchanged: true
