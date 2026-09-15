@@ -46,6 +46,16 @@ export function activeQuestionnaire(questionnaire) {
   const consentContractReady = Boolean(expectedConsentText) || legacyV31Consent;
 
   const content = create("div", { className: "questionnaire-workspace" }, [
+    create("section", { "aria-label": "Administrator danych i kontakt" }, [
+      create("h3", { text: "Twoje dane i kontakt" }),
+      create("p", { text: "Administratorem danych jest Damian Krawiec — Studio Las. Adres do korespondencji: ul. Pracka, 05-504 Prace Duże." }),
+      create("p", {}, [
+        "W sprawach swoich danych lub wycofania zgody napisz na ",
+        create("a", { href: "mailto:trenermedycznywarszawa@gmail.com", text: "trenermedycznywarszawa@gmail.com" }),
+        ". Nie musisz podawać powodu wycofania zgody."
+      ]),
+      create("p", { text: "Wycofanie zgody dotyczy dalszego przetwarzania danych na jej podstawie i nie wpływa na zgodność z prawem wcześniejszego przetwarzania." })
+    ]),
     questionnaire.error ? statusBox(questionnaire.error, "error") : null,
     !consentContractReady
       ? statusBox("Ta wersja ankiety nie ma kompletnej treści zgody powiązanej z zapisem danych zdrowotnych.", "error")
