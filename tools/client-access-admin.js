@@ -189,6 +189,7 @@ function renderAdmin(message = "", kind = "info") {
 
 function showLogin(message = "") {
   renderLogin(root, {
+    environment: state.config?.mode,
     message,
     onSubmit: async ({ email, password }) => {
       try {

@@ -18,6 +18,8 @@ on:
       - "scripts/e2e_mfa_bootstrap.mjs"
       - "scripts/e2e_pwd_staging.mjs"
       - "scripts/e2e_questionnaire_staging.mjs"
+      - "scripts/e2e_client_access_login.mjs"
+      - "tools/client-access-admin.js"
       - "scripts/test_questionnaire_e2e_fixture.mjs"
       - "scripts/e2e_p1_visual_staging.mjs"
       - "scripts/e2e_decision_state_integrity_local.mjs"
@@ -134,6 +136,9 @@ jobs:
           done
           cat /tmp/studio-las-e2e-server.log
           exit 1
+
+      - name: Run client access login browser regression
+        run: node scripts/e2e_client_access_login.mjs
 
       - name: Run trainer decision-state browser E2E
         run: node scripts/e2e_decision_state_integrity_local.mjs

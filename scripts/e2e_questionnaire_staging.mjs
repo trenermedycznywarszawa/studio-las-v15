@@ -261,7 +261,19 @@ async function run() {
     await openQuestionnaire(clientPage, "Wypełnij");
     await fillSafePath(clientPage);
 
-    await clientPage.waitForTimeout(1800);
+    // Change and close in the same browser task: the 650 ms debounce cannot fire first.
+    await clientPage.locator('[name="q3_goal_ability"][value="7"]').evaluate(input => {
+      input.click();
+      const close = [...document.querySelectorAll("button")].find(button => button.textContent.trim() === "Zamknij");
+      if (!close) throw new Error("Questionnaire Close button is missing");
+      close.click();
+    });
+    await clientPage.getByRole("heading", { name: "ANKIETA · przed pierwszą wizytą" })
+      .waitFor({ state: "detached", timeout: 20_000 });
+    await openQuestionnaire(clientPage, "Kontynuuj");
+    assert(await clientPage.locator('[name="q3_goal_ability"][value="7"]').isChecked(),
+      "Immediate Close lost the latest answer when reopening from the server");
+
     await clientPage.reload({ waitUntil: "domcontentloaded" });
     await clientPage.getByRole("heading", { name: /Dzień dobry/ }).waitFor({ state: "visible", timeout: 20_000 });
     await clientPage.getByRole("button", { name: "Kontynuuj" }).waitFor({ state: "visible", timeout: 20_000 });
@@ -317,6 +329,7 @@ async function run() {
       clientId: fixture.clientId,
       draftHiddenFromTrainer: true,
       resumeVerified: true,
+      immediateCloseVerified: true,
       consciousSubmitVerified: true,
       trainerBriefVerified: true,
       guidanceUnchanged: true

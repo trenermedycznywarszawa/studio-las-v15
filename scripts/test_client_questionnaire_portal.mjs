@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 
-const read = path => readFileSync(new URL(`../${path}`, import.meta.url), "utf8");
+const read = path => readFileSync(new URL(`../${path}`, import.meta.url), "utf8").replace(/\r\n/g, "\n");
 const migration = read("supabase/migrations/20260911132813_questionnaire_v3_client_portal_snapshot.sql");
 const ui = read("assets/os/ui/client.js");
 const questionnaireUi = read("assets/os/ui/client-questionnaires.js");
