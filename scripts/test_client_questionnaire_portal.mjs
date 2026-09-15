@@ -7,6 +7,7 @@ const ui = read("assets/os/ui/client.js");
 const questionnaireUi = read("assets/os/ui/client-questionnaires.js");
 const runtime = read("assets/os/client-app-runtime.js");
 const controller = read("assets/os/client-portal-controller.js");
+const questionnaireController = read("assets/os/client-questionnaire-controller.js");
 
 assert.match(migration, /alter function public\.client_portal_snapshot\(\) set schema private/i);
 assert.match(migration, /create function public\.client_portal_snapshot\(\)/i);
@@ -34,6 +35,15 @@ assert.match(questionnaireUi, /item\.canOpen/,
 assert.match(runtime, /ClientQuestionnaireController/);
 assert.match(runtime, /questionnaire:\s*state\.clientQuestionnaire\?\.model/,
   "Canonical Client Portal runtime must expose questionnaire controller state to the UI.");
+
+const closeMatch = questionnaireController.match(/async close\(\)\s*\{([\s\S]*?)\n  \}\n\n  setAnswer/);
+assert.ok(closeMatch, "Questionnaire close must be asynchronous so pending saves can finish.");
+const closeBody = closeMatch[1];
+assert.ok(
+  closeBody.indexOf("await this.flushPendingSaves()") >= 0
+    && closeBody.indexOf("await this.flushPendingSaves()") < closeBody.indexOf("this.reset()"),
+  "Questionnaire close must flush the latest autosave before clearing controller state."
+);
 
 for (const source of [ui, questionnaireUi, runtime]) {
   assert.doesNotMatch(source, /ZIELONY|ŻÓŁTY|CZERWONY/,
