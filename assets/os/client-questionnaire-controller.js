@@ -112,11 +112,19 @@ export class ClientQuestionnaireController {
     this.state.validationInvalid = [];
   }
 
-  close() {
-    if (this.draftTimer) clearTimeout(this.draftTimer);
-    if (this.profileTimer) clearTimeout(this.profileTimer);
-    this.reset();
-    this.notify();
+  async close() {
+    try {
+      await this.flushPendingSaves();
+      if (this.state.error || this.state.conflict) {
+        this.notify();
+        return;
+      }
+      this.reset();
+      this.notify();
+    } catch (error) {
+      this.state.error = error?.message || "Nie udało się zapisać ostatnich zmian przed zamknięciem ankiety.";
+      this.notify();
+    }
   }
 
   setAnswer(id, value) {
