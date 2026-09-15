@@ -9,6 +9,7 @@ const browser = await chromium.launch({ headless: true, ...(process.env.STUDIO_L
 const results = [];
 try {
   for (const scenario of ["no-session", "invalid-session", "expired-session"]) {
+    console.log(`CLIENT_ACCESS_LOGIN_CASE=${scenario}`);
     const context = await browser.newContext();
     let rejectedAuthRequests = 0;
     await context.route("**/*", async route => {

@@ -95,11 +95,12 @@ jobs:
           '''
           Path("studio-las-config.js").write_text(config, encoding="utf-8")
 
-          html_path = Path("studio-las-os.html")
-          html = html_path.read_text(encoding="utf-8")
-          if production_origin not in html:
-              raise SystemExit("Canonical production CSP origin not found; refusing ambiguous staging rewrite")
-          html_path.write_text(html.replace(production_origin, staging_origin), encoding="utf-8")
+          for html_name in ("studio-las-os.html", "tools/client-access-admin.html"):
+              html_path = Path(html_name)
+              html = html_path.read_text(encoding="utf-8")
+              if production_origin not in html:
+                  raise SystemExit("Canonical production CSP origin not found; refusing ambiguous staging rewrite")
+              html_path.write_text(html.replace(production_origin, staging_origin), encoding="utf-8")
           PY
 
       - name: Verify preview is pinned to canonical staging
