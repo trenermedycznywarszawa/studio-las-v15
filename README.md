@@ -1,184 +1,257 @@
 # Studio Las OS
 
-Studio Las OS is a private operating system for guiding Studio Las clients through an individual 1:1 process.
+Studio Las OS is a private support system for the trainer-led Studio Las Method.
 
-It is not a public product. It is not sold separately. It is available only to active Studio Las clients in the FUNDAMENT, ROZWÓJ, or continued 1:1 process. When the cooperation ends, the client should lose access to the app.
+It is not a public product, fitness application, SaaS platform, medical diagnostic tool, or automated coach.
 
-Core product rule:
+Core rule:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
 
-## Source-of-truth hierarchy
+## Authority hierarchy
 
-All future decisions must follow this hierarchy:
+All decisions follow this order:
 
-1. Constitution
-2. Product
-3. Architecture
-4. PRD
-5. Implementation
-6. Code
+1. Mission
+2. Constitution
+3. Product
+4. Architecture
+5. PRD
+6. Implementation
+7. Code
+8. Runtime
+9. Public/client surfaces
 
 A lower layer must never redefine a higher layer.
 
-If implementation conflicts with Product, Product wins.
+## Current architecture
 
-If Product conflicts with Constitution, Constitution wins.
+The application uses:
 
-## What Studio Las OS is
+- static HTML entry points,
+- native ES modules,
+- Supabase Auth,
+- Supabase Postgres and Row Level Security,
+- Supabase REST/RPC,
+- GitHub Pages for static delivery.
 
-Studio Las OS is a private client process system for:
+No frontend framework or application server is required for the current scope.
 
-- organizing client history,
-- recording trainer decisions,
-- supporting 1:1 guidance,
-- assigning simple offline protocols,
-- collecting short process signals,
-- preparing future 4/8/12-week reports,
-- helping the trainer notice patterns over time.
+### Production entry point
 
-The system exists to support the Studio Las Method, not to replace it.
+`studio-las-os.html`
 
-## What Studio Las OS is not
+Production rules:
 
-Studio Las OS is not:
+- `STUDIO_LAS_CONFIG.mode` must be exactly `production`,
+- Supabase is the only source of truth,
+- health/process data is never persisted in browser storage,
+- failed remote writes fail visibly,
+- the client uses a Supabase Auth account,
+- client data is returned only through a narrow authenticated RPC projection,
+- the browser never contains a service-role key.
 
-- a fitness app,
-- a wellness app,
-- a habit tracker,
-- a quantified-self product,
-- a SaaS product,
-- a marketplace,
-- a community platform,
-- a medical diagnosis tool,
-- an AI coach for the client,
-- a wearable data platform,
-- a gamified motivation system.
+### Demo entry point
 
-## Current project status
+`demo/studio-las-os-demo.html`
 
-Current status:
+Demo rules:
 
-- Public website exists on GitHub Pages.
-- Main OS file is `studio-management-os-3.0.html`.
-- The OS is currently a static HTML/CSS/JS application.
-- Supabase read/write preview exists in the OS.
-- `localStorage` fallback still exists and must not be removed without a separate migration plan.
-- Supabase migrations exist under `supabase/migrations/`.
-- Client, session, measurement, intake, report, home plan, exercise, and guidance-related structures already exist.
-- Paper-first process tracking is not yet implemented as a production feature.
+- persistent visible DEMO banner,
+- fictional data only,
+- no Supabase configuration,
+- no network data calls,
+- no `localStorage` or `sessionStorage`,
+- changes exist only in memory and disappear after reload.
 
-## Main product principles
+### Retired entry point
 
-1. The client should not start the morning from the phone.
-2. Morning guidance should happen offline, on paper.
-3. The app records only a short signal after the offline protocol.
-4. The trainer interprets the signal in context.
-5. Reports show patterns across time.
-6. The app must reduce chaos, not create new tasks.
-7. The app must lower fear of movement, not increase self-monitoring anxiety.
-8. The system must protect the role of the trainer.
-9. Data collection must be minimal and purposeful.
-10. No feature should exist only because it is technically possible.
+`studio-management-os-3.0.html`
 
-## Strategic decisions currently in force
+The historical path is now a deprecation and migration gate. It does not run the former application, read client data, or save data. Git history remains the recovery source for the old implementation.
 
-1. The First Diagnostic Visit currently costs 300 PLN.
-2. The 300 PLN fee may be deducted from the package if the client enters the process under the current offer rules.
-3. The Studio Las process follows the System 4 Kroków.
-4. The app processes health-related data: pain, symptoms, health history, treatment, supplementation, process notes, and individual recommendations.
-5. Data is entered manually.
-6. There are no integrations with Apple Health, Garmin, WHOOP, Oura, Tanita API, or other wearable systems.
-7. The client sees instructions and summaries only.
-8. The client does not see full trainer notes.
-9. The system should support future 4/8/12-week reports.
-10. AI may later support the trainer in report analysis, but the client-facing AI coach is out of scope.
-11. The public website still leads to the diagnostic form.
-12. The app may be mentioned as part of the process, but not as the main public product.
-13. We are not creating a new application from scratch.
+## Module map
 
-Pricing is business data. If the offer changes, update this section in a focused documentation commit.
+- `assets/os/runtime.js` — strict production configuration, session-storage boundary, local-data guard, canonical labels.
+- `assets/os/data.js` — Supabase Auth, REST/RPC client, repositories, all production persistence.
+- `assets/os/decision-support.js` — non-medical attention signals for trainer review.
+- `assets/os/app.js` — application orchestration and role routing.
+- `assets/os/ui/common.js` — safe DOM and shared form helpers.
+- `assets/os/ui/forms.js` — trainer and client forms.
+- `assets/os/ui/trainer.js` — trainer workspace.
+- `assets/os/ui/client.js` — client-safe portal.
+- `assets/os/styles.css` — shared visual layer.
 
-## Architecture overview
+The UI cannot select a local or cloud storage adapter. Production has one data repository and it writes to Supabase only.
 
-Current architecture is intentionally simple:
+## Canonical vocabulary
 
-- Static public website files.
-- Static Studio Las OS HTML file.
-- Inline JavaScript and CSS in the OS file.
-- Supabase for backend data.
-- Browser storage fallback for legacy/local operation.
-- GitHub Pages for hosting.
+Runtime name:
 
-Important current files and folders:
+- `Studio Las OS`
 
-- `index.html` — public homepage.
-- `ankieta-kontakt.html` — diagnostic/contact path.
-- `strefa-klienta.html` — client zone entry.
-- `studio-management-os-3.0.html` — current OS.
-- `studio-las-config.js` — runtime configuration surface.
-- `docs/constitution/` — highest documentation authority and decision hierarchy.
-- `docs/product/` — Studio Las Method and product layer.
-- `docs/` — operating, architecture, data, implementation, and review documentation.
-- `supabase/migrations/` — database migrations.
-- `supabase/importer/` — legacy import tooling.
+Cooperation types:
 
-## Current stack
+- `diagnostic_visit` — Pierwsza Wizyta Diagnostyczna,
+- `twelve_week_process` — Proces 12-tygodniowy,
+- `continuation` — Prowadzenie kontynuacyjne.
 
-- HTML
-- CSS
-- Vanilla JavaScript
-- Supabase REST/Auth
-- Supabase SQL migrations
-- GitHub Pages
-- No required frontend framework
-- No required npm runtime for the public app
+Process stages:
 
-## Rules for working with this repository
+1. Diagnostyka i punkt startowy
+2. Plan i pierwsze decyzje
+3. Prowadzona praca 1:1
+4. Raport i decyzja co dalej
 
-Before changing code, read in this order:
+The historical `clients.package` column is retained only for migration compatibility. New code must use `clients.engagement_type`.
 
-1. `README.md`
-2. `docs/constitution/README.md`
-3. `docs/product/README.md`
-4. `docs/product/00_PRODUCT_MODEL.md`
-5. `docs/product/02_STUDIO_LAS_METHOD.md`
-6. `docs/STUDIO_LAS_OS_BLUEPRINT.md`
-7. `docs/DATA_POLICY.md`
-8. `docs/PAPER_FIRST_PROTOCOLS.md`
-9. Relevant architecture documents when they exist.
-10. Relevant implementation plans only after Architecture approves the direction.
+## Authentication and client access
 
-Every change should be small, reversible, and aligned with the private 1:1 service model.
+Trainer and client identities are managed by Supabase Auth.
 
-Preferred workflow:
+An authenticated user maps to:
 
-1. Confirm the source-of-truth layer that governs the change.
-2. Audit current code and data structures.
-3. Describe the intended change.
-4. Check whether existing tables/functions already solve part of the problem.
-5. Avoid broad refactors.
-6. Implement the smallest safe step.
-7. Manually test trainer flow and client flow.
-8. Document risk and next step.
+1. `auth.users`,
+2. `public.profiles`,
+3. for clients: exactly one active `public.client_users` relationship.
+
+Client access is revoked by revoking the relationship and/or disabling the Auth account.
+
+The production frontend does not:
+
+- create client Auth accounts,
+- store passwords,
+- generate local access codes,
+- use a trainer-preview bypass,
+- expose service-role credentials.
+
+Client account provisioning and revocation are trusted administrative operations performed outside the public browser runtime.
+
+## Database and RLS hardening
+
+Apply migrations in repository order, including:
+
+`supabase/migrations/012_security_hardening.sql`
+
+This migration:
+
+- removes the legacy client access-code table,
+- establishes canonical Auth/RLS helper functions,
+- forces RLS on sensitive tables,
+- removes anonymous table access,
+- recreates canonical trainer policies for client records,
+- removes direct client policies on process tables,
+- replaces client-safe views with explicit RPC boundaries,
+- adds the `client_portal_snapshot()` RPC,
+- adds the validated `save_client_checkin()` RPC,
+- enforces one active Studio Las client mapping per client account,
+- adds canonical cooperation vocabulary.
+
+Run afterward:
+
+`supabase/tests/012_security_hardening_audit.sql`
+
+The audit fails when a critical metadata invariant is missing.
+
+## Decision support boundary
+
+Studio Las OS does not make medical or training decisions.
+
+The decision-support module may identify an input that deserves trainer attention, for example:
+
+- a reported increase in symptoms,
+- very low readiness,
+- very high perceived effort,
+- a manually marked new symptom or risk concern.
+
+It may not output:
+
+- an automated diagnosis,
+- a treatment recommendation,
+- an automatic progression or regression decision,
+- an automatic plan change,
+- a client-facing medical interpretation.
+
+The trainer records the actual decision separately and remains responsible for context and communication.
+
+## Data policy
+
+The system may process identity, contact, session, movement, pain/symptom, health-history, measurement, plan, and report information needed for the private Studio Las process.
+
+Data must not be used for:
+
+- gamification,
+- marketing profiling,
+- mass analytics,
+- unrelated lifestyle surveillance,
+- curiosity-driven tracking.
+
+Sensitive data must never be stored in:
+
+- URLs or query strings,
+- browser logs,
+- analytics events,
+- push notifications,
+- public fixtures,
+- screenshots shared publicly,
+- Git commits, issues, or pull-request comments,
+- browser `localStorage`.
+
+Supabase Auth tokens are stored only in `sessionStorage`. This is an authentication session, not health-data persistence.
+
+## Production gate
+
+Do not enter real client health/process data until all conditions are satisfied:
+
+1. Migration `012_security_hardening.sql` has been applied to the target Supabase project.
+2. `012_security_hardening_audit.sql` completes without exception.
+3. Seeded role tests prove Trainer A cannot read Trainer B's client.
+4. Seeded role tests prove Client A cannot read Client B's snapshot.
+5. Revoking `client_users.status` blocks access immediately.
+6. Browser inspection shows all production process writes go only to Supabase.
+7. Production refuses to start when configuration is missing or not explicitly marked `production`.
+8. No service-role key exists in the repository, browser, deployment files, or browser storage.
+9. A separate RODO/legal review defines legal basis, notices, retention, export/deletion, processors, and incident response.
+
+Technical hardening is not a declaration of legal RODO/GDPR compliance.
+
+## Legacy browser-data migration
+
+The production runtime refuses to start if known historical Studio Las data keys remain in `localStorage`.
+
+This is intentional. A silent fallback would create two sources of truth.
+
+Required sequence:
+
+1. export the historical local data,
+2. preserve a secure backup outside the public repository,
+3. run the existing importer in dry-run mode,
+4. review rejected or ambiguous records,
+5. import to a non-production Supabase environment,
+6. validate counts and relationships,
+7. apply to the approved target environment,
+8. verify records in Supabase,
+9. remove historical browser data only after verification.
+
+The application does not automatically migrate unknown browser profiles.
 
 ## Security rules
 
-- Never commit Supabase service role keys.
-- Never commit private client data.
+- Never commit Supabase service-role keys.
+- Never commit real client data.
 - Never put secrets in frontend code.
-- Never put health-sensitive data in URLs.
-- Never put health-sensitive data in logs.
-- Never put health-sensitive data in push notifications.
-- Never expose full trainer notes to the client.
-- Use client-safe views/policies for client-facing data.
-- Treat pain, symptoms, treatment history, supplementation, and trainer notes as sensitive operational data.
-- Any production change involving health data must be reviewed from a RODO/legal perspective later.
+- Never use production data as demo fixtures.
+- Never expose full trainer notes to clients.
+- Never rely on `noindex` as access control.
+- Never add a local persistence fallback to production.
+- Never add a custom authentication code verified in frontend JavaScript.
+- Never add direct client RLS access to sensitive base tables when a narrow RPC projection is sufficient.
+- Never represent an attention signal as a medical conclusion.
 
-## Bans for future changes
+## Product bans
 
 Do not add:
 
@@ -189,37 +262,25 @@ Do not add:
 - leaderboards,
 - community features,
 - push notifications,
-- wearable integrations,
+- wearable ingestion,
 - automatic medical interpretation,
-- client-facing AI coach,
-- supplement advice module as medical advice,
-- a separate app or framework,
-- a new SaaS-like product direction,
-- broad tracking that does not support trainer decisions or reports.
+- client-facing AI coaching,
+- broad daily tracking,
+- a separate SaaS product direction.
 
-Do not change without a separate explicit task:
+## Required reading before changes
 
-- authentication,
-- Supabase config,
-- existing login logic,
-- existing public site layout,
-- existing `localStorage` fallback,
-- SQL migrations,
-- production database data.
+1. `docs/constitution/README.md`
+2. Constitution documents in order
+3. `docs/governance/00_SOURCE_OF_TRUTH_REGISTRY.md`
+4. `docs/product/README.md`
+5. Relevant Product documents
+6. Relevant Architecture documents
+7. `docs/architecture/09_SECURITY_RUNTIME_ARCHITECTURE.md` for authentication, data, RLS, runtime, client portal, demo, or decision-support changes
+8. Relevant PRD and implementation plan only after Architecture approves the direction
 
-## Checklist before every change
+## Final rule
 
-Before every change, answer:
+Studio Las OS should not become more impressive.
 
-- Does this reduce client chaos?
-- Does this lower fear of movement?
-- Does this help the trainer make a better decision?
-- Does this support a 4/8/12-week report?
-- Can this work without morning phone use?
-- Is the collected data minimal?
-- Is this free from gamification?
-- Is this free from medical diagnosis claims?
-- Does this preserve the trainer's role?
-- Does this avoid sensitive data in URLs/logs/notifications?
-- Can this be tested manually without touching production data?
-- Does this avoid unnecessary refactor?
+It should become safer, calmer, easier to understand, and more useful to the trainer-led process.

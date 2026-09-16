@@ -2,3 +2,9 @@ tmp/
 *.local
 .env
 .env.*
+
+# Studio Las target backup and local restore evidence — never commit.
+studio-las-target-backup-*/
+*.studio-las-backup.sql
+studio-las-backup-manifest.json
+studio-las-restore-preflight.log
