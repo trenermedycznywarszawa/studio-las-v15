@@ -9,6 +9,7 @@ const output = join(root, ".deploy", "studio-las-os");
 const files = [
   "studio-las-os.html",
   "studio-las-config.js",
+  "favicon.ico",
   "tools/client-access-admin.html",
   "tools/client-access-admin.js",
   "tools/client-access-bootstrap.js"

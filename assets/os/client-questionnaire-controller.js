@@ -119,6 +119,7 @@ export class ClientQuestionnaireController {
         this.notify();
         return;
       }
+      await this.onPortalReload();
       this.reset();
       this.notify();
     } catch (error) {
