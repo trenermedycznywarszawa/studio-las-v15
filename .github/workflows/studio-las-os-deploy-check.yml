@@ -5,6 +5,7 @@ on:
     paths:
       - "studio-las-os.html"
       - "studio-las-config.js"
+      - "favicon.ico"
       - "assets/os/**"
       - "tools/client-access-admin.html"
       - "tools/client-access-admin.js"
@@ -17,6 +18,7 @@ on:
     paths:
       - "studio-las-os.html"
       - "studio-las-config.js"
+      - "favicon.ico"
       - "assets/os/**"
       - "tools/client-access-admin.html"
       - "tools/client-access-admin.js"
@@ -49,6 +51,7 @@ jobs:
           test -f .deploy/studio-las-os/index.html
           test -f .deploy/studio-las-os/studio-las-os.html
           test -f .deploy/studio-las-os/studio-las-config.js
+          test -f .deploy/studio-las-os/favicon.ico
           test -f .deploy/studio-las-os/assets/os/app.js
           test -f .deploy/studio-las-os/tools/client-access-admin.html
           test -f .deploy/studio-las-os/tools/client-access-admin.js
