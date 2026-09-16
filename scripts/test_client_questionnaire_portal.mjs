@@ -39,10 +39,16 @@ assert.match(runtime, /questionnaire:\s*state\.clientQuestionnaire\?\.model/,
 const closeMatch = questionnaireController.match(/async close\(\)\s*\{([\s\S]*?)\n  \}\n\n  setAnswer/);
 assert.ok(closeMatch, "Questionnaire close must be asynchronous so pending saves can finish.");
 const closeBody = closeMatch[1];
+const flushIndex = closeBody.indexOf("await this.flushPendingSaves()");
+const reloadIndex = closeBody.indexOf("await this.onPortalReload()");
+const resetIndex = closeBody.indexOf("this.reset()");
 assert.ok(
-  closeBody.indexOf("await this.flushPendingSaves()") >= 0
-    && closeBody.indexOf("await this.flushPendingSaves()") < closeBody.indexOf("this.reset()"),
+  flushIndex >= 0 && flushIndex < resetIndex,
   "Questionnaire close must flush the latest autosave before clearing controller state."
+);
+assert.ok(
+  reloadIndex >= 0 && flushIndex < reloadIndex && reloadIndex < resetIndex,
+  "Questionnaire close must refresh portal assignment metadata after saving and before closing the form."
 );
 
 for (const source of [ui, questionnaireUi, runtime]) {
