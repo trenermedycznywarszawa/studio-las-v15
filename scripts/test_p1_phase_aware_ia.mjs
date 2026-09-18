@@ -113,4 +113,11 @@ assert.match(
 assert.match(inquiryControllerSource, /render\(workspace, \{ activeClientId = ""/);
 assert.doesNotMatch(inquiryControllerSource, /document\.querySelector\("\.client-select"\)/);
 
+// Pilot trainer UI must stay focused on the real intake path: public first contact -> trainer decision -> explicit conversion.
+assert.doesNotMatch(trainerSource, /newClientForm|Dodaj klienta/);
+assert.doesNotMatch(trainerSource, /Jedno źródło prawdy/);
+assert.doesNotMatch(trainerSource, /Brak localStorage i kolejki offline/);
+assert.doesNotMatch(appSource, /onCreateClient:/);
+assert.match(trainerSource, /Wybierz klienta, aby zobaczyć jego proces\./);
+
 console.log("P1-A phase-aware information architecture tests completed");
