@@ -247,11 +247,6 @@ function renderTrainerState() {
     onReload: () => loadTrainer(state.activeClientId).catch(handleRuntimeError),
     onLogout: () => logout().catch(handleRuntimeError),
     onManageMfa: () => showMfaManagement(),
-    onCreateClient: async values => {
-      await withWrite("Dodawanie klienta", () =>
-        state.repository.createClient(state.profile.id, values), result => loadTrainerWorkspace(result?.id || "", true)
-      );
-    },
     onSavePwd: async values => {
       await withWrite("Zapisywanie PWD", () => savePwdWorkflow(state.repository, state.activeClientId, values), reloadWorkspace);
     },
