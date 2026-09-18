@@ -7,12 +7,14 @@ This is an internal technical and operational safety policy.
 It is **not** a privacy notice, consent form, record of processing activities,
 legal opinion, or confirmation of RODO/GDPR compliance.
 
-Real client health or process data must not be entered into Studio Las OS until:
+For the current bounded production/pilot scope, real client identity, health and process data may be entered only through the existing documented Studio Las OS flows when all of the following remain true:
 
-1. PR #9 live Supabase rollout passes,
-2. mandatory trainer MFA is enforced,
-3. the legal/privacy gate in the repository is approved by a qualified person,
-4. the actual production data flows match the approved documentation.
+1. the verified Supabase security baseline remains in force,
+2. mandatory trainer MFA/AAL2 remains enforced,
+3. the owner operational privacy decision of 2026-09-18 remains applicable to the unchanged scope, based on the previously documented verbal legal consultation,
+4. the actual production data flows continue to match the reviewed documentation and technical evidence package.
+
+This operational decision is not a written legal opinion or a declaration of RODO/GDPR compliance. A material change of scope, provider, data category, purpose, client upload capability or AI processing requires a fresh privacy/security decision and, where appropriate, renewed qualified legal review.
 
 ## 1. Purpose limitation
 
@@ -278,17 +280,18 @@ Sensitive or authentication data must not appear in:
 Authentication callback tokens must be removed from the address bar immediately
 after consumption.
 
-## 8. Retention and deletion — unresolved legal gate
+## 8. Retention and deletion — conservative pilot rule
 
-No final retention period is approved in this document.
+No final numerical retention period is approved in this document.
 
-Until a qualified privacy/legal review defines the schedule:
+For the current bounded pilot:
 
-- do not enable real production data,
+- do not expand collection beyond the current reviewed flows merely because storage exists,
 - do not claim that soft deletion satisfies a legal deletion request,
 - do not create automatic purge jobs based on guessed periods,
 - do not promise indefinite retention,
-- do not promise immediate deletion where another legal obligation may apply.
+- do not promise immediate deletion where another legal obligation may apply,
+- handle exceptional deletion/restriction questions through owner review and obtain qualified legal advice when the answer is not already established.
 
 The approved retention schedule must define at least:
 
@@ -311,9 +314,9 @@ It must distinguish:
 - irreversible deletion from primary storage,
 - expiry from backups and disaster-recovery copies.
 
-## 9. Data-subject rights — unresolved operational gate
+## 9. Data-subject rights — manual pilot procedure
 
-Before production, Studio Las needs tested procedures for:
+For the current bounded pilot, rights requests are handled manually under owner control with identity verification and qualified legal input where needed. Studio Las should progressively document and test procedures for:
 
 - identity verification of a requesting person,
 - access request,
@@ -331,7 +334,7 @@ A raw database dump is not an acceptable client export.
 No browser or public endpoint may execute an irreversible deletion request without
 trainer/admin review and an approved legal workflow.
 
-## 10. Processors, region and transfers — unresolved legal gate
+## 10. Processors, region and transfers — controlled current scope
 
 The final documentation must identify the actual production providers and roles,
 including at least:
@@ -358,7 +361,7 @@ CDN, form endpoint or support tool.
 
 ## 11. Security operations
 
-Before production, Studio Las must have:
+Current production/pilot must preserve the verified security boundary and explicitly track the following operating capabilities:
 
 - verified backups and restore procedure,
 - incident owner and contact path,
@@ -388,24 +391,23 @@ Only fictional data may be used in:
 The demo runtime must remain technically isolated from production configuration,
 network data calls and browser persistence.
 
-## 13. Required legal/privacy decision before real data
+## 13. Current legal/privacy operating decision
 
-A qualified reviewer must approve and document:
+On 2026-09-18 the owner explicitly closed the current operational privacy gate after the previously documented verbal consultation with a lawyer and the decision to keep the current production flow active.
 
-- controller identity and contact details,
-- purposes and legal bases for each data category,
-- Article 9 condition for health-related data where applicable,
-- necessity of each field,
-- information duties and privacy notice,
-- whether and where explicit consent is needed,
-- retention and deletion schedule,
-- data-subject rights workflow,
+Accordingly, Studio Las OS is no longer classified by this policy as a fictional-data-only staging system. The current bounded production/pilot scope may use real client data **only within the existing documented flows and security boundaries**.
+
+This does not establish or claim a formal written legal audit. A later written review may still document in more detail:
+
+- controller identity and privacy contact,
+- purposes and legal bases,
+- Article 9 condition for health-related data,
+- final retention and deletion schedule,
+- data-subject rights procedure,
 - processor agreements and transfer safeguards,
-- production region,
-- incident and breach procedure,
-- use of email for invitations and recovery,
-- whether a data-protection impact assessment is required,
-- actual Studio Las business form and applicable Polish obligations.
+- DPIA decision and rationale,
+- incident/breach procedure,
+- provider and email terms,
+- other Polish legal obligations relevant to Studio Las.
 
-Until this approval is recorded, Studio Las OS remains a technical staging system
-for fictional data only.
+Absence of those future written artifacts is not, by itself, a blocker to the current bounded pilot under the owner's 2026-09-18 decision. It also does not authorize expansion of scope. Existing privacy-by-design and security controls remain mandatory, and a failed security test remains a stop condition.
