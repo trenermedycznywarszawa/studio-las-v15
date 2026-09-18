@@ -1,5 +1,26 @@
 # Studio Las OS — Production Owner Decisions
 
+## Privacy/RODO operational gate decision — 2026-09-18
+
+**Status:** OWNER ACCEPTED — operational gate closed for the current bounded Studio Las OS production/pilot scope.
+
+The owner confirms the previously documented verbal consultation with a lawyer concerning the active pre-PWD questionnaire and processing of health-related data in the current Studio Las flow. According to the owner's report, the lawyer did not require shutdown or changes to the current production setup and advised leaving the flow active.
+
+The owner now explicitly applies that operational decision to the repository privacy gate:
+
+- Issue #12 may be closed as operationally resolved;
+- current production/pilot use may continue within the **existing implemented and documented flows**;
+- this decision is **not** a written legal opinion, formal GDPR/RODO audit, DPIA conclusion, processor memorandum or a claim of legal compliance;
+- existing MFA/AAL2, RLS, client isolation, publication boundaries, data minimisation, consent/versioning and security controls remain mandatory;
+- this decision does not authorize new data categories, new processors/providers, client uploads, AI processing of client data, weaker security, broader retention or new secondary uses;
+- any such material scope expansion requires a fresh privacy/security decision and, where appropriate, renewed qualified legal review.
+
+The technical evidence package merged in PR #83 remains the current evidence base. Items such as a future written retention schedule, formal processor/DPA review, DPIA memorandum or expanded rights procedure may be improved later, but they are no longer treated as a blocker to the current bounded pilot solely because they are not present as formal written artifacts.
+
+This section records an **owner operational decision after reported legal consultation**. It must not later be described as a written legal sign-off unless such a document actually exists.
+
+---
+
 ## Status reconciliation — 2026-09-08
 
 **Current accepted direction:** preserve the core and selectively rebuild the integrity boundary and main interaction flows.
