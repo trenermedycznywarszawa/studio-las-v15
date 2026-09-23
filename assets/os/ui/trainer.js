@@ -187,9 +187,9 @@ export function renderTrainer(root, model) {
   const content = create("main", { className: "workspace" });
   if (model.loading || model.loadError) content.append(statusBox(
     model.loadError || "Ładowanie procesu…", model.loadError ? "error" : "info"));
-  content.append(knowledgeLibraryPanel(model));
   if (!model.workspace) {
     content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Wybierz klienta, aby zobaczyć jego proces." })));
+    content.append(knowledgeLibraryPanel(model));
   } else {
     const workspace = model.workspace;
     const sections = {
@@ -218,6 +218,7 @@ export function renderTrainer(root, model) {
         ]));
     }
     content.append(...orderTrainerSections(workspace.client.stage, sections));
+    content.append(knowledgeLibraryPanel(model));
   }
 
   if (model.loading || model.loadError) {
