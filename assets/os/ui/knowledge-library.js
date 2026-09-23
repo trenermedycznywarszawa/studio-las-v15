@@ -36,6 +36,17 @@ function cardScore(card, query) {
   return score;
 }
 
+export function searchKnowledgeCards(cards, query, limit = 8) {
+  const q = normalize(query);
+  if (q.length < 2) return [];
+  return (Array.isArray(cards) ? cards : [])
+    .map(card => ({ card, score: cardScore(card, q) }))
+    .filter(item => item.score > 0)
+    .sort((a, b) => b.score - a.score || a.card.slk_id.localeCompare(b.card.slk_id))
+    .slice(0, limit)
+    .map(item => item.card);
+}
+
 function reviewLabel(card) {
   if (card.review_state === "approved") return "Zatwierdzona";
   if (card.review_state === "rejected") return "Odrzucona";
@@ -120,13 +131,7 @@ export function knowledgeLibraryPanel(model) {
       text: `Biblioteka zawiera ${cards.length} kart. Wpisz pytanie lub temat; wyniki pozostają wyłącznie w panelu trenera.`
     }));
   } else {
-    const q = normalize(query);
-    const results = q.length < 2 ? [] : cards
-      .map(card => ({ card, score: cardScore(card, q) }))
-      .filter(item => item.score > 0)
-      .sort((a, b) => b.score - a.score || a.card.slk_id.localeCompare(b.card.slk_id))
-      .slice(0, 8)
-      .map(item => item.card);
+    const results = searchKnowledgeCards(cards, query);
     body.append(create("p", {
       className: "knowledge-result-count",
       text: results.length
