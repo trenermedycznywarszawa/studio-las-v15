@@ -16,6 +16,7 @@ import {
   trainingLoadForm
 } from "./forms.js";
 import { runtimeEnvironmentLabel } from "../runtime.js";
+import { knowledgeLibraryPanel } from "./knowledge-library.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
 import { pwdSection } from "./pwd-section.js";
 import { plansSection } from "./trainer-guidance.js";
@@ -194,6 +195,7 @@ export function renderTrainer(root, model) {
     model.loadError || "Ładowanie procesu…", model.loadError ? "error" : "info"));
   if (!model.workspace) {
     content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Po wyborze zobaczysz proces i formularze zapisujące bezpośrednio do Supabase." })));
+    content.append(knowledgeLibraryPanel(model));
   } else {
     const workspace = model.workspace;
     const sections = {
@@ -222,6 +224,7 @@ export function renderTrainer(root, model) {
         ]));
     }
     content.append(...orderTrainerSections(workspace.client.stage, sections));
+    content.append(knowledgeLibraryPanel(model));
   }
 
   if (model.loading || model.loadError) {
