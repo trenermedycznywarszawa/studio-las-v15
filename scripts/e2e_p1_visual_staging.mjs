@@ -169,6 +169,8 @@ async function selectSyntheticClient(page) {
   const clientId = await select.inputValue();
   assert(/^[0-9a-f-]{20,64}$/i.test(clientId), "Synthetic QA client id is invalid");
   await page.getByRole("heading", { name: CLIENT_NAME }).waitFor({ state: "visible" });
+  // The heading renders from the core snapshot before the final questionnaire RPC completes.
+  await page.waitForFunction(() => !document.querySelector(".client-select")?.disabled);
   return clientId;
 }
 
@@ -270,7 +272,10 @@ async function run() {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   page.on("pageerror", error => pageErrors.push(String(error?.message || error)));
-  page.on("requestfailed", request => failedRequests.push(`${request.method()} ${request.url()}`));
+  page.on("requestfailed", request => {
+    const failure = request.failure();
+    failedRequests.push(`${request.method()} ${request.url()} (${failure?.errorText || "unknown error"})`);
+  });
 
   try {
     token = await loginToAal2(page);

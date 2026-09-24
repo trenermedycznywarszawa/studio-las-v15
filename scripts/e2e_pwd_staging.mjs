@@ -340,7 +340,10 @@ async function run() {
     if (message.type() === "error") consoleErrors.push(message.text());
   });
   page.on("pageerror", error => pageErrors.push(String(error?.message || error)));
-  page.on("requestfailed", request => failedRequests.push(`${request.method()} ${request.url()}`));
+  page.on("requestfailed", request => {
+    const failure = request.failure();
+    failedRequests.push(`${request.method()} ${request.url()} (${failure?.errorText || "unknown error"})`);
+  });
   page.on("request", request => {
     let url;
     try { url = new URL(request.url()); } catch { return; }
