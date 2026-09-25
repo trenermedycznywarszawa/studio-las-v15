@@ -109,6 +109,35 @@ export function assembleTrainerAttentionSnapshot(readResults) {
   return Object.freeze(assertTrainerAttentionSnapshot(snapshot));
 }
 
+export async function collectTrainerAttentionPages(readPage, {
+  pageSize = 200,
+  maxPages = 10000
+} = {}) {
+  if (typeof readPage !== "function") {
+    throw new TypeError("Trainer Attention pagination: readPage must be a function");
+  }
+  if (!Number.isInteger(pageSize) || pageSize < 1) {
+    throw new TypeError("Trainer Attention pagination: pageSize must be a positive integer");
+  }
+  if (!Number.isInteger(maxPages) || maxPages < 1) {
+    throw new TypeError("Trainer Attention pagination: maxPages must be a positive integer");
+  }
+
+  const rows = [];
+  let offset = 0;
+  for (let page = 0; page < maxPages; page += 1) {
+    const chunk = await readPage({ offset, limit: pageSize, page });
+    if (!Array.isArray(chunk)) {
+      throw new TypeError("Trainer Attention pagination: page result must be an array");
+    }
+    if (chunk.length === 0) return Object.freeze(rows);
+    rows.push(...chunk);
+    offset += chunk.length;
+  }
+
+  throw new Error("Trainer Attention pagination: maxPages reached before an empty page");
+}
+
 export function getTrainerAttentionSourceKeys() {
   return SOURCE_KEYS;
 }
