@@ -332,3 +332,25 @@
     flex-basis: 100%;
   }
 }
+
+@media (max-width: 460px) {
+  .sl-runtime-shell .sl-page-head {
+    margin-bottom: 16px;
+  }
+
+  .sl-runtime-actions {
+    gap: 6px;
+    margin-top: 8px;
+  }
+
+  .sl-runtime-date {
+    flex-basis: auto;
+    margin-right: auto;
+    font-size: 11px;
+  }
+
+  .sl-action {
+    min-height: 36px;
+    padding-inline: 11px;
+  }
+}
