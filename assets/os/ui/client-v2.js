@@ -32,7 +32,7 @@ function navLink(label, mark, href, current = false) {
   ]);
 }
 
-function planItem(item, model) {
+function planItem(item) {
   const meta = [item.dosage, item.frequency].filter(Boolean).join(" · ");
   return create("article", { className: "sl-runtime-item" }, [
     create("strong", { text: item.name || "Zadanie" }),
@@ -41,12 +41,11 @@ function planItem(item, model) {
     item.stopCriteria
       ? create("p", { className: "stop-note", text: `Ustalona granica: ${item.stopCriteria}` })
       : null,
-    guidanceVideo(item.videoUrl),
-    clientResponseForm(item, model)
+    guidanceVideo(item.videoUrl)
   ]);
 }
 
-function todayFocus(snapshot, model) {
+function todayFocus(snapshot) {
   const plan = snapshot.homePlan;
   if (!plan) {
     return create("section", { className: "sl-card sl-focus", id: "today-v2-focus" }, [
@@ -80,7 +79,7 @@ function todayFocus(snapshot, model) {
       ? create("div", { className: "sl-focus-cue", text: "Obowiązują ustalenia przekazane na papierze. Tutaj możesz do nich wrócić." })
       : null,
     items.length
-      ? create("div", { className: "sl-runtime-focus-list" }, items.map(item => planItem(item, model)))
+      ? create("div", { className: "sl-runtime-focus-list" }, items.map(planItem))
       : create("div", { className: "sl-runtime-empty" }, [
           create("strong", { text: "Brak przypisanych zadań." }),
           create("p", { text: "Jeżeli to wymaga wyjaśnienia, skontaktuj się z trenerem." })
@@ -104,6 +103,28 @@ function trainerAgreement(snapshot) {
         agreement.nextStep ? create("strong", { text: agreement.nextStep }) : null
       ])
     ])
+  ]);
+}
+
+function signalCard(snapshot, model) {
+  const items = Array.isArray(snapshot.homePlan?.items) ? snapshot.homePlan.items : [];
+  if (!items.length) return null;
+
+  return create("section", { className: "sl-card", id: "today-v2-signal" }, [
+    create("div", { className: "sl-card-head" }, [
+      create("h3", { text: "Po wykonaniu" }),
+      create("span", { className: "sl-card-kicker", text: "Sygnał dla trenera" })
+    ]),
+    create("p", {
+      className: "sl-runtime-signal-intro",
+      text: "Jeśli wydarzyło się coś, co warto zapamiętać przed kolejną decyzją, zostaw krótki sygnał."
+    }),
+    create("div", { className: "sl-runtime-signal-list" }, items.map(item =>
+      create("section", { className: "sl-runtime-signal-item" }, [
+        items.length > 1 ? create("strong", { text: item.name || "Ustalenie" }) : null,
+        clientResponseForm(item, model)
+      ])
+    ))
   ]);
 }
 
@@ -200,7 +221,7 @@ export function renderClientV2(root, model) {
       create("p", { className: "sl-eyebrow", text: `Dzień dobry${clientName ? `, ${clientName}` : ""}` }),
       create("h2", {
         id: "today-v2-title",
-        text: hasPlan ? "Jedna ważna rzecz na dziś." : "Dziś niczego nie trzeba dokładać."
+        text: hasPlan ? "Dziś liczy się to, co ustalone." : "Dziś niczego nie trzeba dokładać."
       }),
       create("p", {
         text: hasPlan
@@ -208,11 +229,7 @@ export function renderClientV2(root, model) {
           : "Nie ma teraz opublikowanej wskazówki. Nie musisz wykonywać ani zgłaszać dodatkowego zadania."
       })
     ]),
-    create("div", {
-      className: "sl-hero-art",
-      role: "img",
-      "aria-label": "Spokojny, leśny motyw wizualny"
-    })
+    create("div", { className: "sl-hero-art", "aria-hidden": "true" })
   ]);
 
   const status = create("div", { className: "sl-runtime-status" }, [
@@ -222,10 +239,11 @@ export function renderClientV2(root, model) {
 
   const mainGrid = create("div", { className: "sl-section-grid" }, [
     create("div", { className: "sl-stack" }, [
-      todayFocus(snapshot, model),
+      todayFocus(snapshot),
       trainerAgreement(snapshot)
     ]),
     create("div", { className: "sl-stack" }, [
+      signalCard(snapshot, model),
       processContext(snapshot)
     ])
   ]);
