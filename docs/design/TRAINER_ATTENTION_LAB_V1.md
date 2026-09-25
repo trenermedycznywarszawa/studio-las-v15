@@ -22,13 +22,45 @@ Every attention item therefore contains:
 
 No score, readiness number, ranking points or automatic plan recommendation is used.
 
+## Visual hierarchy decision
+
+The first version was still slightly too dashboard-like because four equal summary cards competed with the actual exceptions.
+
+V1 now uses:
+
+1. one quiet daily statement: number of open situations and affected clients;
+2. the exception list as the dominant surface;
+3. semantic labels only: urgent review / unresolved contact / new signal / Review;
+4. upcoming Review in a quieter secondary panel;
+5. clients without an open exception hidden behind a disclosure rather than displayed as a competing list.
+
+The interface explicitly says that “no open exception” is not proof that everything is fine.
+
+## Pure attention model
+
+The lab now builds its screen from a source snapshot through `assets/os/trainer-attention-model.js` instead of hard-coding already-interpreted UI cards.
+
+The model reuses the current Studio Las signal path:
+
+- `collectWorkspaceSignals()`;
+- `collectAttentionSignals()`;
+- `withoutReviewedSignals()`.
+
+This matters because the cockpit should not quietly create a second interpretation engine merely for presentation.
+
 ## Important repository finding
 
 The current trainer runtime loads full decision context for one active client at a time through `getClientWorkspace(clientId)`. `listClients()` returns only client-level fields.
 
 Therefore a real cross-client attention inbox is **not** a presentation-only change. Building it by silently fetching every full workspace would increase requests, complexity and trainer-context coupling.
 
-Before production integration, choose and test the smallest safe read model for cross-client attention. Do not add writes or change existing decision semantics as part of the visual experiment.
+The selected V0 direction is documented in `docs/architecture/TRAINER_ATTENTION_READ_MODEL_V0.md`:
+
+- no new production table;
+- no new production RPC for the first experiment;
+- minimal cross-client source reads under existing RLS;
+- reuse the existing JavaScript attention rules;
+- real-data integration only after staging verifies the security and correctness contract.
 
 ## Candidate attention facts already represented in the current domain
 
@@ -46,7 +78,8 @@ Before production integration, choose and test the smallest safe read model for 
 - automatic plan changes;
 - replacing the per-client trainer workspace;
 - new database schema merely to support the mockup;
-- production integration before the read model is reviewed.
+- production integration before the read model is reviewed;
+- fetching every full client workspace to construct the inbox.
 
 ## Success criteria
 
@@ -56,6 +89,6 @@ The lab succeeds if a trainer can answer in a few seconds:
 2. why the person is shown;
 3. what source created that reason;
 4. what question still belongs to the trainer;
-5. which clients do not currently have an open recorded exception.
+5. what is upcoming but not yet competing with open exceptions.
 
-The lab fails if visual polish makes system-generated facts look like approved coaching decisions.
+The lab fails if visual polish makes system-generated facts look like approved coaching decisions or if the attention mechanism increases coach work without improving decisions.
