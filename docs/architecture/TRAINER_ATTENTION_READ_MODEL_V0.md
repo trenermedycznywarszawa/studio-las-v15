@@ -82,9 +82,31 @@ Do **not** deduplicate only by `sourceId`, because one session can legitimately 
 
 ## V0 source snapshot contract
 
+`getTrainerAttentionReadContract()` in `assets/os/trainer-attention-snapshot.js` is the executable source-read contract for the future adapter. It defines the table, deterministic order, query predicates and transfer fields for every source.
+
+### Soft-delete parity is mandatory
+
+The existing per-client workspace excludes soft-deleted rows. The cross-client Attention read must preserve that same boundary.
+
+At the **query boundary**, require `deleted_at=is.null` for:
+
+- `clients`;
+- `sessions`;
+- `training_load_observations`;
+- `pre_session_checks`;
+- `guidance_events`.
+
+`trainer_signal_reviews` does not use a `deleted_at` field in the current schema and must not invent one.
+
+`deleted_at` is a **filter-only field**. Do not transfer it into the Trainer Attention snapshot. A deleted source row must be excluded before mapping into the six source arrays, so it cannot resurrect as a new attention signal.
+
 The future repository read should request only the columns needed by the existing rules.
 
 ### `clients`
+
+Query predicate:
+
+- `deleted_at = is.null`
 
 Transfer:
 
@@ -98,6 +120,10 @@ Transfer:
 Not needed for the inbox: full intake, motivation, fears, health history, contraindications, reports or measurements.
 
 ### `sessions`
+
+Query predicate:
+
+- `deleted_at = is.null`
 
 Transfer:
 
@@ -114,6 +140,10 @@ Do not fetch the full session narrative for the cross-client inbox.
 
 ### `training_load_observations`
 
+Query predicate:
+
+- `deleted_at = is.null`
+
 Transfer:
 
 - `id`
@@ -124,6 +154,10 @@ Transfer:
 - `updated_at`
 
 ### `pre_session_checks`
+
+Query predicate:
+
+- `deleted_at = is.null`
 
 Transfer:
 
@@ -136,8 +170,9 @@ Transfer:
 
 ### `guidance_events`
 
-Query predicate:
+Query predicates:
 
+- `deleted_at = is.null`
 - `kind = client_checkin`
 
 Transfer:
@@ -151,6 +186,10 @@ Transfer:
 `collectWorkspaceSignals()` accepts this minimal `note` projection while remaining backward-compatible with the existing per-client `payload.note` shape.
 
 ### `trainer_signal_reviews`
+
+Query predicates:
+
+- no soft-delete predicate in the current schema.
 
 Transfer:
 
@@ -206,6 +245,7 @@ Additional requirements:
 - the attention read writes nothing;
 - no attention payload is stored in localStorage or another offline cache;
 - only the columns above are transferred;
+- all soft-deletable source queries apply `deleted_at=is.null` before mapping rows;
 - opening an item loads the existing per-client workspace rather than copying its full context into the inbox.
 
 Existing RLS must be verified on staging; its presence in migration files is not sufficient evidence that the deployed policies behave as required.
@@ -229,7 +269,8 @@ Required comparison cases:
 - upcoming Review;
 - client with no open recorded exception;
 - one failed source read must block the whole inbox;
-- paginated source larger than one server-capped page must remain complete.
+- paginated source larger than one server-capped page must remain complete;
+- a soft-deleted client/source row must not appear in the source snapshot or Attention output.
 
 If the new inbox disagrees with the existing per-client path, integration stops. Do not “fix” the discrepancy in presentation code.
 
@@ -277,6 +318,7 @@ Do not integrate if any implementation requires:
 - autonomous plan recommendations;
 - weakening AAL2/RLS boundaries;
 - rendering a partial snapshot after one source read fails;
+- omitting `deleted_at=is.null` on any soft-deletable source read;
 - assuming a short page means pagination is complete;
 - deriving the business date from UTC instead of Studio-local calendar time;
 - a production migration before backup/restore readiness.
