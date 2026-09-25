@@ -7,7 +7,10 @@ on:
       - "assets/os/trainer-attention-snapshot.js"
       - "assets/os/trainer-signals.js"
       - "assets/os/decision-support.js"
+      - "tools/trainer-attention-lab.js"
+      - "tools/trainer-attention-lab.html"
       - "scripts/test_trainer_attention_model.mjs"
+      - "scripts/test_trainer_attention_lab.mjs"
       - ".github/workflows/trainer-attention-model-check.yml"
   workflow_dispatch:
 
@@ -26,3 +29,5 @@ jobs:
           persist-credentials: false
       - name: Run pure model regression
         run: node scripts/test_trainer_attention_model.mjs
+      - name: Load synthetic Trainer Attention Lab
+        run: node scripts/test_trainer_attention_lab.mjs
