@@ -1,0 +1,311 @@
+@import url("./design-system.css");
+
+.sl-runtime-shell {
+  min-height: 100vh;
+  background:
+    radial-gradient(circle at 16% -8%, rgba(111, 130, 106, 0.12), transparent 32rem),
+    linear-gradient(145deg, #f8f4ed 0%, var(--sl-color-canvas) 58%, #ebe4d8 100%);
+}
+
+.sl-runtime-shell .sl-page {
+  width: min(var(--sl-content-client), 100%);
+}
+
+.sl-runtime-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+}
+
+.sl-runtime-date {
+  margin-right: 6px;
+  color: var(--sl-color-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+.sl-action {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--sl-color-line);
+  border-radius: var(--sl-radius-control);
+  background: rgba(255, 253, 248, 0.78);
+  color: var(--sl-color-ink);
+  font: inherit;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: background var(--sl-motion-fast), border-color var(--sl-motion-fast);
+}
+
+.sl-action:hover,
+.sl-action:focus-visible {
+  border-color: var(--sl-color-line-strong);
+  background: var(--sl-color-paper-raised);
+  outline: 3px solid rgba(111, 130, 106, 0.12);
+}
+
+.sl-action:disabled {
+  cursor: default;
+  opacity: 0.55;
+}
+
+.sl-action-danger {
+  color: var(--sl-color-danger);
+}
+
+.sl-action-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--sl-color-line);
+  border-radius: var(--sl-radius-control);
+  color: var(--sl-color-forest);
+  text-decoration: none;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sl-runtime-status {
+  margin-bottom: 16px;
+}
+
+.sl-runtime-status .status {
+  margin-bottom: 8px;
+}
+
+.sl-runtime-focus-list {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.sl-runtime-item {
+  padding: 15px 16px;
+  border: 1px solid var(--sl-color-line);
+  border-radius: 12px;
+  background: rgba(255, 253, 248, 0.82);
+}
+
+.sl-runtime-item > strong {
+  display: block;
+  font-size: 15px;
+  line-height: 1.35;
+}
+
+.sl-runtime-item > p {
+  margin: 6px 0 0;
+  color: var(--sl-color-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sl-runtime-item .stop-note {
+  color: #6c4a20;
+}
+
+.sl-runtime-item > a {
+  display: inline-flex;
+  margin-top: 10px;
+  color: var(--sl-color-forest);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sl-runtime-item .client-response {
+  margin-top: 14px;
+  padding-top: 14px;
+  border-top: 1px solid var(--sl-color-line);
+}
+
+.sl-runtime-shell .client-response > p {
+  margin: 0 0 9px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sl-runtime-shell .client-response .field {
+  display: grid;
+  gap: 6px;
+}
+
+.sl-runtime-shell .client-response .field > span {
+  color: var(--sl-color-muted);
+  font-size: 11px;
+  font-weight: 750;
+}
+
+.sl-runtime-shell .client-response textarea {
+  width: 100%;
+  min-height: 76px;
+  resize: vertical;
+  padding: 11px 12px;
+  border: 1px solid var(--sl-color-line);
+  border-radius: var(--sl-radius-control);
+  background: var(--sl-color-paper-raised);
+  color: var(--sl-color-ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.sl-runtime-shell .client-response textarea:focus-visible {
+  border-color: var(--sl-color-moss);
+  outline: 3px solid rgba(111, 130, 106, 0.12);
+}
+
+.sl-runtime-shell .client-response .form-actions {
+  margin-top: 9px;
+}
+
+.sl-runtime-shell .client-response .button,
+.sl-runtime-shell .client-response .button.primary {
+  min-height: 38px;
+  padding: 0 13px;
+  border: 1px solid var(--sl-color-forest);
+  border-radius: var(--sl-radius-control);
+  background: var(--sl-color-forest);
+  color: #fffdf8;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sl-runtime-empty {
+  padding: 18px;
+  border: 1px dashed var(--sl-color-line-strong);
+  border-radius: 12px;
+  background: rgba(111, 130, 106, 0.05);
+}
+
+.sl-runtime-empty strong {
+  display: block;
+  font-family: var(--sl-font-display);
+  font-size: 22px;
+  font-weight: 500;
+}
+
+.sl-runtime-empty p {
+  margin: 8px 0 0;
+  color: var(--sl-color-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.sl-runtime-agreement {
+  display: grid;
+  grid-template-columns: 42px minmax(0, 1fr);
+  gap: 14px;
+}
+
+.sl-runtime-agreement p {
+  margin: 4px 0 0;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.sl-runtime-agreement strong {
+  display: block;
+  margin-top: 10px;
+  color: var(--sl-color-forest);
+  font-size: 12px;
+}
+
+.sl-process-facts {
+  display: grid;
+  gap: 12px;
+}
+
+.sl-process-fact {
+  display: grid;
+  gap: 3px;
+}
+
+.sl-process-fact span {
+  color: var(--sl-color-muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.09em;
+  text-transform: uppercase;
+}
+
+.sl-process-fact strong {
+  font-size: 14px;
+  line-height: 1.45;
+}
+
+.sl-process-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--sl-color-line);
+}
+
+.sl-runtime-secondary {
+  display: grid;
+  gap: 12px;
+  margin-top: 18px;
+}
+
+.sl-runtime-secondary .panel,
+.sl-runtime-secondary .details-card,
+.sl-runtime-secondary > section {
+  margin: 0;
+  border: 1px solid var(--sl-color-line);
+  border-radius: var(--sl-radius-card);
+  background: rgba(255, 253, 248, 0.76);
+  box-shadow: none;
+}
+
+.sl-runtime-secondary .panel {
+  padding: 20px;
+}
+
+.sl-runtime-secondary .details-card {
+  padding: 0;
+  overflow: hidden;
+}
+
+.sl-runtime-secondary .details-card > summary {
+  padding: 16px 18px;
+  cursor: pointer;
+  font-family: var(--sl-font-display);
+  font-size: 17px;
+}
+
+.sl-runtime-secondary .details-card > *:not(summary) {
+  margin-left: 18px;
+  margin-right: 18px;
+}
+
+.sl-runtime-secondary .details-card > *:last-child {
+  margin-bottom: 18px;
+}
+
+.sl-runtime-secondary .record {
+  box-shadow: none;
+}
+
+.sl-runtime-disclaimer {
+  margin: 18px 4px 0;
+  color: var(--sl-color-muted);
+  font-size: 11px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .sl-runtime-actions {
+    justify-content: flex-start;
+    margin-top: 10px;
+  }
+
+  .sl-runtime-date {
+    flex-basis: 100%;
+  }
+}
