@@ -1,4 +1,10 @@
 import { collectAttentionSignals, signalIdentity, signalInstanceKey, signalTypeLabel, withoutReviewedSignals } from "./decision-support.js";
+
+function clientObservationContext(event) {
+ const note = Object.prototype.hasOwnProperty.call(event || {}, "note") ? event.note : event?.payload?.note;
+ return String(note || "").trim() || "Zapisana odpowiedź klienta.";
+}
+
 export function collectWorkspaceSignals(workspace = {}) {
  const signals = [
   ...(workspace.sessions || []).flatMap(session=>collectAttentionSignals({session}).signals),
@@ -6,7 +12,7 @@ export function collectWorkspaceSignals(workspace = {}) {
   ...(workspace.preSessionChecks || []).flatMap(preSessionCheck=>collectAttentionSignals({preSessionCheck}).signals),
   ...(workspace.guidanceEvents || []).map(event=>{
    const source={id:"client-observation",source:"client-response",sourceDate:event.event_date,sourceId:event.id,sourceRevision:event.created_at};
-   return {...source,signalKey:signalInstanceKey(source),level:"review",label:"Odpowiedź klienta do przeglądu",context:event.payload?.note || "Zapisana odpowiedź klienta.",trainerQuestion:"Czy ta informacja zmienia następne ustalenie?"};
+   return {...source,signalKey:signalInstanceKey(source),level:"review",label:"Odpowiedź klienta do przeglądu",context:clientObservationContext(event),trainerQuestion:"Czy ta informacja zmienia następne ustalenie?"};
   })
  ];
  const keys=new Set(signals.map(signal=>signal.signalKey));
