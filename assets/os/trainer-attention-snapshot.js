@@ -16,6 +16,45 @@ const REQUIRED_FIELDS = Object.freeze({
   signalReviews: Object.freeze(["id", "client_id", "signal_key", "outcome", "contact_resolved_at"])
 });
 
+const READ_CONTRACT = Object.freeze({
+  clients: Object.freeze({
+    table: "clients",
+    order: "id.asc",
+    predicates: Object.freeze({ deleted_at: "is.null" }),
+    transfer: Object.freeze(["id", "name", "status", "stage", "next_session_date", "next_review_date"])
+  }),
+  sessions: Object.freeze({
+    table: "sessions",
+    order: "id.asc",
+    predicates: Object.freeze({ deleted_at: "is.null" }),
+    transfer: Object.freeze(["id", "client_id", "date", "vas_before", "vas_after", "readiness", "sleep_quality", "updated_at"])
+  }),
+  trainingLoad: Object.freeze({
+    table: "training_load_observations",
+    order: "id.asc",
+    predicates: Object.freeze({ deleted_at: "is.null" }),
+    transfer: Object.freeze(["id", "client_id", "observed_at", "rpe", "zone_high_min", "updated_at"])
+  }),
+  preSessionChecks: Object.freeze({
+    table: "pre_session_checks",
+    order: "id.asc",
+    predicates: Object.freeze({ deleted_at: "is.null" }),
+    transfer: Object.freeze(["id", "client_id", "check_date", "red_flag_concern", "new_symptoms", "updated_at"])
+  }),
+  guidanceEvents: Object.freeze({
+    table: "guidance_events",
+    order: "id.asc",
+    predicates: Object.freeze({ deleted_at: "is.null", kind: "eq.client_checkin" }),
+    transfer: Object.freeze(["id", "client_id", "event_date", "created_at", "note"])
+  }),
+  signalReviews: Object.freeze({
+    table: "trainer_signal_reviews",
+    order: "id.asc",
+    predicates: Object.freeze({}),
+    transfer: Object.freeze(["id", "client_id", "signal_key", "outcome", "contact_resolved_at"])
+  })
+});
+
 const REVIEW_OUTCOMES = new Set([
   "noted_no_change",
   "changed_guidance",
@@ -140,4 +179,8 @@ export async function collectTrainerAttentionPages(readPage, {
 
 export function getTrainerAttentionSourceKeys() {
   return SOURCE_KEYS;
+}
+
+export function getTrainerAttentionReadContract() {
+  return READ_CONTRACT;
 }
