@@ -45,6 +45,12 @@ Missing source arrays, malformed source identities, invalid review outcomes, a r
 
 This protects against the most dangerous false negative: a missing `signalReviews` read making an unresolved `contact_required` situation look quiet.
 
+## Studio-local business date
+
+`buildTrainerAttentionModel()` requires an explicit `today` value in Studio-local calendar form (`YYYY-MM-DD`). It must not infer the business date from `new Date().toISOString()`.
+
+The future caller is responsible for deriving the date in the Studio business timezone (`Europe/Warsaw`) before building the inbox. This prevents a Review due after local midnight from being temporarily treated as tomorrow because UTC is still on the previous date.
+
 ## Pure model already added
 
 `assets/os/trainer-attention-model.js` accepts the validated snapshot and returns:
@@ -55,6 +61,8 @@ This protects against the most dangerous false negative: a missing `signalReview
 - factual counts for the current view.
 
 It never returns a coaching recommendation, readiness score, diagnosis, progression/regression decision or plan change.
+
+Information-level signals are normally hidden from the main inbox, but an information-level signal with an unresolved `contact_required` review must remain visible. The open contact takes precedence over the original signal display level.
 
 ## Revision semantics while contact is open
 
@@ -164,6 +172,20 @@ For the initial staging experiment, correctness is more important than optimizat
 
 Only after we know the real data shape may we introduce a bounded server-side source view. A time window is unacceptable if it can make an unreviewed exception disappear.
 
+## Exhaustive pagination contract
+
+Every source read must be exhaustive and deterministically ordered. A short page is **not** proof that the source is complete because PostgREST/Supabase may apply a server-side row cap.
+
+The future adapter must:
+
+- request a stable order for each source;
+- continue pagination until an **empty page**, not merely until `rows.length < requestedLimit`;
+- fail closed if any page errors or returns an invalid shape;
+- use `collectTrainerAttentionPages()` (or an equivalent implementation with the same stop rule);
+- prove the behavior on staging with a fixture larger than the effective API row cap / page size.
+
+The V0 snapshot is not a transactional database snapshot. If source rows mutate while pages are being read, the next refresh must converge. The first correctness goal is to prevent silent truncation from hiding historical open contacts or resurrecting already-reviewed signals.
+
 ## Security contract before any real-data preview
 
 The real-data version is blocked until staging proves the exact future projections against every source table.
@@ -197,15 +219,17 @@ Required comparison cases:
 - new client response;
 - reviewed signal that should disappear;
 - `contact_required` review that remains open until contact is resolved;
+- information-level signal with an unresolved `contact_required` review;
 - open contact whose original source row is absent;
 - source revision changes while an earlier contact remains open;
 - urgent manual trainer-check signal;
 - ordinary review-level signal;
-- information-only signal that should not dominate the attention inbox;
-- Review due today / overdue;
+- information-only signal without an open contact that should not dominate the attention inbox;
+- Review due today / overdue using an explicit Studio-local date;
 - upcoming Review;
 - client with no open recorded exception;
-- one failed source read must block the whole inbox.
+- one failed source read must block the whole inbox;
+- paginated source larger than one server-capped page must remain complete.
 
 If the new inbox disagrees with the existing per-client path, integration stops. Do not “fix” the discrepancy in presentation code.
 
@@ -216,7 +240,7 @@ No numerical client priority score.
 Semantic order only:
 
 1. existing `urgent-review` facts;
-2. unresolved trainer contact;
+2. unresolved trainer contact, including contact attached to an information-level source signal;
 3. other open review signals;
 4. Review due/overdue;
 5. upcoming Review is shown separately and does not compete with open exceptions.
@@ -253,4 +277,6 @@ Do not integrate if any implementation requires:
 - autonomous plan recommendations;
 - weakening AAL2/RLS boundaries;
 - rendering a partial snapshot after one source read fails;
+- assuming a short page means pagination is complete;
+- deriving the business date from UTC instead of Studio-local calendar time;
 - a production migration before backup/restore readiness.
