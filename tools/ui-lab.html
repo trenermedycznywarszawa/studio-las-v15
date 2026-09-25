@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Studio Las — Dzisiaj V2 UI Lab</title>
+  <meta name="robots" content="noindex, nofollow, noarchive" />
+  <link rel="stylesheet" href="../assets/os/design-system.css" />
+</head>
+<body class="sl-lab">
+  <div class="sl-app-shell">
+    <aside class="sl-sidebar" aria-label="Nawigacja klienta">
+      <div class="sl-brand">Studio Las <small>OS</small></div>
+      <nav class="sl-nav">
+        <a href="#dzisiaj" aria-current="page"><span class="sl-nav-mark">○</span>Dzisiaj</a>
+        <a href="#proces"><span class="sl-nav-mark">↗</span>Proces</a>
+        <a href="#postep"><span class="sl-nav-mark">│</span>Postęp</a>
+        <a href="#sygnaly"><span class="sl-nav-mark">∿</span>Sygnały</a>
+        <a href="#raport"><span class="sl-nav-mark">□</span>Raport</a>
+      </nav>
+
+      <div class="sl-sidebar-foot">
+        <div class="sl-person">
+          <div class="sl-avatar" aria-hidden="true">K</div>
+          <div>
+            <strong>Kasia Nowak</strong>
+            <span>Klientka</span>
+          </div>
+        </div>
+      </div>
+    </aside>
+
+    <main class="sl-page" id="dzisiaj">
+      <header class="sl-page-head">
+        <h1 class="sl-page-title">Dzisiaj</h1>
+        <div class="sl-date">Czwartek, 25 września 2026</div>
+      </header>
+
+      <section class="sl-hero" aria-labelledby="today-title">
+        <div class="sl-hero-copy">
+          <p class="sl-eyebrow">Dzień dobry, Kasiu</p>
+          <h2 id="today-title">Jedna ważna rzecz na dziś.</h2>
+          <p>
+            Nie musisz pilnować całego procesu. Zobacz ustalenie na dziś, wykonaj je w spokojnym tempie
+            i po wszystkim zostaw krótki sygnał dla trenera.
+          </p>
+        </div>
+        <div class="sl-hero-art" role="img" aria-label="Spokojny, leśny motyw wizualny"></div>
+      </section>
+
+      <div class="sl-section-grid">
+        <div class="sl-stack">
+          <section class="sl-card sl-focus" aria-labelledby="focus-title">
+            <div class="sl-card-head">
+              <span class="sl-card-kicker">Na dziś</span>
+              <span class="sl-pill">Ustalone przez trenera</span>
+            </div>
+            <div class="sl-focus-label">Główne zadanie</div>
+            <h3 class="sl-focus-title" id="focus-title">Spokojny bieg + mobilność kolana</h3>
+            <div class="sl-focus-meta">
+              <span>30–35 min</span>
+              <span>Spokojne tempo</span>
+              <span>Bez dokładania pracy</span>
+            </div>
+            <div class="sl-focus-cue">
+              Jeśli pojawi się ból większy niż zwykle, zakończ bieg i przejdź do spokojnego marszu.
+              Nie musisz „odrabiać” czasu później.
+            </div>
+          </section>
+
+          <section class="sl-card" aria-labelledby="trainer-title">
+            <div class="sl-card-head">
+              <h3 id="trainer-title">Od trenera</h3>
+              <span class="sl-card-kicker">Tylko gdy potrzebne</span>
+            </div>
+            <div class="sl-trainer-note">
+              <div class="sl-avatar" aria-hidden="true">D</div>
+              <div>
+                <strong>Damian</strong>
+                <p>
+                  Dzisiaj zależy mi bardziej na jakości ruchu niż na tempie. Zostaw po treningu sygnał,
+                  jak zachowało się kolano — to wystarczy.
+                </p>
+                <small>Ustalenie trenera · przykład syntetyczny</small>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <div class="sl-stack">
+          <section class="sl-card" aria-labelledby="signal-title">
+            <div class="sl-card-head">
+              <h3 id="signal-title">Po wykonaniu</h3>
+              <span class="sl-card-kicker">Krótki sygnał</span>
+            </div>
+            <p class="sl-process-copy">
+              Jak zachowało się kolano względem typowego treningu? To sygnał dla trenera, nie ocena Ciebie.
+            </p>
+            <div class="sl-signal-scale" aria-label="Przykładowa skala sygnału 1–5">
+              <button class="sl-signal-button" type="button">1</button>
+              <button class="sl-signal-button" type="button">2</button>
+              <button class="sl-signal-button" type="button">3</button>
+              <button class="sl-signal-button" type="button">4</button>
+              <button class="sl-signal-button" type="button">5</button>
+            </div>
+            <div class="sl-signal-caption"><span>Dużo trudniej</span><span>Dużo lepiej</span></div>
+          </section>
+
+          <section class="sl-card" id="proces" aria-labelledby="process-title">
+            <div class="sl-card-head">
+              <h3 id="process-title">Kierunek procesu</h3>
+              <span class="sl-card-kicker">Kontekst, nie dashboard</span>
+            </div>
+            <strong>Powrót do biegania 5 km bez bólu kolana</strong>
+            <p class="sl-process-copy">
+              Pracujemy nad regularnym spokojnym biegiem, tolerancją kolana i pewnością ruchu. Pełne wnioski
+              omawiasz z trenerem w Review.
+            </p>
+            <div class="sl-progress" aria-hidden="true"><span style="--sl-progress: 58%"></span></div>
+            <div class="sl-meta-row">
+              <span>Aktualny etap: budowanie tolerancji</span>
+              <span>Review: za ok. 4 tyg.</span>
+            </div>
+          </section>
+        </div>
+      </div>
+
+      <p class="sl-lab-note">
+        UI LAB · Dane na tym ekranie są wyłącznie syntetyczne. Ten prototyp nie łączy się z Supabase,
+        nie zapisuje odpowiedzi i nie zmienia planu. Celem jest zamrożenie hierarchii, typografii,
+        przestrzeni i komponentów przed podłączeniem istniejącego ClientPortalController.
+      </p>
+    </main>
+  </div>
+</body>
+</html>
