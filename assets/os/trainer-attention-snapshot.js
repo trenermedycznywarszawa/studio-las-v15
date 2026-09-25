@@ -7,13 +7,13 @@ const SOURCE_KEYS = Object.freeze([
   "signalReviews"
 ]);
 
-const REQUIRED_FIELDS = Object.freeze({
+const REQUIRED_VALUE_FIELDS = Object.freeze({
   clients: Object.freeze(["id", "name", "status"]),
   sessions: Object.freeze(["id", "client_id", "date", "updated_at"]),
   trainingLoad: Object.freeze(["id", "client_id", "observed_at", "updated_at"]),
   preSessionChecks: Object.freeze(["id", "client_id", "check_date", "updated_at"]),
   guidanceEvents: Object.freeze(["id", "client_id", "event_date", "created_at"]),
-  signalReviews: Object.freeze(["id", "client_id", "signal_key", "outcome", "contact_resolved_at"])
+  signalReviews: Object.freeze(["id", "client_id", "signal_key", "outcome"])
 });
 
 const READ_CONTRACT = Object.freeze({
@@ -21,36 +21,42 @@ const READ_CONTRACT = Object.freeze({
     table: "clients",
     order: "id.asc",
     predicates: Object.freeze({ deleted_at: "is.null" }),
+    select: "id,name,status,stage,next_session_date,next_review_date",
     transfer: Object.freeze(["id", "name", "status", "stage", "next_session_date", "next_review_date"])
   }),
   sessions: Object.freeze({
     table: "sessions",
     order: "id.asc",
     predicates: Object.freeze({ deleted_at: "is.null" }),
+    select: "id,client_id,date,vas_before,vas_after,readiness,sleep_quality,updated_at",
     transfer: Object.freeze(["id", "client_id", "date", "vas_before", "vas_after", "readiness", "sleep_quality", "updated_at"])
   }),
   trainingLoad: Object.freeze({
     table: "training_load_observations",
     order: "id.asc",
     predicates: Object.freeze({ deleted_at: "is.null" }),
+    select: "id,client_id,observed_at,rpe,zone_high_min,updated_at",
     transfer: Object.freeze(["id", "client_id", "observed_at", "rpe", "zone_high_min", "updated_at"])
   }),
   preSessionChecks: Object.freeze({
     table: "pre_session_checks",
     order: "id.asc",
     predicates: Object.freeze({ deleted_at: "is.null" }),
+    select: "id,client_id,check_date,red_flag_concern,new_symptoms,updated_at",
     transfer: Object.freeze(["id", "client_id", "check_date", "red_flag_concern", "new_symptoms", "updated_at"])
   }),
   guidanceEvents: Object.freeze({
     table: "guidance_events",
     order: "id.asc",
     predicates: Object.freeze({ deleted_at: "is.null", kind: "eq.client_checkin" }),
+    select: "id,client_id,event_date,created_at,note:payload->>note",
     transfer: Object.freeze(["id", "client_id", "event_date", "created_at", "note"])
   }),
   signalReviews: Object.freeze({
     table: "trainer_signal_reviews",
     order: "id.asc",
     predicates: Object.freeze({}),
+    select: "id,client_id,signal_key,outcome,contact_resolved_at",
     transfer: Object.freeze(["id", "client_id", "signal_key", "outcome", "contact_resolved_at"])
   })
 });
@@ -66,10 +72,14 @@ function hasOwn(object, key) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
-function requireValue(row, field, source, index) {
+function requireFieldPresence(row, field, source, index) {
   if (!hasOwn(row, field)) {
     throw new TypeError(`Trainer Attention snapshot: ${source}[${index}] is missing ${field}`);
   }
+}
+
+function requireValue(row, field, source, index) {
+  requireFieldPresence(row, field, source, index);
   const value = row[field];
   if (value === null || value === undefined || (typeof value === "string" && !value.trim())) {
     throw new TypeError(`Trainer Attention snapshot: ${source}[${index}].${field} is empty`);
@@ -77,20 +87,23 @@ function requireValue(row, field, source, index) {
 }
 
 function validateRows(source, rows) {
-  const required = REQUIRED_FIELDS[source];
+  const contract = READ_CONTRACT[source];
+  const requiredValues = REQUIRED_VALUE_FIELDS[source];
   rows.forEach((row, index) => {
     if (!row || typeof row !== "object" || Array.isArray(row)) {
       throw new TypeError(`Trainer Attention snapshot: ${source}[${index}] is not an object`);
     }
-    for (const field of required) {
-      if (source === "signalReviews" && field === "contact_resolved_at") {
-        if (!hasOwn(row, field)) {
-          throw new TypeError(`Trainer Attention snapshot: ${source}[${index}] is missing ${field}`);
-        }
-        continue;
-      }
+
+    // Every transferred field must be present so a projection/mapping regression
+    // cannot silently turn a signal-bearing value into "no signal". Nullable DB
+    // values remain valid; identity fields below still require a concrete value.
+    for (const field of contract.transfer) {
+      requireFieldPresence(row, field, source, index);
+    }
+    for (const field of requiredValues) {
       requireValue(row, field, source, index);
     }
+
     if (source === "signalReviews" && !REVIEW_OUTCOMES.has(String(row.outcome))) {
       throw new TypeError(`Trainer Attention snapshot: ${source}[${index}].outcome is invalid`);
     }
