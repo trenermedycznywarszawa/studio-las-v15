@@ -122,7 +122,7 @@ function signalCard(snapshot, model) {
     create("div", { className: "sl-runtime-signal-list" }, items.map(item =>
       create("section", { className: "sl-runtime-signal-item" }, [
         items.length > 1 ? create("strong", { text: item.name || "Ustalenie" }) : null,
-        clientResponseForm(item, model)
+        clientResponseForm(item, model, { compact: true })
       ])
     ))
   ]);
