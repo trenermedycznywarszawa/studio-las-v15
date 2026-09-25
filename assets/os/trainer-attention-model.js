@@ -70,7 +70,7 @@ function signalToItem(client, signal) {
   });
 }
 
-function reviewDueItem(client, today, days) {
+function reviewDueItem(client, days) {
   const sourceDate = dateOnly(client.next_review_date);
   const overdue = days < 0;
   return Object.freeze({
@@ -111,12 +111,13 @@ export function buildTrainerAttentionModel(snapshot = {}, {
   const reviewSoon = [];
 
   for (const client of clients) {
-    const reviews = signalReviews.get(client.id) || [];
+    const clientId = String(client.id);
+    const reviews = signalReviews.get(clientId) || [];
     const workspace = {
-      sessions: sessions.get(client.id) || [],
-      trainingLoad: trainingLoad.get(client.id) || [],
-      preSessionChecks: preSessionChecks.get(client.id) || [],
-      guidanceEvents: guidanceEvents.get(client.id) || [],
+      sessions: sessions.get(clientId) || [],
+      trainingLoad: trainingLoad.get(clientId) || [],
+      preSessionChecks: preSessionChecks.get(clientId) || [],
+      guidanceEvents: guidanceEvents.get(clientId) || [],
       signalReviews: reviews
     };
     const generated = collectWorkspaceSignals(workspace);
@@ -128,7 +129,7 @@ export function buildTrainerAttentionModel(snapshot = {}, {
 
     const reviewDistance = daysFrom(today, client.next_review_date);
     if (reviewDistance !== null && reviewDistance <= 0) {
-      attention.push(reviewDueItem(client, today, reviewDistance));
+      attention.push(reviewDueItem(client, reviewDistance));
     } else if (reviewDistance !== null && reviewDistance <= reviewSoonDays) {
       reviewSoon.push(Object.freeze({
         clientId: client.id,
@@ -146,9 +147,10 @@ export function buildTrainerAttentionModel(snapshot = {}, {
       || String(left.client).localeCompare(String(right.client), "pl")
   );
 
-  const attentionClients = new Set(attention.map(item => item.clientId));
+  const attentionClients = new Set(attention.map(item => String(item.clientId)));
+  const upcomingReviewClients = new Set(reviewSoon.map(item => String(item.clientId)));
   const quiet = clients
-    .filter(client => !attentionClients.has(client.id))
+    .filter(client => !attentionClients.has(String(client.id)) && !upcomingReviewClients.has(String(client.id)))
     .map(client => Object.freeze({
       clientId: client.id,
       client: client.name,
