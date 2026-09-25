@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { signalInstanceKey } from "../assets/os/decision-support.js";
 import { buildTrainerAttentionModel } from "../assets/os/trainer-attention-model.js";
-import { assembleTrainerAttentionSnapshot } from "../assets/os/trainer-attention-snapshot.js";
+import { assembleTrainerAttentionSnapshot, collectTrainerAttentionPages } from "../assets/os/trainer-attention-snapshot.js";
 
 function client(id, extras = {}) {
   return { id, name: id.toUpperCase(), status: "active", stage_label: "Prowadzenie", ...extras };
@@ -154,10 +154,44 @@ assert.equal(revisedSource.attention[0].kind, "contact");
 assert.equal(revisedSource.attention[0].sourceChangedSinceContact, true, "revision drift must be explicit rather than silently duplicated");
 assert.equal(revisedSource.attention[0].relatedSignalKeys.length, 1);
 
+const informationContactKey = signalInstanceKey({
+  id: "high-zone-present",
+  source: "training-load",
+  sourceDate: "2026-09-24",
+  sourceId: "load-info",
+  sourceRevision: "2026-09-24T18:00:00Z"
+});
+const informationContact = buildTrainerAttentionModel(emptySnapshot({
+  clients: [client("information-contact")],
+  trainingLoad: [{
+    id: "load-info",
+    client_id: "information-contact",
+    observed_at: "2026-09-24",
+    rpe: 6,
+    zone_high_min: 3,
+    updated_at: "2026-09-24T18:00:00Z"
+  }],
+  signalReviews: [{
+    id: "review-info-contact",
+    client_id: "information-contact",
+    signal_key: informationContactKey,
+    outcome: "contact_required",
+    contact_resolved_at: null
+  }]
+}), { today: "2026-09-25" });
+assert.equal(informationContact.attention.length, 1, "information-level signal with unresolved contact must remain in Attention");
+assert.equal(informationContact.attention[0].kind, "contact");
+
+assert.throws(
+  () => buildTrainerAttentionModel(emptySnapshot()),
+  /explicit Studio-local today date is required/,
+  "business date must be explicit so UTC midnight cannot move Review between sections"
+);
+
 assert.throws(
   () => buildTrainerAttentionModel({
     clients: [], sessions: [], trainingLoad: [], preSessionChecks: [], guidanceEvents: []
-  }),
+  }, { today: "2026-09-25" }),
   /missing required source signalReviews/,
   "incomplete snapshot must fail closed"
 );
@@ -171,7 +205,7 @@ assert.throws(
       signal_key: historicalSignalKey,
       outcome: "contact_required"
     }]
-  })),
+  }), { today: "2026-09-25" }),
   /contact_resolved_at/,
   "missing review mapping fields must fail closed"
 );
@@ -185,5 +219,13 @@ assert.throws(
   /signalReviews read failed/,
   "one failed source read must block the whole attention snapshot"
 );
+
+const paginationFixture = Array.from({ length: 511 }, (_, index) => ({ id: index + 1 }));
+const paged = await collectTrainerAttentionPages(({ offset, limit }) => {
+  const simulatedServerCap = 73;
+  return Promise.resolve(paginationFixture.slice(offset, offset + Math.min(limit, simulatedServerCap)));
+}, { pageSize: 200 });
+assert.equal(paged.length, paginationFixture.length, "pagination must continue past a short server-capped page until an empty page");
+assert.equal(paged.at(-1).id, 511);
 
 console.log("TRAINER_ATTENTION_MODEL_PASS");
