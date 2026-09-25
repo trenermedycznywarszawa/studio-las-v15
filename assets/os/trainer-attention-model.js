@@ -108,9 +108,17 @@ function semanticSourceKey(item) {
   return [item.clientId, item.signalId, item.sourceType, item.sourceId].map(String).join("::");
 }
 
-function collapseOpenContactRevisions(items) {
+function collapseOpenContactRevisions(items, generatedSourceItems = []) {
   const groups = new Map();
   const passthrough = [];
+  const generatedBySemanticSource = new Map();
+
+  for (const item of generatedSourceItems) {
+    const key = semanticSourceKey(item);
+    if (!key) continue;
+    if (!generatedBySemanticSource.has(key)) generatedBySemanticSource.set(key, []);
+    generatedBySemanticSource.get(key).push(item);
+  }
 
   for (const item of items) {
     const key = semanticSourceKey(item);
@@ -123,9 +131,9 @@ function collapseOpenContactRevisions(items) {
   }
 
   const collapsed = [...passthrough];
-  for (const group of groups.values()) {
+  for (const [key, group] of groups.entries()) {
     const contacts = group.filter(item => item.kind === "contact");
-    if (!contacts.length || group.length === 1) {
+    if (!contacts.length) {
       collapsed.push(...group);
       continue;
     }
@@ -133,10 +141,23 @@ function collapseOpenContactRevisions(items) {
     const contact = [...contacts].sort((left, right) =>
       String(right.sourceRevision || "").localeCompare(String(left.sourceRevision || ""))
     )[0];
-    const related = group.filter(item => item.signalKey !== contact.signalKey);
+
+    // Compare the unresolved contact with all currently generated source revisions,
+    // before review filtering. A current revision may already be reviewed and thus
+    // absent from the open list, but the trainer still needs to know that the
+    // underlying source changed after the unresolved contact was recorded.
+    const relatedByKey = new Map();
+    for (const candidate of [...group, ...(generatedBySemanticSource.get(key) || [])]) {
+      if (!candidate.signalKey || candidate.signalKey === contact.signalKey) continue;
+      relatedByKey.set(candidate.signalKey, candidate);
+    }
+    const related = [...relatedByKey.values()];
+
     collapsed.push(Object.freeze({
       ...contact,
-      context: `${contact.context} Ten sam rekord źródłowy ma nowszą lub równoległą rewizję; inbox zachowuje jeden otwarty kontakt dla tej sytuacji.`,
+      context: related.length
+        ? `${contact.context} Ten sam rekord źródłowy ma nowszą lub równoległą rewizję; inbox zachowuje jeden otwarty kontakt dla tej sytuacji.`
+        : contact.context,
       sourceChangedSinceContact: related.length > 0,
       relatedSignalKeys: Object.freeze(related.map(item => item.signalKey))
     }));
@@ -167,6 +188,7 @@ export function buildTrainerAttentionModel(snapshot, {
   const guidanceEvents = groupByClient(snapshot.guidanceEvents);
   const signalReviews = groupByClient(snapshot.signalReviews);
   const rawAttention = [];
+  const generatedSourceItems = [];
   const reviewSoon = [];
 
   for (const client of clients) {
@@ -179,6 +201,14 @@ export function buildTrainerAttentionModel(snapshot, {
       guidanceEvents: guidanceEvents.get(clientId) || [],
       signalReviews: reviews
     };
+
+    // Generate a review-free view solely to preserve source-revision facts for
+    // unresolved contacts. It does not create attention items by itself.
+    const sourceGenerated = collectWorkspaceSignals({ ...workspace, signalReviews: [] });
+    for (const signal of sourceGenerated.signals) {
+      generatedSourceItems.push(signalToItem(client, signal));
+    }
+
     const generated = collectWorkspaceSignals(workspace);
     const open = withoutReviewedSignals(generated, reviews);
     for (const signal of open.signals) {
@@ -200,7 +230,7 @@ export function buildTrainerAttentionModel(snapshot, {
     }
   }
 
-  const attention = collapseOpenContactRevisions(rawAttention);
+  const attention = collapseOpenContactRevisions(rawAttention, generatedSourceItems);
   attention.sort((left, right) =>
     attentionRank(left) - attentionRank(right)
       || String(right.sourceDate || "").localeCompare(String(left.sourceDate || ""))
