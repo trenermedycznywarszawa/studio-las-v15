@@ -42,10 +42,10 @@ async function planScenario(viewport, name) {
     `${name}: expected canonical per-item response flows in the signal card`);
 
   const firstResponse = page.locator("#today-v2-signal .client-response").first();
-  await firstResponse.getByLabel("Twoja odpowiedź — opcjonalnie", { exact: true })
+  await firstResponse.getByLabel("Krótki sygnał — opcjonalnie", { exact: true })
     .fill("Ruch spokojny, bez bólu ponad ustaloną granicę.");
-  await firstResponse.getByRole("button", { name: "Zapisz odpowiedź", exact: true }).click();
-  await page.getByText("Odpowiedź zapisana", { exact: false }).first().waitFor();
+  await firstResponse.getByRole("button", { name: "Zapisz sygnał", exact: true }).click();
+  await page.getByText("Sygnał zapisany", { exact: false }).first().waitFor();
 
   await assertNoOverflow(page, name);
   if (viewport.width <= 460) {
@@ -76,7 +76,7 @@ async function uncertainScenario() {
   const retry = page.getByRole("button", { name: "Sprawdź i ponów ten sam zapis", exact: true });
   await retry.waitFor();
   await retry.click();
-  await page.getByText("Odpowiedź zapisana", { exact: false }).first().waitFor();
+  await page.getByText("Sygnał zapisany", { exact: false }).first().waitFor();
   await context.close();
 }
 
