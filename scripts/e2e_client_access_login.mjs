@@ -53,3 +53,9 @@ try {
 } finally {
   await browser.close();
 }
+
+// Dzisiaj V2 is intentionally exercised with synthetic data only. This keeps
+// the visual/presentation regression independent from Supabase and verifies the
+// real renderer, canonical client response component and responsive layout.
+console.log("RUNNING_TODAY_V2_LOCAL_BROWSER_REGRESSION");
+await import("./e2e_today_v2_local.mjs");
