@@ -1,5 +1,6 @@
 import { withoutReviewedSignals } from "./decision-support.js";
 import { collectWorkspaceSignals } from "./trainer-signals.js";
+import { assertTrainerAttentionSnapshot } from "./trainer-attention-snapshot.js";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 const SOURCE_LABELS = Object.freeze({
@@ -27,9 +28,8 @@ function daysFrom(today, value) {
 
 function groupByClient(rows = []) {
   const grouped = new Map();
-  for (const row of rows || []) {
-    const clientId = String(row?.client_id || "");
-    if (!clientId) continue;
+  for (const row of rows) {
+    const clientId = String(row.client_id);
     if (!grouped.has(clientId)) grouped.set(clientId, []);
     grouped.get(clientId).push(row);
   }
@@ -66,7 +66,13 @@ function signalToItem(client, signal) {
     source: `${sourceLabel(signal)} · ${signal.sourceDate}`,
     sourceDate: signal.sourceDate,
     signalKey: signal.signalKey,
-    contactReviewId: signal.contactReviewId || null
+    signalId: signal.id || null,
+    sourceType: signal.source || null,
+    sourceId: signal.sourceId || null,
+    sourceRevision: signal.sourceRevision || null,
+    contactReviewId: signal.contactReviewId || null,
+    sourceChangedSinceContact: false,
+    relatedSignalKeys: Object.freeze([])
   });
 }
 
@@ -89,6 +95,48 @@ function reviewDueItem(client, days) {
   });
 }
 
+function semanticSourceKey(item) {
+  if (!item.signalId || !item.sourceType || !item.sourceId) return "";
+  return [item.clientId, item.signalId, item.sourceType, item.sourceId].map(String).join("::");
+}
+
+function collapseOpenContactRevisions(items) {
+  const groups = new Map();
+  const passthrough = [];
+
+  for (const item of items) {
+    const key = semanticSourceKey(item);
+    if (!key) {
+      passthrough.push(item);
+      continue;
+    }
+    if (!groups.has(key)) groups.set(key, []);
+    groups.get(key).push(item);
+  }
+
+  const collapsed = [...passthrough];
+  for (const group of groups.values()) {
+    const contacts = group.filter(item => item.kind === "contact");
+    if (!contacts.length || group.length === 1) {
+      collapsed.push(...group);
+      continue;
+    }
+
+    const contact = [...contacts].sort((left, right) =>
+      String(right.sourceRevision || "").localeCompare(String(left.sourceRevision || ""))
+    )[0];
+    const related = group.filter(item => item.signalKey !== contact.signalKey);
+    collapsed.push(Object.freeze({
+      ...contact,
+      context: `${contact.context} Ten sam rekord źródłowy ma nowszą lub równoległą rewizję; inbox zachowuje jeden otwarty kontakt dla tej sytuacji.`,
+      sourceChangedSinceContact: related.length > 0,
+      relatedSignalKeys: Object.freeze(related.map(item => item.signalKey))
+    }));
+  }
+
+  return collapsed;
+}
+
 function attentionRank(item) {
   if (item.level === "urgent-review") return 0;
   if (item.kind === "contact") return 1;
@@ -97,17 +145,19 @@ function attentionRank(item) {
   return 4;
 }
 
-export function buildTrainerAttentionModel(snapshot = {}, {
+export function buildTrainerAttentionModel(snapshot, {
   today = new Date().toISOString().slice(0, 10),
   reviewSoonDays = 7
 } = {}) {
-  const clients = (snapshot.clients || []).filter(client => client?.id && client?.status !== "archived");
+  assertTrainerAttentionSnapshot(snapshot);
+
+  const clients = snapshot.clients.filter(client => client.status !== "archived");
   const sessions = groupByClient(snapshot.sessions);
   const trainingLoad = groupByClient(snapshot.trainingLoad);
   const preSessionChecks = groupByClient(snapshot.preSessionChecks);
   const guidanceEvents = groupByClient(snapshot.guidanceEvents);
   const signalReviews = groupByClient(snapshot.signalReviews);
-  const attention = [];
+  const rawAttention = [];
   const reviewSoon = [];
 
   for (const client of clients) {
@@ -124,12 +174,12 @@ export function buildTrainerAttentionModel(snapshot = {}, {
     const open = withoutReviewedSignals(generated, reviews);
     for (const signal of open.signals) {
       if (signal.level === "information") continue;
-      attention.push(signalToItem(client, signal));
+      rawAttention.push(signalToItem(client, signal));
     }
 
     const reviewDistance = daysFrom(today, client.next_review_date);
     if (reviewDistance !== null && reviewDistance <= 0) {
-      attention.push(reviewDueItem(client, reviewDistance));
+      rawAttention.push(reviewDueItem(client, reviewDistance));
     } else if (reviewDistance !== null && reviewDistance <= reviewSoonDays) {
       reviewSoon.push(Object.freeze({
         clientId: client.id,
@@ -141,6 +191,7 @@ export function buildTrainerAttentionModel(snapshot = {}, {
     }
   }
 
+  const attention = collapseOpenContactRevisions(rawAttention);
   attention.sort((left, right) =>
     attentionRank(left) - attentionRank(right)
       || String(right.sourceDate || "").localeCompare(String(left.sourceDate || ""))
