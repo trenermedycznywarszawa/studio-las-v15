@@ -9,14 +9,14 @@ const annaSignalKey = signalInstanceKey({
   sourceRevision: "2026-09-24T18:00:00Z"
 });
 
-const snapshot = {
+export const trainerAttentionLabSnapshot = {
   clients: [
-    { id: "anna", name: "Anna K.", status: "active", stage_label: "Prowadzenie · tydzień 6", next_session_date: "2026-09-26", next_review_date: "2026-10-18" },
-    { id: "marek", name: "Marek P.", status: "active", stage_label: "Prowadzenie · tydzień 4", next_session_date: "2026-09-27", next_review_date: "2026-10-30" },
-    { id: "ewa", name: "Ewa S.", status: "active", stage_label: "Review", next_review_date: "2026-09-25" },
-    { id: "piotr", name: "Piotr R.", status: "active", stage_label: "Prowadzenie · tydzień 2", next_session_date: "2026-09-27", next_review_date: "2026-11-05" },
-    { id: "kasia", name: "Kasia W.", status: "active", stage_label: "Prowadzenie · tydzień 8", next_session_date: "2026-09-29", next_review_date: "2026-10-15" },
-    { id: "tomasz", name: "Tomasz L.", status: "active", stage_label: "Prowadzenie · tydzień 10", next_session_date: "2026-09-28", next_review_date: "2026-10-01" }
+    { id: "anna", name: "Anna K.", status: "active", stage: 6, stage_label: "Prowadzenie · tydzień 6", next_session_date: "2026-09-26", next_review_date: "2026-10-18" },
+    { id: "marek", name: "Marek P.", status: "active", stage: 4, stage_label: "Prowadzenie · tydzień 4", next_session_date: "2026-09-27", next_review_date: "2026-10-30" },
+    { id: "ewa", name: "Ewa S.", status: "active", stage: null, stage_label: "Review", next_session_date: null, next_review_date: "2026-09-25" },
+    { id: "piotr", name: "Piotr R.", status: "active", stage: 2, stage_label: "Prowadzenie · tydzień 2", next_session_date: "2026-09-27", next_review_date: "2026-11-05" },
+    { id: "kasia", name: "Kasia W.", status: "active", stage: 8, stage_label: "Prowadzenie · tydzień 8", next_session_date: "2026-09-29", next_review_date: "2026-10-15" },
+    { id: "tomasz", name: "Tomasz L.", status: "active", stage: 10, stage_label: "Prowadzenie · tydzień 10", next_session_date: "2026-09-28", next_review_date: "2026-10-01" }
   ],
   sessions: [],
   trainingLoad: [],
@@ -26,16 +26,14 @@ const snapshot = {
       id: "evt-anna-1",
       client_id: "anna",
       event_date: "2026-09-24",
-      kind: "client_checkin",
-      payload: { note: "Po zadaniu pojawiła się informacja, którą trener oznaczył do kontaktu." },
+      note: "Po zadaniu pojawiła się informacja, którą trener oznaczył do kontaktu.",
       created_at: "2026-09-24T18:00:00Z"
     },
     {
       id: "evt-marek-1",
       client_id: "marek",
       event_date: "2026-09-25",
-      kind: "client_checkin",
-      payload: { note: "Kolano spokojne w trakcie, wieczorem lekko sztywniejsze." },
+      note: "Kolano spokojne w trakcie, wieczorem lekko sztywniejsze.",
       created_at: "2026-09-25T07:40:00Z"
     }
   ],
@@ -45,13 +43,15 @@ const snapshot = {
       client_id: "anna",
       signal_key: annaSignalKey,
       outcome: "contact_required",
-      reviewed_at: "2026-09-24T18:15:00Z",
       contact_resolved_at: null
     }
   ]
 };
 
-const model = buildTrainerAttentionModel(snapshot, { today: "2026-09-25", reviewSoonDays: 7 });
+export const trainerAttentionLabModel = buildTrainerAttentionModel(
+  trainerAttentionLabSnapshot,
+  { today: "2026-09-25", reviewSoonDays: 7 }
+);
 
 function el(tag, attrs = {}, children = []) {
   const node = document.createElement(tag);
@@ -99,7 +99,7 @@ function reviewSoonItem(item) {
   ]);
 }
 
-function quietDetails() {
+function quietDetails(model) {
   return el("details", { className: "sl-attention-quiet-details" }, [
     el("summary", { text: `${model.quiet.length} klientów bez otwartego wyjątku` }),
     el("p", { text: "Brak otwartego wyjątku nie znaczy, że „wszystko jest dobrze”. Oznacza tylko, że system nie ma obecnie zapisanego faktu wymagającego przeglądu." }),
@@ -112,72 +112,77 @@ function quietDetails() {
   ]);
 }
 
-const root = document.getElementById("app");
-root.append(
-  el("div", { className: "sl-attention-shell" }, [
-    el("aside", { className: "sl-attention-rail" }, [
-      el("div", { className: "sl-attention-brand" }, [
-        document.createTextNode("Studio Las"),
-        el("small", { text: "Panel trenera · lab" })
-      ]),
-      el("nav", { className: "sl-attention-nav", "aria-label": "Makieta nawigacji" }, [
-        el("span", { className: "active", text: "Uwaga" }),
-        el("span", { text: "Klienci" }),
-        el("span", { text: "Proces" }),
-        el("span", { text: "Raporty" })
-      ]),
-      el("p", { className: "sl-attention-rail-note", text: "Syntetyczny prototyp. Zero połączenia z Supabase, zero zapisów, zero automatycznych decyzji." })
-    ]),
-    el("main", { className: "sl-attention-page" }, [
-      el("header", { className: "sl-attention-head" }, [
-        el("div", {}, [
-          el("p", { className: "sl-attention-eyebrow", text: "Uwaga trenera" }),
-          el("h1", { text: "Kto dziś wymaga Twojej uwagi?" }),
-          el("p", { text: "Najpierw wyjątki i niedomknięte sprawy. Pełny proces klienta otwierasz dopiero wtedy, gdy jest potrzebny do decyzji." })
+export function renderTrainerAttentionLab(root = document.getElementById("app")) {
+  if (!root) throw new Error("Trainer Attention Lab: missing #app root");
+  const model = trainerAttentionLabModel;
+  root.append(
+    el("div", { className: "sl-attention-shell" }, [
+      el("aside", { className: "sl-attention-rail" }, [
+        el("div", { className: "sl-attention-brand" }, [
+          document.createTextNode("Studio Las"),
+          el("small", { text: "Panel trenera · lab" })
         ]),
-        el("span", { className: "sl-attention-date", text: "25 września 2026" })
-      ]),
-      el("section", { className: "sl-attention-overview", "aria-label": "Dzisiejsza uwaga" }, [
-        el("div", {}, [
-          el("span", { text: "Na dziś" }),
-          el("strong", { text: `${model.counts.situations} sprawy · ${model.counts.clients} klientów` }),
-          el("p", { text: "To nie jest ranking klientów. To kolejka faktów, które czekają na ocenę człowieka." })
+        el("nav", { className: "sl-attention-nav", "aria-label": "Makieta nawigacji" }, [
+          el("span", { className: "active", text: "Uwaga" }),
+          el("span", { text: "Klienci" }),
+          el("span", { text: "Proces" }),
+          el("span", { text: "Raporty" })
         ]),
-        el("div", { className: "sl-attention-overview-meta" }, [
-          model.counts.contacts ? el("span", { text: `Kontakt ${model.counts.contacts}` }) : null,
-          model.counts.signals ? el("span", { text: `Nowe sygnały ${model.counts.signals}` }) : null,
-          model.counts.reviews ? el("span", { text: `Review ${model.counts.reviews}` }) : null
-        ])
+        el("p", { className: "sl-attention-rail-note", text: "Syntetyczny prototyp. Zero połączenia z Supabase, zero zapisów, zero automatycznych decyzji." })
       ]),
-      el("div", { className: "sl-attention-grid" }, [
-        el("section", { className: "sl-attention-panel" }, [
-          el("div", { className: "sl-attention-panel-head" }, [
-            el("div", {}, [
-              el("h2", { text: "Do przejrzenia" }),
-              el("p", { text: "Powód → źródło → pytanie dla trenera" })
-            ]),
-            el("span", { text: "bez automatycznej interpretacji" })
+      el("main", { className: "sl-attention-page" }, [
+        el("header", { className: "sl-attention-head" }, [
+          el("div", {}, [
+            el("p", { className: "sl-attention-eyebrow", text: "Uwaga trenera" }),
+            el("h1", { text: "Kto dziś wymaga Twojej uwagi?" }),
+            el("p", { text: "Najpierw wyjątki i niedomknięte sprawy. Pełny proces klienta otwierasz dopiero wtedy, gdy jest potrzebny do decyzji." })
           ]),
-          model.attention.length
-            ? el("div", { className: "sl-attention-list" }, model.attention.map(attentionItem))
-            : el("p", { className: "sl-attention-empty", text: "Brak zapisanych wyjątków wymagających przeglądu." })
+          el("span", { className: "sl-attention-date", text: "25 września 2026" })
         ]),
-        el("aside", { className: "sl-attention-side" }, [
-          el("section", { className: "sl-attention-panel sl-attention-side-panel" }, [
-            el("h3", { text: "Nadchodzące Review" }),
-            model.reviewSoon.length
-              ? el("div", { className: "sl-attention-review-list" }, model.reviewSoon.map(reviewSoonItem))
-              : el("p", { text: "Brak Review w najbliższych 7 dniach." })
+        el("section", { className: "sl-attention-overview", "aria-label": "Dzisiejsza uwaga" }, [
+          el("div", {}, [
+            el("span", { text: "Na dziś" }),
+            el("strong", { text: `${model.counts.situations} sprawy · ${model.counts.clients} klientów` }),
+            el("p", { text: "To nie jest ranking klientów. To kolejka faktów, które czekają na ocenę człowieka." })
           ]),
-          el("section", { className: "sl-attention-panel sl-attention-side-panel" }, [quietDetails()]),
-          el("section", { className: "sl-attention-panel sl-attention-side-panel" }, [
-            el("h3", { text: "Granica odpowiedzialności" }),
-            el("p", { text: model.disclaimer }),
-            el("strong", { className: "sl-attention-principle", text: "System kieruje uwagę. Trener nadaje znaczenie." })
+          el("div", { className: "sl-attention-overview-meta" }, [
+            model.counts.contacts ? el("span", { text: `Kontakt ${model.counts.contacts}` }) : null,
+            model.counts.signals ? el("span", { text: `Nowe sygnały ${model.counts.signals}` }) : null,
+            model.counts.reviews ? el("span", { text: `Review ${model.counts.reviews}` }) : null
           ])
-        ])
-      ]),
-      el("p", { className: "sl-attention-footnote", text: "Trainer Attention Lab v1 · syntetyczne dane · żadnego dostępu do danych klientów" })
+        ]),
+        el("div", { className: "sl-attention-grid" }, [
+          el("section", { className: "sl-attention-panel" }, [
+            el("div", { className: "sl-attention-panel-head" }, [
+              el("div", {}, [
+                el("h2", { text: "Do przejrzenia" }),
+                el("p", { text: "Powód → źródło → pytanie dla trenera" })
+              ]),
+              el("span", { text: "bez automatycznej interpretacji" })
+            ]),
+            model.attention.length
+              ? el("div", { className: "sl-attention-list" }, model.attention.map(attentionItem))
+              : el("p", { className: "sl-attention-empty", text: "Brak zapisanych wyjątków wymagających przeglądu." })
+          ]),
+          el("aside", { className: "sl-attention-side" }, [
+            el("section", { className: "sl-attention-panel sl-attention-side-panel" }, [
+              el("h3", { text: "Nadchodzące Review" }),
+              model.reviewSoon.length
+                ? el("div", { className: "sl-attention-review-list" }, model.reviewSoon.map(reviewSoonItem))
+                : el("p", { text: "Brak Review w najbliższych 7 dniach." })
+            ]),
+            el("section", { className: "sl-attention-panel sl-attention-side-panel" }, [quietDetails(model)]),
+            el("section", { className: "sl-attention-panel sl-attention-side-panel" }, [
+              el("h3", { text: "Granica odpowiedzialności" }),
+              el("p", { text: model.disclaimer }),
+              el("strong", { className: "sl-attention-principle", text: "System kieruje uwagę. Trener nadaje znaczenie." })
+            ])
+          ])
+        ]),
+        el("p", { className: "sl-attention-footnote", text: "Trainer Attention Lab v1 · syntetyczne dane · żadnego dostępu do danych klientów" })
+      ])
     ])
-  ])
-);
+  );
+}
+
+if (typeof document !== "undefined") renderTrainerAttentionLab();
