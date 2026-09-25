@@ -4,10 +4,12 @@ import { readFileSync } from "node:fs";
 const read = path => readFileSync(new URL(`../${path}`, import.meta.url), "utf8").replace(/\r\n/g, "\n");
 const migration = read("supabase/migrations/20260911132813_questionnaire_v3_client_portal_snapshot.sql");
 const ui = read("assets/os/ui/client.js");
+const uiV2 = read("assets/os/ui/client-v2.js");
 const questionnaireUi = read("assets/os/ui/client-questionnaires.js");
 const runtime = read("assets/os/client-app-runtime.js");
 const controller = read("assets/os/client-portal-controller.js");
 const questionnaireController = read("assets/os/client-questionnaire-controller.js");
+const todayV2Styles = read("assets/os/today-v2.css");
 
 assert.match(migration, /alter function public\.client_portal_snapshot\(\) set schema private/i);
 assert.match(migration, /create function public\.client_portal_snapshot\(\)/i);
@@ -36,6 +38,33 @@ assert.match(runtime, /ClientQuestionnaireController/);
 assert.match(runtime, /questionnaire:\s*state\.clientQuestionnaire\?\.model/,
   "Canonical Client Portal runtime must expose questionnaire controller state to the UI.");
 
+// Dzisiaj V2 is a reversible presentation experiment. It must reuse the
+// canonical Client Portal controller and remain explicitly opt-in.
+assert.match(runtime, /let clientRenderer = renderClient;/,
+  "Current client renderer must remain the default path.");
+assert.match(runtime, /get\("ui"\) === "today-v2"/,
+  "Dzisiaj V2 must require an explicit presentation flag.");
+assert.match(runtime, /import\("\.\/ui\/client-v2\.js"\)/,
+  "Dzisiaj V2 renderer must be loaded only through the explicit presentation path.");
+assert.match(uiV2, /clientResponseForm\(item, model\)/,
+  "Dzisiaj V2 must reuse the canonical client response flow.");
+assert.match(uiV2, /questionnaireList\(snapshot\.questionnaires, questionnaire\)/,
+  "Dzisiaj V2 must preserve the existing questionnaire boundary.");
+assert.match(uiV2, /activeQuestionnaire\(questionnaire\)/,
+  "Dzisiaj V2 must preserve the existing active questionnaire renderer.");
+assert.match(uiV2, /Panel nie diagnozuje i nie zmienia planu automatycznie/,
+  "Dzisiaj V2 must state the trainer-responsibility boundary.");
+assert.match(todayV2Styles, /@import url\("\.\/design-system\.css"\)/,
+  "Dzisiaj V2 runtime styles must be based on the isolated design-system layer.");
+assert.doesNotMatch(uiV2, /\bfetch\s*\(/,
+  "Dzisiaj V2 presentation layer must not make network requests directly.");
+assert.doesNotMatch(uiV2, /Supabase|StudioLasRepository|save_client_checkin|client_portal_snapshot/i,
+  "Dzisiaj V2 presentation layer must not bypass the repository/controller boundary.");
+assert.doesNotMatch(uiV2, /generateWeeklyDecision|readiness|confidence|progresj|regresj/i,
+  "Dzisiaj V2 must not publish autonomous coaching or readiness judgements.");
+assert.doesNotMatch(uiV2, /Minimum\s*\/\s*Standard\s*\/\s*Więcej/i,
+  "Mockup-only service-dose choices must not silently become a production mechanism.");
+
 const closeMatch = questionnaireController.match(/async close\(\)\s*\{([\s\S]*?)\n  \}\n\n  setAnswer/);
 assert.ok(closeMatch, "Questionnaire close must be asynchronous so pending saves can finish.");
 const closeBody = closeMatch[1];
@@ -51,7 +80,7 @@ assert.ok(
   "Questionnaire close must refresh portal assignment metadata after saving and before closing the form."
 );
 
-for (const source of [ui, questionnaireUi, runtime]) {
+for (const source of [ui, uiV2, questionnaireUi, runtime]) {
   assert.doesNotMatch(source, /ZIELONY|ŻÓŁTY|CZERWONY/,
     "Internal trainer workflow state must not leak into client UI.");
   assert.doesNotMatch(source, /localStorage|sessionStorage|indexedDB/i,
@@ -59,4 +88,4 @@ for (const source of [ui, questionnaireUi, runtime]) {
 }
 assert.match(controller, /never persist response text or receipts in browser storage/i);
 
-console.log("Client questionnaire portal integration tests completed");
+console.log("Client questionnaire portal + Dzisiaj V2 presentation boundary tests completed");
