@@ -19,10 +19,18 @@ function dateOnly(value) {
   return Number.isNaN(date.getTime()) ? "" : date.toISOString().slice(0, 10);
 }
 
+function requiredBusinessDate(value) {
+  const normalized = dateOnly(value);
+  if (!normalized) {
+    throw new TypeError("Trainer Attention model: explicit Studio-local today date is required");
+  }
+  return normalized;
+}
+
 function daysFrom(today, value) {
-  const start = dateOnly(today);
+  const start = requiredBusinessDate(today);
   const target = dateOnly(value);
-  if (!start || !target) return null;
+  if (!target) return null;
   return Math.round((new Date(`${target}T12:00:00Z`) - new Date(`${start}T12:00:00Z`)) / DAY_MS);
 }
 
@@ -146,10 +154,11 @@ function attentionRank(item) {
 }
 
 export function buildTrainerAttentionModel(snapshot, {
-  today = new Date().toISOString().slice(0, 10),
+  today,
   reviewSoonDays = 7
 } = {}) {
   assertTrainerAttentionSnapshot(snapshot);
+  const businessToday = requiredBusinessDate(today);
 
   const clients = snapshot.clients.filter(client => client.status !== "archived");
   const sessions = groupByClient(snapshot.sessions);
@@ -173,11 +182,11 @@ export function buildTrainerAttentionModel(snapshot, {
     const generated = collectWorkspaceSignals(workspace);
     const open = withoutReviewedSignals(generated, reviews);
     for (const signal of open.signals) {
-      if (signal.level === "information") continue;
+      if (signal.level === "information" && !signal.contactReviewId) continue;
       rawAttention.push(signalToItem(client, signal));
     }
 
-    const reviewDistance = daysFrom(today, client.next_review_date);
+    const reviewDistance = daysFrom(businessToday, client.next_review_date);
     if (reviewDistance !== null && reviewDistance <= 0) {
       rawAttention.push(reviewDueItem(client, reviewDistance));
     } else if (reviewDistance !== null && reviewDistance <= reviewSoonDays) {
@@ -218,7 +227,7 @@ export function buildTrainerAttentionModel(snapshot, {
   });
 
   return Object.freeze({
-    today: dateOnly(today),
+    today: businessToday,
     attention: Object.freeze(attention),
     reviewSoon: Object.freeze(reviewSoon),
     quiet: Object.freeze(quiet),
