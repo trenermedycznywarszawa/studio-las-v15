@@ -116,10 +116,33 @@
   font-weight: 800;
 }
 
-.sl-runtime-item .client-response {
-  margin-top: 14px;
+.sl-runtime-signal-intro {
+  margin: -2px 0 16px;
+  color: var(--sl-color-muted);
+  font-size: 13px;
+  line-height: 1.55;
+}
+
+.sl-runtime-signal-list {
+  display: grid;
+  gap: 14px;
+}
+
+.sl-runtime-signal-item {
+  min-width: 0;
+}
+
+.sl-runtime-signal-item + .sl-runtime-signal-item {
   padding-top: 14px;
   border-top: 1px solid var(--sl-color-line);
+}
+
+.sl-runtime-signal-item > strong {
+  display: block;
+  margin-bottom: 9px;
+  color: var(--sl-color-forest);
+  font-size: 12px;
+  line-height: 1.4;
 }
 
 .sl-runtime-shell .client-response > p {
