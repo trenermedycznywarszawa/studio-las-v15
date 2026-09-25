@@ -46,8 +46,8 @@ assert.match(runtime, /get\("ui"\) === "today-v2"/,
   "Dzisiaj V2 must require an explicit presentation flag.");
 assert.match(runtime, /import\("\.\/ui\/client-v2\.js"\)/,
   "Dzisiaj V2 renderer must be loaded only through the explicit presentation path.");
-assert.match(uiV2, /clientResponseForm\(item, model\)/,
-  "Dzisiaj V2 must reuse the canonical client response flow.");
+assert.match(uiV2, /clientResponseForm\(item, model, \{ compact: true \}\)/,
+  "Dzisiaj V2 must reuse the canonical client response flow in compact presentation mode.");
 assert.match(uiV2, /questionnaireList\(snapshot\.questionnaires, questionnaire\)/,
   "Dzisiaj V2 must preserve the existing questionnaire boundary.");
 assert.match(uiV2, /activeQuestionnaire\(questionnaire\)/,
