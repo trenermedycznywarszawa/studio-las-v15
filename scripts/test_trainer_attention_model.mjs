@@ -273,6 +273,24 @@ assert.throws(
   "a missing signal-bearing projection field must fail closed instead of making the client look quiet"
 );
 
+assert.throws(
+  () => buildTrainerAttentionModel(emptySnapshot({
+    clients: [client("undefined-signal-field")],
+    sessions: [{
+      id: "session-undefined-vas",
+      client_id: "undefined-signal-field",
+      date: "2026-09-25",
+      vas_before: undefined,
+      vas_after: 5,
+      readiness: 7,
+      sleep_quality: "dobry",
+      updated_at: "2026-09-25T10:00:00Z"
+    }]
+  }), { today: "2026-09-25" }),
+  /vas_before is undefined/,
+  "an undefined signal-bearing projection field must fail closed instead of becoming an implicit null"
+);
+
 const nullableSignalFields = buildTrainerAttentionModel(emptySnapshot({
   clients: [client("nullable-signal-fields")],
   sessions: [{
