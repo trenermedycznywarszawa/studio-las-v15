@@ -26,9 +26,28 @@ Duplicating those rules in SQL would create two sources of truth for the meaning
 
 V0 therefore keeps interpretation rules in one place and reduces the read surface.
 
+## Fail-closed snapshot boundary
+
+`assets/os/trainer-attention-snapshot.js` defines the only accepted cross-client snapshot shape.
+
+The model requires all six sources:
+
+1. `clients`
+2. `sessions`
+3. `trainingLoad`
+4. `preSessionChecks`
+5. `guidanceEvents`
+6. `signalReviews`
+
+Missing source arrays, malformed source identities, invalid review outcomes, a review missing `contact_resolved_at`, or a row referencing a client outside the snapshot are errors. They must stop the inbox from rendering.
+
+`assembleTrainerAttentionSnapshot()` is an **all-or-nothing application boundary**, not a database transaction. A future real-data adapter may execute the six reads concurrently, but it must not convert a failed/rejected read into `[]` and must not render a partial inbox.
+
+This protects against the most dangerous false negative: a missing `signalReviews` read making an unresolved `contact_required` situation look quiet.
+
 ## Pure model already added
 
-`assets/os/trainer-attention-model.js` accepts a minimal snapshot and returns:
+`assets/os/trainer-attention-model.js` accepts the validated snapshot and returns:
 
 - `attention` — open factual situations requiring trainer review;
 - `reviewSoon` — explicit upcoming `next_review_date` facts;
@@ -37,13 +56,29 @@ V0 therefore keeps interpretation rules in one place and reduces the read surfac
 
 It never returns a coaching recommendation, readiness score, diagnosis, progression/regression decision or plan change.
 
+## Revision semantics while contact is open
+
+Signal instance identity includes source revision. Therefore an edited source row may create a new current signal key while an earlier revision still has an unresolved `contact_required` review.
+
+The inbox must not silently drop either fact and must not imply that they are two unrelated client problems.
+
+V0 display rule:
+
+- preserve the unresolved contact;
+- group only signals that share the same client, signal type, source type and source row id;
+- ignore source revision only for this **display grouping**;
+- mark the item `sourceChangedSinceContact=true` and retain related signal keys;
+- never close or rewrite the historical review automatically.
+
+Do **not** deduplicate only by `sourceId`, because one session can legitimately produce several different signal types.
+
 ## V0 source snapshot contract
 
 The future repository read should request only the columns needed by the existing rules.
 
 ### `clients`
 
-Required:
+Transfer:
 
 - `id`
 - `name`
@@ -56,7 +91,7 @@ Not needed for the inbox: full intake, motivation, fears, health history, contra
 
 ### `sessions`
 
-Required only for existing signal rules:
+Transfer:
 
 - `id`
 - `client_id`
@@ -65,61 +100,61 @@ Required only for existing signal rules:
 - `vas_after`
 - `readiness`
 - `sleep_quality`
-- `created_at`
 - `updated_at`
 
 Do not fetch the full session narrative for the cross-client inbox.
 
 ### `training_load_observations`
 
-Required:
+Transfer:
 
 - `id`
 - `client_id`
 - `observed_at`
 - `rpe`
 - `zone_high_min`
-- `created_at`
 - `updated_at`
 
 ### `pre_session_checks`
 
-Required:
+Transfer:
 
 - `id`
 - `client_id`
 - `check_date`
 - `red_flag_concern`
 - `new_symptoms`
-- `created_at`
 - `updated_at`
 
 ### `guidance_events`
 
-Required only for client responses that can become an open trainer signal:
+Query predicate:
+
+- `kind = client_checkin`
+
+Transfer:
 
 - `id`
 - `client_id`
 - `event_date`
-- `kind`
-- `payload.note`
 - `created_at`
-- `updated_at`
+- only the extracted note used by the existing client-observation rule, not the complete `payload` JSON.
 
-The real query should restrict this source to the event kinds used by the attention model rather than loading unrelated guidance history.
+`collectWorkspaceSignals()` accepts this minimal `note` projection while remaining backward-compatible with the existing per-client `payload.note` shape.
 
 ### `trainer_signal_reviews`
 
-Required:
+Transfer:
 
 - `id`
 - `client_id`
 - `signal_key`
 - `outcome`
-- `reviewed_at`
 - `contact_resolved_at`
 
-A still-open `contact_required` review must remain visible even if the original signal is old.
+A still-open `contact_required` review must remain visible even if the original signal source row is no longer present in the source read.
+
+`reviewed_at`, broad guidance payloads and unrelated session/context fields are not needed for V0.
 
 ## No arbitrary time window in the first correctness test
 
@@ -131,16 +166,25 @@ Only after we know the real data shape may we introduce a bounded server-side so
 
 ## Security contract before any real-data preview
 
-The real-data version is blocked until staging proves all of the following:
+The real-data version is blocked until staging proves the exact future projections against every source table.
 
-1. trainer AAL2 can read the source snapshot for clients they are allowed to manage;
-2. trainer AAL1 is denied where the existing Studio Las security model requires AAL2;
-3. client role cannot read the cross-client snapshot;
-4. anonymous access is denied;
-5. the attention read does not write anything;
-6. no attention payload is stored in localStorage or another offline cache;
-7. only the minimal columns above are transferred;
-8. opening an item loads the existing per-client workspace rather than copying its full context into the inbox.
+Mandatory matrix for **each** of the six reads:
+
+1. trainer-owner at AAL2 can read allowed rows;
+2. trainer at AAL2 cannot read another trainer's client rows;
+3. trainer at AAL1 receives no protected rows / access is denied according to the deployed policy;
+4. client at AAL2 cannot read the cross-client trainer projection;
+5. anonymous access is denied;
+6. a client identity for client A cannot observe client B.
+
+Pay special attention to `guidance_events` and `trainer_signal_reviews`; passing `clients` and `sessions` alone does not prove the inbox contract.
+
+Additional requirements:
+
+- the attention read writes nothing;
+- no attention payload is stored in localStorage or another offline cache;
+- only the columns above are transferred;
+- opening an item loads the existing per-client workspace rather than copying its full context into the inbox.
 
 Existing RLS must be verified on staging; its presence in migration files is not sufficient evidence that the deployed policies behave as required.
 
@@ -153,12 +197,15 @@ Required comparison cases:
 - new client response;
 - reviewed signal that should disappear;
 - `contact_required` review that remains open until contact is resolved;
+- open contact whose original source row is absent;
+- source revision changes while an earlier contact remains open;
 - urgent manual trainer-check signal;
 - ordinary review-level signal;
 - information-only signal that should not dominate the attention inbox;
 - Review due today / overdue;
 - upcoming Review;
-- client with no open recorded exception.
+- client with no open recorded exception;
+- one failed source read must block the whole inbox.
 
 If the new inbox disagrees with the existing per-client path, integration stops. Do not “fix” the discrepancy in presentation code.
 
@@ -205,4 +252,5 @@ Do not integrate if any implementation requires:
 - duplicated signal interpretation rules in SQL and JavaScript;
 - autonomous plan recommendations;
 - weakening AAL2/RLS boundaries;
+- rendering a partial snapshot after one source read fails;
 - a production migration before backup/restore readiness.
