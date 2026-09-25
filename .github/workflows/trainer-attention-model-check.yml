@@ -4,6 +4,7 @@ on:
   pull_request:
     paths:
       - "assets/os/trainer-attention-model.js"
+      - "assets/os/trainer-attention-snapshot.js"
       - "assets/os/trainer-signals.js"
       - "assets/os/decision-support.js"
       - "scripts/test_trainer_attention_model.mjs"
