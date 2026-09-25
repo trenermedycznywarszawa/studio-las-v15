@@ -1,0 +1,27 @@
+name: Trainer Attention model check
+
+on:
+  pull_request:
+    paths:
+      - "assets/os/trainer-attention-model.js"
+      - "assets/os/trainer-signals.js"
+      - "assets/os/decision-support.js"
+      - "scripts/test_trainer_attention_model.mjs"
+      - ".github/workflows/trainer-attention-model-check.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  attention-model:
+    name: Pure attention model regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - name: Run pure model regression
+        run: node scripts/test_trainer_attention_model.mjs
