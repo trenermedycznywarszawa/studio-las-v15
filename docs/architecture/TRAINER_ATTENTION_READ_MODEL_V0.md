@@ -41,6 +41,8 @@ The model requires all six sources:
 
 Missing source arrays, malformed source identities, invalid review outcomes, a review missing `contact_resolved_at`, or a row referencing a client outside the snapshot are errors. They must stop the inbox from rendering.
 
+Every field named by the executable `transfer` contract must be present on each mapped row. Signal-bearing values such as `vas_before`, `readiness`, `rpe`, `zone_high_min`, `red_flag_concern`, `new_symptoms` and the extracted guidance `note` may legitimately be `null`, but the property itself must not be missing. This prevents a broken projection or mapper from silently turning missing evidence into a quiet client.
+
 `assembleTrainerAttentionSnapshot()` is an **all-or-nothing application boundary**, not a database transaction. A future real-data adapter may execute the six reads concurrently, but it must not convert a failed/rejected read into `[]` and must not render a partial inbox.
 
 This protects against the most dangerous false negative: a missing `signalReviews` read making an unresolved `contact_required` situation look quiet.
@@ -75,6 +77,7 @@ V0 display rule:
 - preserve the unresolved contact;
 - group only signals that share the same client, signal type, source type and source row id;
 - ignore source revision only for this **display grouping**;
+- compare the unresolved contact against currently generated source revisions **before review filtering**, so a newer revision that was already reviewed still marks the historical open contact as changed;
 - mark the item `sourceChangedSinceContact=true` and retain related signal keys;
 - never close or rewrite the historical review automatically.
 
@@ -82,7 +85,7 @@ Do **not** deduplicate only by `sourceId`, because one session can legitimately 
 
 ## V0 source snapshot contract
 
-`getTrainerAttentionReadContract()` in `assets/os/trainer-attention-snapshot.js` is the executable source-read contract for the future adapter. It defines the table, deterministic order, query predicates and transfer fields for every source.
+`getTrainerAttentionReadContract()` in `assets/os/trainer-attention-snapshot.js` is the executable source-read contract for the future adapter. It defines the table, deterministic order, query predicates, concrete PostgREST `select` expression and mapped transfer fields for every source.
 
 ### Soft-delete parity is mandatory
 
@@ -175,15 +178,19 @@ Query predicates:
 - `deleted_at = is.null`
 - `kind = client_checkin`
 
-Transfer:
+The PostgREST projection must encode the JSON extraction directly:
+
+- `note:payload->>note`
+
+Mapped transfer fields:
 
 - `id`
 - `client_id`
 - `event_date`
 - `created_at`
-- only the extracted note used by the existing client-observation rule, not the complete `payload` JSON.
+- `note`
 
-`collectWorkspaceSignals()` accepts this minimal `note` projection while remaining backward-compatible with the existing per-client `payload.note` shape.
+Do **not** fetch the complete `payload` JSON merely to extract the note in application code. `collectWorkspaceSignals()` accepts the minimal aliased `note` projection while remaining backward-compatible with the existing per-client `payload.note` shape.
 
 ### `trainer_signal_reviews`
 
@@ -262,6 +269,7 @@ Required comparison cases:
 - information-level signal with an unresolved `contact_required` review;
 - open contact whose original source row is absent;
 - source revision changes while an earlier contact remains open;
+- newer source revision was already reviewed, while an older `contact_required` remains unresolved: one contact item stays visible and explicitly reports source revision drift;
 - urgent manual trainer-check signal;
 - ordinary review-level signal;
 - information-only signal without an open contact that should not dominate the attention inbox;
@@ -269,8 +277,10 @@ Required comparison cases:
 - upcoming Review;
 - client with no open recorded exception;
 - one failed source read must block the whole inbox;
+- a mapped row missing any transfer field must fail closed, while present nullable values remain valid;
 - paginated source larger than one server-capped page must remain complete;
-- a soft-deleted client/source row must not appear in the source snapshot or Attention output.
+- a soft-deleted client/source row must not appear in the source snapshot or Attention output;
+- the generated `guidance_events` select must use the `payload->>note` alias rather than request a nonexistent `note` column or the full JSON payload.
 
 If the new inbox disagrees with the existing per-client path, integration stops. Do not “fix” the discrepancy in presentation code.
 
@@ -303,7 +313,7 @@ The inbox is a failure if it increases CAH or ACL by creating more review work t
 
 ## When V0 should be replaced
 
-A server-side read model/RPC becomes justified only if measured payload, latency or portfolio growth makes the batched minimal reads materially inefficient.
+A server-side read model/RPC becomes justified only if measured payload, latency or portfolio growth makes the V0 batched reads materially inefficient.
 
 If that happens, the server layer should normalize **source facts**, not invent a second set of coaching rules. Any production migration remains behind the separate backup/restore gate.
 
@@ -318,7 +328,9 @@ Do not integrate if any implementation requires:
 - autonomous plan recommendations;
 - weakening AAL2/RLS boundaries;
 - rendering a partial snapshot after one source read fails;
+- accepting a mapped row with a missing transfer field;
 - omitting `deleted_at=is.null` on any soft-deletable source read;
+- requesting a nonexistent `guidance_events.note` column or transferring the full payload instead of using the JSON extraction alias;
 - assuming a short page means pagination is complete;
 - deriving the business date from UTC instead of Studio-local calendar time;
 - a production migration before backup/restore readiness.
