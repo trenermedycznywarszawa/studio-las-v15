@@ -72,16 +72,19 @@ function hasOwn(object, key) {
   return Object.prototype.hasOwnProperty.call(object, key);
 }
 
-function requireFieldPresence(row, field, source, index) {
+function requireTransferValue(row, field, source, index) {
   if (!hasOwn(row, field)) {
     throw new TypeError(`Trainer Attention snapshot: ${source}[${index}] is missing ${field}`);
+  }
+  if (row[field] === undefined) {
+    throw new TypeError(`Trainer Attention snapshot: ${source}[${index}].${field} is undefined`);
   }
 }
 
 function requireValue(row, field, source, index) {
-  requireFieldPresence(row, field, source, index);
+  requireTransferValue(row, field, source, index);
   const value = row[field];
-  if (value === null || value === undefined || (typeof value === "string" && !value.trim())) {
+  if (value === null || (typeof value === "string" && !value.trim())) {
     throw new TypeError(`Trainer Attention snapshot: ${source}[${index}].${field} is empty`);
   }
 }
@@ -94,11 +97,12 @@ function validateRows(source, rows) {
       throw new TypeError(`Trainer Attention snapshot: ${source}[${index}] is not an object`);
     }
 
-    // Every transferred field must be present so a projection/mapping regression
-    // cannot silently turn a signal-bearing value into "no signal". Nullable DB
-    // values remain valid; identity fields below still require a concrete value.
+    // Every transferred field must be present and must not be undefined so a
+    // projection/mapping regression cannot silently turn a signal-bearing value
+    // into "no signal". Explicit null remains valid for nullable DB fields;
+    // identity fields below still require a concrete value.
     for (const field of contract.transfer) {
-      requireFieldPresence(row, field, source, index);
+      requireTransferValue(row, field, source, index);
     }
     for (const field of requiredValues) {
       requireValue(row, field, source, index);
