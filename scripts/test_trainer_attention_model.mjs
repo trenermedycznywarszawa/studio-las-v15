@@ -1,7 +1,11 @@
 import assert from "node:assert/strict";
 import { signalInstanceKey } from "../assets/os/decision-support.js";
 import { buildTrainerAttentionModel } from "../assets/os/trainer-attention-model.js";
-import { assembleTrainerAttentionSnapshot, collectTrainerAttentionPages } from "../assets/os/trainer-attention-snapshot.js";
+import {
+  assembleTrainerAttentionSnapshot,
+  collectTrainerAttentionPages,
+  getTrainerAttentionReadContract
+} from "../assets/os/trainer-attention-snapshot.js";
 
 function client(id, extras = {}) {
   return { id, name: id.toUpperCase(), status: "active", stage_label: "Prowadzenie", ...extras };
@@ -227,5 +231,13 @@ const paged = await collectTrainerAttentionPages(({ offset, limit }) => {
 }, { pageSize: 200 });
 assert.equal(paged.length, paginationFixture.length, "pagination must continue past a short server-capped page until an empty page");
 assert.equal(paged.at(-1).id, 511);
+
+const readContract = getTrainerAttentionReadContract();
+for (const source of ["clients", "sessions", "trainingLoad", "preSessionChecks", "guidanceEvents"]) {
+  assert.equal(readContract[source].predicates.deleted_at, "is.null", `${source} must exclude soft-deleted rows at the query boundary`);
+  assert(!readContract[source].transfer.includes("deleted_at"), `${source} must filter on deleted_at without transferring it`);
+}
+assert.equal(readContract.guidanceEvents.predicates.kind, "eq.client_checkin", "guidance events must be restricted to client_checkin");
+assert(!readContract.signalReviews.transfer.includes("deleted_at"), "signal review contract must not invent a deleted_at field");
 
 console.log("TRAINER_ATTENTION_MODEL_PASS");
