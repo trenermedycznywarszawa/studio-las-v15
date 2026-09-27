@@ -8,6 +8,7 @@ on:
       - "studio-las-os.html"
       - "studio-las-config.js"
       - "assets/os/app.js"
+      - "assets/os/trainer-attention-controller.js"
       - "assets/os/trainer-attention-model.js"
       - "assets/os/trainer-attention-snapshot.js"
       - "assets/os/trainer-attention-runtime.js"
