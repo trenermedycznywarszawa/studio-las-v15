@@ -166,6 +166,7 @@ const revisedSource = buildTrainerAttentionModel(emptySnapshot({
 assert.equal(revisedSource.attention.length, 1, "one source/signal situation with an open contact should render once across revisions");
 assert.equal(revisedSource.attention[0].kind, "contact");
 assert.equal(revisedSource.attention[0].sourceChangedSinceContact, true, "revision drift must be explicit rather than silently duplicated");
+assert.equal(revisedSource.attention[0].currentSourceRevision, revisedSession.updated_at);
 assert.equal(revisedSource.attention[0].relatedSignalKeys.length, 1);
 
 const currentRevisionKey = signalInstanceKey({
@@ -199,6 +200,40 @@ assert.equal(reviewedCurrentRevision.attention.length, 1, "reviewed current revi
 assert.equal(reviewedCurrentRevision.attention[0].kind, "contact", "older unresolved contact must remain open");
 assert.equal(reviewedCurrentRevision.attention[0].sourceChangedSinceContact, true, "review filtering must not hide revision drift from an unresolved contact");
 assert(reviewedCurrentRevision.attention[0].relatedSignalKeys.includes(currentRevisionKey), "current reviewed revision key must remain attached as revision context");
+
+const clearedRevisionOldKey = signalInstanceKey({
+  id: "symptom-increase-after-session",
+  source: "session",
+  sourceDate: "2026-09-24",
+  sourceId: "session-cleared",
+  sourceRevision: "2026-09-24T09:00:00Z"
+});
+const clearedRevisionSession = {
+  id: "session-cleared",
+  client_id: "revision-cleared",
+  date: "2026-09-24",
+  vas_before: 4,
+  vas_after: 4,
+  readiness: 7,
+  sleep_quality: "dobry",
+  updated_at: "2026-09-24T12:00:00Z"
+};
+const clearedRevision = buildTrainerAttentionModel(emptySnapshot({
+  clients: [client("revision-cleared")],
+  sessions: [clearedRevisionSession],
+  signalReviews: [{
+    id: "review-cleared-contact",
+    client_id: "revision-cleared",
+    signal_key: clearedRevisionOldKey,
+    outcome: "contact_required",
+    contact_resolved_at: null
+  }]
+}), { today: "2026-09-25" });
+assert.equal(clearedRevision.attention.length, 1, "clearing the trigger must not close the unresolved contact");
+assert.equal(clearedRevision.attention[0].kind, "contact");
+assert.equal(clearedRevision.attention[0].sourceChangedSinceContact, true, "source-row revision drift must remain visible even when the current row no longer emits the signal");
+assert.equal(clearedRevision.attention[0].currentSourceRevision, clearedRevisionSession.updated_at);
+assert.equal(clearedRevision.attention[0].relatedSignalKeys.length, 0, "a cleared trigger should not invent a current signal key");
 
 const informationContactKey = signalInstanceKey({
   id: "high-zone-present",
@@ -289,6 +324,40 @@ assert.throws(
   }), { today: "2026-09-25" }),
   /vas_before is undefined/,
   "an undefined signal-bearing projection field must fail closed instead of becoming an implicit null"
+);
+
+assert.throws(
+  () => buildTrainerAttentionModel(emptySnapshot({
+    clients: [client("malformed-number")],
+    sessions: [{
+      id: "session-string-vas",
+      client_id: "malformed-number",
+      date: "2026-09-25",
+      vas_before: "2",
+      vas_after: 5,
+      readiness: 7,
+      sleep_quality: "dobry",
+      updated_at: "2026-09-25T10:00:00Z"
+    }]
+  }), { today: "2026-09-25" }),
+  /vas_before must be number or null/,
+  "numeric signal fields must reject serialized strings instead of silently changing signal semantics"
+);
+
+assert.throws(
+  () => buildTrainerAttentionModel(emptySnapshot({
+    clients: [client("malformed-boolean")],
+    preSessionChecks: [{
+      id: "check-string-boolean",
+      client_id: "malformed-boolean",
+      check_date: "2026-09-25",
+      red_flag_concern: "false",
+      new_symptoms: false,
+      updated_at: "2026-09-25T10:00:00Z"
+    }]
+  }), { today: "2026-09-25" }),
+  /red_flag_concern must be boolean/,
+  "boolean signal fields must reject strings so false cannot become a truthy urgent alert"
 );
 
 const nullableSignalFields = buildTrainerAttentionModel(emptySnapshot({
