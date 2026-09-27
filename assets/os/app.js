@@ -14,6 +14,7 @@ import { TrainerMfaController } from "./trainer-mfa.js";
 import { savePwdWorkflow } from "./pwd.js";
 import { renderTrainerMfa } from "./ui/trainer-mfa.js";
 import { createRuntimeFeedback } from "./ui/runtime-feedback.js";
+import { loadTrainerAttention, trainerAttentionPreviewEnabled } from "./trainer-attention-runtime.js";
 
 const root = document.getElementById("app");
 const state = {
@@ -30,7 +31,12 @@ const state = {
   activeClientId: "",
   workspace: null,
   clientPortal: null,
-  snapshot: null
+  snapshot: null,
+  trainerAttentionEnabled: false,
+  trainerAttentionView: false,
+  trainerAttention: null,
+  trainerAttentionLoading: false,
+  trainerAttentionError: ""
 };
 
 const { announce, withWrite, reset: resetFeedback } = createRuntimeFeedback(() => state.config?.mode);
@@ -52,6 +58,10 @@ async function logout() {
   state.workspace = null;
   state.snapshot = null;
   state.mfaView = null;
+  state.trainerAttention = null;
+  state.trainerAttentionLoading = false;
+  state.trainerAttentionError = "";
+  state.trainerAttentionView = state.trainerAttentionEnabled;
   showLogin();
 }
 
@@ -204,6 +214,40 @@ async function loadTrainerWorkspace(clientId, refreshClients = false) {
   await trainerLoader.load(clientId, refreshClients, loadQuestionnaireSubmissionsForTrainer);
 }
 
+async function refreshTrainerAttention({ clearSelection = false } = {}) {
+  if (!state.trainerAttentionEnabled) return;
+  if (clearSelection) {
+    trainerLoader.reset();
+    state.activeClientId = "";
+    state.workspace = null;
+  }
+  state.trainerAttentionView = true;
+  state.trainerAttentionLoading = true;
+  state.trainerAttentionError = "";
+  renderTrainerState();
+  try {
+    const result = await loadTrainerAttention(state.repository);
+    state.trainerAttention = result.model;
+    state.clients = result.snapshot.clients;
+  } catch (error) {
+    state.trainerAttention = null;
+    state.trainerAttentionError = userSafeError(error, state.config?.mode);
+    throw error;
+  } finally {
+    state.trainerAttentionLoading = false;
+    renderTrainerState();
+  }
+}
+
+async function openTrainerClientContext(clientId) {
+  if (!clientId) return;
+  state.trainerAttentionView = false;
+  state.trainerAttentionError = "";
+  await loadTrainerWorkspace(clientId, true);
+  await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
+  renderTrainerState();
+}
+
 async function loadTrainer(preferredClientId = state.activeClientId) {
   let mfaView;
   try { mfaView = await state.mfa.prepare(); }
@@ -218,12 +262,22 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
+
+  if (state.trainerAttentionEnabled && state.trainerAttentionView) {
+    await refreshTrainerAttention({ clearSelection: true });
+    return;
+  }
+
   await loadTrainerWorkspace(preferredClientId, true);
   await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
   renderTrainerState();
 }
 
 async function selectClient(clientId) {
+  if (state.trainerAttentionEnabled && state.trainerAttentionView) {
+    await openTrainerClientContext(clientId);
+    return;
+  }
   await loadTrainerWorkspace(clientId);
 }
 
@@ -241,10 +295,22 @@ function renderTrainerState() {
     workspace: state.workspace,
     loading: state.loading,
     loadError: state.loadError,
+    trainerAttentionEnabled: state.trainerAttentionEnabled,
+    trainerAttentionView: state.trainerAttentionView,
+    trainerAttention: state.trainerAttention,
+    trainerAttentionLoading: state.trainerAttentionLoading,
+    trainerAttentionError: state.trainerAttentionError,
     onRetrySection: section => trainerLoader.section(section).catch(handleRuntimeError),
     attentionSignals,
     onSelectClient: clientId => selectClient(clientId).catch(handleRuntimeError),
-    onReload: () => loadTrainer(state.activeClientId).catch(handleRuntimeError),
+    onOpenClientContext: clientId => openTrainerClientContext(clientId).catch(handleRuntimeError),
+    onShowTrainerAttention: () => refreshTrainerAttention({ clearSelection: true }).catch(handleRuntimeError),
+    onRetryTrainerAttention: () => refreshTrainerAttention().catch(handleRuntimeError),
+    onReload: () => (
+      state.trainerAttentionView
+        ? refreshTrainerAttention().catch(handleRuntimeError)
+        : loadTrainer(state.activeClientId).catch(handleRuntimeError)
+    ),
     onLogout: () => logout().catch(handleRuntimeError),
     onManageMfa: () => showMfaManagement(),
     onCreateClient: async values => {
@@ -289,7 +355,7 @@ function renderTrainerState() {
     },
     onRecordGuidanceDelivery: async (homePlanId, deliveryStatus) => {
       await withWrite("Zapisywanie dostarczenia", () =>
-        state.repository.recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus), reloadWorkspace
+        state.repository.recordGuidanceDelivery(homePlanId, deliveryStatus), reloadWorkspace
       );
     },
     onSaveCycleDecision: async values => {
@@ -312,12 +378,14 @@ function renderTrainerState() {
     }
   });
 
-  state.inquiryController.render(root.querySelector(".workspace"), {
-    activeClientId: state.activeClientId,
-    rerender: renderTrainerState,
-    loadTrainer,
-    onError: handleRuntimeError
-  });
+  if (!state.trainerAttentionView) {
+    state.inquiryController.render(root.querySelector(".workspace"), {
+      activeClientId: state.activeClientId,
+      rerender: renderTrainerState,
+      loadTrainer,
+      onError: handleRuntimeError
+    });
+  }
 }
 
 function handleRuntimeError(error) {
@@ -334,6 +402,8 @@ function handleRuntimeError(error) {
 async function initialize() {
   try {
     state.config = getRuntimeConfig();
+    state.trainerAttentionEnabled = trainerAttentionPreviewEnabled(state.config);
+    state.trainerAttentionView = state.trainerAttentionEnabled;
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
     state.questionnaireApi = new QuestionnaireApi(state.repository);
