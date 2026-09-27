@@ -1,0 +1,78 @@
+name: Trainer Attention staging read verification
+
+on:
+  pull_request:
+    branches:
+      - codex/today-v2-renderer
+    paths:
+      - "assets/os/trainer-attention-model.js"
+      - "assets/os/trainer-attention-snapshot.js"
+      - "assets/os/trainer-signals.js"
+      - "assets/os/decision-support.js"
+      - "scripts/e2e_trainer_attention_staging.mjs"
+      - "scripts/e2e_mfa_bootstrap.mjs"
+      - ".github/workflows/trainer-attention-staging-read.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# The QA account receives an ephemeral TOTP factor. Serialize with the canonical
+# staging browser suite so two jobs never manipulate the same QA MFA state.
+concurrency:
+  group: studio-las-browser-e2e-canonical-staging
+  cancel-in-progress: false
+
+jobs:
+  trainer-attention-staging-read:
+    name: Trainer Attention — canonical staging read-only gate
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+
+    env:
+      STUDIO_LAS_STAGING_PUBLISHABLE_KEY: sb_publishable_5IVYDd1a02rye5szV80sLA_UWzwjZRk
+      STUDIO_LAS_E2E_ARTIFACT_DIR: artifacts/trainer-attention-staging
+      STUDIO_LAS_E2E_MARKER: ATTENTION-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Verify QA secrets are configured
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: |
+          test -n "$STUDIO_LAS_QA_EMAIL"
+          test -n "$STUDIO_LAS_QA_PASSWORD"
+
+      - name: Bootstrap ephemeral QA TOTP on canonical staging
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_mfa_bootstrap.mjs bootstrap
+
+      - name: Run read-only Trainer Attention staging verification
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_trainer_attention_staging.mjs
+
+      - name: Remove ephemeral QA TOTP from staging
+        if: always()
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_mfa_bootstrap.mjs cleanup
+
+      - name: Upload staging read evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trainer-attention-staging-read-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/trainer-attention-staging/
+          if-no-files-found: warn
+          retention-days: 14
