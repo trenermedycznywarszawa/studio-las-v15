@@ -355,7 +355,7 @@ function renderTrainerState() {
     },
     onRecordGuidanceDelivery: async (homePlanId, deliveryStatus) => {
       await withWrite("Zapisywanie dostarczenia", () =>
-        state.repository.recordGuidanceDelivery(homePlanId, deliveryStatus), reloadWorkspace
+        state.repository.recordHomePlanGuidanceDelivery(homePlanId, deliveryStatus), reloadWorkspace
       );
     },
     onSaveCycleDecision: async values => {
