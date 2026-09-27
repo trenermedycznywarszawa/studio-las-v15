@@ -1,0 +1,54 @@
+@import url("./trainer-attention-lab.css");
+
+.sl-attention-runtime {
+  padding-top: 8px;
+}
+
+.sl-attention-runtime-head-actions {
+  display: grid;
+  justify-items: end;
+  gap: 10px;
+}
+
+.sl-attention-runtime .sl-attention-empty strong {
+  display: block;
+  color: var(--sl-color-ink);
+  font-size: 13px;
+}
+
+.sl-attention-runtime .sl-attention-empty p {
+  margin: 6px 0 0;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.sl-attention-quiet-button {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  cursor: pointer;
+}
+
+.sl-attention-review-row {
+  cursor: pointer;
+}
+
+.sl-attention-review-row:focus-visible,
+.sl-attention-quiet-button:focus-visible,
+.sl-attention-open:focus-visible {
+  outline: 2px solid var(--sl-color-forest);
+  outline-offset: 3px;
+}
+
+.sl-attention-workspace {
+  background: linear-gradient(145deg, rgba(248, 244, 237, 0.78), rgba(243, 239, 231, 0.58));
+}
+
+@media (max-width: 620px) {
+  .sl-attention-runtime-head-actions {
+    justify-items: start;
+    margin-top: 12px;
+  }
+}
