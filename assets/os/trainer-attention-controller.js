@@ -2,17 +2,34 @@ import { userSafeError } from "./runtime.js";
 import { loadTrainerAttention } from "./trainer-attention-runtime.js";
 
 export class TrainerAttentionController {
-  constructor(state, {
-    render,
-    resetWorkspace,
-    loadWorkspace,
-    refreshInquiry
-  }) {
+  constructor(state, { render, resetWorkspace, loadWorkspace, refreshInquiry }) {
     this.state = state;
     this.render = render;
     this.resetWorkspace = resetWorkspace;
     this.loadWorkspace = loadWorkspace;
     this.refreshInquiry = refreshInquiry;
+  }
+
+  reset() {
+    const state = this.state;
+    state.trainerAttention = null;
+    state.trainerAttentionLoading = false;
+    state.trainerAttentionError = "";
+    state.trainerAttentionView = state.trainerAttentionEnabled;
+  }
+
+  renderBindings(onError) {
+    const state = this.state;
+    return {
+      trainerAttentionEnabled: state.trainerAttentionEnabled,
+      trainerAttentionView: state.trainerAttentionView,
+      trainerAttention: state.trainerAttention,
+      trainerAttentionLoading: state.trainerAttentionLoading,
+      trainerAttentionError: state.trainerAttentionError,
+      onOpenClientContext: clientId => this.openClient(clientId).catch(onError),
+      onShowTrainerAttention: () => this.refresh({ clearSelection: true }).catch(onError),
+      onRetryTrainerAttention: () => this.refresh().catch(onError)
+    };
   }
 
   async refresh({ clearSelection = false } = {}) {
