@@ -67,10 +67,7 @@ async function logout() {
   state.workspace = null;
   state.snapshot = null;
   state.mfaView = null;
-  state.trainerAttention = null;
-  state.trainerAttentionLoading = false;
-  state.trainerAttentionError = "";
-  state.trainerAttentionView = state.trainerAttentionEnabled;
+  trainerAttentionController.reset();
   showLogin();
 }
 
@@ -270,17 +267,10 @@ function renderTrainerState() {
     workspace: state.workspace,
     loading: state.loading,
     loadError: state.loadError,
-    trainerAttentionEnabled: state.trainerAttentionEnabled,
-    trainerAttentionView: state.trainerAttentionView,
-    trainerAttention: state.trainerAttention,
-    trainerAttentionLoading: state.trainerAttentionLoading,
-    trainerAttentionError: state.trainerAttentionError,
+    ...trainerAttentionController.renderBindings(handleRuntimeError),
     onRetrySection: section => trainerLoader.section(section).catch(handleRuntimeError),
     attentionSignals,
     onSelectClient: clientId => selectClient(clientId).catch(handleRuntimeError),
-    onOpenClientContext: clientId => trainerAttentionController.openClient(clientId).catch(handleRuntimeError),
-    onShowTrainerAttention: () => trainerAttentionController.refresh({ clearSelection: true }).catch(handleRuntimeError),
-    onRetryTrainerAttention: () => trainerAttentionController.refresh().catch(handleRuntimeError),
     onReload: () => (
       state.trainerAttentionView
         ? trainerAttentionController.refresh().catch(handleRuntimeError)
