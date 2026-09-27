@@ -14,7 +14,8 @@ import { TrainerMfaController } from "./trainer-mfa.js";
 import { savePwdWorkflow } from "./pwd.js";
 import { renderTrainerMfa } from "./ui/trainer-mfa.js";
 import { createRuntimeFeedback } from "./ui/runtime-feedback.js";
-import { loadTrainerAttention, trainerAttentionPreviewEnabled } from "./trainer-attention-runtime.js";
+import { trainerAttentionPreviewEnabled } from "./trainer-attention-runtime.js";
+import { TrainerAttentionController } from "./trainer-attention-controller.js";
 
 const root = document.getElementById("app");
 const state = {
@@ -41,6 +42,14 @@ const state = {
 
 const { announce, withWrite, reset: resetFeedback } = createRuntimeFeedback(() => state.config?.mode);
 const trainerLoader = new TrainerWorkspaceLoader(state, renderTrainerState);
+const trainerAttentionController = new TrainerAttentionController(state, {
+  render: renderTrainerState,
+  resetWorkspace: () => trainerLoader.reset(),
+  loadWorkspace: clientId => loadTrainerWorkspace(clientId, true),
+  refreshInquiry: async () => {
+    await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
+  }
+});
 
 async function logout() {
   trainerLoader.reset();
@@ -214,40 +223,6 @@ async function loadTrainerWorkspace(clientId, refreshClients = false) {
   await trainerLoader.load(clientId, refreshClients, loadQuestionnaireSubmissionsForTrainer);
 }
 
-async function refreshTrainerAttention({ clearSelection = false } = {}) {
-  if (!state.trainerAttentionEnabled) return;
-  if (clearSelection) {
-    trainerLoader.reset();
-    state.activeClientId = "";
-    state.workspace = null;
-  }
-  state.trainerAttentionView = true;
-  state.trainerAttentionLoading = true;
-  state.trainerAttentionError = "";
-  renderTrainerState();
-  try {
-    const result = await loadTrainerAttention(state.repository);
-    state.trainerAttention = result.model;
-    state.clients = result.snapshot.clients;
-  } catch (error) {
-    state.trainerAttention = null;
-    state.trainerAttentionError = userSafeError(error, state.config?.mode);
-    throw error;
-  } finally {
-    state.trainerAttentionLoading = false;
-    renderTrainerState();
-  }
-}
-
-async function openTrainerClientContext(clientId) {
-  if (!clientId) return;
-  state.trainerAttentionView = false;
-  state.trainerAttentionError = "";
-  await loadTrainerWorkspace(clientId, true);
-  await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
-  renderTrainerState();
-}
-
 async function loadTrainer(preferredClientId = state.activeClientId) {
   let mfaView;
   try { mfaView = await state.mfa.prepare(); }
@@ -264,7 +239,7 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
   state.mfaView = null;
 
   if (state.trainerAttentionEnabled && state.trainerAttentionView) {
-    await refreshTrainerAttention({ clearSelection: true });
+    await trainerAttentionController.refresh({ clearSelection: true });
     return;
   }
 
@@ -275,7 +250,7 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
 
 async function selectClient(clientId) {
   if (state.trainerAttentionEnabled && state.trainerAttentionView) {
-    await openTrainerClientContext(clientId);
+    await trainerAttentionController.openClient(clientId);
     return;
   }
   await loadTrainerWorkspace(clientId);
@@ -303,12 +278,12 @@ function renderTrainerState() {
     onRetrySection: section => trainerLoader.section(section).catch(handleRuntimeError),
     attentionSignals,
     onSelectClient: clientId => selectClient(clientId).catch(handleRuntimeError),
-    onOpenClientContext: clientId => openTrainerClientContext(clientId).catch(handleRuntimeError),
-    onShowTrainerAttention: () => refreshTrainerAttention({ clearSelection: true }).catch(handleRuntimeError),
-    onRetryTrainerAttention: () => refreshTrainerAttention().catch(handleRuntimeError),
+    onOpenClientContext: clientId => trainerAttentionController.openClient(clientId).catch(handleRuntimeError),
+    onShowTrainerAttention: () => trainerAttentionController.refresh({ clearSelection: true }).catch(handleRuntimeError),
+    onRetryTrainerAttention: () => trainerAttentionController.refresh().catch(handleRuntimeError),
     onReload: () => (
       state.trainerAttentionView
-        ? refreshTrainerAttention().catch(handleRuntimeError)
+        ? trainerAttentionController.refresh().catch(handleRuntimeError)
         : loadTrainer(state.activeClientId).catch(handleRuntimeError)
     ),
     onLogout: () => logout().catch(handleRuntimeError),
