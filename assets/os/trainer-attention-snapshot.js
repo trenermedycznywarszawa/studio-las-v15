@@ -61,6 +61,60 @@ const READ_CONTRACT = Object.freeze({
   })
 });
 
+// Keep the cross-client boundary strict enough that serialization/mapping mistakes
+// cannot silently become a quiet client or a false urgent alert. These are DB scalar
+// shapes, not domain thresholds; threshold semantics remain in decision-support.js.
+const TRANSFER_TYPES = Object.freeze({
+  clients: Object.freeze({
+    id: "string",
+    name: "string",
+    status: "string",
+    stage: "nullable-number",
+    next_session_date: "nullable-string",
+    next_review_date: "nullable-string"
+  }),
+  sessions: Object.freeze({
+    id: "string",
+    client_id: "string",
+    date: "string",
+    vas_before: "nullable-number",
+    vas_after: "nullable-number",
+    readiness: "nullable-number",
+    sleep_quality: "nullable-string",
+    updated_at: "string"
+  }),
+  trainingLoad: Object.freeze({
+    id: "string",
+    client_id: "string",
+    observed_at: "string",
+    rpe: "nullable-number",
+    zone_high_min: "nullable-number",
+    updated_at: "string"
+  }),
+  preSessionChecks: Object.freeze({
+    id: "string",
+    client_id: "string",
+    check_date: "string",
+    red_flag_concern: "boolean",
+    new_symptoms: "boolean",
+    updated_at: "string"
+  }),
+  guidanceEvents: Object.freeze({
+    id: "string",
+    client_id: "string",
+    event_date: "string",
+    created_at: "string",
+    note: "nullable-string"
+  }),
+  signalReviews: Object.freeze({
+    id: "string",
+    client_id: "string",
+    signal_key: "string",
+    outcome: "string",
+    contact_resolved_at: "nullable-string"
+  })
+});
+
 const REVIEW_OUTCOMES = new Set([
   "noted_no_change",
   "changed_guidance",
@@ -89,6 +143,33 @@ function requireValue(row, field, source, index) {
   }
 }
 
+function typeMatches(value, expected) {
+  if (expected === "string") return typeof value === "string";
+  if (expected === "number") return typeof value === "number" && Number.isFinite(value);
+  if (expected === "boolean") return typeof value === "boolean";
+  if (expected === "nullable-string") return value === null || typeof value === "string";
+  if (expected === "nullable-number") return value === null || (typeof value === "number" && Number.isFinite(value));
+  if (expected === "nullable-boolean") return value === null || typeof value === "boolean";
+  return false;
+}
+
+function expectedTypeLabel(expected) {
+  if (expected.startsWith("nullable-")) return `${expected.slice("nullable-".length)} or null`;
+  return expected;
+}
+
+function validateTransferTypes(source, row, index) {
+  const fieldTypes = TRANSFER_TYPES[source] || {};
+  for (const [field, expected] of Object.entries(fieldTypes)) {
+    const value = row[field];
+    if (!typeMatches(value, expected)) {
+      throw new TypeError(
+        `Trainer Attention snapshot: ${source}[${index}].${field} must be ${expectedTypeLabel(expected)}`
+      );
+    }
+  }
+}
+
 function validateRows(source, rows) {
   const contract = READ_CONTRACT[source];
   const requiredValues = REQUIRED_VALUE_FIELDS[source];
@@ -99,16 +180,16 @@ function validateRows(source, rows) {
 
     // Every transferred field must be present and must not be undefined so a
     // projection/mapping regression cannot silently turn a signal-bearing value
-    // into "no signal". Explicit null remains valid for nullable DB fields;
-    // identity fields below still require a concrete value.
+    // into "no signal". Explicit null remains valid only for schema-nullable fields.
     for (const field of contract.transfer) {
       requireTransferValue(row, field, source, index);
     }
     for (const field of requiredValues) {
       requireValue(row, field, source, index);
     }
+    validateTransferTypes(source, row, index);
 
-    if (source === "signalReviews" && !REVIEW_OUTCOMES.has(String(row.outcome))) {
+    if (source === "signalReviews" && !REVIEW_OUTCOMES.has(row.outcome)) {
       throw new TypeError(`Trainer Attention snapshot: ${source}[${index}].outcome is invalid`);
     }
   });
