@@ -28,6 +28,15 @@ export function trainerAttentionPreviewEnabled(config, locationLike = globalThis
   return new URLSearchParams(search).get(PREVIEW_PARAM) === PREVIEW_VALUE;
 }
 
+function requireTrainerAal2(repository) {
+  const aal = repository?.auth?.getAuthenticatorAssuranceLevel?.();
+  if (aal !== "aal2") {
+    const error = new Error("Trainer Attention runtime requires trainer AAL2");
+    error.status = 403;
+    throw error;
+  }
+}
+
 function queryForContract(contract, { offset, limit }) {
   return {
     select: contract.select,
@@ -53,11 +62,19 @@ export async function loadTrainerAttention(repository, { today = studioBusinessD
     throw new TypeError("Trainer Attention runtime: repository is required");
   }
 
+  // RLS deliberately returns zero trainer rows at AAL1. Without an explicit
+  // assurance-level gate that valid denial could be mistaken for an empty inbox.
+  requireTrainerAal2(repository);
+
   const sourceKeys = getTrainerAttentionSourceKeys();
   const results = await Promise.all(sourceKeys.map(async source => {
     const data = await readSource(repository, source);
     return [source, { data, error: null }];
   }));
+
+  // A token refresh can occur during a REST request. Re-check after the batched
+  // reads so an AAL downgrade can never render as a quiet cross-client snapshot.
+  requireTrainerAal2(repository);
 
   const snapshot = assembleTrainerAttentionSnapshot(Object.fromEntries(results));
   const model = buildTrainerAttentionModel(snapshot, { today, reviewSoonDays: 7 });
