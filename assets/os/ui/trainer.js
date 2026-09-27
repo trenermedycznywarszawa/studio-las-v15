@@ -11,7 +11,6 @@ import {
 import {
   assessmentForm,
   measurementForm,
-  newClientForm,
   sessionForm,
   trainingLoadForm
 } from "./forms.js";
@@ -181,19 +180,14 @@ export function renderTrainer(root, model) {
 
   const sidebar = create("aside", { className: "sidebar" }, [
     create("h2", { text: "Klienci" }),
-    clientSelect,
-    detailsForm("Dodaj klienta", newClientForm(model.onCreateClient)),
-    create("div", { className: "security-note" }, [
-      create("strong", { text: "Jedno źródło prawdy" }),
-      create("p", { text: "Każdy zapis trafia bezpośrednio do Supabase. Brak localStorage i kolejki offline." })
-    ])
+    clientSelect
   ]);
 
   const content = create("main", { className: "workspace" });
   if (model.loading || model.loadError) content.append(statusBox(
     model.loadError || "Ładowanie procesu…", model.loadError ? "error" : "info"));
   if (!model.workspace) {
-    content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Po wyborze zobaczysz proces i formularze zapisujące bezpośrednio do Supabase." })));
+    content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Wybierz klienta, aby zobaczyć jego proces." })));
   } else {
     const workspace = model.workspace;
     const sections = {
