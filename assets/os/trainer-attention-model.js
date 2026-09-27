@@ -80,6 +80,7 @@ function signalToItem(client, signal) {
     sourceRevision: signal.sourceRevision || null,
     contactReviewId: signal.contactReviewId || null,
     sourceChangedSinceContact: false,
+    currentSourceRevision: null,
     relatedSignalKeys: Object.freeze([])
   });
 }
@@ -108,7 +109,31 @@ function semanticSourceKey(item) {
   return [item.clientId, item.signalId, item.sourceType, item.sourceId].map(String).join("::");
 }
 
-function collapseOpenContactRevisions(items, generatedSourceItems = []) {
+function sourceRowKey(item) {
+  if (!item.clientId || !item.sourceType || !item.sourceId) return "";
+  return [item.clientId, item.sourceType, item.sourceId].map(String).join("::");
+}
+
+function buildSourceRevisionIndex(snapshot) {
+  const revisions = new Map();
+  const remember = (row, sourceType, revisionField) => {
+    const revision = row?.[revisionField];
+    if (!row?.client_id || !row?.id || !revision) return;
+    revisions.set(
+      [row.client_id, sourceType, row.id].map(String).join("::"),
+      String(revision)
+    );
+  };
+
+  for (const row of snapshot.sessions) remember(row, "session", "updated_at");
+  for (const row of snapshot.trainingLoad) remember(row, "training-load", "updated_at");
+  for (const row of snapshot.preSessionChecks) remember(row, "trainer-check", "updated_at");
+  for (const row of snapshot.guidanceEvents) remember(row, "client-response", "created_at");
+
+  return revisions;
+}
+
+function collapseOpenContactRevisions(items, generatedSourceItems = [], sourceRevisions = new Map()) {
   const groups = new Map();
   const passthrough = [];
   const generatedBySemanticSource = new Map();
@@ -153,12 +178,24 @@ function collapseOpenContactRevisions(items, generatedSourceItems = []) {
     }
     const related = [...relatedByKey.values()];
 
+    // Signal generation alone is not enough to prove revision parity: a newer
+    // source row can legitimately stop emitting the original signal. Track the
+    // loaded source row revision independently so that an unresolved contact still
+    // exposes drift even after the trigger clears.
+    const currentSourceRevision = sourceRevisions.get(sourceRowKey(contact)) || "";
+    const rowRevisionChanged = Boolean(
+      currentSourceRevision
+      && String(currentSourceRevision) !== String(contact.sourceRevision || "")
+    );
+    const sourceChangedSinceContact = rowRevisionChanged || related.length > 0;
+
     collapsed.push(Object.freeze({
       ...contact,
-      context: related.length
-        ? `${contact.context} Ten sam rekord źródłowy ma nowszą lub równoległą rewizję; inbox zachowuje jeden otwarty kontakt dla tej sytuacji.`
+      context: sourceChangedSinceContact
+        ? `${contact.context} Ten sam rekord źródłowy ma inną rewizję niż przy otwarciu kontaktu; inbox zachowuje jeden otwarty kontakt dla tej sytuacji.`
         : contact.context,
-      sourceChangedSinceContact: related.length > 0,
+      sourceChangedSinceContact,
+      currentSourceRevision: currentSourceRevision || contact.sourceRevision || null,
       relatedSignalKeys: Object.freeze(related.map(item => item.signalKey))
     }));
   }
@@ -187,6 +224,7 @@ export function buildTrainerAttentionModel(snapshot, {
   const preSessionChecks = groupByClient(snapshot.preSessionChecks);
   const guidanceEvents = groupByClient(snapshot.guidanceEvents);
   const signalReviews = groupByClient(snapshot.signalReviews);
+  const sourceRevisions = buildSourceRevisionIndex(snapshot);
   const rawAttention = [];
   const generatedSourceItems = [];
   const reviewSoon = [];
@@ -230,7 +268,7 @@ export function buildTrainerAttentionModel(snapshot, {
     }
   }
 
-  const attention = collapseOpenContactRevisions(rawAttention, generatedSourceItems);
+  const attention = collapseOpenContactRevisions(rawAttention, generatedSourceItems, sourceRevisions);
   attention.sort((left, right) =>
     attentionRank(left) - attentionRank(right)
       || String(right.sourceDate || "").localeCompare(String(left.sourceDate || ""))
