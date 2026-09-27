@@ -6,7 +6,7 @@ function ensureStyles() {
   const link = document.createElement("link");
   link.id = id;
   link.rel = "stylesheet";
-  link.href = new URL("../trainer-attention-lab.css", import.meta.url).href;
+  link.href = new URL("../trainer-attention-runtime.css", import.meta.url).href;
   document.head.append(link);
 }
 
