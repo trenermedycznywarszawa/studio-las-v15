@@ -596,5 +596,5 @@ export function evaluatePrePwdV3Visibility(rule, answers = {}) {
   if (rule.mode === "answer_in") return rule.values.some(value => answerContains(answers[rule.questionId], value));
   if (rule.mode === "any") return rule.rules.some(child => evaluatePrePwdV3Visibility(child, answers));
   if (rule.mode === "blocked_pending_rule") return false;
-  throw new Error(`Unsupported pre-PWD v3 visibility rule: ${rule.mode}`);
+  throw new Error(`Nieobsługiwana reguła widoczności ankiety: ${rule.mode}`);
 }

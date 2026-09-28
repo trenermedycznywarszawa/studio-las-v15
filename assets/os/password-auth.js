@@ -44,7 +44,7 @@ export function consumePasswordCallback(auth) {
 
   if (error) {
     clearCallbackUrl();
-    const callbackError = new Error("Password callback is invalid or expired");
+    const callbackError = new Error("Link do ustawienia hasła jest nieprawidłowy albo wygasł");
     callbackError.status = 401;
     throw callbackError;
   }
@@ -53,7 +53,7 @@ export function consumePasswordCallback(auth) {
 
   if (!ALLOWED_CALLBACK_TYPES.has(type) || !accessToken || !refreshToken) {
     clearCallbackUrl();
-    const callbackError = new Error("Unsupported or incomplete authentication callback");
+    const callbackError = new Error("Link logowania jest nieobsługiwany albo niekompletny");
     callbackError.status = 401;
     throw callbackError;
   }
@@ -79,13 +79,13 @@ export async function requestPasswordRecovery(auth, email, redirectTo) {
   const redirect = new URL(String(redirectTo || ""));
 
   if (!EMAIL_PATTERN.test(normalizedEmail) || normalizedEmail.length > 254) {
-    const error = new Error("Valid email required");
+    const error = new Error("Podaj prawidłowy adres poczty elektronicznej");
     error.status = 400;
     throw error;
   }
 
   if (redirect.protocol !== "https:" || redirect.origin !== window.location.origin) {
-    const error = new Error("Unsafe recovery redirect");
+    const error = new Error("Nieprawidłowy adres powrotu po odzyskaniu dostępu");
     error.status = 400;
     throw error;
   }
@@ -103,7 +103,7 @@ export async function requestPasswordRecovery(auth, email, redirectTo) {
 export async function updatePassword(auth, password) {
   const value = String(password || "");
   if (value.length < 12 || value.length > 128) {
-    const error = new Error("Password must contain 12 to 128 characters");
+    const error = new Error("Hasło musi mieć od 12 do 128 znaków");
     error.status = 400;
     throw error;
   }

@@ -71,12 +71,12 @@ assert.equal(overlayBrief.assignmentId, "assignment-v33",
   "Versioned release overlays must be accepted through the explicit renderer contract.");
 assert.throws(
   () => buildPrePwdV31TrainerBrief({ versionCode: "3.3", rendererKey: "other_renderer", answers: {} }),
-  /Unsupported pre-PWD trainer brief renderer/,
+  /Nieobsługiwany sposób wyświetlania podsumowania ankiety/,
   "An unrelated renderer must remain fail-closed."
 );
 assert.throws(
   () => buildPrePwdV31TrainerBrief({ versionCode: "3.3", answers: {} }),
-  /Unsupported pre-PWD trainer brief version/,
+  /Nieobsługiwana wersja podsumowania ankiety/,
   "Legacy callers without rendererKey must not silently widen their historical version contract."
 );
 

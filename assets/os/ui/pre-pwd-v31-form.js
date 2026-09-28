@@ -171,7 +171,7 @@ function confirmationQuestion(question, answers, onAnswerChange) {
 
 function renderQuestion(question, values, onChange) {
   if (!PRE_PWD_V31_SUPPORTED_TYPES.includes(question.type)) {
-    throw new Error(`Unsupported pre-PWD v3.1 field type: ${question.type}`);
+    throw new Error(`Nieobsługiwany typ pola ankiety: ${question.type}`);
   }
 
   if (question.type === "confirmation") {

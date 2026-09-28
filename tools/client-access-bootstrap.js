@@ -33,7 +33,7 @@
           <div class="form-actions">
             <button class="button primary" type="button" id="client-access-relogin">Zaloguj ponownie</button>
             <button class="button" type="button" id="client-access-retry">Spróbuj ponownie</button>
-            <button class="button" type="button" id="client-access-back">Wróć do OS</button>
+            <button class="button" type="button" id="client-access-back">Wróć do panelu</button>
           </div>
         </section>
       </main>`;

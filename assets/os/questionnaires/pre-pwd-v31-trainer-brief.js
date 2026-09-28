@@ -59,13 +59,13 @@ function sourceLine(sourceRef, answers, snapshot) {
 
 export function buildPrePwdV31TrainerBrief(snapshot = {}) {
   if (snapshot.rendererKey && snapshot.rendererKey !== "pre_pwd_v31") {
-    throw new Error(`Unsupported pre-PWD trainer brief renderer: ${snapshot.rendererKey}`);
+    throw new Error(`Nieobsługiwany sposób wyświetlania podsumowania ankiety: ${snapshot.rendererKey}`);
   }
   // Legacy/unit callers may not provide rendererKey. Keep their historical
   // 3.1 guard, while runtime overlays (3.2, 3.3, …) are versioned by the
   // explicit renderer contract rather than by an arbitrary release number.
   if (!snapshot.rendererKey && snapshot.versionCode && snapshot.versionCode !== "3.1") {
-    throw new Error(`Unsupported pre-PWD trainer brief version: ${snapshot.versionCode}`);
+    throw new Error(`Nieobsługiwana wersja podsumowania ankiety: ${snapshot.versionCode}`);
   }
   const answers = snapshot.answers && typeof snapshot.answers === "object" && !Array.isArray(snapshot.answers)
     ? snapshot.answers

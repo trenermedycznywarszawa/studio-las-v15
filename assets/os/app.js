@@ -122,7 +122,7 @@ async function loadAuthenticatedRuntime() {
     state.auth.persistCurrentSession();
     return;
   }
-  throw new Error("Unsupported profile role");
+  throw new Error("Nieobsługiwana rola profilu");
 }
 
 function renderMfaView(view, message = "") {
@@ -165,7 +165,7 @@ async function advanceMfa(operation, loadingMessage) {
 }
 
 async function enforceTrainerMfa() {
-  await advanceMfa(() => state.mfa.prepare(), "Sprawdzanie drugiego składnika…");
+  await advanceMfa(() => state.mfa.prepare(), "Sprawdzanie dodatkowego zabezpieczenia…");
 }
 
 async function showMfaManagement() {

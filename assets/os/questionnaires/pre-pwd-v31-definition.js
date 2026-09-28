@@ -18,7 +18,7 @@ const pregnancyApplies = answerIn("q_pregnancy_applicability", ["applies"]);
 
 const definition = deepClone(PRE_PWD_V3_DEFINITION);
 definition.version = "3.1";
-definition.sourceLabel = `${PRE_PWD_V3_DEFINITION.sourceLabel} | zasady Studio Las 3.1`;
+definition.sourceLabel = `${PRE_PWD_V3_DEFINITION.sourceLabel} | Studio Las contract 3.1`;
 definition.architecture.healthDraftServerPersistence = "requires_explicit_pre_health_consent_receipt";
 definition.architecture.productionRelease = "blocked_pending_health_data_consent_legal_review";
 definition.unresolvedRules = definition.unresolvedRules.filter(rule => rule.id === "health_data_consent_and_autosave");
@@ -118,5 +118,5 @@ export function evaluatePrePwdV31Visibility(rule, answers = {}) {
   if (rule.mode === "any") return rule.rules.some(child => evaluatePrePwdV31Visibility(child, answers));
   if (rule.mode === "all") return rule.rules.every(child => evaluatePrePwdV31Visibility(child, answers));
   if (rule.mode === "blocked_pending_rule") return false;
-  throw new Error(`Unsupported pre-PWD v3.1 visibility rule: ${rule.mode}`);
+  throw new Error(`Nieobsługiwana reguła widoczności ankiety: ${rule.mode}`);
 }

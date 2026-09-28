@@ -45,7 +45,7 @@ assert.equal(brief.lastDecision.value, "Utrzymać spokojne tempo i obserwować s
 assert.equal(brief.lastDecision.sourceDate, "2026-07-18");
 assert.match(brief.latestClientSignal.value, /Wykonane: nie/);
 assert.match(brief.latestClientSignal.value, /Zmęczenie po pracy/);
-assert.equal(brief.latestClientSignal.sourceType, "Check-in klienta — Spokojny spacer");
+assert.equal(brief.latestClientSignal.sourceType, "Odpowiedź klienta — Spokojny spacer");
 assert.deepEqual(brief.activeGuidance.map(item => item.label), ["Wstawanie z krzesła", "Spokojny spacer"]);
 assert.equal(brief.nextSession.value, "2026-07-24");
 assert.equal(brief.reviewPoint.value, "2026-08-15");

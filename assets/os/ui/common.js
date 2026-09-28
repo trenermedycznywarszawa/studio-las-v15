@@ -197,7 +197,7 @@ export function renderLogin(root, { environment, onSubmit, onRecover, message = 
   const form = submitForm([
     create("p", { className: "eyebrow", text: `Studio Las · ${environmentLabel}` }),
     create("h1", { text: "Bezpieczne logowanie" }),
-    create("p", { className: "muted", text: "Zaloguj się swoim adresem e-mail i hasłem." }),
+    create("p", { className: "muted", text: "Zaloguj się swoim adresem poczty elektronicznej i hasłem." }),
     message ? statusBox(message, "error") : null,
     field("Adres poczty elektronicznej", "email", "email", { required: true, maxlength: 254, autocomplete: "email" }),
     field("Hasło", "password", "password", { required: true, maxlength: 1024, autocomplete: "current-password" })

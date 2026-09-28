@@ -72,12 +72,12 @@ async function loadStatus() {
 
 async function inviteClient() {
   const client = activeClient();
-  if (!client?.email) throw new Error("Klient nie ma zapisanego adresu email.");
+  if (!client?.email) throw new Error("Klient nie ma zapisanego adresu poczty elektronicznej.");
 
   renderLoading(root, "Wysyłanie bezpiecznego zaproszenia…");
   const payload = await invokeClientAccess("invite", client.id, client.email);
   state.access = payload.access || null;
-  renderAdmin("Zaproszenie zostało obsłużone przez Supabase Auth.", "ok");
+  renderAdmin("Zaproszenie zostało obsłużone przez usługę bezpiecznego logowania.", "ok");
 }
 
 async function revokeClient() {
@@ -88,7 +88,7 @@ async function revokeClient() {
   renderLoading(root, "Cofanie dostępu…");
   const payload = await invokeClientAccess("revoke", client.id);
   state.access = payload.access || null;
-  renderAdmin("Dostęp został cofnięty. Aktywny token nie daje już dostępu do danych klienta.", "ok");
+  renderAdmin("Dostęp został cofnięty. Aktywna sesja nie daje już dostępu do danych klienta.", "ok");
 }
 
 async function logout() {
@@ -122,7 +122,7 @@ function renderAdmin(message = "", kind = "info") {
     create("option", { value: "", text: "Wybierz klienta" }),
     ...state.clients.map(item => create("option", {
       value: item.id,
-      text: `${item.name}${item.email ? ` · ${item.email}` : " · brak email"}`
+      text: `${item.name}${item.email ? ` · ${item.email}` : " · brak adresu poczty"}`
     }))
   ]);
   select.value = state.activeClientId;
@@ -140,7 +140,7 @@ function renderAdmin(message = "", kind = "info") {
         create("strong", { text: client.name })
       ]),
       create("div", { className: "summary-item" }, [
-        create("span", { text: "Email konta" }),
+        create("span", { text: "Adres poczty elektronicznej konta" }),
         create("strong", { text: client.email || "Brak — najpierw uzupełnij profil klienta" })
       ]),
       create("div", { className: "summary-item" }, [
@@ -165,18 +165,18 @@ function renderAdmin(message = "", kind = "info") {
     ]) : null,
     create("div", { className: "security-note" }, [
       create("strong", { text: "Granica bezpieczeństwa" }),
-      create("p", { text: "Zaproszenia są wysyłane przez Edge Function. Klucz service role nie trafia do tej strony ani do repozytorium." })
+      create("p", { text: "Zaproszenia są wysyłane przez chronioną usługę serwerową. Klucz administracyjny nie trafia do tej strony ani do repozytorium." })
     ])
   ]);
 
   const header = create("header", { className: "topbar" }, [
     create("div", {}, [
-      create("p", { className: "eyebrow", text: "Studio Las OS · administracja dostępu" }),
+      create("p", { className: "eyebrow", text: "Studio Las · zarządzanie dostępem" }),
       create("h1", { text: "Konta klientów" })
     ]),
     create("div", { className: "top-actions" }, [
       create("span", { className: "role-badge", text: state.profile.display_name || state.profile.email || "Trener" }),
-      button("Wróć do OS", { onclick: () => window.location.assign("../studio-las-os.html") }),
+      button("Wróć do panelu", { onclick: () => window.location.assign("../studio-las-os.html") }),
       button("Wyloguj", { className: "button danger", onclick: () => logout().catch(handleError) })
     ])
   ]);
@@ -231,11 +231,11 @@ function renderMfaView(view, message = "") {
     message,
     onStartEnrollment: () => advanceMfa(
       () => state.mfa.beginEnrollment(),
-      "Przygotowywanie konfiguracji TOTP\u2026"
+      "Przygotowywanie aplikacji uwierzytelniającej\u2026"
     ),
     onVerify: code => advanceMfa(
       () => state.mfa.verify(code),
-      "Weryfikowanie kodu TOTP\u2026"
+      "Sprawdzanie kodu z aplikacji uwierzytelniającej\u2026"
     ),
     onRetry: () => advanceMfa(
       () => state.mfa.prepare(),
@@ -268,21 +268,21 @@ async function advanceMfa(operation, loadingMessage) {
 async function enforceTrainerMfa() {
   await advanceMfa(
     () => state.mfa.prepare(),
-    "Sprawdzanie drugiego sk\u0142adnika\u2026"
+    "Sprawdzanie dodatkowego zabezpieczenia\u2026"
   );
 }
 
 async function removeMfaFactor(index) {
-  if (!window.confirm("Usun\u0105\u0107 ten sk\u0142adnik TOTP? Sesja zostanie zako\u0144czona.")) return;
+  if (!window.confirm("Usun\u0105\u0107 t\u0119 aplikacj\u0119 uwierzytelniaj\u0105c\u0105 z konta? Sesja zostanie zako\u0144czona.")) return;
   try {
-    renderLoading(root, "Usuwanie sk\u0142adnika i ko\u0144czenie sesji\u2026");
+    renderLoading(root, "Usuwanie aplikacji uwierzytelniaj\u0105cej i ko\u0144czenie sesji\u2026");
     await state.mfa.removeFactor(index);
     state.profile = null;
     state.clients = [];
     state.activeClientId = "";
     state.access = null;
     state.mfaView = null;
-    showLogin("Sk\u0142adnik TOTP usuni\u0119to. Zaloguj si\u0119 ponownie.");
+    showLogin("Aplikacj\u0119 uwierzytelniaj\u0105c\u0105 usuni\u0119to z konta. Zaloguj si\u0119 ponownie.");
   } catch (error) {
     renderMfaView(
       state.mfaView || { status: "management", factors: [] },

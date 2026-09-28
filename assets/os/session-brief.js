@@ -51,8 +51,8 @@ function buildSafetyFacts(workspace) {
   return [
     fact("Przeciwwskazania", client.contraindications, "Karta klienta", clientDate),
     fact("Kontekst wymagający uwagi", client.red_flags_text, "Karta klienta", clientDate),
-    fact("Flagi z intake", intake?.medical_flags, "Najnowszy intake", intakeDate),
-    fact("Ograniczenia ruchowe", intake?.movement_limitations, "Najnowszy intake", intakeDate)
+    fact("Informacje zdrowotne z wywiadu", intake?.medical_flags, "Najnowszy wywiad", intakeDate),
+    fact("Ograniczenia ruchowe", intake?.movement_limitations, "Najnowszy wywiad", intakeDate)
   ].filter(Boolean);
 }
 
@@ -70,7 +70,7 @@ function buildCurrentFocus(workspace, activePlan) {
   const intakeFocus = fact(
     "Aktualny cel",
     intake?.first_session_focus,
-    "Najnowszy intake",
+    "Najnowszy wywiad",
     sourceDate(intake, "updated_at", "created_at")
   );
   if (intakeFocus) return intakeFocus;
@@ -154,7 +154,7 @@ function buildLatestClientSignal(workspace) {
   return fact(
     "Ostatni sygnał klienta",
     parts.join(" · ") || "Sygnał został zapisany.",
-    item?.name ? `Check-in klienta — ${item.name}` : "Check-in klienta",
+    item?.name ? `Odpowiedź klienta — ${item.name}` : "Odpowiedź klienta",
     sourceDate(event, "event_date", "created_at")
   );
 }

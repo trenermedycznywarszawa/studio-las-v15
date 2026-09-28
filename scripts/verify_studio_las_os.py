@@ -171,7 +171,7 @@ def check_password_flows() -> None:
         "renderpasswordsetup",
         "renderrecoveryrequest",
         "/auth/v1/recover?redirect_to=",
-        "unsafe recovery redirect",
+        "nieprawidłowy adres powrotu po odzyskaniu dostępu",
         "ze względów bezpieczeństwa komunikat nie potwierdzi, czy konto istnieje",
     ]
     for fragment in required:
