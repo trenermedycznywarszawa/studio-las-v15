@@ -49,7 +49,7 @@ export function collectPwdObservations(values) {
       ? PWD_MOVEMENTS.find(movement => movement.id === referenceId)
       : null;
     if (referenceId && !reference) {
-      throw new Error("Wybrany punkt odniesienia nie należy do prywatnej biblioteki PWD.");
+      throw new Error("Wybrany punkt odniesienia nie należy do prywatnej biblioteki pierwszej wizyty diagnostycznej.");
     }
 
     const testName = enteredName || reference?.label || "";
@@ -81,7 +81,7 @@ export async function savePwdWorkflow(repository, clientId, values) {
   const trainerDecision = text(values.trainerDecision);
   const decisionLabel = pwdDecisionLabel(trainerDecision);
   const payload = Object.freeze({
-    date: requiredText(values.date, "Data PWD"),
+    date: requiredText(values.date, "Data pierwszej wizyty diagnostycznej"),
     realLifeGoal: requiredText(values.realLifeGoal, "Cel klienta"),
     whyImportant: requiredText(values.whyImportant, "Znaczenie celu"),
     contextBoundaries: requiredText(values.contextBoundaries, "Kontekst i granice"),

@@ -20,7 +20,7 @@ function today() {
 export function newClientForm(onSubmit) {
   return submitForm([
     field("Imię i nazwisko", "name", "text", { required: true, maxlength: 180 }),
-    field("Email", "email", "email", { maxlength: 254 }),
+    field("Adres poczty elektronicznej", "email", "email", { maxlength: 254 }),
     field("Telefon", "phone", "tel", { maxlength: 40 }),
     field("Typ współpracy", "engagementType", "select", {
       required: true,
@@ -67,9 +67,9 @@ export function sessionForm(onSubmit) {
 export function measurementForm(onSubmit) {
   return submitForm([
     field("Data", "date", "date", { value: today(), required: true }),
-    field("Waga kg", "weightKg", "number", { step: 0.1, min: 0 }),
-    field("Tłuszcz %", "fatPercent", "number", { step: 0.1, min: 0, max: 100 }),
-    field("Masa mięśniowa kg", "muscleMassKg", "number", { step: 0.1, min: 0 }),
+    field("Waga w kilogramach", "weightKg", "number", { step: 0.1, min: 0 }),
+    field("Udział tkanki tłuszczowej w procentach", "fatPercent", "number", { step: 0.1, min: 0, max: 100 }),
+    field("Masa mięśniowa w kilogramach", "muscleMassKg", "number", { step: 0.1, min: 0 }),
     field("Interpretacja trenera", "trainerInterpretation", "textarea", { maxlength: 8000 }),
     field("Podsumowanie dla klienta", "clientSummary", "textarea", { maxlength: 4000 }),
     checkbox("Opublikuj klientowi", "clientVisible")
@@ -80,11 +80,11 @@ export function trainingLoadForm(onSubmit) {
   return submitForm([
     field("Data", "date", "date", { value: today(), required: true }),
     field("Typ sesji", "sessionType", "text", { maxlength: 160 }),
-    field("Czas min", "durationMin", "number", { min: 0 }),
-    field("HR średnie", "hrAvg", "number", { min: 0 }),
-    field("HR maksymalne", "hrMax", "number", { min: 0 }),
-    field("Strefa wysoka min", "zoneHighMin", "number", { min: 0 }),
-    field("RPE 1–10", "rpe", "number", { min: 1, max: 10 }),
+    field("Czas w minutach", "durationMin", "number", { min: 0 }),
+    field("Średnie tętno", "hrAvg", "number", { min: 0 }),
+    field("Najwyższe tętno", "hrMax", "number", { min: 0 }),
+    field("Czas w wysokiej strefie tętna w minutach", "zoneHighMin", "number", { min: 0 }),
+    field("Odczuwany wysiłek od 1 do 10", "rpe", "number", { min: 1, max: 10 }),
     field("Notatka trenera", "trainerNote", "textarea", { maxlength: 8000 }),
     field("Podsumowanie dla klienta", "clientSummary", "textarea", { maxlength: 4000 }),
     checkbox("Opublikuj klientowi", "clientVisible")
@@ -152,7 +152,7 @@ export function homePlanItemForm(homePlans, onSubmit) {
     field("Częstotliwość", "frequency", "text", { maxlength: 240, disabled: !hasPlan }),
     field("Wskazówka dla klienta", "clientCue", "textarea", { maxlength: 4000, disabled: !hasPlan }),
     field("Kiedy przerwać / co zgłosić", "stopCriteria", "textarea", { maxlength: 4000, disabled: !hasPlan }),
-    field("Video URL", "videoUrl", "url", { maxlength: 2000, disabled: !hasPlan }),
+    field("Adres filmu", "videoUrl", "url", { maxlength: 2000, disabled: !hasPlan }),
 
   ], "Dodaj zadanie do planu", values => onSubmit(values.homePlanId, values), "form-grid", {
     disabled: !hasPlan,

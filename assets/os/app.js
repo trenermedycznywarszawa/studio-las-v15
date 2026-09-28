@@ -14,6 +14,8 @@ import { TrainerMfaController } from "./trainer-mfa.js";
 import { savePwdWorkflow } from "./pwd.js";
 import { renderTrainerMfa } from "./ui/trainer-mfa.js";
 import { createRuntimeFeedback } from "./ui/runtime-feedback.js";
+import { trainerAttentionPreviewEnabled } from "./trainer-attention-runtime.js";
+import { TrainerAttentionController } from "./trainer-attention-controller.js";
 
 const root = document.getElementById("app");
 const state = {
@@ -30,11 +32,25 @@ const state = {
   activeClientId: "",
   workspace: null,
   clientPortal: null,
-  snapshot: null
+  snapshot: null,
+  trainerAttentionEnabled: false,
+  trainerAttentionView: false,
+  trainerAttention: null,
+  trainerAttentionLoading: false,
+  trainerAttentionError: ""
 };
 
 const { announce, withWrite, reset: resetFeedback } = createRuntimeFeedback(() => state.config?.mode);
 const trainerLoader = new TrainerWorkspaceLoader(state, renderTrainerState);
+const trainerAttentionController = new TrainerAttentionController(state, {
+  render: renderTrainerState,
+  resetWorkspace: () => trainerLoader.reset(),
+  resetInquirySelection: () => state.inquiryController.select(""),
+  loadWorkspace: clientId => loadTrainerWorkspace(clientId, true),
+  refreshInquiry: async () => {
+    await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
+  }
+});
 
 async function logout() {
   trainerLoader.reset();
@@ -52,6 +68,7 @@ async function logout() {
   state.workspace = null;
   state.snapshot = null;
   state.mfaView = null;
+  trainerAttentionController.reset();
   showLogin();
 }
 
@@ -132,11 +149,11 @@ function renderMfaView(view, message = "") {
     message,
     onStartEnrollment: () => advanceMfa(
       () => state.mfa.beginEnrollment(),
-      "Przygotowywanie konfiguracji TOTP…"
+      "Przygotowywanie aplikacji uwierzytelniającej…"
     ),
     onVerify: code => advanceMfa(
       () => state.mfa.verify(code),
-      "Weryfikowanie kodu TOTP…"
+      "Sprawdzanie kodu z aplikacji uwierzytelniającej…"
     ),
     onRetry: () => advanceMfa(
       () => state.mfa.prepare(),
@@ -170,7 +187,7 @@ async function enforceTrainerMfa() {
 
 async function showMfaManagement() {
   try {
-    renderLoading(root, "Ładowanie ustawień MFA…");
+    renderLoading(root, "Ładowanie ustawień zabezpieczeń…");
     renderMfaView(await state.mfa.management());
   } catch (error) {
     handleRuntimeError(error);
@@ -178,9 +195,9 @@ async function showMfaManagement() {
 }
 
 async function removeMfaFactor(index) {
-  if (!window.confirm("Usunąć ten składnik TOTP?")) return;
+  if (!window.confirm("Usunąć tę aplikację uwierzytelniającą z konta?")) return;
   try {
-    renderLoading(root, "Usuwanie składnika TOTP…");
+    renderLoading(root, "Usuwanie aplikacji uwierzytelniającej…");
     const next = await state.mfa.removeFactor(index);
     if (next.status === "verified") {
       state.mfaView = null;
@@ -218,12 +235,22 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
+
+  if (state.trainerAttentionEnabled && state.trainerAttentionView) {
+    await trainerAttentionController.refresh({ clearSelection: true });
+    return;
+  }
+
   await loadTrainerWorkspace(preferredClientId, true);
   await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
   renderTrainerState();
 }
 
 async function selectClient(clientId) {
+  if (state.trainerAttentionEnabled && state.trainerAttentionView) {
+    await trainerAttentionController.openClient(clientId);
+    return;
+  }
   await loadTrainerWorkspace(clientId);
 }
 
@@ -241,10 +268,15 @@ function renderTrainerState() {
     workspace: state.workspace,
     loading: state.loading,
     loadError: state.loadError,
+    ...trainerAttentionController.renderBindings(handleRuntimeError),
     onRetrySection: section => trainerLoader.section(section).catch(handleRuntimeError),
     attentionSignals,
     onSelectClient: clientId => selectClient(clientId).catch(handleRuntimeError),
-    onReload: () => loadTrainer(state.activeClientId).catch(handleRuntimeError),
+    onReload: () => (
+      state.trainerAttentionView
+        ? trainerAttentionController.refresh().catch(handleRuntimeError)
+        : loadTrainer(state.activeClientId).catch(handleRuntimeError)
+    ),
     onLogout: () => logout().catch(handleRuntimeError),
     onManageMfa: () => showMfaManagement(),
     onCreateClient: async values => {
@@ -253,7 +285,7 @@ function renderTrainerState() {
       );
     },
     onSavePwd: async values => {
-      await withWrite("Zapisywanie PWD", () => savePwdWorkflow(state.repository, state.activeClientId, values), reloadWorkspace);
+      await withWrite("Zapisywanie pierwszej wizyty diagnostycznej", () => savePwdWorkflow(state.repository, state.activeClientId, values), reloadWorkspace);
     },
     onSaveSession: async values => {
       await withWrite("Zapisywanie sesji", () => state.repository.saveSession(state.activeClientId, values), reloadWorkspace);
@@ -312,12 +344,14 @@ function renderTrainerState() {
     }
   });
 
-  state.inquiryController.render(root.querySelector(".workspace"), {
-    activeClientId: state.activeClientId,
-    rerender: renderTrainerState,
-    loadTrainer,
-    onError: handleRuntimeError
-  });
+  if (!state.trainerAttentionView) {
+    state.inquiryController.render(root.querySelector(".workspace"), {
+      activeClientId: state.activeClientId,
+      rerender: renderTrainerState,
+      loadTrainer,
+      onError: handleRuntimeError
+    });
+  }
 }
 
 function handleRuntimeError(error) {
@@ -334,6 +368,8 @@ function handleRuntimeError(error) {
 async function initialize() {
   try {
     state.config = getRuntimeConfig();
+    state.trainerAttentionEnabled = trainerAttentionPreviewEnabled(state.config);
+    state.trainerAttentionView = state.trainerAttentionEnabled;
     state.auth = new SupabaseAuth(state.config);
     state.repository = new StudioLasRepository(state.config, state.auth);
     state.questionnaireApi = new QuestionnaireApi(state.repository);
@@ -381,5 +417,4 @@ window.addEventListener("unhandledrejection", event => {
   event.preventDefault();
   handleRuntimeError(event.reason);
 });
-
 initialize();

@@ -11,7 +11,6 @@ import {
 import {
   assessmentForm,
   measurementForm,
-  newClientForm,
   sessionForm,
   trainingLoadForm
 } from "./forms.js";
@@ -21,6 +20,7 @@ import { pwdSection } from "./pwd-section.js";
 import { plansSection } from "./trainer-guidance.js";
 import { questionnaireBriefPanel } from "./questionnaire-brief.js";
 import { orderTrainerSections } from "./trainer-order.js";
+import { trainerAttentionView } from "./trainer-attention.js";
 import {
   clientIdentityPanel,
   cycleDecisionSection,
@@ -73,7 +73,7 @@ function sessionBriefPanel(workspace) {
       brief.safety,
       "Nie zapisano ograniczeń. To nie jest potwierdzenie ich braku."
     ),
-    briefFactCard("Aktualny fokus", brief.currentFocus, "Nie zapisano aktualnego fokusu."),
+    briefFactCard("Aktualny cel", brief.currentFocus, "Nie zapisano aktualnego celu."),
     briefFactCard("Ostatnia decyzja trenera", brief.lastDecision, "Nie zapisano jeszcze decyzji trenera."),
     briefFactCard("Ostatni sygnał klienta", brief.latestClientSignal, "Klient nie zapisał jeszcze sygnału."),
     briefListCard(
@@ -135,7 +135,7 @@ function measurementsSection(workspace, model) {
     create("h3", { text: "Polar / tolerancja obciążenia" }),
     recordList(workspace.trainingLoad, item => create("article", { className: "record" }, [
       create("strong", { text: `${formatDate(item.observed_at)} · ${item.session_type || "Sesja"}` }),
-      create("p", { text: `RPE: ${item.rpe ?? "—"}, HR śr.: ${item.hr_avg ?? "—"}` }),
+      create("p", { text: `Odczuwany wysiłek: ${item.rpe ?? "—"}, średnie tętno: ${item.hr_avg ?? "—"}` }),
       create("p", { className: "muted", text: item.trainer_note || "Brak notatki" })
     ]), "Brak odczytów."),
     detailsForm("Dodaj odczyt", trainingLoadForm(model.onSaveTrainingLoad))
@@ -167,13 +167,17 @@ export function renderTrainer(root, model) {
 
   const header = create("header", { className: "topbar" }, [
     create("div", {}, [
-      create("p", { className: "eyebrow", text: `Studio Las OS · ${runtimeEnvironmentLabel(model.environment)}` }),
+      create("p", { className: "eyebrow", text: `Studio Las · ${runtimeEnvironmentLabel(model.environment)}` }),
       create("h1", { text: "Panel trenera" })
     ]),
     create("div", { className: "top-actions" }, [
       create("span", { className: "role-badge", text: model.profile.display_name || model.profile.email || "Trener" }),
+      model.trainerAttentionEnabled ? button("Uwaga", {
+        className: model.trainerAttentionView ? "button primary" : "button",
+        onclick: model.onShowTrainerAttention
+      }) : null,
       button("Dostęp klientów", { onclick: () => window.location.assign("./tools/client-access-admin.html") }),
-      button("MFA", { onclick: model.onManageMfa }),
+      button("Bezpieczeństwo", { onclick: model.onManageMfa }),
       button("Odśwież", { onclick: model.onReload }),
       button("Wyloguj", { className: "button danger", onclick: model.onLogout })
     ])
@@ -181,52 +185,68 @@ export function renderTrainer(root, model) {
 
   const sidebar = create("aside", { className: "sidebar" }, [
     create("h2", { text: "Klienci" }),
-    clientSelect,
-    detailsForm("Dodaj klienta", newClientForm(model.onCreateClient)),
-    create("div", { className: "security-note" }, [
-      create("strong", { text: "Jedno źródło prawdy" }),
-      create("p", { text: "Każdy zapis trafia bezpośrednio do Supabase. Brak localStorage i kolejki offline." })
-    ])
+    clientSelect
   ]);
 
   const content = create("main", { className: "workspace" });
-  if (model.loading || model.loadError) content.append(statusBox(
-    model.loadError || "Ładowanie procesu…", model.loadError ? "error" : "info"));
-  if (!model.workspace) {
-    content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Po wyborze zobaczysz proces i formularze zapisujące bezpośrednio do Supabase." })));
-  } else {
-    const workspace = model.workspace;
-    const sections = {
-      identity: clientIdentityPanel(workspace.client),
-      now: nowPanel(workspace, model.attentionSignals),
-      cycleDecision: Number(workspace.client.stage) === 4 || workspace.cycleDecisions?.length
-        ? cycleDecisionSection(workspace, model)
-        : null,
-      questionnaireBrief: questionnaireBriefPanel(workspace),
-      pwd: pwdSection(workspace, model),
-      signals: signalsSection(workspace, model.attentionSignals, model),
-      sessionBrief: sessionBriefPanel(workspace),
-      sessions: sessionsSection(workspace, model),
-      measurements: measurementsSection(workspace, model),
-      assessments: assessmentsSection(workspace, model),
-      guidance: plansSection(workspace, model),
-      reports: reportsSection(workspace, model)
-    };
-    for (const section of ["measurements", "reports"]) {
-      const status = workspace.sectionStatus?.[section];
-      if (status && status !== "ready") sections[section] = panel(
-        section === "reports" ? "Raporty" : "Pomiary",
-        create("div", {}, [
-          statusBox(status === "loading" ? "Ładowanie sekcji…" : "Nie udało się wczytać tej sekcji. Pozostały proces jest dostępny.", status === "failed" ? "error" : "info"),
-          status === "failed" ? button("Ponów odczyt sekcji", {onclick: () => model.onRetrySection(section)}) : null
-        ]));
+
+  if (model.trainerAttentionView) {
+    content.classList.add("sl-attention-workspace");
+    if (model.trainerAttentionLoading) {
+      content.append(statusBox("Ładowanie Uwaga trenera…", "info"));
+    } else if (model.trainerAttentionError) {
+      content.append(
+        statusBox(model.trainerAttentionError, "error"),
+        button("Ponów odczyt", { onclick: model.onRetryTrainerAttention })
+      );
+    } else if (model.trainerAttention) {
+      content.append(trainerAttentionView(model.trainerAttention, {
+        onOpenClientContext: model.onOpenClientContext,
+        onReload: model.onRetryTrainerAttention
+      }));
+    } else {
+      content.append(statusBox("Uwaga trenera nie została jeszcze wczytana.", "info"));
     }
-    content.append(...orderTrainerSections(workspace.client.stage, sections));
+  } else {
+    if (model.loading || model.loadError) content.append(statusBox(
+      model.loadError || "Ładowanie procesu…", model.loadError ? "error" : "info"));
+    if (!model.workspace) {
+      content.append(panel("Wybierz klienta", create("p", { className: "muted", text: "Wybierz klienta, aby zobaczyć jego proces." })));
+    } else {
+      const workspace = model.workspace;
+      const sections = {
+        identity: clientIdentityPanel(workspace.client),
+        now: nowPanel(workspace, model.attentionSignals),
+        cycleDecision: Number(workspace.client.stage) === 4 || workspace.cycleDecisions?.length
+          ? cycleDecisionSection(workspace, model)
+          : null,
+        questionnaireBrief: questionnaireBriefPanel(workspace),
+        pwd: pwdSection(workspace, model),
+        signals: signalsSection(workspace, model.attentionSignals, model),
+        sessionBrief: sessionBriefPanel(workspace),
+        sessions: sessionsSection(workspace, model),
+        measurements: measurementsSection(workspace, model),
+        assessments: assessmentsSection(workspace, model),
+        guidance: plansSection(workspace, model),
+        reports: reportsSection(workspace, model)
+      };
+      for (const section of ["measurements", "reports"]) {
+        const status = workspace.sectionStatus?.[section];
+        if (status && status !== "ready") sections[section] = panel(
+          section === "reports" ? "Raporty" : "Pomiary",
+          create("div", {}, [
+            statusBox(status === "loading" ? "Ładowanie sekcji…" : "Nie udało się wczytać tej sekcji. Pozostały proces jest dostępny.", status === "failed" ? "error" : "info"),
+            status === "failed" ? button("Ponów odczyt sekcji", {onclick: () => model.onRetrySection(section)}) : null
+          ]));
+      }
+      content.append(...orderTrainerSections(workspace.client.stage, sections));
+    }
+
+    if (model.loading || model.loadError) {
+      for (const scope of [sidebar, content]) scope.querySelectorAll("form input, form select, form textarea, form button, .workspace button").forEach(node => { node.disabled = true; });
+      content.querySelectorAll("button").forEach(node => { node.disabled = true; });
+    }
   }
 
-  if (model.loading || model.loadError) {
-    for (const scope of [sidebar, content]) scope.querySelectorAll("form input, form select, form textarea, form button, .workspace button").forEach(node => { node.disabled = true; });
-    content.querySelectorAll("button").forEach(node => { node.disabled = true; });
-  }
   root.append(header, create("div", { className: "app-layout" }, [sidebar, content]));
 }

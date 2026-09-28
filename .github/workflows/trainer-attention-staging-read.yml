@@ -1,0 +1,162 @@
+name: Trainer Attention staging read verification
+
+on:
+  pull_request:
+    branches:
+      - codex/today-v2-renderer
+    paths:
+      - "studio-las-os.html"
+      - "studio-las-config.js"
+      - "assets/os/app.js"
+      - "assets/os/trainer-attention-controller.js"
+      - "assets/os/trainer-attention-model.js"
+      - "assets/os/trainer-attention-snapshot.js"
+      - "assets/os/trainer-attention-runtime.js"
+      - "assets/os/trainer-attention-runtime.css"
+      - "assets/os/trainer-attention-lab.css"
+      - "assets/os/trainer-signals.js"
+      - "assets/os/decision-support.js"
+      - "assets/os/ui/trainer-attention.js"
+      - "assets/os/ui/trainer.js"
+      - "scripts/e2e_trainer_attention_staging.mjs"
+      - "scripts/e2e_trainer_attention_preview_staging.mjs"
+      - "scripts/e2e_mfa_bootstrap.mjs"
+      - ".github/workflows/trainer-attention-staging-read.yml"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+# The QA account receives an ephemeral TOTP factor. Serialize with the canonical
+# staging browser suite so two jobs never manipulate the same QA MFA state.
+concurrency:
+  group: studio-las-browser-e2e-canonical-staging
+  cancel-in-progress: false
+
+jobs:
+  trainer-attention-staging-read:
+    name: Trainer Attention — canonical staging read-only gate
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      STAGING_REF: ulauyoqjoetjqktegeuq
+      STAGING_ORIGIN: https://ulauyoqjoetjqktegeuq.supabase.co
+      STUDIO_LAS_STAGING_PUBLISHABLE_KEY: sb_publishable_5IVYDd1a02rye5szV80sLA_UWzwjZRk
+      STUDIO_LAS_E2E_URL: http://127.0.0.1:8791/studio-las-os.html?trainer-ui=attention-v1
+      STUDIO_LAS_E2E_ARTIFACT_DIR: artifacts/trainer-attention-staging
+      STUDIO_LAS_E2E_MARKER: ATTENTION-${{ github.run_id }}-${{ github.run_attempt }}
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+
+      - name: Verify QA secrets are configured
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: |
+          test -n "$STUDIO_LAS_QA_EMAIL"
+          test -n "$STUDIO_LAS_QA_PASSWORD"
+
+      - name: Build isolated staging preview configuration
+        run: |
+          python3 - <<'PY'
+          import os
+          from pathlib import Path
+
+          staging_ref = os.environ["STAGING_REF"]
+          staging_origin = os.environ["STAGING_ORIGIN"]
+          publishable_key = os.environ["STUDIO_LAS_STAGING_PUBLISHABLE_KEY"]
+          production_origin = "https://ufcumhbnuyernuwepcij.supabase.co"
+
+          config = f'''(function () {{
+            window.STUDIO_LAS_CONFIG = Object.freeze({{
+              mode: "staging",
+              supabase: Object.freeze({{
+                projectRef: "{staging_ref}",
+                url: "{staging_origin}",
+                publishableKey: "{publishable_key}"
+              }})
+            }});
+          }})();
+          '''
+          Path("studio-las-config.js").write_text(config, encoding="utf-8")
+          html_path = Path("studio-las-os.html")
+          html = html_path.read_text(encoding="utf-8")
+          if production_origin not in html:
+              raise SystemExit("Canonical production CSP origin not found; refusing ambiguous staging rewrite")
+          html_path.write_text(html.replace(production_origin, staging_origin), encoding="utf-8")
+          PY
+
+      - name: Verify preview is pinned to canonical staging
+        run: |
+          grep -q 'mode: "staging"' studio-las-config.js
+          grep -q 'projectRef: "ulauyoqjoetjqktegeuq"' studio-las-config.js
+          grep -q 'connect-src https://ulauyoqjoetjqktegeuq.supabase.co' studio-las-os.html
+          if grep -q 'connect-src https://ufcumhbnuyernuwepcij.supabase.co' studio-las-os.html; then
+            echo "Production Supabase origin remains in the Attention preview CSP" >&2
+            exit 1
+          fi
+
+      - name: Bootstrap ephemeral QA TOTP on canonical staging
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_mfa_bootstrap.mjs bootstrap
+
+      - name: Run read-only Trainer Attention staging verification
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_trainer_attention_staging.mjs
+
+      - name: Install pinned Playwright runtime
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+
+      - name: Start local staging preview
+        run: |
+          python3 -m http.server 8791 --bind 127.0.0.1 > /tmp/studio-las-attention-preview.log 2>&1 &
+          echo $! > /tmp/studio-las-attention-preview.pid
+          for attempt in $(seq 1 20); do
+            if curl --fail --silent --show-error http://127.0.0.1:8791/studio-las-os.html > /dev/null; then
+              exit 0
+            fi
+            sleep 0.5
+          done
+          cat /tmp/studio-las-attention-preview.log
+          exit 1
+
+      - name: Run Trainer Attention staging preview browser regression
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_trainer_attention_preview_staging.mjs
+
+      - name: Remove ephemeral QA TOTP from staging
+        if: always()
+        env:
+          STUDIO_LAS_QA_EMAIL: ${{ secrets.STUDIO_LAS_QA_EMAIL }}
+          STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_QA_PASSWORD }}
+        run: node scripts/e2e_mfa_bootstrap.mjs cleanup
+
+      - name: Upload staging read evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: trainer-attention-staging-read-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/trainer-attention-staging/
+          if-no-files-found: warn
+          retention-days: 14
+
+      - name: Stop preview server
+        if: always()
+        run: |
+          if test -f /tmp/studio-las-attention-preview.pid; then
+            kill "$(cat /tmp/studio-las-attention-preview.pid)" 2>/dev/null || true
+          fi

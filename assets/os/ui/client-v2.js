@@ -189,7 +189,7 @@ export function renderClientV2(root, model) {
   const clientName = snapshot.client?.firstName || "";
 
   const sidebar = create("aside", { className: "sl-sidebar", "aria-label": "Nawigacja klienta" }, [
-    create("div", { className: "sl-brand" }, ["Studio Las ", create("small", { text: "OS" })]),
+    create("div", { className: "sl-brand", text: "Studio Las" }),
     create("nav", { className: "sl-nav" }, [
       navLink("Dzisiaj", "○", "#today-v2", true),
       navLink("Proces", "↗", "#today-v2-process"),
