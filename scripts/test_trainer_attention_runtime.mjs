@@ -1,4 +1,6 @@
 import assert from "node:assert/strict";
+import { TrainerAttentionController } from "../assets/os/trainer-attention-controller.js";
+import { InquiryController } from "../assets/os/inquiries-controller.js";
 import {
   loadTrainerAttention,
   studioBusinessDate,
@@ -48,6 +50,36 @@ const empty = await loadTrainerAttention(aal2Repository, { today: "2026-09-27" }
 assert.equal(empty.snapshot.clients.length, 0);
 assert.equal(empty.model.counts.situations, 0);
 assert.equal(stableAal2Reads, 6, "Each empty source should terminate after one page");
+
+const inquiry = Object.create(InquiryController.prototype);
+inquiry.activeInquiryId = "previous-person";
+inquiry.decisions = [{ id: "previous-decision" }];
+inquiry.repository = {
+  listInquiries: async () => [{ id: "previous-person" }],
+  listDecisions: async () => [{ id: "previous-decision" }]
+};
+const navigationState = {
+  trainerAttentionEnabled: true,
+  trainerAttentionView: false,
+  activeClientId: "previous-client",
+  workspace: { id: "previous-workspace" },
+  repository: aal2Repository,
+  config: { mode: "staging" }
+};
+const attentionController = new TrainerAttentionController(navigationState, {
+  render: () => {},
+  resetWorkspace: () => {},
+  resetInquirySelection: () => inquiry.select(""),
+  loadWorkspace: async clientId => { navigationState.activeClientId = clientId; },
+  refreshInquiry: () => inquiry.refresh()
+});
+await attentionController.refresh({ clearSelection: true });
+assert.equal(inquiry.activeInquiryId, "", "Entering Attention must clear the previous person's inquiry");
+assert.deepEqual(inquiry.decisions, [], "Entering Attention must clear stale inquiry actions");
+await attentionController.openClient("another-client");
+assert.equal(inquiry.activeInquiryId, "", "Opening a client must not restore the previous inquiry");
+await attentionController.refresh({ clearSelection: true });
+assert.equal(inquiry.activeInquiryId, "", "Returning to Attention must keep inquiry selection clear");
 
 let aalChecks = 0;
 const downgradeRepository = {
