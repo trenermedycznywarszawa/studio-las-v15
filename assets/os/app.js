@@ -45,6 +45,7 @@ const trainerLoader = new TrainerWorkspaceLoader(state, renderTrainerState);
 const trainerAttentionController = new TrainerAttentionController(state, {
   render: renderTrainerState,
   resetWorkspace: () => trainerLoader.reset(),
+  resetInquirySelection: () => state.inquiryController.select(""),
   loadWorkspace: clientId => loadTrainerWorkspace(clientId, true),
   refreshInquiry: async () => {
     await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
