@@ -18,7 +18,7 @@ const pregnancyApplies = answerIn("q_pregnancy_applicability", ["applies"]);
 
 const definition = deepClone(PRE_PWD_V3_DEFINITION);
 definition.version = "3.1";
-definition.sourceLabel = `${PRE_PWD_V3_DEFINITION.sourceLabel} | Studio Las contract 3.1`;
+definition.sourceLabel = `${PRE_PWD_V3_DEFINITION.sourceLabel} | zasady Studio Las 3.1`;
 definition.architecture.healthDraftServerPersistence = "requires_explicit_pre_health_consent_receipt";
 definition.architecture.productionRelease = "blocked_pending_health_data_consent_legal_review";
 definition.unresolvedRules = definition.unresolvedRules.filter(rule => rule.id === "health_data_consent_and_autosave");

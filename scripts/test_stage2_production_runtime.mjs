@@ -41,7 +41,7 @@ assert(!data.includes('method: "PATCH"') && !data.includes('method: "DELETE"'), 
 
 const ui = await read("assets/os/ui/inquiries-section.js");
 assert(ui.includes('value: "", label: "Wybierz dopiero po rozmowie"'), "decision UI does not fail open with an empty choice");
-assert(ui.includes("Utwórz klienta do PWD"), "explicit conversion action missing");
+assert(ui.includes("Utwórz klienta do pierwszej wizyty diagnostycznej"), "explicit conversion action missing");
 assert(ui.includes("Sam zapis tej decyzji nie tworzy klienta"), "PWD recommendation/conversion boundary missing in UI");
 assert(ui.includes('["Następny krok", formatNextAction(inquiry)]'), "agreed current next action is not visible in inquiry summary");
 assert(ui.includes("Następny krok: ${formatNextAction(item)}"), "decision history does not preserve visible next-action context");

@@ -199,7 +199,7 @@ export function renderLogin(root, { environment, onSubmit, onRecover, message = 
     create("h1", { text: "Bezpieczne logowanie" }),
     create("p", { className: "muted", text: "Zaloguj się swoim adresem e-mail i hasłem." }),
     message ? statusBox(message, "error") : null,
-    field("Email", "email", "email", { required: true, maxlength: 254, autocomplete: "email" }),
+    field("Adres poczty elektronicznej", "email", "email", { required: true, maxlength: 254, autocomplete: "email" }),
     field("Hasło", "password", "password", { required: true, maxlength: 1024, autocomplete: "current-password" })
   ], "Zaloguj", onSubmit, "login-card");
 

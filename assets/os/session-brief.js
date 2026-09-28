@@ -59,7 +59,7 @@ function buildSafetyFacts(workspace) {
 function buildCurrentFocus(workspace, activePlan) {
   if (activePlan) {
     return fact(
-      "Aktualny fokus",
+      "Aktualny cel",
       activePlan.focus || activePlan.title,
       "Aktywny plan domowy",
       sourceDate(activePlan, "published_at", "updated_at", "created_at")
@@ -68,7 +68,7 @@ function buildCurrentFocus(workspace, activePlan) {
 
   const intake = latest(workspace.intakes, "updated_at", "created_at");
   const intakeFocus = fact(
-    "Aktualny fokus",
+    "Aktualny cel",
     intake?.first_session_focus,
     "Najnowszy intake",
     sourceDate(intake, "updated_at", "created_at")
@@ -76,7 +76,7 @@ function buildCurrentFocus(workspace, activePlan) {
   if (intakeFocus) return intakeFocus;
 
   return fact(
-    "Aktualny fokus",
+    "Aktualny cel",
     workspace.client?.goal,
     "Karta klienta — cel procesu",
     sourceDate(workspace.client, "updated_at", "created_at")

@@ -108,8 +108,8 @@ async function fixtureRequest(token, action, assignmentId = "") {
 
 async function loginTrainerAal2(page) {
   await page.goto(PREVIEW_URL, { waitUntil: "domcontentloaded" });
-  await page.getByText("STAGING / QA", { exact: false }).first().waitFor({ state: "visible" });
-  await page.getByLabel("Email").fill(QA_EMAIL);
+  await page.getByText("WERSJA TESTOWA", { exact: false }).first().waitFor({ state: "visible" });
+  await page.getByLabel("Adres poczty elektronicznej").fill(QA_EMAIL);
   await page.getByLabel("Hasło").fill(QA_PASSWORD);
   await page.getByRole("button", { name: "Zaloguj" }).click();
 
@@ -133,7 +133,7 @@ async function loginTrainerAal2(page) {
 
 async function loginClient(page, email, password) {
   await page.goto(PREVIEW_URL, { waitUntil: "domcontentloaded" });
-  await page.getByLabel("Email").fill(email);
+  await page.getByLabel("Adres poczty elektronicznej").fill(email);
   await page.getByLabel("Hasło").fill(password);
   await page.getByRole("button", { name: "Zaloguj" }).click();
   await page.getByRole("heading", { name: /Dzień dobry/ }).waitFor({ state: "visible", timeout: 20_000 });

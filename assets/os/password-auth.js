@@ -190,7 +190,7 @@ export function renderRecoveryRequest(root, { onSubmit, onCancel, sent = false, 
     }),
     sent ? statusBox("Jeśli konto istnieje, wiadomość z linkiem została wysłana.", "ok") : null,
     message ? statusBox(message, "error") : null,
-    field("Email", "email", "email", {
+    field("Adres poczty elektronicznej", "email", "email", {
       required: true,
       maxlength: 254,
       autocomplete: "email"

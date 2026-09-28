@@ -7,7 +7,7 @@ export const REPORT_QUESTIONS = Object.freeze({
  current_capability: "Co ta osoba może teraz robić w ważnej dla niej sytuacji?",
  next_step: "Co dalej i kiedy wracamy do oceny?"
 });
-export const EVIDENCE_LABELS = Object.freeze({sessions:"Sesja / PWD",assessment_results:"Obserwacja ruchowa",guidance_events:"Oryginalna odpowiedź klienta",body_measurements:"Kontekst pomiaru",training_load_observations:"Kontekst obciążenia"});
+export const EVIDENCE_LABELS = Object.freeze({sessions:"Sesja / pierwsza wizyta diagnostyczna",assessment_results:"Obserwacja ruchowa",guidance_events:"Oryginalna odpowiedź klienta",body_measurements:"Kontekst pomiaru",training_load_observations:"Kontekst obciążenia"});
 export function reportCandidates(workspace) {
  const groups = [
   ["sessions",workspace.sessions,"date",row=>[row.trainer_observation,row.trainer_decision,row.client_summary]],

@@ -125,11 +125,11 @@ function validPayload(requestId, overrides = {}) {
 
 async function loginToAal2(page) {
   await page.goto(PREVIEW_URL, { waitUntil: "domcontentloaded" });
-  await page.getByText("STAGING / QA", { exact: false }).first().waitFor({ state: "visible" });
+  await page.getByText("WERSJA TESTOWA", { exact: false }).first().waitFor({ state: "visible" });
   assert(await page.evaluate(() => window.STUDIO_LAS_CONFIG?.supabase?.projectRef) === STAGING_REF,
     "Preview is not pinned to canonical staging");
 
-  await page.getByLabel("Email").fill(QA_EMAIL);
+  await page.getByLabel("Adres poczty elektronicznej").fill(QA_EMAIL);
   await page.getByLabel("Hasło").fill(QA_PASSWORD);
   await page.getByRole("button", { name: "Zaloguj" }).click();
 

@@ -205,9 +205,9 @@ setRuntimeConfig({
   projectRef: "ulauyoqjoetjqktegeuq",
   url: "https://ulauyoqjoetjqktegeuq.supabase.co"
 });
-assert.equal(runtimeEnvironmentLabel(getRuntimeConfig().mode), "STAGING / QA");
+assert.equal(runtimeEnvironmentLabel(getRuntimeConfig().mode), "WERSJA TESTOWA");
 setRuntimeConfig({ mode: "staging", projectRef: "foreign", url: "https://foreign.supabase.co" });
-assert.throws(() => getRuntimeConfig(), /Błędna konfiguracja stagingu/);
+assert.throws(() => getRuntimeConfig(), /Błędna konfiguracja wersji testowej/);
 setRuntimeConfig({
   mode: "production",
   projectRef: "ufcumhbnuyernuwepcij",
@@ -219,7 +219,7 @@ setRuntimeConfig({
   projectRef: "ulauyoqjoetjqktegeuq",
   url: "https://ulauyoqjoetjqktegeuq.supabase.co"
 });
-assert.throws(() => getRuntimeConfig(), /Błędna konfiguracja production/);
+assert.throws(() => getRuntimeConfig(), /Błędna konfiguracja wersji produkcyjnej/);
 setRuntimeConfig({
   mode: "preview",
   projectRef: "ulauyoqjoetjqktegeuq",
@@ -251,6 +251,6 @@ assert.equal(await new SupabaseAuth({}).restore(), null);
 assert.equal(coldStartRequests, 0);
 globalThis.sessionStorage = originalSessionStorage;
 globalThis.fetch = originalFetch;
-assert.match(userSafeError(new TypeError("Failed to fetch"), "staging"), /STAGING \/ QA/);
+assert.match(userSafeError(new TypeError("Failed to fetch"), "staging"), /wersją testową/);
 
 console.log("PWD_TRAINER_WORKFLOW_SUCCESS atomic client/domain/static contract PASS; SQL integration is separate");

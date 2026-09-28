@@ -19,7 +19,7 @@ const CANONICAL_PRODUCTION_REF = "ufcumhbnuyernuwepcij";
 const CANONICAL_STAGING_REF = "ulauyoqjoetjqktegeuq";
 
 export function runtimeEnvironmentLabel(mode) {
-  const label = { staging: "STAGING / QA", production: "PRODUKCJA" }[mode];
+  const label = { staging: "WERSJA TESTOWA", production: "PRODUKCJA" }[mode];
   if (!label) {
     throw new RuntimeConfigurationError("Nieobsługiwane środowisko nie może zostać oznaczone jako aktywne.");
   }
@@ -51,21 +51,21 @@ export function getRuntimeConfig() {
 
   if (mode !== "production" && mode !== "staging") {
     throw new RuntimeConfigurationError(
-      "Nieobsługiwane środowisko: STUDIO_LAS_CONFIG.mode musi mieć wartość production albo staging."
+      "Nieobsługiwane środowisko aplikacji. Wybierz wersję produkcyjną albo testową."
     );
   }
 
   const expectedRef = mode === "production" ? CANONICAL_PRODUCTION_REF : CANONICAL_STAGING_REF;
   if (projectRef !== expectedRef) {
-    const environment = mode === "production" ? "production" : "stagingu";
+    const environment = mode === "production" ? "wersji produkcyjnej" : "wersji testowej";
     throw new RuntimeConfigurationError(
-      `Błędna konfiguracja ${environment}: dozwolony jest wyłącznie kanoniczny ref ${expectedRef}.`
+      `Błędna konfiguracja ${environment}: wskazano niewłaściwy projekt ${expectedRef}.`
     );
   }
 
   if (supabaseUrl !== `https://${expectedRef}.supabase.co`) {
     throw new RuntimeConfigurationError(
-      `Błędna konfiguracja ${mode === "production" ? "production" : "stagingu"}: URL Supabase musi wskazywać kanoniczny ref ${expectedRef}.`
+      `Błędna konfiguracja ${mode === "production" ? "wersji produkcyjnej" : "wersji testowej"}: adres usługi musi wskazywać właściwy projekt ${expectedRef}.`
     );
   }
 
@@ -83,7 +83,7 @@ export async function submitPasswordLogin(auth, { email, password }) {
   const normalizedEmail = String(email || "").trim();
   const submittedPassword = String(password || "");
   if (!normalizedEmail || !submittedPassword) {
-    throw new RuntimeConfigurationError("Email i hasło są wymagane.");
+    throw new RuntimeConfigurationError("Adres poczty elektronicznej i hasło są wymagane.");
   }
   return auth.signInWithPassword(normalizedEmail, submittedPassword, { persist: false });
 }
@@ -212,11 +212,11 @@ export function userSafeError(error, environment = "") {
   const errorCode = String(error?.payload?.code || error?.payload?.error_code || "").toLowerCase();
   if (error instanceof TypeError && /fetch|network/i.test(String(error.message || ""))) {
     return environment === "staging"
-      ? "Nie można połączyć się ze stagingiem (STAGING / QA). Sprawdź lokalny preview i konfigurację środowiska."
+      ? "Nie można połączyć się z wersją testową. Sprawdź konfigurację środowiska."
       : "Nie można połączyć się z usługą danych. Sprawdź konfigurację środowiska.";
   }
   if (status === 400 && (errorCode === "invalid_credentials" || /invalid login credentials/i.test(String(error?.message || "")))) {
-    return "E-mail lub hasło są nieprawidłowe.";
+    return "Adres poczty elektronicznej lub hasło są nieprawidłowe.";
   }
   if (status === 400) return "Dane formularza nie spełniają wymagań. Sprawdź pola i spróbuj ponownie.";
   if (status === 401) return "Sesja wygasła albo link jest nieprawidłowy. Zaloguj się ponownie.";

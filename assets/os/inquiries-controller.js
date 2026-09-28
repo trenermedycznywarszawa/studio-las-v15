@@ -63,7 +63,7 @@ export class InquiryController {
         await this.withWrite("Zapisywanie decyzji po rozmowie", () => this.repository.saveDecision(inquiryId, values), () => refresh(inquiryId));
       },
       onConvertInquiry: async inquiryId => {
-        await this.withWrite("Tworzenie klienta do PWD", () => this.repository.convertToPwdClient(inquiryId), async result => {
+        await this.withWrite("Tworzenie klienta do pierwszej wizyty diagnostycznej", () => this.repository.convertToPwdClient(inquiryId), async result => {
           await refresh(inquiryId);
           await loadTrainer(result?.clientId || "");
         });

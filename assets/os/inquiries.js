@@ -1,6 +1,6 @@
 export const INQUIRY_DECISIONS = Object.freeze([
-  ["PWD", "PWD"],
-  ["FOLLOW_UP", "Follow-up"],
+  ["PWD", "Pierwsza wizyta diagnostyczna"],
+  ["FOLLOW_UP", "Ponowny kontakt"],
   ["NOT_NOW", "Nie teraz"],
   ["REFERRED", "Najpierw konsultacja / inny krok"],
   ["NOT_A_FIT", "Studio Las nie pasuje"],
@@ -17,7 +17,7 @@ export const CONTACT_STATUS_LABELS = Object.freeze({
 export const INQUIRY_STATUS_LABELS = Object.freeze({
   open: "Otwarte",
   closed: "Zamknięte",
-  converted: "Przekazane do PWD"
+  converted: "Przekazane do pierwszej wizyty diagnostycznej"
 });
 
 const CALL_BRIEF_TEMPLATES = Object.freeze({
@@ -81,7 +81,7 @@ export function buildInquiryCallBrief(inquiry) {
     purpose: template.purpose,
     questions: [...template.questions],
     summaryPrompt: "Czyli dobrze rozumiem, że najbardziej zależy Ci na ___, a obecnie zatrzymuje Cię przede wszystkim ___?",
-    pwdBoundary: "Jeśli jest dopasowanie: przedstaw PWD jako sposób ustalenia spokojnego i rozsądnego punktu startowego — nie jako sprzedaż treningu.",
+    pwdBoundary: "Jeśli jest dopasowanie: przedstaw pierwszą wizytę diagnostyczną jako sposób ustalenia spokojnego i rozsądnego punktu startowego — nie jako sprzedaż treningu.",
     guardrail: "Nie zakładaj diagnozy, źródła bólu, przyczyny przerwy ani gotowości osoby do zakupu programu."
   };
 }

@@ -43,7 +43,7 @@ function factorList(view, onRemoveFactor) {
   if (!view.factors?.length) {
     return create("p", {
       className: "muted",
-      text: "Brak zweryfikowanego sk\u0142adnika TOTP."
+      text: "Nie skonfigurowano aplikacji uwierzytelniaj\u0105cej."
     });
   }
   return create("div", { className: "mfa-factor-list" }, view.factors.map((factor, index) =>
@@ -54,7 +54,7 @@ function factorList(view, onRemoveFactor) {
           className: "muted",
           text: factor.createdAt
             ? `Dodano: ${new Date(factor.createdAt).toLocaleDateString("pl-PL")}`
-            : "Zweryfikowany TOTP"
+            : "Zweryfikowana aplikacja uwierzytelniaj\u0105ca"
         })
       ]),
       button("Usu\u0144", {
@@ -79,19 +79,19 @@ export function renderTrainerMfa(root, {
   const body = [
     create("p", {
       className: "eyebrow",
-      text: "Studio Las OS \u00b7 bezpiecze\u0144stwo trenera"
+      text: "Studio Las \u00b7 bezpiecze\u0144stwo trenera"
     }),
     create("h1", { text: "Weryfikacja dwuetapowa" }),
     create("p", {
       className: "muted",
-      text: "Dane trenera pozostaj\u0105 zablokowane, dop\u00f3ki konto nie ma dok\u0142adnie jednego zweryfikowanego TOTP, a bie\u017c\u0105ca sesja nie osi\u0105gnie poziomu AAL2."
+      text: "Dost\u0119p do danych trenera wymaga jednej skonfigurowanej aplikacji uwierzytelniaj\u0105cej i potwierdzenia kodem podczas bie\u017c\u0105cego logowania."
     }),
     message ? statusBox(message, "error") : null
   ];
 
   if (view.status === "enrollment_required") {
     body.push(
-      statusBox("To konto trenera nie ma jeszcze TOTP. Skonfiguruj dok\u0142adnie jedn\u0105 aplikacj\u0119 uwierzytelniaj\u0105c\u0105.", "info"),
+      statusBox("To konto trenera nie ma jeszcze skonfigurowanej aplikacji uwierzytelniaj\u0105cej. Skonfiguruj jedn\u0105 aplikacj\u0119.", "info"),
       create("div", { className: "form-actions" }, [
         button("Rozpocznij konfiguracj\u0119", { className: "button primary", onclick: onStartEnrollment }),
         button("Wyloguj", { className: "button danger", onclick: onLogout })
@@ -100,11 +100,11 @@ export function renderTrainerMfa(root, {
   } else if (view.status === "enrollment") {
     body.push(
       create("ol", { className: "mfa-steps" }, [
-        create("li", { text: "Zeskanuj kod QR w aplikacji uwierzytelniaj\u0105cej." }),
+        create("li", { text: "Zeskanuj widoczny obraz w aplikacji uwierzytelniaj\u0105cej." }),
         create("li", { text: "Wpisz aktualny sze\u015bciocyfrowy kod." }),
-        create("li", { text: "Po potwierdzeniu sesja zostanie wymieniona na AAL2." })
+        create("li", { text: "Po potwierdzeniu kodu uzyskasz wymagany dost\u0119p do panelu." })
       ]),
-      create("img", { className: "mfa-qr", src: view.qrCode, alt: "Kod QR konfiguracji TOTP" }),
+      create("img", { className: "mfa-qr", src: view.qrCode, alt: "Obraz do konfiguracji aplikacji uwierzytelniaj\u0105cej" }),
       create("div", { className: "mfa-secret" }, [
         create("span", { text: "Klucz r\u0119czny (tylko na czas konfiguracji)" }),
         create("code", { text: view.secret || "Niedost\u0119pny" })
@@ -116,7 +116,7 @@ export function renderTrainerMfa(root, {
     body.push(
       statusBox(
         view.multipleFactors
-          ? "Najpierw potwierd\u017a kod. Nast\u0119pnie trzeba b\u0119dzie usun\u0105\u0107 nadmiarowe sk\u0142adniki TOTP."
+          ? "Najpierw potwierd\u017a kod. Nast\u0119pnie usu\u0144 nadmiarowe aplikacje uwierzytelniaj\u0105ce przypisane do konta."
           : `U\u017cyj sk\u0142adnika: ${view.factor?.label || "aplikacja uwierzytelniaj\u0105ca"}.`,
         "info"
       ),
@@ -129,8 +129,8 @@ export function renderTrainerMfa(root, {
   } else if (["factor_cleanup_required", "management"].includes(view.status)) {
     body.push(
       view.status === "factor_cleanup_required"
-        ? statusBox("Konto ma wi\u0119cej ni\u017c jeden TOTP. Panel pozostaje zablokowany do usuni\u0119cia nadmiarowych sk\u0142adnik\u00f3w.", "error")
-        : statusBox("Studio Las wymaga dok\u0142adnie jednego zweryfikowanego sk\u0142adnika TOTP.", "info"),
+        ? statusBox("Konto ma wi\u0119cej ni\u017c jedn\u0105 skonfigurowan\u0105 aplikacj\u0119 uwierzytelniaj\u0105c\u0105. Usu\u0144 nadmiarowe konfiguracje, aby odblokowa\u0107 panel.", "error")
+        : statusBox("Studio Las wymaga jednej zweryfikowanej aplikacji uwierzytelniaj\u0105cej.", "info"),
       factorList(view, onRemoveFactor),
       create("div", { className: "form-actions" }, [
         view.status === "management" ? button("Wr\u00f3\u0107 do panelu", { onclick: onBack }) : null,

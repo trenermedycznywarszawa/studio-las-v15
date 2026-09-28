@@ -87,11 +87,11 @@ function query(table, params) {
 
 async function loginToAal2(page) {
   await page.goto(PREVIEW_URL, { waitUntil: "domcontentloaded" });
-  await page.getByText("STAGING / QA", { exact: false }).first().waitFor({ state: "visible" });
+  await page.getByText("WERSJA TESTOWA", { exact: false }).first().waitFor({ state: "visible" });
   assert(await page.evaluate(() => window.STUDIO_LAS_CONFIG?.supabase?.projectRef) === STAGING_REF,
     "Preview is not pinned to canonical staging");
 
-  await page.getByLabel("Email").fill(QA_EMAIL);
+  await page.getByLabel("Adres poczty elektronicznej").fill(QA_EMAIL);
   await page.getByLabel("Hasło").fill(QA_PASSWORD);
   await page.getByRole("button", { name: "Zaloguj" }).click();
 
@@ -227,7 +227,7 @@ async function main() {
       "PWD decision alone created a client");
 
     page.once("dialog", dialog => dialog.accept());
-    await page.getByRole("button", { name: "Utwórz klienta do PWD" }).click();
+    await page.getByRole("button", { name: "Utwórz klienta do pierwszej wizyty diagnostycznej" }).click();
     await page.getByRole("heading", { name: SYNTHETIC_NAME }).waitFor({ state: "visible", timeout: 20_000 });
     await waitForAppIdle(page);
 
