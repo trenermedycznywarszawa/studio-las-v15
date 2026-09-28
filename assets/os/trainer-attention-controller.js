@@ -2,10 +2,11 @@ import { userSafeError } from "./runtime.js";
 import { loadTrainerAttention } from "./trainer-attention-runtime.js";
 
 export class TrainerAttentionController {
-  constructor(state, { render, resetWorkspace, loadWorkspace, refreshInquiry }) {
+  constructor(state, { render, resetWorkspace, resetInquirySelection, loadWorkspace, refreshInquiry }) {
     this.state = state;
     this.render = render;
     this.resetWorkspace = resetWorkspace;
+    this.resetInquirySelection = resetInquirySelection;
     this.loadWorkspace = loadWorkspace;
     this.refreshInquiry = refreshInquiry;
   }
@@ -37,6 +38,7 @@ export class TrainerAttentionController {
     if (!state.trainerAttentionEnabled) return;
     if (clearSelection) {
       this.resetWorkspace();
+      this.resetInquirySelection();
       state.activeClientId = "";
       state.workspace = null;
     }
