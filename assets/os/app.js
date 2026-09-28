@@ -417,5 +417,4 @@ window.addEventListener("unhandledrejection", event => {
   event.preventDefault();
   handleRuntimeError(event.reason);
 });
-
 initialize();
