@@ -73,7 +73,7 @@ function sessionBriefPanel(workspace) {
       brief.safety,
       "Nie zapisano ograniczeń. To nie jest potwierdzenie ich braku."
     ),
-    briefFactCard("Aktualny fokus", brief.currentFocus, "Nie zapisano aktualnego fokusu."),
+    briefFactCard("Aktualny cel", brief.currentFocus, "Nie zapisano aktualnego celu."),
     briefFactCard("Ostatnia decyzja trenera", brief.lastDecision, "Nie zapisano jeszcze decyzji trenera."),
     briefFactCard("Ostatni sygnał klienta", brief.latestClientSignal, "Klient nie zapisał jeszcze sygnału."),
     briefListCard(
@@ -135,7 +135,7 @@ function measurementsSection(workspace, model) {
     create("h3", { text: "Polar / tolerancja obciążenia" }),
     recordList(workspace.trainingLoad, item => create("article", { className: "record" }, [
       create("strong", { text: `${formatDate(item.observed_at)} · ${item.session_type || "Sesja"}` }),
-      create("p", { text: `RPE: ${item.rpe ?? "—"}, HR śr.: ${item.hr_avg ?? "—"}` }),
+      create("p", { text: `Odczuwany wysiłek: ${item.rpe ?? "—"}, średnie tętno: ${item.hr_avg ?? "—"}` }),
       create("p", { className: "muted", text: item.trainer_note || "Brak notatki" })
     ]), "Brak odczytów."),
     detailsForm("Dodaj odczyt", trainingLoadForm(model.onSaveTrainingLoad))
@@ -167,7 +167,7 @@ export function renderTrainer(root, model) {
 
   const header = create("header", { className: "topbar" }, [
     create("div", {}, [
-      create("p", { className: "eyebrow", text: `Studio Las OS · ${runtimeEnvironmentLabel(model.environment)}` }),
+      create("p", { className: "eyebrow", text: `Studio Las · ${runtimeEnvironmentLabel(model.environment)}` }),
       create("h1", { text: "Panel trenera" })
     ]),
     create("div", { className: "top-actions" }, [
@@ -177,7 +177,7 @@ export function renderTrainer(root, model) {
         onclick: model.onShowTrainerAttention
       }) : null,
       button("Dostęp klientów", { onclick: () => window.location.assign("./tools/client-access-admin.html") }),
-      button("MFA", { onclick: model.onManageMfa }),
+      button("Bezpieczeństwo", { onclick: model.onManageMfa }),
       button("Odśwież", { onclick: model.onReload }),
       button("Wyloguj", { className: "button danger", onclick: model.onLogout })
     ])

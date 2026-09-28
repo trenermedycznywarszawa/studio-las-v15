@@ -16,8 +16,8 @@ import {
 const NEXT_ACTION_LABELS = Object.freeze({
   contact_call: "Telefon",
   contact_message: "Wiadomość",
-  arrange_pwd: "Ustalić termin PWD",
-  follow_up: "Follow-up",
+  arrange_pwd: "Ustalić termin pierwszej wizyty diagnostycznej",
+  follow_up: "Ponowny kontakt",
   referral: "Najpierw konsultacja / inny krok"
 });
 
@@ -41,7 +41,7 @@ function inquiryOption(inquiry) {
 function sourceSummary(inquiry) {
   const rows = [
     ["Telefon", inquiry.submitted_phone],
-    ["E-mail", inquiry.submitted_email || "Nie podano"],
+    ["Adres poczty elektronicznej", inquiry.submitted_email || "Nie podano"],
     ["Kontakt", inquiry.preferred_contact_window],
     ["Kierunek", inquiry.broad_goal],
     ["Własne zdanie", inquiry.person_words || "Nie podano"],
@@ -70,7 +70,7 @@ function callBrief(inquiry) {
 
 function contactActions(inquiry, model) {
   if (inquiry.inquiry_status === "converted") {
-    return create("p", { className: "muted", text: "Zgłoszenie zostało już jawnie przekazane do procesu PWD." });
+    return create("p", { className: "muted", text: "Zgłoszenie przekazano do pierwszej wizyty diagnostycznej." });
   }
 
   return create("div", { className: "form-actions" }, [
@@ -153,7 +153,7 @@ function decisionForm(inquiry, model) {
     if (value === "PWD") {
       dynamic.append(create("p", {
         className: "muted",
-        text: "PWD jest rekomendowanym następnym krokiem. Sam zapis tej decyzji nie tworzy klienta."
+        text: "Pierwsza wizyta diagnostyczna jest rekomendowanym następnym krokiem. Sam zapis tej decyzji nie tworzy klienta."
       }));
     }
   }
@@ -205,10 +205,10 @@ function conversionAction(inquiry, decisions, model) {
     return null;
   }
   return create("div", { className: "form-actions" }, [
-    button("Utwórz klienta do PWD", {
+    button("Utwórz klienta do pierwszej wizyty diagnostycznej", {
       className: "button primary",
       onclick: async () => {
-        if (!window.confirm("Potwierdzasz, że PWD zostało uzgodnione i chcesz utworzyć klienta do PWD?")) return;
+        if (!window.confirm("Potwierdzasz, że pierwsza wizyta diagnostyczna została uzgodniona i chcesz utworzyć klienta do pierwszej wizyty diagnostycznej?")) return;
         await model.onConvertInquiry(inquiry.id);
       }
     })
@@ -228,7 +228,7 @@ export function renderInquirySection(workspace, model) {
   const body = create("div", {}, [
     create("p", {
       className: "brief-intro",
-      text: "Krótka pamięć relacji przed PWD. To nie jest CRM i system nie kwalifikuje człowieka za trenera."
+      text: "Krótka pamięć relacji przed pierwszą wizytą diagnostyczną. System nie kwalifikuje człowieka za trenera."
     }),
     select
   ]);
@@ -253,7 +253,7 @@ export function renderInquirySection(workspace, model) {
   const inquiryPanel = panel(
     "Pierwszy kontakt",
     body,
-    "Źródło → rozmowa → jawna decyzja → ewentualne PWD"
+    "Źródło → rozmowa → jawna decyzja → ewentualna pierwsza wizyta diagnostyczna"
   );
 
   // First contact is a pre-client work surface. When a client is actively

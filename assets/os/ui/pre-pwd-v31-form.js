@@ -245,7 +245,7 @@ export function prePwdV31Form({
   const root = create("div", { className: "questionnaire-form" }, [
     create("div", { className: "section-heading" }, [
       create("h2", { text: "Ankieta przed pierwszą wizytą" }),
-      create("p", { text: `Około ${PRE_PWD_V31_DEFINITION.estimatedMinutes} min · odpowiedzi służą przygotowaniu rozmowy z trenerem.` })
+      create("p", { text: `Około ${PRE_PWD_V31_DEFINITION.estimatedMinutes} minut · odpowiedzi służą przygotowaniu rozmowy z trenerem.` })
     ]),
     statusBox("Formularz nie diagnozuje i nie podejmuje decyzji za trenera.", "info")
   ]);

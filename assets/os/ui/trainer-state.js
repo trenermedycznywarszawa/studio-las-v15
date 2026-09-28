@@ -72,7 +72,7 @@ export function nowPanel(workspace, attentionSignals) {
   return panel("Teraz", create("div", { className: "now-block" }, [
     create("div", { className: "now-grid" }, [
       nowItem("Etap procesu", CANONICAL_STAGES[workspace.client.stage] || "Proces Studio Las"),
-      nowItem("Aktualny fokus", brief.currentFocus?.value || "Fokus nie został jeszcze zapisany.", focusMeta),
+      nowItem("Aktualny cel", brief.currentFocus?.value || "Cel nie został jeszcze zapisany.", focusMeta),
       nowItem("Ostatnia obowiązująca decyzja trenera", brief.lastDecision?.value || "Brak zapisanej decyzji trenera.", decisionMeta),
       nowItem("Otwarty sygnał wymagający uwagi", openSignal?.label || "Brak otwartego sygnału wymagającego uwagi.", signalMeta),
       nowItem(brief.nextStep.label, brief.nextStep.value, nextMeta, "now-item wide")

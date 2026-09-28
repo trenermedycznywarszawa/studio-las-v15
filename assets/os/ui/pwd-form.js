@@ -115,7 +115,7 @@ export function pwdForm(onSubmit) {
   });
 
   const form = submitForm([
-    field("Data PWD", "date", "date", { value: today(), required: true }),
+    field("Data pierwszej wizyty diagnostycznej", "date", "date", { value: today(), required: true }),
     field("Co chcesz móc robić swobodniej? — słowami klienta", "realLifeGoal", "textarea", { required: true, maxlength: 4000 }),
     field("Dlaczego to jest dla Ciebie ważne?", "whyImportant", "textarea", { required: true, maxlength: 4000 }),
     field("Kontekst i granice — istotne okoliczności, tolerancja, obawy", "contextBoundaries", "textarea", { required: true, maxlength: 8000 }),
@@ -140,7 +140,7 @@ export function pwdForm(onSubmit) {
     create("p", { className: "muted", text: "Wybór decyzji jest wymagany. System nie wybierze jej automatycznie." }),
     field("Jasny następny krok zapisany przez trenera", "nextStep", "textarea", { required: true, maxlength: 4000 }),
     create("p", { className: "muted", text: "Zapis decyzji nie wykonuje jej automatycznie i nie tworzy wskazówki ani planu domowego." })
-  ], "Zapisz PWD", onSubmit);
+  ], "Zapisz pierwszą wizytę diagnostyczną", onSubmit);
 
   const decisionSelect = form.elements.namedItem("trainerDecision");
   decisionSelect.value = "";

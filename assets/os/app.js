@@ -149,11 +149,11 @@ function renderMfaView(view, message = "") {
     message,
     onStartEnrollment: () => advanceMfa(
       () => state.mfa.beginEnrollment(),
-      "Przygotowywanie konfiguracji TOTP…"
+      "Przygotowywanie aplikacji uwierzytelniającej…"
     ),
     onVerify: code => advanceMfa(
       () => state.mfa.verify(code),
-      "Weryfikowanie kodu TOTP…"
+      "Sprawdzanie kodu z aplikacji uwierzytelniającej…"
     ),
     onRetry: () => advanceMfa(
       () => state.mfa.prepare(),
@@ -187,7 +187,7 @@ async function enforceTrainerMfa() {
 
 async function showMfaManagement() {
   try {
-    renderLoading(root, "Ładowanie ustawień MFA…");
+    renderLoading(root, "Ładowanie ustawień zabezpieczeń…");
     renderMfaView(await state.mfa.management());
   } catch (error) {
     handleRuntimeError(error);
@@ -195,9 +195,9 @@ async function showMfaManagement() {
 }
 
 async function removeMfaFactor(index) {
-  if (!window.confirm("Usunąć ten składnik TOTP?")) return;
+  if (!window.confirm("Usunąć tę aplikację uwierzytelniającą z konta?")) return;
   try {
-    renderLoading(root, "Usuwanie składnika TOTP…");
+    renderLoading(root, "Usuwanie aplikacji uwierzytelniającej…");
     const next = await state.mfa.removeFactor(index);
     if (next.status === "verified") {
       state.mfaView = null;
@@ -285,7 +285,7 @@ function renderTrainerState() {
       );
     },
     onSavePwd: async values => {
-      await withWrite("Zapisywanie PWD", () => savePwdWorkflow(state.repository, state.activeClientId, values), reloadWorkspace);
+      await withWrite("Zapisywanie pierwszej wizyty diagnostycznej", () => savePwdWorkflow(state.repository, state.activeClientId, values), reloadWorkspace);
     },
     onSaveSession: async values => {
       await withWrite("Zapisywanie sesji", () => state.repository.saveSession(state.activeClientId, values), reloadWorkspace);

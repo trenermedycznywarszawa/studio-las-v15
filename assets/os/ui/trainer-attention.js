@@ -13,7 +13,7 @@ function ensureStyles() {
 function kindLabel(item) {
   if (item.level === "urgent-review") return "Pilny przegląd";
   if (item.kind === "contact") return "Niedomknięty kontakt";
-  if (item.kind === "review") return "Review";
+  if (item.kind === "review") return "Przegląd";
   return "Nowy sygnał";
 }
 
@@ -91,7 +91,7 @@ export function trainerAttentionView(model, {
   return create("div", { className: "sl-attention-page sl-attention-runtime" }, [
     create("header", { className: "sl-attention-head" }, [
       create("div", {}, [
-        create("p", { className: "sl-attention-eyebrow", text: "Uwaga trenera · preview" }),
+        create("p", { className: "sl-attention-eyebrow", text: "Uwaga trenera · wersja testowa" }),
         create("h1", { text: "Kto dziś wymaga Twojej uwagi?" }),
         create("p", {
           text: "Najpierw wyjątki i niedomknięte sprawy. Pełny proces klienta otwierasz dopiero wtedy, gdy jest potrzebny do decyzji."
@@ -113,7 +113,7 @@ export function trainerAttentionView(model, {
       create("div", { className: "sl-attention-overview-meta" }, [
         model.counts.contacts ? create("span", { text: `Kontakt ${model.counts.contacts}` }) : null,
         model.counts.signals ? create("span", { text: `Sygnały ${model.counts.signals}` }) : null,
-        model.counts.reviews ? create("span", { text: `Review ${model.counts.reviews}` }) : null
+        model.counts.reviews ? create("span", { text: `Przeglądy ${model.counts.reviews}` }) : null
       ])
     ]),
     create("div", { className: "sl-attention-grid" }, [
@@ -134,10 +134,10 @@ export function trainerAttentionView(model, {
       ]),
       create("aside", { className: "sl-attention-side" }, [
         create("section", { className: "sl-attention-panel sl-attention-side-panel" }, [
-          create("h3", { text: "Nadchodzące Review" }),
+          create("h3", { text: "Nadchodzące przeglądy" }),
           model.reviewSoon.length
             ? create("div", { className: "sl-attention-review-list" }, model.reviewSoon.map(item => reviewSoonItem(item, onOpenClientContext)))
-            : create("p", { text: "Brak Review w najbliższych 7 dniach." })
+            : create("p", { text: "Brak zaplanowanych przeglądów w najbliższych siedmiu dniach." })
         ]),
         create("section", { className: "sl-attention-panel sl-attention-side-panel" }, [quietDetails(model, onOpenClientContext)]),
         create("section", { className: "sl-attention-panel sl-attention-side-panel" }, [
@@ -147,6 +147,6 @@ export function trainerAttentionView(model, {
         ])
       ])
     ]),
-    create("p", { className: "sl-attention-footnote", text: "Trainer Attention v1 · staging preview · dane tylko do odczytu" })
+    create("p", { className: "sl-attention-footnote", text: "Uwaga trenera · wersja testowa · dane tylko do odczytu" })
   ]);
 }

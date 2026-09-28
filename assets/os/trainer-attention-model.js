@@ -56,7 +56,7 @@ function stageLabel(client) {
 
 function nextQuietFact(client) {
   if (client.next_session_date) return `następna sesja ${dateOnly(client.next_session_date)}`;
-  if (client.next_review_date) return `Review ${dateOnly(client.next_review_date)}`;
+  if (client.next_review_date) return `Przegląd ${dateOnly(client.next_review_date)}`;
   return "brak otwartego wyjątku";
 }
 
@@ -94,12 +94,12 @@ function reviewDueItem(client, days) {
     stage: stageLabel(client),
     kind: "review",
     level: "review",
-    reason: overdue ? "Punkt Review jest po terminie" : "Punkt Review przypada dziś",
+    reason: overdue ? "Przegląd jest po terminie" : "Przegląd przypada dziś",
     context: overdue
-      ? `W karcie klienta zapisano Review na ${sourceDate}. System nie ocenia wyniku procesu.`
-      : "W karcie klienta zapisano dzisiejszą datę Review. System nie ocenia wyniku procesu.",
+      ? `W karcie klienta zapisano przegląd na ${sourceDate}. System nie ocenia wyniku procesu.`
+      : "W karcie klienta zapisano dzisiejszą datę przeglądu. System nie ocenia wyniku procesu.",
     question: "Jaka jest decyzja co dalej na podstawie całego kontekstu?",
-    source: `Karta klienta · next_review_date · ${sourceDate}`,
+    source: `Karta klienta · termin przeglądu · ${sourceDate}`,
     sourceDate
   });
 }

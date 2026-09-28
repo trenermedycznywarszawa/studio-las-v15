@@ -109,7 +109,7 @@ export function collectAttentionSignals({ client, session, trainingLoad, preSess
       source: "training-load",
       sourceDate: trainingLoadDate, sourceId:trainingLoad.id, sourceRevision:trainingLoad.updated_at || trainingLoad.created_at,
       label: SIGNAL_LABELS["very-high-perceived-effort"],
-      context: `RPE ${rpe}/10.`,
+      context: `Odczuwany wysiłek: ${rpe} w skali od 1 do 10.`,
       trainerQuestion: "Czy wysoki wysiłek był zamierzony i dobrze tolerowany w całym kontekście sesji?"
     });
   }
