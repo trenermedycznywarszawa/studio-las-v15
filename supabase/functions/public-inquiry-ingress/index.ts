@@ -1,4 +1,5 @@
 import { createClient } from "npm:@supabase/supabase-js@^2";
+import { sendInquiryConfirmation } from "./confirmation.ts";
 
 const MAX_BODY_BYTES = 8 * 1024;
 const SOURCE_VERSION = "public-ingress-v1";
@@ -249,6 +250,11 @@ Deno.serve(async (req: Request) => {
     if (status === "created") {
       if (isProductionRuntime(supabaseUrl)) {
         await notifyTrainerNoPii();
+        await sendInquiryConfirmation(payload.email, payload.requestId, {
+          env: key => Deno.env.get(key),
+          fetch: globalThis.fetch,
+          log: metadata => console.error("inquiry-confirmation delivery_failed", metadata)
+        });
       }
       return response(origin, { ok: true }, 202);
     }
