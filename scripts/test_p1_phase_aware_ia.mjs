@@ -102,6 +102,10 @@ assert.doesNotMatch(trainerStateSource, /life_goal|north_star/);
 assert.match(trainerSource, /questionnaireBrief:\s*questionnaireBriefPanel\(workspace\)/,
   "Trainer workspace must expose the submitted pre-PWD brief as a phase-aware section.");
 assert.match(trainerSource, /orderTrainerSections\(workspace\.client\.stage, sections\)/);
+assert.doesNotMatch(trainerSource, /newClientForm|Jedno źródło prawdy|Supabase/,
+  "The trainer home must not show direct client creation or technical storage copy.");
+assert.doesNotMatch(appSource, /onCreateClient:/,
+  "Client creation must begin with the first-contact workflow.");
 assert.match(
   dataSource,
   /select: "id,name,email,phone,engagement_type,stage,start_date,next_session_date,next_review_date,goal,next_milestone,status,created_at,updated_at"/
