@@ -14,10 +14,13 @@ on:
       - "assets/os/ui/trainer-attention.js"
       - "assets/os/ui/trainer.js"
       - "tools/trainer-attention-lab.js"
+      - "tools/trainer-attention-lab-state.js"
       - "tools/trainer-attention-lab.html"
       - "scripts/test_trainer_attention_model.mjs"
       - "scripts/test_trainer_attention_runtime.mjs"
       - "scripts/test_trainer_attention_lab.mjs"
+      - "scripts/e2e_trainer_attention_lab.mjs"
+      - "assets/os/trainer-attention-lab.css"
       - ".github/workflows/trainer-attention-model-check.yml"
   workflow_dispatch:
 
@@ -40,3 +43,29 @@ jobs:
         run: node scripts/test_trainer_attention_runtime.mjs
       - name: Load synthetic Trainer Attention Lab
         run: node scripts/test_trainer_attention_lab.mjs
+
+  attention-lab-browser:
+    name: Fictional attention lab browser regression
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+      - name: Install browser test tools
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start fictional lab and verify interactions
+        run: |
+          python3 -m http.server 8793 --bind 127.0.0.1 > /tmp/attention-lab.log 2>&1 &
+          LAB_SERVER_PID=$!
+          trap 'kill "$LAB_SERVER_PID"' EXIT
+          for attempt in $(seq 1 20); do
+            if curl -fsS http://127.0.0.1:8793/tools/trainer-attention-lab.html > /dev/null; then break; fi
+            sleep 0.2
+          done
+          node scripts/e2e_trainer_attention_lab.mjs
