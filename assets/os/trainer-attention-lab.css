@@ -456,3 +456,53 @@ body.sl-attention-lab {
   .sl-attention-panel-head > span { display: block; margin-top: 5px; }
   .sl-attention-nav { grid-template-columns: 1fr 1fr; }
 }
+
+/* Interactive fictional-data lab only; the trainer runtime shares this sheet. */
+.sl-attention-lab .sl-attention-page { width: min(1280px, 100%); }
+.sl-attention-lab .sl-attention-grid { grid-template-columns: minmax(0, 1fr) 350px; align-items: start; }
+.sl-attention-lab button { cursor: pointer; }
+.sl-attention-lab button:focus-visible,
+.sl-attention-lab [tabindex="-1"]:focus-visible { outline: 2px solid var(--sl-color-forest); outline-offset: 4px; }
+.sl-attention-lab .sl-attention-nav button {
+  padding: 12px; border: 0; border-radius: var(--sl-radius-control);
+  background: transparent; color: var(--sl-color-muted); text-align: left; font: inherit; font-size: 13px;
+}
+.sl-attention-lab .sl-attention-nav button.active { background: rgba(49, 76, 61, .09); color: var(--sl-color-forest); font-weight: 800; }
+.sl-lab-preview-label { display: inline-block; margin-bottom: 22px; color: var(--sl-color-muted); font-size: 11px; }
+.sl-lab-scenarios { margin-bottom: 24px; }
+.sl-lab-scenarios p { margin: 0 0 10px; font-size: 11px; color: var(--sl-color-muted); }
+.sl-lab-scenarios > div { display: flex; gap: 8px; flex-wrap: wrap; }
+.sl-lab-scenarios button { min-height: 40px; background: rgba(255, 253, 248, .7); }
+.sl-attention-lab .sl-lab-primary { background: var(--sl-color-forest); color: var(--sl-color-paper-raised); border-color: var(--sl-color-forest); }
+.sl-lab-notice { min-height: 1.4em; margin: 0 0 14px; color: var(--sl-color-forest); font-size: 12px; }
+.sl-lab-empty { display: grid; place-content: center; min-height: 270px; text-align: center; padding: 36px 24px; }
+.sl-lab-empty h3 { margin: 12px 0 8px; color: var(--sl-color-ink); font-family: var(--sl-font-display); font-size: 26px; font-weight: 500; }
+.sl-lab-empty p { margin: 0; font-size: 12px; line-height: 1.6; }
+.sl-lab-empty-symbol { font-size: 26px; color: var(--sl-color-moss); }
+.sl-lab-context-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.sl-lab-context blockquote { margin: 20px 0; padding: 2px 0 2px 14px; border-left: 2px solid var(--sl-color-moss); font-size: 14px; line-height: 1.7; }
+.sl-lab-decision, .sl-lab-fact { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--sl-color-line); }
+.sl-lab-fact strong { font-size: 12px; }
+.sl-lab-decision small, .sl-lab-history small { color: var(--sl-color-muted); font-size: 10px; line-height: 1.5; }
+.sl-lab-actions { display: grid; gap: 8px; margin-top: 16px; }
+.sl-lab-actions button { min-height: 42px; }
+.sl-lab-history { padding: 0; list-style: none; }
+.sl-lab-history li { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--sl-color-line); }
+.sl-lab-history strong { font-size: 12px; }
+.sl-lab-history p { margin: 6px 0; font-size: 12px; line-height: 1.6; }
+.sl-lab-history-context { color: var(--sl-color-muted); }
+.sl-lab-content { padding: 22px; }
+.sl-lab-content h2 { margin: 0 0 16px; font-family: var(--sl-font-display); font-size: 26px; font-weight: 500; }
+.sl-lab-clients { display: grid; gap: 8px; }
+.sl-lab-client-button { min-height: 44px; padding: 12px; border: 1px solid var(--sl-color-line); border-radius: var(--sl-radius-control); background: transparent; color: var(--sl-color-forest); text-align: left; font: inherit; font-size: 13px; }
+.sl-lab-muted { color: var(--sl-color-muted); font-size: 12px; }
+@media (max-width: 1150px) {
+  .sl-attention-lab .sl-attention-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 620px) {
+  .sl-attention-lab .sl-attention-head h1 { font-size: 38px; }
+  .sl-lab-scenarios > div { display: grid; grid-template-columns: 1fr 1fr; }
+  .sl-lab-scenarios button, .sl-lab-actions button { grid-column: auto; justify-self: stretch; }
+  .sl-attention-lab .sl-attention-nav { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 4px; }
+  .sl-attention-lab .sl-attention-nav button { padding: 10px 6px; font-size: 12px; }
+}
