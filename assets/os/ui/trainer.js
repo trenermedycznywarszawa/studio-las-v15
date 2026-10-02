@@ -1,3 +1,4 @@
+import { trainerAttentionView } from "./trainer-attention.js";
 import {
   button,
   clear,
@@ -179,11 +180,18 @@ export function renderTrainer(root, model) {
   ]);
 
   const sidebar = create("aside", { className: "sidebar" }, [
+    button("Uwaga trenera", {onclick:model.onShowTrainerAttention}),
+    button("Zgłoszenia", {onclick:() => model.onOpenClientContext("inquiries")}),
     create("h2", { text: "Klienci" }),
     clientSelect
   ]);
 
   const content = create("main", { className: "workspace" });
+  if (model.trainerAttentionView) {
+    content.append(model.trainerAttentionLoading ? statusBox("Ładowanie spraw…") : model.trainerAttentionError
+      ? create("section", {}, [statusBox("Nie udało się wczytać spraw. Sprawdź dostęp i spróbuj ponownie.", "error"), button("Ponów odczyt", {onclick:model.onRetryTrainerAttention})])
+      : trainerAttentionView(model.trainerAttention, model));
+  } else {
   if (model.loading || model.loadError) content.append(statusBox(
     model.loadError || "Ładowanie procesu…", model.loadError ? "error" : "info"));
   if (model.workspace) {
@@ -219,6 +227,7 @@ export function renderTrainer(root, model) {
   if (model.loading || model.loadError) {
     for (const scope of [sidebar, content]) scope.querySelectorAll("form input, form select, form textarea, form button, .workspace button").forEach(node => { node.disabled = true; });
     content.querySelectorAll("button").forEach(node => { node.disabled = true; });
+  }
   }
   root.append(header, create("div", { className: "app-layout" }, [sidebar, content]));
 }

@@ -815,7 +815,7 @@ export class StudioLasRepository {
   async saveClientCheckin(input) {
     return this.rpc("save_client_guidance_response", {
       p_home_plan_item_id: input.homePlanItemId, p_home_plan_id: input.homePlanId,
-      p_response: input.response, p_submission_id: input.submissionId
+      p_response: input.response, p_submission_id: input.submissionId, p_contact_requested: input.contactRequested === true
     });
   }
 }

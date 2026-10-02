@@ -1,3 +1,4 @@
+import { TrainerAttentionController } from "./trainer-attention-controller.js";
 import { TrainerWorkspaceLoader } from "./trainer-workspace-loader.js";
 import { collectWorkspaceSignals } from "./trainer-signals.js";
 import { loadClientAppRuntime } from "./client-app-runtime.js";
@@ -30,13 +31,22 @@ const state = {
   activeClientId: "",
   workspace: null,
   clientPortal: null,
+  trainerAttentionEnabled: true, trainerAttentionView: true,
   snapshot: null
 };
 
 const { announce, withWrite, reset: resetFeedback } = createRuntimeFeedback(() => state.config?.mode);
 const trainerLoader = new TrainerWorkspaceLoader(state, renderTrainerState);
+const trainerAttentionController = new TrainerAttentionController(state, {
+  render: renderTrainerState, withWrite,
+  resetWorkspace: () => trainerLoader.reset(),
+  resetInquirySelection: () => state.inquiryController.select(""),
+  loadWorkspace: clientId => loadTrainerWorkspace(clientId, true),
+  refreshInquiry: async () => { await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; }); }
+});
 
 async function logout() {
+  trainerAttentionController.reset();
   trainerLoader.reset();
   resetFeedback();
   state.clientPortal?.reset();
@@ -218,13 +228,14 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
+  if (state.trainerAttentionView) { await trainerAttentionController.refresh({clearSelection:true}); return; }
   await loadTrainerWorkspace(preferredClientId, true);
   await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
   renderTrainerState();
 }
 
 async function selectClient(clientId) {
-  await loadTrainerWorkspace(clientId);
+  await trainerAttentionController.openClient(clientId);
 }
 
 function renderTrainerState() {
@@ -234,6 +245,7 @@ function renderTrainerState() {
   const reloadWorkspace = () => loadTrainerWorkspace(clientId);
 
   renderTrainer(root, {
+    ...trainerAttentionController.renderBindings(handleRuntimeError),
     environment: state.config?.mode,
     profile: state.profile,
     clients: state.clients,
@@ -307,7 +319,7 @@ function renderTrainerState() {
     }
   });
 
-  state.inquiryController.render(root.querySelector(".workspace"), {
+  if (!state.trainerAttentionView) state.inquiryController.render(root.querySelector(".workspace"), {
     activeClientId: state.activeClientId,
     rerender: renderTrainerState,
     loadTrainer,
