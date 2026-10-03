@@ -9,6 +9,7 @@ const key = process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY;
 const dir = process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
 const clientId = "c7200000-0000-4000-8000-000000000001";
 const results = [];
+const resolutionNote = `Ustalenie wyjaśnione. Dane fikcyjne. ${process.env.STUDIO_LAS_E2E_MARKER || randomUUID()}`;
 async function api(path, token, method="GET", body) {
  const r=await fetch(`${origin}${path}`,{method,headers:{apikey:key,Authorization:`Bearer ${token}`,"Content-Type":"application/json",Prefer:"return=representation"},body:body===undefined?undefined:JSON.stringify(body)});
  const text=await r.text(); assert.ok(r.ok,`${method} ${path.split("?")[0]}: ${r.status} ${text.slice(0,200)}`); return text?JSON.parse(text):null;
@@ -76,7 +77,7 @@ try {
  trainerToken=await login(page,process.env.STUDIO_LAS_QA_EMAIL,process.env.STUDIO_LAS_QA_PASSWORD,true);
  await page.getByText("Kontakt nadal wymaga domknięcia",{exact:true}).waitFor(); results.push("open contact persists across logout/login without duplication");
  await page.locator(".attention-case summary").click();
- await page.getByLabel("Co ustalono po kontakcie?").fill("Ustalenie wyjaśnione. Dane fikcyjne.");
+ await page.getByLabel("Co ustalono po kontakcie?").fill(resolutionNote);
  await page.getByRole("button",{name:"Kontakt zakończony",exact:true}).click();
  await empty(page); results.push("explicit contact completion removes case");
  const remaining=(await api(`/rest/v1/rpc/client_portal_snapshot`,clientToken,"POST",{})).homePlan.items.find(i=>!i.todayResponse);
@@ -100,11 +101,11 @@ try {
  await page.getByRole("button",{name:"Przejrzane · bez zmiany",exact:true}).click(); await empty(page); results.push("source drift requires acknowledgement; newer source remains for review");
  await page.getByLabel("Wybierz klienta").selectOption(clientId);
  await page.getByText("Pokaż historię przejrzanych sygnałów",{exact:true}).click();
- await page.getByText(/Ustalenie wyjaśnione. Dane fikcyjne./).waitFor(); results.push("history retains original contact and resolution");
+ await page.getByText(`Kontakt potwierdzony: ${new Intl.DateTimeFormat("pl-PL",{timeZone:"Europe/Warsaw"}).format(new Date())} · ${resolutionNote}`,{exact:true}).waitFor(); results.push("history retains original contact and resolution");
  const reviews=await api(`/rest/v1/trainer_signal_reviews?client_id=eq.${clientId}&select=id`,clientToken); assert.deepEqual(reviews,[]);
  const foreign=await api("/rest/v1/clients?id=eq.aaaaaaaa-1111-4111-8111-aaaaaaaaaaa1&select=id",trainerToken); assert.deepEqual(foreign,[]);
  const snapshot=await api("/rest/v1/rpc/client_portal_snapshot",clientToken,"POST",{});
- assert.ok(!JSON.stringify(snapshot).includes("Ustalenie wyjaśnione.")); results.push("client cannot read trainer review or private resolution; foreign client invisible");
+ assert.ok(!JSON.stringify(snapshot).includes(resolutionNote)); results.push("client cannot read trainer review or private resolution; foreign client invisible");
  await page.route(`${origin}/rest/v1/guidance_events?**`,route=>route.fulfill({status:503,contentType:"application/json",body:'{"message":"synthetic outage"}'}));
  await page.getByRole("button",{name:"Uwaga trenera",exact:true}).click();
  await page.getByText("Nie udało się wczytać spraw. Sprawdź dostęp i spróbuj ponownie.",{exact:true}).waitFor();
