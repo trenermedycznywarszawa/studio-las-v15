@@ -503,3 +503,9 @@ summary { padding-block: 10px; }
 .report-evidence-picker { grid-column: 1 / -1; min-width: 0; border: 1px solid var(--line); border-radius: 9px; }
 .report-evidence-picker .check-field { align-items: flex-start; }
 .report-evidence-picker input[type="checkbox"] { flex-shrink: 0; }
+
+.attention-actions {display:flex;flex-wrap:wrap;gap:10px;margin-top:16px;align-items:flex-start}
+.attention-actions .details-card {flex-basis:100%}
+.attention-case {overflow-wrap:anywhere}
+.attention-empty {padding:24px 0}
+@media(max-width:600px){.attention-actions>button {width:100%}}

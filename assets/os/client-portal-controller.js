@@ -33,7 +33,7 @@ export class ClientPortalController {
       }
     } finally { if (version === this.readVersion) { this.loading = false; this.emit(); } }
   }
-  async submit(itemId, text) {
+  async submit(itemId, text, contactRequested = false) {
     const existing = this.responses[itemId];
     if (existing && ["saving","saved","saved_refresh_failed"].includes(existing.status)) return;
     const item = this.snapshot?.homePlan?.items?.find(row => row.id === itemId);
@@ -41,7 +41,7 @@ export class ClientPortalController {
     if (!item && existing?.status !== "uncertain") return;
     const entry = existing?.status === "uncertain" ? existing : {
       homePlanItemId:itemId, homePlanId:this.snapshot.homePlan.id,
-      response:String(text || "").trim(), submissionId:this.makeId(), serverDate:this.snapshot.serverDate
+      contactRequested:contactRequested === true, response:String(text || "").trim(), submissionId:this.makeId(), serverDate:this.snapshot.serverDate
     };
     entry.status = "saving"; entry.message = ""; this.responses[itemId] = entry; this.emit();
     try {

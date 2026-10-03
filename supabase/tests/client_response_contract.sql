@@ -72,6 +72,15 @@ do $$ declare snapshot jsonb; saved jsonb; repeated jsonb; begin
  perform pg_temp.assert_true(exists(select 1 from jsonb_array_elements(snapshot->'homePlan'->'items') item where item->>'id'='e1000000-0000-4000-8000-000000000001' and item->'todayResponse'->>'id'=saved->>'id'),'saved state visible after reload');
  perform pg_temp.assert_true(not ((snapshot->'homePlan'->'items'->0) ? 'trainer_note'),'trainer context excluded');
 end $$;
+do $$ declare saved jsonb; repeated jsonb; begin
+ saved:=public.save_client_guidance_response('e1000000-0000-4000-8000-000000000002','d1000000-0000-4000-8000-000000000001','Fictional explicit question','f1000000-0000-4000-8000-000000000003',true);
+ perform pg_temp.assert_true(saved->>'contactRequested'='true','explicit request persisted');
+ perform pg_temp.assert_true(saved->>'eventDate'=(now() at time zone 'Europe/Warsaw')::date::text,'Warsaw write date');
+ perform pg_temp.assert_true(public.client_portal_snapshot()->>'serverDate'=saved->>'eventDate','snapshot and write use same business date');
+ repeated:=public.save_client_guidance_response('e1000000-0000-4000-8000-000000000002','d1000000-0000-4000-8000-000000000001','Fictional explicit question','f1000000-0000-4000-8000-000000000003',true);
+ perform pg_temp.assert_true(repeated->>'id'=saved->>'id' and repeated->>'alreadySaved'='true','request replay is idempotent');
+ perform pg_temp.expect_error($q$select public.save_client_guidance_response('e1000000-0000-4000-8000-000000000002','d1000000-0000-4000-8000-000000000001','Fictional explicit question','f1000000-0000-4000-8000-000000000003',false)$q$,'22023');
+end $$;
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}',true);
 select pg_temp.expect_error($q$select public.save_client_guidance_response('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Unrelated','f1000000-0000-4000-8000-000000000001')$q$,'22023');
 reset role;

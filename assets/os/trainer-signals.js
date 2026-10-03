@@ -4,9 +4,9 @@ export function collectWorkspaceSignals(workspace = {}) {
   ...(workspace.sessions || []).flatMap(session=>collectAttentionSignals({session}).signals),
   ...(workspace.trainingLoad || []).flatMap(trainingLoad=>collectAttentionSignals({trainingLoad}).signals),
   ...(workspace.preSessionChecks || []).flatMap(preSessionCheck=>collectAttentionSignals({preSessionCheck}).signals),
-  ...(workspace.guidanceEvents || []).map(event=>{
+  ...(workspace.guidanceEvents || []).filter(event=>event.payload?.contact_requested === true || event.contact_requested === "true").map(event=>{
    const source={id:"client-observation",source:"client-response",sourceDate:event.event_date,sourceId:event.id,sourceRevision:event.created_at};
-   return {...source,signalKey:signalInstanceKey(source),level:"review",label:"Odpowiedź klienta do przeglądu",context:event.payload?.note || "Zapisana odpowiedź klienta.",trainerQuestion:"Czy ta informacja zmienia następne ustalenie?"};
+   return {...source,signalKey:signalInstanceKey(source),level:"review",label:"Klient prosi o kontakt",context:event.payload?.note || event.note || "Zapisana odpowiedź klienta.",trainerQuestion:"Czy ta informacja zmienia następne ustalenie?"};
   })
  ];
  const keys=new Set(signals.map(signal=>signal.signalKey));

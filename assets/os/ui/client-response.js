@@ -1,4 +1,4 @@
-import { button, create, field, formatDate, statusBox, submitForm } from "./common.js";
+import { button, checkbox, create, field, formatDate, statusBox, submitForm } from "./common.js";
 export function clientResponseForm(item, model) {
   const entry = model.responseStates?.[item.id];
   const receipt = item.todayResponse || entry?.receipt;
@@ -16,7 +16,7 @@ export function clientResponseForm(item, model) {
     create("p",{text:"Odpowiedź jest opcjonalna. Co się wydarzyło i czy jest coś, co Damian powinien wiedzieć?"}),
     create("p",{className:"muted",text:"Możesz opisać wykonanie zgodnie z ustaleniem, uzgodnioną krótszą wersję, przerwanie, brak próby lub to, że dziś wskazówka nie miała zastosowania."}),
     entry?.status === "failed" ? statusBox(entry.message,"error") : null,
-    submitForm([field("Twoja odpowiedź — opcjonalnie", "response", "textarea", {required:true,maxlength:500,rows:2,value:entry?.response || ""})],
-      "Zapisz odpowiedź", values=>model.onSaveCheckin(item.id,values.response),"form-grid",{disabled:model.loading})
+    submitForm([field("Twoja odpowiedź — opcjonalnie", "response", "textarea", {required:true,maxlength:500,rows:2,value:entry?.response || ""}), checkbox("Mam pytanie / potrzebuję kontaktu", "contactRequested", entry?.contactRequested === true)],
+      "Zapisz odpowiedź", values=>model.onSaveCheckin(item.id,values.response,values.contactRequested === true),"form-grid",{disabled:model.loading})
   ]);
 }
