@@ -408,3 +408,21 @@ assert(!readContract.guidanceEvents.select.includes(",payload,"), "guidance even
 assert(!readContract.signalReviews.transfer.includes("deleted_at"), "signal review contract must not invent a deleted_at field");
 
 console.log("TRAINER_ATTENTION_MODEL_PASS");
+
+// A consciously saved review date follows the same durable decision lifecycle.
+{
+ const snapshot=emptySnapshot({clients:[client("dated",{next_review_date:"2026-10-02"})]});
+ const options={today:"2026-10-03"};
+ const due=buildTrainerAttentionModel(snapshot,options).attention[0];
+ assert.ok(due.signalKey);
+ snapshot.signalReviews=[{id:"dated-review",client_id:"dated",signal_key:due.signalKey,outcome:"noted_no_change",contact_resolved_at:null}];
+ assert.equal(buildTrainerAttentionModel(snapshot,options).attention.length,0);
+ snapshot.clients[0].next_review_date="2026-10-03";
+ assert.equal(buildTrainerAttentionModel(snapshot,options).attention.length,1,"new saved review date must not be hidden");
+ snapshot.clients[0].next_review_date="2026-10-02";
+ snapshot.signalReviews[0].outcome="contact_required";
+ assert.equal(buildTrainerAttentionModel(snapshot,options).attention.length,1);
+ assert.equal(buildTrainerAttentionModel(snapshot,options).attention[0].contactReviewId,"dated-review");
+ snapshot.signalReviews[0].contact_resolved_at="2026-10-03T10:00:00Z";
+ assert.equal(buildTrainerAttentionModel(snapshot,options).attention.length,0);
+}
