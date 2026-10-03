@@ -9,7 +9,7 @@ export async function loadClientAppRuntime(root, state, { onLogout }) {
     questionnaire: state.clientQuestionnaire?.model || {},
     onReload: () => state.clientPortal.load(),
     onLogout,
-    onSaveCheckin: (id, text) => state.clientPortal.submit(id, text),
+    onSaveCheckin: (id, text, contactRequested) => state.clientPortal.submit(id, text, contactRequested),
     onRetryResponse: id => state.clientPortal.retry(id)
   });
 

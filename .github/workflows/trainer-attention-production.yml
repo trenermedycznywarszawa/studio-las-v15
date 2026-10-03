@@ -1,0 +1,68 @@
+name: Trainer attention production verification
+on:
+  pull_request:
+    paths:
+      - 'assets/os/**'
+      - 'scripts/*trainer_attention*'
+      - '.github/workflows/trainer-attention-production.yml'
+      - 'supabase/migrations/20261002195748*'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: studio-las-browser-e2e-canonical-staging
+  cancel-in-progress: false
+jobs:
+  attention:
+    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    env:
+      STUDIO_LAS_STAGING_PUBLISHABLE_KEY: sb_publishable_5IVYDd1a02rye5szV80sLA_UWzwjZRk
+      STUDIO_LAS_QA_EMAIL: attention.trainer@example.test
+      STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_ATTENTION_QA_PASSWORD }}
+      STUDIO_LAS_ATTENTION_CLIENT_PASSWORD: ${{ secrets.STUDIO_LAS_ATTENTION_CLIENT_PASSWORD }}
+      STUDIO_LAS_E2E_URL: http://127.0.0.1:8790/
+      STUDIO_LAS_E2E_ARTIFACT_DIR: artifacts/attention
+      STUDIO_LAS_E2E_MARKER: ATTENTION-${{ github.run_id }}-${{ github.run_attempt }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Required regressions
+        run: |
+          node scripts/test_pwd_trainer_workflow.mjs
+          node scripts/test_decision_state_integrity.mjs
+          node scripts/test_stage2_production_runtime.mjs
+          node scripts/test_pre_pwd_v31_registration.mjs
+          node scripts/test_trainer_attention_model.mjs
+          node scripts/test_trainer_attention_runtime.mjs
+          node scripts/test_signal_followthrough.mjs
+          node scripts/test_client_response_state.mjs
+          node scripts/test_client_response_day_rollover.mjs
+      - name: Build staging artifact
+        run: node scripts/build_studio_las_os_deploy.mjs --staging
+      - name: Install browser runtime
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --with-deps chromium
+      - name: Start staging preview
+        run: python3 -m http.server 8790 --bind 127.0.0.1 --directory .deploy/studio-las-os > /tmp/attention-server.log 2>&1 &
+      - name: Bootstrap temporary MFA
+        run: node scripts/e2e_mfa_bootstrap.mjs bootstrap
+      - name: Real staging workflow on desktop and phone
+        run: node scripts/e2e_trainer_attention_flow.mjs
+      - name: Exhaustive reads and authorization
+        run: node scripts/e2e_trainer_attention_staging.mjs
+      - name: Remove temporary MFA
+        if: always()
+        run: node scripts/e2e_mfa_bootstrap.mjs cleanup
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: trainer-attention-${{ github.run_id }}-${{ github.run_attempt }}
+          path: artifacts/attention/
+          retention-days: 14
