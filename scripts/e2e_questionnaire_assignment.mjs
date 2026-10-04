@@ -62,7 +62,7 @@ try {
  const before=await api(`/rest/v1/questionnaire_assignments?client_id=eq.${id}&status=in.(assigned,in_progress)&select=id`,token);
  assert.equal(before.length,0,"Start with no prepared assignment");
  let lost=false;
- await t.route("**/rest/v1/rpc/assign_active_questionnaire",async route=>{const response=await route.fetch();assert.ok(response.ok());lost=true;await route.abort("failed");});
+ await t.route("**/rest/v1/rpc/assign_active_questionnaire",async route=>{const response=await route.fetch();assert.ok(response.ok(),`Assignment RPC status ${response.status()}: ${await response.text()}`);lost=true;await route.abort("failed");});
  await t.getByRole("button",{name:/Przypisz aktywną ankietę|Przypisz kolejną ankietę/}).click();
  await t.getByRole("button",{name:"Sprawdź aktualny zapis",exact:true}).click();
  await t.getByRole("button",{name:"Ankieta już przypisana",exact:true}).waitFor();
@@ -105,7 +105,7 @@ try {
  const auth=await request("/auth/v1/token?grant_type=password",key,{email:process.env.STUDIO_LAS_QA_EMAIL,password:process.env.STUDIO_LAS_QA_PASSWORD});assert.ok(auth.ok);
  const aal1=(await auth.json()).access_token;
  for(const bearer of [key,aal1,clientToken]) {const denied=await request("/rest/v1/rpc/assign_active_questionnaire",bearer,{p_client_id:id,p_template_key:"pre_pwd_first_visit"});assert.ok([401,403].includes(denied.status));}
- const foreign="c7100000-0000-4000-8000-000000000002";
+ const foreign="aaaaaaaa-1111-4111-8111-aaaaaaaaaaa1";
  const denied=await request("/rest/v1/rpc/assign_active_questionnaire",token,{p_client_id:foreign,p_template_key:"pre_pwd_first_visit"});assert.equal(denied.status,403);
  assert.deepEqual(await api(`/rest/v1/questionnaire_assignments?client_id=eq.${foreign}&select=id`,token),[]);
  assert.deepEqual(await api(`/rest/v1/questionnaire_assignments?client_id=eq.${id}&select=id`,aal1),[]);
