@@ -206,7 +206,8 @@ async function removeMfaFactor(index) {
 
 async function loadQuestionnaireSubmissionsForTrainer(workspace, clientId) {
   if (!workspace || !clientId) return;
-  const submissions = await state.questionnaireApi.trainerSubmissions(clientId);
+  const [submissions, overview] = await Promise.all([state.questionnaireApi.trainerSubmissions(clientId), state.questionnaireApi.trainerOverview(clientId)]);
+  workspace.questionnaireOverview = overview;
   workspace.questionnaireSubmissions = Array.isArray(submissions) ? submissions : [];
 }
 
@@ -259,6 +260,7 @@ function renderTrainerState() {
     onReload: () => loadTrainer(state.activeClientId).catch(handleRuntimeError),
     onLogout: () => logout().catch(handleRuntimeError),
     onManageMfa: () => showMfaManagement(),
+    onAssignQuestionnaire: () => withWrite("Przypisywanie ankiety", () => state.questionnaireApi.assignActive(clientId), reloadWorkspace).catch(handleRuntimeError),
     onSavePwd: async values => {
       await withWrite("Zapisywanie pierwszej wizyty diagnostycznej", () => savePwdWorkflow(state.repository, state.activeClientId, values), reloadWorkspace);
     },

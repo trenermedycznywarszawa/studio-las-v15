@@ -46,6 +46,7 @@ jobs:
           node scripts/test_client_response_state.mjs
           node scripts/test_client_response_day_rollover.mjs
           node scripts/test_client_contact_requests.mjs
+          node scripts/test_trainer_questionnaire.mjs
       - name: Build staging artifact
         run: node scripts/build_studio_las_os_deploy.mjs --staging
       - name: Install browser runtime
@@ -60,6 +61,8 @@ jobs:
         run: node scripts/e2e_trainer_attention_flow.mjs
       - name: Independent client questions
         run: node scripts/e2e_client_contact_requests.mjs
+      - name: Questionnaire assignment from trainer UI
+        run: node scripts/e2e_questionnaire_assignment.mjs
       - name: Exhaustive reads and authorization
         run: node scripts/e2e_trainer_attention_staging.mjs
       - name: Remove temporary MFA
