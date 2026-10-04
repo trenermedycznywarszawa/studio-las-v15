@@ -334,6 +334,7 @@ export class StudioLasRepository {
       "transition_evidence_report",
       "save_client_checkin",
       "save_client_guidance_response",
+      "save_client_contact_request",
       "publish_home_plan_guidance",
       "approve_home_plan_guidance",
       "clone_home_plan_guidance",
@@ -408,7 +409,7 @@ export class StudioLasRepository {
       read("training_load_observations", "observed_at.desc"),
       read("assessment_results", "performed_at.desc"),
       this.rpc("trainer_guidance_snapshot", {p_client_id: clientId}),
-      this.rest("guidance_events", {query: {...byClient, kind: "eq.client_checkin", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_by,created_at,updated_at,guidance_observation_notes(*,profiles(display_name))", order: "event_date.desc,created_at.desc", limit: 100}}),
+      this.rest("guidance_events", {query: {...byClient, kind: "in.(client_checkin,client_contact_request)", select: "id,client_id,home_plan_item_id,event_date,kind,completed,payload,created_by,created_at,updated_at,guidance_observation_notes(*,profiles(display_name))", order: "event_date.desc,created_at.desc", limit: 100}}),
       this.rest("client_cycle_decisions", {query: {client_id: `eq.${clientId}`, select: "*", order: "decided_at.desc,created_at.desc"}}),
       this.rest("trainer_signal_reviews", {query: {client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc"}})
     ]);
@@ -753,6 +754,9 @@ export class StudioLasRepository {
     return this.insert("client_cycle_decisions", { client_id: clientId, decision: input.decision, rationale: String(input.rationale || "").trim(), actor_profile_id: profileId });
   }
 
+  async saveClientContactRequest(input) {
+    return this.rpc("save_client_contact_request", {p_home_plan_item_id:input.homePlanItemId,p_home_plan_id:input.homePlanId,p_question:input.question,p_submission_id:input.submissionId});
+  }
   async saveSignalReview(profileId, clientId, signalKey, outcome) {
     return this.insert("trainer_signal_reviews", { client_id: clientId, signal_key: signalKey, outcome, actor_profile_id: profileId });
   }

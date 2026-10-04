@@ -3,38 +3,12 @@ import { mkdir, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
 import { chromium } from "playwright";
 import { freshTotpCode, studioToday } from "./e2e_trainer_attention_staging.mjs";
-const origin = "https://ulauyoqjoetjqktegeuq.supabase.co";
-const url = process.env.STUDIO_LAS_E2E_URL;
-const key = process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY;
-const dir = process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
-const clientId = "c7200000-0000-4000-8000-000000000001";
-const results = [];
-const resolutionNote = `Ustalenie wyjaśnione. Dane fikcyjne. ${process.env.STUDIO_LAS_E2E_MARKER || randomUUID()}`;
-async function api(path, token, method="GET", body) {
- const r=await fetch(`${origin}${path}`,{method,headers:{apikey:key,Authorization:`Bearer ${token}`,"Content-Type":"application/json",Prefer:"return=representation"},body:body===undefined?undefined:JSON.stringify(body)});
- const text=await r.text(); assert.ok(r.ok,`${method} ${path.split("?")[0]}: ${r.status} ${text.slice(0,200)}`); return text?JSON.parse(text):null;
-}
-async function login(page,email,password,trainer=false) {
- await page.goto(url);
- await page.getByLabel("Adres poczty elektronicznej").fill(email);
- await page.getByLabel("Hasło").fill(password);
- await page.getByRole("button",{name:"Zaloguj",exact:true}).click();
- if(trainer) {
-  await page.getByRole("heading",{name:"Weryfikacja dwuetapowa",exact:true}).waitFor();
-  await page.getByLabel("Sześciocyfrowy kod jednorazowy").fill(await freshTotpCode(process.env.STUDIO_LAS_QA_TOTP_SECRET));
-  await page.getByRole("button",{name:"Potwierdź kod",exact:true}).click();
-  await page.getByRole("heading",{name:"Uwaga trenera",exact:true}).waitFor();
- } else await page.getByLabel("Mam pytanie / potrzebuję kontaktu").first().waitFor();
- const session=await page.evaluate(()=>JSON.parse(sessionStorage.getItem("studio-las-auth-session")));
- return session.access_token;
-}
-async function queue(page) { await page.getByRole("button",{name:"Uwaga trenera",exact:true}).click(); await page.getByRole("heading",{name:"Uwaga trenera",exact:true}).waitFor(); }
-async function empty(page) { await page.getByText("Brak spraw do przejrzenia.",{exact:true}).waitFor(); assert.equal(await page.locator(".attention-case").count(),0); }
-async function screenshot(page,name) {
- assert.equal(await page.getByLabel("Wybierz klienta").locator("option").count(),2,"Screenshot must contain only the isolated synthetic client");
- assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2),false,"Horizontal overflow");
- await page.screenshot({path:`${dir}/${name}.png`,fullPage:true});
-}
+import { api,login,queue,empty,screenshot } from "./attention_e2e_helpers.mjs";
+const origin="https://ulauyoqjoetjqktegeuq.supabase.co";
+const dir=process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
+const clientId="c7200000-0000-4000-8000-000000000001";
+const results=[];
+const resolutionNote=`Ustalenie wyjaśnione. Dane fikcyjne. ${process.env.STUDIO_LAS_E2E_MARKER || randomUUID()}`;
 await mkdir(dir,{recursive:true});
 const browser=await chromium.launch();
 const context=await browser.newContext({viewport:{width:1440,height:1000}});
@@ -52,16 +26,14 @@ try {
  await api("/rest/v1/rpc/approve_home_plan_guidance",trainerToken,"POST",{p_home_plan_id:plan.id,p_expected_revision:current.content_revision});
  await api("/rest/v1/rpc/publish_home_plan_guidance",trainerToken,"POST",{p_home_plan_id:plan.id});
  const clientToken=await login(clientPage,"attention.client@example.test",process.env.STUDIO_LAS_ATTENTION_CLIENT_PASSWORD);
- let form=clientPage.locator("form").filter({has:clientPage.getByLabel("Mam pytanie / potrzebuję kontaktu")}).first();
+ let form=clientPage.locator(".client-response form").first();
  await form.getByLabel("Twoja odpowiedź — opcjonalnie").fill("Wykonano zgodnie z ustaleniem.");
  await form.getByRole("button",{name:"Zapisz odpowiedź",exact:true}).click();
  await clientPage.getByText("Wykonano zgodnie z ustaleniem.",{exact:true}).waitFor();
  await queue(page); await empty(page); results.push("routine UI response creates no case");
- form=clientPage.locator("form").filter({has:clientPage.getByLabel("Mam pytanie / potrzebuję kontaktu")}).first();
- await form.getByLabel("Twoja odpowiedź — opcjonalnie").fill("Czy możemy omówić ustalenie? Dane fikcyjne.");
- await form.getByLabel("Mam pytanie / potrzebuję kontaktu").check();
- await form.getByRole("button",{name:"Zapisz odpowiedź",exact:true}).click();
- await clientPage.getByText("Czy możemy omówić ustalenie? Dane fikcyjne.",{exact:true}).waitFor();
+ // Legacy frontend compatibility remains part of the regression.
+ const legacyItem=(await api("/rest/v1/rpc/client_portal_snapshot",clientToken,"POST",{})).homePlan.items.find(i=>!i.todayResponse);
+ await api("/rest/v1/rpc/save_client_guidance_response",clientToken,"POST",{p_home_plan_item_id:legacyItem.id,p_home_plan_id:plan.id,p_response:"Czy możemy omówić ustalenie? Dane fikcyjne.",p_submission_id:randomUUID(),p_contact_requested:true});
  await queue(page); await page.locator(".attention-case").waitFor();
  assert.equal(await page.locator(".attention-case").count(),1);
  await screenshot(page,"attention-question-desktop");

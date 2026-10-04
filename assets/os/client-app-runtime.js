@@ -10,7 +10,11 @@ export async function loadClientAppRuntime(root, state, { onLogout }) {
     onReload: () => state.clientPortal.load(),
     onLogout,
     onSaveCheckin: (id, text, contactRequested) => state.clientPortal.submit(id, text, contactRequested),
-    onRetryResponse: id => state.clientPortal.retry(id)
+    onRetryResponse: id => state.clientPortal.retry(id),
+    onStartContact: id => state.clientPortal.contacts.start(id),
+    onContactDraft: (id,text) => state.clientPortal.contacts.draft(id,text),
+    onSendContact: (id,text) => state.clientPortal.contacts.submit(id,text),
+    onRetryContact: id => state.clientPortal.contacts.retry(id)
   });
 
   state.clientPortal ||= new ClientPortalController(state.repository, renderState);

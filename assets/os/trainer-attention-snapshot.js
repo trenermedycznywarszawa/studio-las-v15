@@ -48,7 +48,7 @@ const READ_CONTRACT = Object.freeze({
   guidanceEvents: Object.freeze({
     table: "guidance_events",
     order: "id.asc",
-    predicates: Object.freeze({ deleted_at: "is.null", kind: "eq.client_checkin" }),
+    predicates: Object.freeze({ deleted_at: "is.null", kind: "in.(client_checkin,client_contact_request)" }),
     select: "id,client_id,event_date,created_at,note:payload->>note,contact_requested:payload->>contact_requested",
     transfer: Object.freeze(["id", "client_id", "event_date", "created_at", "note", "contact_requested"])
   }),
