@@ -99,7 +99,7 @@ const inquiryControllerSource = readFileSync(
 assert.match(trainerStateSource, /const goal = String\(client\.goal \|\| ""\)\.trim\(\)/);
 assert.match(trainerStateSource, /"Cel klienta"[\s\S]*goal \|\| "Cel nie został jeszcze zapisany\."/);
 assert.doesNotMatch(trainerStateSource, /life_goal|north_star/);
-assert.match(trainerSource, /questionnaireBrief:\s*questionnaireBriefPanel\(workspace\)/,
+assert.match(trainerSource, /questionnaireBrief:\s*trainerQuestionnairePanel\(workspace, model\)/,
   "Trainer workspace must expose the submitted pre-PWD brief as a phase-aware section.");
 assert.match(trainerSource, /orderTrainerSections\(workspace\.client\.stage, sections\)/);
 assert.doesNotMatch(trainerSource, /newClientForm|Jedno źródło prawdy|Supabase/,
@@ -118,3 +118,5 @@ assert.match(inquiryControllerSource, /render\(workspace, \{ activeClientId = ""
 assert.doesNotMatch(inquiryControllerSource, /document\.querySelector\("\.client-select"\)/);
 
 console.log("P1-A phase-aware information architecture tests completed");
+
+assert.match(readFileSync(new URL("../assets/os/ui/trainer-questionnaire.js", import.meta.url), "utf8"), /questionnaireBriefPanel\(workspace\)/);
