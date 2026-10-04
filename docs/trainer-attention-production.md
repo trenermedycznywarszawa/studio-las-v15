@@ -12,7 +12,7 @@ Przegląd i kontakt zapisują się w istniejącym `trainer_signal_reviews`. Otwa
 
 Migracja `20261002195748_trainer_attention_contact_intent.sql` dodaje pięcioargumentowe RPC. Stare cztery argumenty delegują z `false`. Własność klienta, aktualność publikacji, blokady, niezmienność odpowiedzi i identyfikator ponowienia pozostają zachowane. Zapis i projekcja klienta używają Europe/Warsaw. Nie zmieniono RLS ani wymogu AAL2 dla trenera. Prywatna historia nie jest częścią projekcji klienta.
 
-Pozostaje istniejący limit jednej odpowiedzi na działanie dziennie. Prośbę zaznacza się przed zapisaniem odpowiedzi; oryginału nie można potem nadpisać. Nie dodano wiadomości, e-maili ani push. Nie dodano zależności aplikacji.
+Limit jednej odpowiedzi na działanie dziennie dotyczy wyłącznie check-inu. Osobny przycisk pytania pozostaje dostępny przed i po odpowiedzi. Pytania są niezależnymi, niezmiennymi zdarzeniami `client_contact_request` z autorem, czasem i odniesieniem do działania. Każde świadome wysłanie otrzymuje nowy UUID; ponowienie tej samej próby zachowuje UUID. Starsze odpowiedzi z `contact_requested=true` nadal tworzą te same sygnały. Nie dodano wiadomości, e-maili ani push. Nie dodano zależności aplikacji.
 
 ## Weryfikacja
 
@@ -27,3 +27,14 @@ Konta `attention.trainer@example.test` i `attention.client@example.test` istniej
 ## Wydanie i wycofanie
 
 Produkcja to projekt Netlify be1d8997-0857-48ab-b3a1-d9f681e2678a oraz Supabase ufcumhbnuyernuwepcij. Najpierw migracja bazy, potem allowlistowany statyczny artefakt z czystego commita. Manifest zawiera SHA źródła i hashe plików. Poprzedni deploy 6abc1fdae336555b19a26e42 pozwala wycofać frontend; migracja pozostaje kompatybilna ze starym frontendem. Nie cofamy zapisanych decyzji ani odpowiedzi klientów.
+
+
+## Niezależne pytania — poprawka po PR #96
+
+Migracja `20261003181509_client_contact_requests.sql` rozszerza dozwolone rodzaje zdarzeń i ochronę niezmienności. Nie usuwa ani nie zmienia indeksów dziennych odpowiedzi. Nowe RPC `save_client_contact_request` ustala klienta i autora z sesji; wymaga własnej aktualnej opublikowanej wskazówki. Dokładne ponowienie wcześniej zapisanego pytania działa również po wycofaniu wskazówki, lecz wymaga nadal aktywnego dostępu klienta. UUID użyty z inną treścią lub operacją jest odrzucany.
+
+`client_contact_requests()` i pole `contactRequests` projekcji pokazują wyłącznie własne pytania zalogowanej osoby. Nie zawierają historii ani notatek trenera. Stan szkicu i próby zapisu jest tylko w pamięci strony. Po utracie odpowiedzi serwera odczyt potwierdzenia lub ten sam UUID zapobiega duplikatowi. Ręczne odświeżenie strony usuwa niezapisany szkic; zapisane pytania pozostają w projekcji.
+
+Filtry kolejki i karty klienta obejmują stare check-iny i nowe pytania. Osobne uzupełnienia oraz ręczne raporty akceptują nowy rodzaj oryginalnego źródła, z zachowaniem uprawnień i zatwierdzania publikacji. Starszy frontend nadal może zapisywać check-in, ale nie odczyta nowego rodzaju zdarzenia; po przyjęciu nowych pytań ewentualny rollback musi zachować rozszerzony filtr kolejki.
+
+Test `client_contact_requests.sql` działa na fikcyjnych danych w transakcji z rollback. `e2e_client_contact_requests.mjs` obejmuje pytanie bez check-inu i po nim, utratę potwierdzenia po rzeczywistym zapisie, równoległe ponowienia, kolejne pytanie po zamknięciu kontaktu, oryginalną odpowiedź, relogowanie, historię, prywatność i oba rozmiary ekranu. Poprzedni test kolejki zachowuje test starego pięcioargumentowego zapisu.

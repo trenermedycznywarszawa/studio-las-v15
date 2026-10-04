@@ -258,7 +258,7 @@ async function perClientOpenSignalSemantics(token, clientId) {
     read("pre_session_checks", { ...byClient, select: "*", order: "check_date.desc" }),
     read("guidance_events", {
       ...byClient,
-      kind: "eq.client_checkin",
+      kind: "in.(client_checkin,client_contact_request)",
       select: "id,client_id,event_date,payload,created_at",
       order: "event_date.desc,created_at.desc"
     }),

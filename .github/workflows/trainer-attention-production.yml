@@ -4,8 +4,10 @@ on:
     paths:
       - 'assets/os/**'
       - 'scripts/*trainer_attention*'
+      - 'scripts/*client_contact*'
+      - 'scripts/attention_e2e_helpers.mjs'
       - '.github/workflows/trainer-attention-production.yml'
-      - 'supabase/migrations/20261002195748*'
+      - 'supabase/migrations/**'
   workflow_dispatch:
 permissions:
   contents: read
@@ -43,6 +45,7 @@ jobs:
           node scripts/test_signal_followthrough.mjs
           node scripts/test_client_response_state.mjs
           node scripts/test_client_response_day_rollover.mjs
+          node scripts/test_client_contact_requests.mjs
       - name: Build staging artifact
         run: node scripts/build_studio_las_os_deploy.mjs --staging
       - name: Install browser runtime
@@ -55,6 +58,8 @@ jobs:
         run: node scripts/e2e_mfa_bootstrap.mjs bootstrap
       - name: Real staging workflow on desktop and phone
         run: node scripts/e2e_trainer_attention_flow.mjs
+      - name: Independent client questions
+        run: node scripts/e2e_client_contact_requests.mjs
       - name: Exhaustive reads and authorization
         run: node scripts/e2e_trainer_attention_staging.mjs
       - name: Remove temporary MFA

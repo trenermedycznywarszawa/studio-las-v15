@@ -402,7 +402,7 @@ for (const source of ["clients", "sessions", "trainingLoad", "preSessionChecks",
   assert(!readContract[source].transfer.includes("deleted_at"), `${source} must filter on deleted_at without transferring it`);
   assert(!readContract[source].select.includes("deleted_at"), `${source} select must not transfer deleted_at`);
 }
-assert.equal(readContract.guidanceEvents.predicates.kind, "eq.client_checkin", "guidance events must be restricted to client_checkin");
+assert.equal(readContract.guidanceEvents.predicates.kind, "in.(client_checkin,client_contact_request)", "read only client responses and independent contact requests");
 assert(readContract.guidanceEvents.select.includes("note:payload->>note"), "guidance event select must encode JSON note extraction as an alias");
 assert(!readContract.guidanceEvents.select.includes(",payload,"), "guidance event select must not transfer the full payload JSON");
 assert(!readContract.signalReviews.transfer.includes("deleted_at"), "signal review contract must not invent a deleted_at field");

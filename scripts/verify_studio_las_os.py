@@ -312,7 +312,7 @@ def check_session_brief_contract() -> None:
     styles = read(ROOT / "assets/os/styles.css")
 
     require('this.rest("guidance_events"' in data, "session brief does not read client check-ins")
-    require('kind: "eq.client_checkin"' in data, "session brief read is not limited to client check-ins")
+    require('kind: "in.(client_checkin,client_contact_request)"' in data, "session brief read is not limited to client check-ins and contact requests")
     require('limit: 1' in data, "session brief client check-in read is not bounded")
     require("guidanceEvents" in data, "session brief data is absent from workspace")
     require("buildTrainerSessionBrief" in trainer, "trainer UI does not compose the session brief")
