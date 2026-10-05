@@ -72,7 +72,9 @@ try {
  assert.ok(repeats.every(x=>x.id===assigned.id));
  assert.equal((await api(`/rest/v1/questionnaire_assignments?client_id=eq.${id}&status=in.(assigned,in_progress)&select=id`,token)).length,1);
  await screenshot(t,"questionnaire-assigned-desktop");
+ await t.locator(".trainer-questionnaire").screenshot({path:`${dir}/questionnaire-panel-desktop.png`});
  await t.setViewportSize({width:390,height:844});await screenshot(t,"questionnaire-assigned-mobile");
+ await t.locator(".trainer-questionnaire").screenshot({path:`${dir}/questionnaire-panel-mobile.png`});
  const clientToken=await login(c,"attention.client@example.test",process.env.STUDIO_LAS_ATTENTION_CLIENT_PASSWORD);
  await c.getByRole("button",{name:"Wypełnij",exact:true}).click();await fillSafePath(c);
  await c.getByRole("button",{name:"Zamknij",exact:true}).click();
