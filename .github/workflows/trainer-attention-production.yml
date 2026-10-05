@@ -47,6 +47,7 @@ jobs:
           node scripts/test_client_response_day_rollover.mjs
           node scripts/test_client_contact_requests.mjs
           node scripts/test_trainer_questionnaire.mjs
+          node scripts/test_first_guidance.mjs
       - name: Build staging artifact
         run: node scripts/build_studio_las_os_deploy.mjs --staging
       - name: Install browser runtime
@@ -63,6 +64,8 @@ jobs:
         run: node scripts/e2e_client_contact_requests.mjs
       - name: Questionnaire assignment from trainer UI
         run: node scripts/e2e_questionnaire_assignment.mjs
+      - name: Saved PWD to first guidance
+        run: node scripts/e2e_pwd_first_guidance.mjs
       - name: Exhaustive reads and authorization
         run: node scripts/e2e_trainer_attention_staging.mjs
       - name: Remove temporary MFA
