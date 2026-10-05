@@ -1,3 +1,4 @@
+import { loadReportGuidanceEvents } from "./process-history-data.js";
 import * as guidance from "./guidance-data.js";
 import {
   clearAuthSession,
@@ -404,7 +405,7 @@ export class StudioLasRepository {
       guidanceSnapshot, guidanceEvents, cycleDecisions, signalReviews] = await Promise.all([
       this.getClient(clientId),
       read("client_intakes", "created_at.desc"),
-      read("sessions", "date.desc"),
+      read("sessions", "date.desc,created_at.desc,id.desc"),
       read("pre_session_checks", "check_date.desc"),
       read("training_load_observations", "observed_at.desc"),
       read("assessment_results", "performed_at.desc"),
@@ -434,7 +435,7 @@ export class StudioLasRepository {
     if (!sources[section]) throw new Error("Unknown workspace section");
     const [table, order] = sources[section];
     const rows = await this.rest(table, {query: {client_id: `eq.${clientId}`, deleted_at: "is.null", select: "*", order}});
-    return {[section]: rows};
+    return section === "reports" ? {reports: rows, reportGuidanceEvents: await loadReportGuidanceEvents(this, clientId)} : {[section]: rows};
   }
 
   async savePwdWorkflow(clientId, input) {

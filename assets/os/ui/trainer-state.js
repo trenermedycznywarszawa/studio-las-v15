@@ -1,3 +1,4 @@
+import { processHistoryPanel } from "./process-history.js";
 import { manualReportComposer, evidenceReportRecord } from "./report-evidence.js";
 import {
   currentCycleDecision,
@@ -77,6 +78,7 @@ export function nowPanel(workspace, attentionSignals) {
       nowItem("Otwarty sygnał wymagający uwagi", openSignal?.label || "Brak otwartego sygnału wymagającego uwagi.", signalMeta),
       nowItem(brief.nextStep.label, brief.nextStep.value, nextMeta, "now-item wide")
     ]),
+    processHistoryPanel(workspace),
     brief.requiresCycleDecision
       ? create("div", { className: "cycle-decision-required", text: "Wymaga decyzji co dalej" })
       : null
@@ -197,7 +199,7 @@ export function reportsSection(workspace, model) {
     report.type === "twelveWeeks" && isInCurrentCycle(workspace, report.created_at)
   ) || null;
   const decision = currentCycleDecision(workspace);
-  return panel("Raporty", create("div", {}, [
+  const section = panel("Raporty", create("div", {}, [
     recordList(reports, report => report.workflow_version === 1 ? evidenceReportRecord(report, model.onTransitionReport) : reportRecord(
       report,
       decision,
@@ -205,4 +207,6 @@ export function reportsSection(workspace, model) {
     ), "Brak raportów."),
     manualReportComposer(workspace, model.onSaveReport)
   ]), "Raport pokazuje wzorzec; nie tworzy decyzji automatycznie");
+  section.id = "trainer-reports";
+  return section;
 }
