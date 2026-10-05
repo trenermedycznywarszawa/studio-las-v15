@@ -54,6 +54,16 @@ select pg_temp.expect_error($q$update public.home_plans set status='archived' wh
 select pg_temp.assert_true(jsonb_array_length(public.trainer_guidance_snapshot('c1000000-0000-4000-8000-000000000001')->'items')=2,'consistent guidance projection');
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal1"}',true);
 
+do $$ declare saved jsonb; repeated jsonb; snapshot jsonb; begin
+ saved:=public.save_client_contact_request('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Question before check-in','f2000000-0000-4000-8000-000000000001');
+ repeated:=public.save_client_contact_request('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Question before check-in','f2000000-0000-4000-8000-000000000001');
+ perform pg_temp.assert_true(saved->>'id'=repeated->>'id' and repeated->>'alreadySaved'='true','idempotent question replay');
+ snapshot:=public.client_portal_snapshot();
+ perform pg_temp.assert_true(snapshot->'homePlan'->'items'->0->'todayResponse'='null'::jsonb,'question does not consume daily response');
+ perform pg_temp.assert_true(jsonb_array_length(snapshot->'contactRequests')=1,'own question visible');
+ perform pg_temp.expect_error($q$select public.save_client_contact_request('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Altered replay','f2000000-0000-4000-8000-000000000001')$q$,'22023');
+ perform pg_temp.expect_error($q$select public.save_client_guidance_response('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Question before check-in','f2000000-0000-4000-8000-000000000001',true)$q$,'22023');
+end $$;
 do $$ declare snapshot jsonb; saved jsonb; repeated jsonb; begin
  snapshot:=public.client_portal_snapshot();
  perform pg_temp.assert_true(snapshot->'homePlan'->>'id'='d1000000-0000-4000-8000-000000000001','exact release id');
@@ -81,19 +91,39 @@ do $$ declare saved jsonb; repeated jsonb; begin
  perform pg_temp.assert_true(repeated->>'id'=saved->>'id' and repeated->>'alreadySaved'='true','request replay is idempotent');
  perform pg_temp.expect_error($q$select public.save_client_guidance_response('e1000000-0000-4000-8000-000000000002','d1000000-0000-4000-8000-000000000001','Fictional explicit question','f1000000-0000-4000-8000-000000000003',false)$q$,'22023');
 end $$;
+do $$ declare original jsonb; after_question jsonb; saved jsonb; begin
+ original:=public.client_portal_snapshot()->'homePlan'->'items'->0->'todayResponse';
+ saved:=public.save_client_contact_request('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Question after routine response','f2000000-0000-4000-8000-000000000002');
+ after_question:=public.client_portal_snapshot()->'homePlan'->'items'->0->'todayResponse';
+ perform pg_temp.assert_true(original=after_question,'daily original unchanged');
+ perform pg_temp.assert_true(jsonb_array_length(public.client_contact_requests())=2,'second deliberate question is independent');
+ perform pg_temp.expect_error($q$select public.save_client_contact_request('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Fictional: reduced as agreed; stopped at the boundary.','f1000000-0000-4000-8000-000000000001')$q$,'22023');
+end $$;
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000003","role":"authenticated","aal":"aal1"}',true);
 select pg_temp.expect_error($q$select public.save_client_guidance_response('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Unrelated','f1000000-0000-4000-8000-000000000001')$q$,'22023');
+select pg_temp.assert_true(public.client_contact_requests()='[]'::jsonb,'wrong client cannot read questions');
+select pg_temp.expect_error($q$select public.save_client_contact_request('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Foreign question','f2000000-0000-4000-8000-000000000003')$q$,'22023');
+select pg_temp.assert_true(not exists(select 1 from public.guidance_events where kind='client_contact_request'),'direct client reads denied');
 reset role;
 update public.client_users set status='revoked' where user_id='b1000000-0000-4000-8000-000000000002';
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000002","role":"authenticated","aal":"aal1"}',true);
 select pg_temp.expect_error($q$select public.save_client_guidance_response('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Fictional: reduced as agreed; stopped at the boundary.','f1000000-0000-4000-8000-000000000001')$q$,'42501');
 select pg_temp.expect_error('select public.client_portal_snapshot()','42501');
+select pg_temp.expect_error('select public.client_contact_requests()','42501');
+select pg_temp.expect_error($q$select public.save_client_contact_request('e1000000-0000-4000-8000-000000000001','d1000000-0000-4000-8000-000000000001','Question before check-in','f2000000-0000-4000-8000-000000000001')$q$,'42501');
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal2"}',true);
 select pg_temp.expect_error($q$select public.save_client_guidance_response(null,null,'Trainer cannot fabricate',null)$q$,'42501');
+select pg_temp.expect_error($q$select public.save_client_contact_request(null,null,'Trainer cannot fabricate',null)$q$,'42501');
+select pg_temp.expect_error($q$insert into public.guidance_events(client_id,home_plan_item_id,event_date,kind,payload) values('c1000000-0000-4000-8000-000000000001','e1000000-0000-4000-8000-000000000001',current_date,'client_contact_request','{}')$q$,'42501');
 reset role;
 set local role anon;
 select pg_temp.expect_error($q$select public.save_client_guidance_response(null,null,'Anonymous',null)$q$,'42501');
+select pg_temp.expect_error($q$select public.save_client_contact_request(null,null,'Anonymous',null)$q$,'42501');
+select pg_temp.expect_error('select public.client_contact_requests()','42501');
 reset role;
-select 'CLIENT_RESPONSE_CONTRACT_SQL_PASS' as result;
+select pg_temp.expect_error($q$update public.guidance_events set payload='{}' where kind='client_contact_request'$q$,'23514');
+select pg_temp.expect_error($q$delete from public.guidance_events where kind='client_contact_request'$q$,'23514');
+select pg_temp.assert_true((select count(*)=2 from public.guidance_events where kind='client_contact_request' and created_by='b1000000-0000-4000-8000-000000000002'),'actor and independent immutable events persisted');
+select 'CLIENT_CONTACT_REQUESTS_SQL_PASS' as result;
 rollback;
