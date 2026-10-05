@@ -1,6 +1,7 @@
 import { REPORT_QUESTIONS, EVIDENCE_LABELS, reportCandidates, reportInput } from "../report-evidence.js";
 import { button, checkbox, create, detailsForm, field, formatDate, statusBox, submitForm } from "./common.js";
 export function manualReportComposer(workspace, onSave) {
+ if(workspace.sectionStatus && (workspace.sectionStatus.reports !== "ready" || workspace.sectionStatus.measurements !== "ready")) return statusBox("Źródła raportu są niepełne. Dokończ odczyt raportów i pomiarów przed przygotowaniem szkicu.");
  const candidates=reportCandidates(workspace);
  if(candidates.length<3) return statusBox("Do raportu potrzebne są co najmniej 3 datowane źródła z opisem. Nie twórz zastępczych obserwacji tylko po to, by uzupełnić raport.");
  const composer = detailsForm("Przygotuj raport 12 tygodni",submitForm([
