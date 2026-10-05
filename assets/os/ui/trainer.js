@@ -19,7 +19,7 @@ import { runtimeEnvironmentLabel } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
 import { pwdSection } from "./pwd-section.js";
 import { plansSection } from "./trainer-guidance.js";
-import { questionnaireBriefPanel } from "./questionnaire-brief.js";
+import { trainerQuestionnairePanel } from "./trainer-questionnaire.js";
 import { orderTrainerSections } from "./trainer-order.js";
 import {
   clientIdentityPanel,
@@ -202,7 +202,7 @@ export function renderTrainer(root, model) {
       cycleDecision: Number(workspace.client.stage) === 4 || workspace.cycleDecisions?.length
         ? cycleDecisionSection(workspace, model)
         : null,
-      questionnaireBrief: questionnaireBriefPanel(workspace),
+      questionnaireBrief: trainerQuestionnairePanel(workspace, model),
       pwd: pwdSection(workspace, model),
       signals: signalsSection(workspace, model.attentionSignals, model),
       sessionBrief: sessionBriefPanel(workspace),

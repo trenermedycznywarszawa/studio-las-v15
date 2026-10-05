@@ -511,3 +511,4 @@ summary { padding-block: 10px; }
 @media(max-width:600px){.attention-actions>button {width:100%}}
 
 .client-contact { display: grid; gap: 12px; margin-top: 16px; }
+.trainer-questionnaire a.button { display: inline-flex; max-width: 100%; box-sizing: border-box; }
