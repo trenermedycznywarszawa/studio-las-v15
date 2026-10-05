@@ -24,6 +24,7 @@ await repo.editGuidanceDraftItem("client-a", "item-a", {name:"Action",dosage:"3"
 assert.equal(calls.at(-1).options.body.published_at, undefined);
 repo.getClient = async () => ({id:"client-a"});
 const workspace = await repo.getClientWorkspace("client-a");
+assert.equal(new URL("https://test"+calls.find(call=>call.path.startsWith("/rest/v1/sessions?")).path).searchParams.get("order"), "date.desc,created_at.desc,id.desc", "Same-day PWD corrections must put the latest saved context first");
 assert.deepEqual(workspace.homePlans, []);
 assert.deepEqual(workspace.homePlanItems, []);
 assert.equal(calls.filter(call => call.path.includes("trainer_guidance_snapshot")).length, 1);
