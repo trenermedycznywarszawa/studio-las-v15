@@ -39,13 +39,13 @@ try{
  await card.getByText("Szkic — nieopublikowany",{exact:true}).waitFor();
  let report=(await api(`/rest/v1/reports?client_id=eq.${id}&title=eq.${encodeURIComponent(title)}&select=*`,token))[0];
  assert.equal(report.evidence_snapshot.length,4);assert.ok(report.evidence_snapshot.some(s=>s.table==="home_plans" && s.date && s.excerpt.includes(initial.homePlan.title)));
- assert.ok(!(await snapshot()).reports.some(r=>r.id===report.id));
+ assert.ok(!(await snapshot()).reports.some(r=>r.title===title));
  await card.getByRole("button",{name:"Zatwierdź dokładnie ten raport",exact:true}).click();
  await card.getByRole("button",{name:"Opublikuj zatwierdzony raport",exact:true}).waitFor();
- assert.ok(!(await snapshot()).reports.some(r=>r.id===report.id));
+ assert.ok(!(await snapshot()).reports.some(r=>r.title===title));
  await card.getByRole("button",{name:"Opublikuj zatwierdzony raport",exact:true}).click();
  await card.getByText("Opublikowany klientowi",{exact:true}).waitFor();
- const after=await snapshot();assert.equal(after.reports.find(r=>r.id===report.id).content,clientText);assert.ok(!JSON.stringify(after).includes(`Prywatna interpretacja raportu ${marker}`));
+ const after=await snapshot();assert.equal(after.reports.find(r=>r.title===title).content,clientText);assert.ok(!JSON.stringify(after).includes(`Prywatna interpretacja raportu ${marker}`));
  await c.reload();await c.getByText("Podsumowania postępu",{exact:true}).click();await c.getByText(clientText,{exact:true}).waitFor();
  await card.screenshot({path:`${dir}/process-report-published-mobile.png`});
  await t.reload();await t.getByLabel("Wybierz klienta").selectOption(id);
