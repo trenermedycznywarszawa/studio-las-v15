@@ -23,7 +23,7 @@ try {
  for(const [name,value] of Object.entries({date:today,realLifeGoal:"Swobodne wejście po schodach",whyImportant:"Samodzielność — dane fikcyjne",contextBoundaries:"Omówione granice — tylko trener",trainerInterpretation:privateText,nextStep:"Ustalić pierwszą wskazówkę"})) await pwd.locator(`[name="${name}"]`).fill(value);
  await pwd.locator('[name="trainerDecision"]').selectOption("continue_guidance");
  await pwd.locator('button[type="submit"]').click();
- await t.getByText(privateText,{exact:false}).first().waitFor();
+ await t.locator("section").filter({has:t.getByRole("heading",{name:"Pierwsza wizyta diagnostyczna",exact:true})}).getByText(privateText,{exact:false}).first().waitFor();
  assert.equal((await snapshot()).homePlan.id,before.homePlan.id,"PWD cannot publish guidance");
  await t.getByText("Przygotuj pierwszą wskazówkę z tej PWD",{exact:true}).click();
  const form=t.locator(".first-guidance-form");
