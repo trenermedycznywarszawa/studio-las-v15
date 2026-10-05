@@ -6,3 +6,9 @@ assert.ok(!JSON.stringify(result).includes("PRIVATE"));
 assert.equal(result.status,undefined);assert.equal(result.published_at,undefined);
 assert.throws(()=>firstGuidanceInput({reviewDate:""}),/termin/);
 console.log("First guidance: explicit draft content and private-context boundary PASS");
+
+const { TrainerAttentionController } = await import("../assets/os/trainer-attention-controller.js");
+const order=[], state={};let release;
+const controller=new TrainerAttentionController(state,{render:()=>order.push("render"),refreshInquiry:()=>new Promise(resolve=>release=resolve),loadWorkspace:async()=>order.push("workspace-ready")});
+const loading=controller.openClient("a");assert.deepEqual(order,["render"]);assert.equal(state.loading,true);
+release();await loading;assert.deepEqual(order,["render","workspace-ready"],"No late redraw after workspace becomes editable");

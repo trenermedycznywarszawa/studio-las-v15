@@ -102,12 +102,17 @@ export class TrainerAttentionController {
   async openClient(clientId) {
     if (!clientId) return;
     const state = this.state;
-    this.generation++;
+    const generation = ++this.generation;
     state.trainerAttentionLoading = false;
     state.trainerAttentionView = false;
     state.trainerAttentionError = "";
-    await this.loadWorkspace(clientId === "inquiries" ? "" : clientId);
-    await this.refreshInquiry();
+    state.loading = true;
+    state.workspace = null;
     this.render();
+    await this.refreshInquiry();
+    if (generation !== this.generation) return;
+    // The workspace loader renders once all context is ready. A later render
+    // here would discard edits begun immediately after its ready state.
+    await this.loadWorkspace(clientId === "inquiries" ? "" : clientId);
   }
 }
