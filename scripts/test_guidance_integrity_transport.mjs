@@ -4,6 +4,7 @@ import { StudioLasRepository } from "../assets/os/data.js";
 const calls = [];
 const auth = { request: async (path, options) => {
   calls.push({path, options});
+  if (path.includes("guidance_events?") && Number(new URL("https://test"+path).searchParams.get("offset")) > 0) return [];
   if (path.includes("trainer_guidance_snapshot")) return {plans: [], items: []};
   return [{id: "fictional", approved_at: "2026-09-09T00:00:00Z"}];
 }};
@@ -30,7 +31,7 @@ assert.ok(!calls.some(call => call.options?.method === "GET" && /home_plans|home
 await repo.addGuidanceObservationNote("observation-a", {kind:"correction",body:"Clarified",reason:"Client explained",created_by:"forged"});
 assert.deepEqual(calls.at(-1).options.body, {p_observation_id:"observation-a",p_kind:"correction",p_body:"Clarified",p_reason:"Client explained"});
 await repo.saveClientCheckin({homePlanItemId:"item-a",homePlanId:"plan-a",response:"Reduced as agreed",submissionId:"request-a",energyScore:1});
-assert.deepEqual(calls.at(-1).options.body, {p_home_plan_item_id:"item-a",p_home_plan_id:"plan-a",p_response:"Reduced as agreed",p_submission_id:"request-a"});
+assert.deepEqual(calls.at(-1).options.body, {p_home_plan_item_id:"item-a",p_home_plan_id:"plan-a",p_response:"Reduced as agreed",p_submission_id:"request-a",p_contact_requested:false});
 auth.request = async () => [];
 await assert.rejects(repo.editGuidanceDraft("client-a","plan-a",{}), /Szkic/);
 console.log("GUIDANCE_TRANSPORT_PASS: exact RPC payloads, guarded edits, consistent review snapshot");

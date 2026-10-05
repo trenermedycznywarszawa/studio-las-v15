@@ -512,3 +512,7 @@ summary { padding-block: 10px; }
 
 .client-contact { display: grid; gap: 12px; margin-top: 16px; }
 .trainer-questionnaire a.button { display: inline-flex; max-width: 100%; box-sizing: border-box; }
+
+.process-history { display: grid; gap: 12px; padding: 12px; }
+.process-source .muted, .report-evidence-picker .muted { overflow-wrap: anywhere; }
+.process-history a.button { display: inline-flex; }
