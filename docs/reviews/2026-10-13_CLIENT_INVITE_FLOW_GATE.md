@@ -37,3 +37,12 @@ Nie zmieniono kodu logowania, sesji, MFA, RLS, migracji, Edge Function, adresów
 ## Następny punkt decyzyjny
 
 Jeśli redirect i callback są poprawne, sprawdzić `profiles.role`, powiązanie `client_users`, przypisanie ankiety i błąd UI na fikcyjnym koncie. Jeśli redirect lub format callbacku są błędne, przygotować precyzyjną zmianę konfiguracji/kodu wraz z testem; nie stosować obejścia przez panel trenera.
+
+## Aktualizacja 2026-10-13 — stan backendów (odczyt konektora)
+
+- `list_projects` i osobne `get_project` potwierdziły `INACTIVE` dla **obu** projektów: staging `ulauyoqjoetjqktegeuq` oraz produkcyjnego ref `ufcumhbnuyernuwepcij`. Jest to blokada wykonania wiarygodnego E2E online; nie jest dowodem, że same dane zostały utracone.
+- Metadane Edge Functions w obu projektach pokazują `client-access` jako `ACTIVE` (staging wersja 3, drugi projekt wersja 2). Status pojedynczej funkcji **nie znosi** stanu `INACTIVE` projektu.
+- Konektor pozwolił odczytać kod wdrożonej funkcji, ale nie ujawnił konfiguracji Auth Site URL, redirect allowlist ani wartości `STUDIO_LAS_CLIENT_REDIRECT_URL`. Nie ustalono więc faktycznego redirectu.
+- Nie wznawiano projektów, nie odczytywano danych klientów, nie wykonywano zaproszeń ani operacji mutujących.
+
+**Nowa bramka:** przed jakąkolwiek próbą E2E trzeba rozstrzygnąć powód stanu `INACTIVE`, koszt i ryzyko wznowienia stagingu oraz zgodność docelowych projektów z konfiguracją aplikacji. Wznowienie produkcji wymaga osobnej decyzji właściciela po ocenie skutków. Nie naprawiać frontendowego redirectu na podstawie niepotwierdzonej hipotezy.
