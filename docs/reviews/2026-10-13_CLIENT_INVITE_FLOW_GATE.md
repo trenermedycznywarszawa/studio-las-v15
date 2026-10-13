@@ -46,3 +46,14 @@ Jeśli redirect i callback są poprawne, sprawdzić `profiles.role`, powiązanie
 - Nie wznawiano projektów, nie odczytywano danych klientów, nie wykonywano zaproszeń ani operacji mutujących.
 
 **Nowa bramka:** przed jakąkolwiek próbą E2E trzeba rozstrzygnąć powód stanu `INACTIVE`, koszt i ryzyko wznowienia stagingu oraz zgodność docelowych projektów z konfiguracją aplikacji. Wznowienie produkcji wymaga osobnej decyzji właściciela po ocenie skutków. Nie naprawiać frontendowego redirectu na podstawie niepotwierdzonej hipotezy.
+
+## Aktualizacja — staging przywrócony i backend zweryfikowany
+
+- Po autoryzowanym wznowieniu `get_project` potwierdza `ACTIVE_HEALTHY` dla `ulauyoqjoetjqktegeuq`.
+- Read-only SQL `select current_database(), now() is not null, to_regclass(...)` wykonał się poprawnie. Istnieją tabele `profiles`, `client_users`, `clients`.
+- Odczyt `information_schema.columns` potwierdza pola powiązań `profiles.auth_user_id`, `profiles.role`, `client_users.client_id`, `client_users.user_id`, `clients.owner_trainer_id` oraz `questionnaire_assignments.client_id/status`.
+- Lista funkcji pokazuje `client-access` v3, `questionnaire-e2e-fixture` v3 i pozostałe funkcje jako `ACTIVE`. To potwierdza metadane wdrożenia, **nie** sukces wywołania z sesją klienta.
+- Nie przeprowadzono faktycznego zaproszenia, logowania, aktywacji hasła, wypełnienia ankiety ani testu izolacji dwóch kont. Brak zweryfikowanej fikcyjnej skrzynki i sesji MFA trenera; nie zastępować ich admin SQL ani obejściem auth.
+- Produkcja nadal poza zakresem; nie wykonano żadnego zapisu SQL ani zmiany konfiguracji.
+
+**Werdykt:** staging i podstawowa struktura danych są dostępne. Pełny scenariusz klienta nadal **NOT VERIFIED**; kolejną bramką jest autentyczny test na fikcyjnych kontach przez prawdziwy callback zaproszenia, a nie samo istnienie tabel i funkcji.
