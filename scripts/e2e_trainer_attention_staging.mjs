@@ -1,3 +1,4 @@
+import { trainerCanReviewClient } from "../assets/os/trainer-review-access.js";
 import { pathToFileURL } from "node:url";
 import { createHmac } from "node:crypto";
 import { mkdir, writeFile } from "node:fs/promises";
@@ -244,7 +245,7 @@ function semanticSignalKey(signal) {
   return String(signal?.signalKey || "");
 }
 
-async function perClientOpenSignalSemantics(token, clientId) {
+async function perClientOpenSignalSemantics(token, clientId, trainerProfile) {
   const byClient = { client_id: `eq.${clientId}`, deleted_at: "is.null" };
   const read = async (table, query) => {
     const response = await rawRest(table, query, token);
@@ -252,7 +253,7 @@ async function perClientOpenSignalSemantics(token, clientId) {
     assert(Array.isArray(response.payload), `Per-client parity read ${table} is not an array`);
     return response.payload;
   };
-  const [sessions, trainingLoad, preSessionChecks, guidanceEvents, signalReviews] = await Promise.all([
+  const [sessions, trainingLoad, preSessionChecks, guidanceEvents, signalReviews, questionnaireAssignments] = await Promise.all([
     read("sessions", { ...byClient, select: "*", order: "date.desc" }),
     read("training_load_observations", { ...byClient, select: "*", order: "observed_at.desc" }),
     read("pre_session_checks", { ...byClient, select: "*", order: "check_date.desc" }),
@@ -266,9 +267,17 @@ async function perClientOpenSignalSemantics(token, clientId) {
       client_id: `eq.${clientId}`,
       select: "*",
       order: "reviewed_at.desc,created_at.desc"
+    }),
+    read("questionnaire_assignments", {
+      ...getTrainerAttentionReadContract().questionnaireAssignments.predicates,
+      select: getTrainerAttentionReadContract().questionnaireAssignments.select,
+      client_id: `eq.${clientId}`,
+      order: "id.asc"
     })
   ]);
-  const workspace = { sessions, trainingLoad, preSessionChecks, guidanceEvents, signalReviews };
+  const clientRows = await read("clients", {id:`eq.${clientId}`,select:"id,owner_trainer_id"});
+  const workspace = { sessions, trainingLoad, preSessionChecks, guidanceEvents, signalReviews,
+    questionnaireAssignments: trainerCanReviewClient(clientRows[0],trainerProfile) ? questionnaireAssignments : [] };
   const generated = collectWorkspaceSignals(workspace);
   const open = withoutReviewedSignals(generated, signalReviews);
   return new Set(open.signals
@@ -276,9 +285,9 @@ async function perClientOpenSignalSemantics(token, clientId) {
     .map(semanticSignalKey));
 }
 
-async function assertPerClientParity(token, snapshot, model) {
+async function assertPerClientParity(token, snapshot, model, trainerProfile) {
   for (const client of snapshot.clients) {
-    const expected = await perClientOpenSignalSemantics(token, client.id);
+    const expected = await perClientOpenSignalSemantics(token, client.id, trainerProfile);
     const actual = new Set(model.attention
       .filter(item => String(item.clientId) === String(client.id) && item.kind !== "review")
       .map(semanticSignalKey));
@@ -307,8 +316,10 @@ async function run() {
     + snapshot.preSessionChecks.length + snapshot.guidanceEvents.length;
   assert(sourceRows > 0, "Canonical staging has no non-client source rows to validate real-data serialization");
 
-  const model = buildTrainerAttentionModel(snapshot, { today: studioToday(), reviewSoonDays: 7 });
-  await assertPerClientParity(aal2.access_token, snapshot, model);
+  const profileRead = await rawRest("profiles", {select:"id,role",auth_user_id:`eq.${decodeJwt(aal2.access_token).sub}`}, aal2.access_token);
+  assert(profileRead.ok && profileRead.payload.length === 1, "Current trainer profile missing");
+  const model = buildTrainerAttentionModel(snapshot, { today: studioToday(), trainerProfile:profileRead.payload[0], reviewSoonDays: 7 });
+  await assertPerClientParity(aal2.access_token, snapshot, model, profileRead.payload[0]);
 
   const sourceSummary = Object.fromEntries(getTrainerAttentionSourceKeys().map(source => [source, snapshot[source].length]));
   const metricSummary = {};

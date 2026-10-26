@@ -11,6 +11,7 @@ function client(id, extras = {}) {
   return {
     id,
     name: id.toUpperCase(),
+    owner_trainer_id: "11111111-1111-4111-8111-111111111111",
     status: "active",
     stage: null,
     next_session_date: null,
@@ -28,6 +29,7 @@ function emptySnapshot(overrides = {}) {
     preSessionChecks: [],
     guidanceEvents: [],
     signalReviews: [],
+    questionnaireAssignments: [],
     ...overrides
   };
 }
@@ -102,7 +104,7 @@ const primarySnapshot = emptySnapshot({
   ]
 });
 
-const model = buildTrainerAttentionModel(primarySnapshot, { today: "2026-09-25", reviewSoonDays: 7 });
+const model = buildTrainerAttentionModel(primarySnapshot, { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25", reviewSoonDays: 7 });
 
 assert.equal(model.counts.situations, 3, "contact, new response and due Review should be open");
 assert.equal(model.counts.clients, 3, "three clients should have open attention facts");
@@ -133,7 +135,7 @@ const historicalContact = buildTrainerAttentionModel(emptySnapshot({
     outcome: "contact_required",
     contact_resolved_at: null
   }]
-}), { today: "2026-09-25" });
+}), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" });
 assert.equal(historicalContact.attention.length, 1, "open contact must survive even when the original source row is absent");
 assert.equal(historicalContact.attention[0].kind, "contact");
 assert(!historicalContact.quiet.some(item => item.clientId === "historical"), "open historical contact must never become quiet");
@@ -165,7 +167,7 @@ const revisedSource = buildTrainerAttentionModel(emptySnapshot({
     outcome: "contact_required",
     contact_resolved_at: null
   }]
-}), { today: "2026-09-25" });
+}), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" });
 assert.equal(revisedSource.attention.length, 1, "one source/signal situation with an open contact should render once across revisions");
 assert.equal(revisedSource.attention[0].kind, "contact");
 assert.equal(revisedSource.attention[0].sourceChangedSinceContact, true, "revision drift must be explicit rather than silently duplicated");
@@ -198,7 +200,7 @@ const reviewedCurrentRevision = buildTrainerAttentionModel(emptySnapshot({
       contact_resolved_at: null
     }
   ]
-}), { today: "2026-09-25" });
+}), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" });
 assert.equal(reviewedCurrentRevision.attention.length, 1, "reviewed current revision must not become its own attention item");
 assert.equal(reviewedCurrentRevision.attention[0].kind, "contact", "older unresolved contact must remain open");
 assert.equal(reviewedCurrentRevision.attention[0].sourceChangedSinceContact, true, "review filtering must not hide revision drift from an unresolved contact");
@@ -231,7 +233,7 @@ const clearedRevision = buildTrainerAttentionModel(emptySnapshot({
     outcome: "contact_required",
     contact_resolved_at: null
   }]
-}), { today: "2026-09-25" });
+}), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" });
 assert.equal(clearedRevision.attention.length, 1, "clearing the trigger must not close the unresolved contact");
 assert.equal(clearedRevision.attention[0].kind, "contact");
 assert.equal(clearedRevision.attention[0].sourceChangedSinceContact, true, "source-row revision drift must remain visible even when the current row no longer emits the signal");
@@ -262,7 +264,7 @@ const informationContact = buildTrainerAttentionModel(emptySnapshot({
     outcome: "contact_required",
     contact_resolved_at: null
   }]
-}), { today: "2026-09-25" });
+}), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" });
 assert.equal(informationContact.attention.length, 1, "information-level signal with unresolved contact must remain in Attention");
 assert.equal(informationContact.attention[0].kind, "contact");
 
@@ -275,7 +277,7 @@ assert.throws(
 assert.throws(
   () => buildTrainerAttentionModel({
     clients: [], sessions: [], trainingLoad: [], preSessionChecks: [], guidanceEvents: []
-  }, { today: "2026-09-25" }),
+  }, { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" }),
   /missing required source signalReviews/,
   "incomplete snapshot must fail closed"
 );
@@ -289,7 +291,7 @@ assert.throws(
       signal_key: historicalSignalKey,
       outcome: "contact_required"
     }]
-  }), { today: "2026-09-25" }),
+  }), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" }),
   /contact_resolved_at/,
   "missing review mapping fields must fail closed"
 );
@@ -306,7 +308,7 @@ assert.throws(
       sleep_quality: "dobry",
       updated_at: "2026-09-25T10:00:00Z"
     }]
-  }), { today: "2026-09-25" }),
+  }), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" }),
   /missing vas_before/,
   "a missing signal-bearing projection field must fail closed instead of making the client look quiet"
 );
@@ -324,7 +326,7 @@ assert.throws(
       sleep_quality: "dobry",
       updated_at: "2026-09-25T10:00:00Z"
     }]
-  }), { today: "2026-09-25" }),
+  }), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" }),
   /vas_before is undefined/,
   "an undefined signal-bearing projection field must fail closed instead of becoming an implicit null"
 );
@@ -342,7 +344,7 @@ assert.throws(
       sleep_quality: "dobry",
       updated_at: "2026-09-25T10:00:00Z"
     }]
-  }), { today: "2026-09-25" }),
+  }), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" }),
   /vas_before must be number or null/,
   "numeric signal fields must reject serialized strings instead of silently changing signal semantics"
 );
@@ -358,7 +360,7 @@ assert.throws(
       new_symptoms: false,
       updated_at: "2026-09-25T10:00:00Z"
     }]
-  }), { today: "2026-09-25" }),
+  }), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" }),
   /red_flag_concern must be boolean/,
   "boolean signal fields must reject strings so false cannot become a truthy urgent alert"
 );
@@ -375,7 +377,7 @@ const nullableSignalFields = buildTrainerAttentionModel(emptySnapshot({
     sleep_quality: null,
     updated_at: "2026-09-25T10:00:00Z"
   }]
-}), { today: "2026-09-25" });
+}), { trainerProfile: {id:"11111111-1111-4111-8111-111111111111",role:"trainer"}, today: "2026-09-25" });
 assert.equal(nullableSignalFields.attention.length, 0, "legitimate nullable signal fields must remain valid snapshot values");
 
 const assembled = assembleTrainerAttentionSnapshot(readResults(primarySnapshot));
@@ -412,7 +414,7 @@ console.log("TRAINER_ATTENTION_MODEL_PASS");
 // A consciously saved review date follows the same durable decision lifecycle.
 {
  const snapshot=emptySnapshot({clients:[client("dated",{next_review_date:"2026-10-02"})]});
- const options={today:"2026-10-03"};
+ const options={trainerProfile:{id:"11111111-1111-4111-8111-111111111111",role:"trainer"},today:"2026-10-03"};
  const due=buildTrainerAttentionModel(snapshot,options).attention[0];
  assert.ok(due.signalKey);
  snapshot.signalReviews=[{id:"dated-review",client_id:"dated",signal_key:due.signalKey,outcome:"noted_no_change",contact_resolved_at:null}];
