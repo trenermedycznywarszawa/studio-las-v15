@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Pierwszy kontakt | Studio Las</title>
-  <meta name="description" content="Pierwszy kontakt ze Studio Las w Pracach Dużych pod Tarczynem. Zostaw kontakt i wybierz, co chcesz odzyskać albo poprawić." />
+  <meta name="description" content="Pierwszy kontakt ze Studio Las w Pracach Dużych pod Tarczynem. Napisz, z czym się zgłaszasz, i wybierz wygodny sposób kontaktu." />
   <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v15/ankieta-kontakt.html" />
   <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v15/ankieta-kontakt.html" />
   <meta property="og:locale" content="pl_PL" />
@@ -38,7 +38,16 @@ a{color:inherit;text-decoration:none}.container{width:100%;max-width:var(--max-w
 footer{background:#16211c;color:rgba(255,255,255,.7);padding:38px 0}.footer-grid{display:flex;justify-content:space-between;gap:24px;align-items:flex-start}.footer-logo{font-family:var(--font-display);font-size:1.35rem;color:var(--white)}.footer-copy{font-size:.74rem;text-align:right}
 @media(max-width:900px){.nav-links{display:none}.nav-hamburger{display:flex}.page-body{grid-template-columns:1fr}.side{padding:56px 24px}.page-body{max-width:none}#ankieta{padding:56px 24px}.form-row{grid-template-columns:1fr}.footer-grid{flex-direction:column}.footer-copy{text-align:left}}
 @media(max-width:520px){#page-hero{padding:116px 0 52px}.page-hero-title{font-size:2.65rem}.container{padding:0 18px}#ankieta,.side{padding-left:18px;padding-right:18px}.practical-grid{grid-template-columns:1fr}}
-  </style>
+  
+/* Pierwszy kontakt v2 — tylko elementy nowe względem istniejącego stylu Studio Las */
+.choice-fieldset{border:0;min-width:0;padding:0;margin:0 0 20px}
+.choice-fieldset legend{padding:0;width:100%}
+.contact-dependent[hidden]{display:none}
+.contact-other-time{margin-top:16px}
+.contact-next-step{border-left:2px solid var(--cedar);padding:13px 18px;margin-top:26px;background:var(--offwhite)}
+.contact-next-step strong{display:block;font-size:.83rem;font-weight:500;margin-bottom:6px}
+.contact-next-step p{font-size:.83rem;line-height:1.7;color:var(--grey-text)}
+</style>
 </head>
 <body>
 <nav id="navbar" aria-label="Główna nawigacja">
@@ -63,70 +72,87 @@ footer{background:#16211c;color:rgba(255,255,255,.7);padding:38px 0}.footer-grid
     <nav class="breadcrumb" aria-label="Okruszki"><a href="./index.html">Strona główna</a><span>›</span><span>Pierwszy kontakt</span></nav>
     <p class="page-hero-label">Pierwszy krok</p>
     <h1 class="page-hero-title">Najpierw <em>porozmawiajmy.</em></h1>
-    <p class="page-hero-sub">Zostaw kontakt. Odezwę się w wybranym przez Ciebie czasie i ustalimy krótki, spokojny moment na rozmowę.</p>
+    <p class="page-hero-sub">Zostaw kontakt. Odezwę się w wybrany przez Ciebie sposób i spokojnie ustalimy, czy Studio Las jest odpowiednim miejscem.</p>
   </div>
 </header>
 
 <main class="page-body">
+
   <section id="ankieta" aria-labelledby="contactTitle">
     <span class="section-label">Pierwszy kontakt</span>
-    <h2 class="form-title" id="contactTitle">Zostaw kontakt</h2>
-    <p class="form-intro">Kilka krótkich informacji wystarczy, żebym przygotował się do rozmowy.</p>
+    <h2 class="form-title" id="contactTitle">Porozmawiajmy</h2>
+    <p class="form-intro">Nie musisz wiedzieć, od czego zacząć ani jaki trening będzie dla Ciebie odpowiedni. Napisz, z jaką sprawą się zgłaszasz, a skontaktuję się z Tobą osobiście.</p>
 
     <form id="mainForm" name="pierwszy-kontakt" action="https://ufcumhbnuyernuwepcij.supabase.co/functions/v1/public-inquiry-ingress" method="POST" novalidate>
       <input type="text" name="honeypot" tabindex="-1" autocomplete="off" style="position:absolute;left:-9999px" aria-hidden="true" />
 
-      <div class="form-row">
-        <div class="form-group">
-          <label class="form-label" for="imie">Imię <span class="req">*</span></label>
-          <input class="form-input" id="imie" name="Imię" type="text" autocomplete="given-name" placeholder="Twoje imię" required />
-          <span class="form-err-msg" id="err-imie">Podaj imię.</span>
-        </div>
-        <div class="form-group">
-          <label class="form-label" for="telefon">Telefon <span class="req">*</span></label>
-          <input class="form-input" id="telefon" name="Telefon" type="tel" autocomplete="tel" placeholder="np. 600 123 456" required />
-          <span class="form-err-msg" id="err-telefon">Podaj numer telefonu.</span>
-        </div>
+      <div class="form-group">
+        <label class="form-label" for="imie">Imię <span class="req">*</span></label>
+        <input class="form-input" id="imie" name="Imię" type="text" autocomplete="given-name" maxlength="120" placeholder="Twoje imię" required />
+        <span class="form-err-msg" id="err-imie">Podaj imię.</span>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="email">E-mail <span style="font-weight:300;text-transform:none;letter-spacing:0;color:var(--grey-text)">— opcjonalnie</span></label>
-        <input class="form-input" id="email" name="Email" type="email" autocomplete="email" placeholder="twoj@email.pl" />
-        <span class="form-err-msg" id="err-email">Sprawdź adres e-mail albo pozostaw pole puste.</span>
-      </div>
+      <fieldset class="form-group choice-fieldset" aria-describedby="goalsHint">
+        <legend class="form-label">O czym chciałbyś porozmawiać?</legend>
+        <span class="form-sublabel" id="goalsHint">Możesz wybrać kilka odpowiedzi. Jeśli nie wiesz, co zaznaczyć, zostaw je puste — omówimy to podczas rozmowy.</span>
+        <div class="choice-group" id="goalChoices">
+          <label class="choice-item"><input type="checkbox" name="Cele" value="start_or_return" /><span class="choice-label">Chcę zacząć regularnie się ruszać lub wrócić do aktywności</span></label>
+          <label class="choice-item"><input type="checkbox" name="Cele" value="strength_fitness" /><span class="choice-label">Chcę poprawić siłę, kondycję lub sprawność</span></label>
+          <label class="choice-item"><input type="checkbox" name="Cele" value="weight_figure" /><span class="choice-label">Chcę schudnąć lub poprawić sylwetkę</span></label>
+          <label class="choice-item"><input type="checkbox" name="Cele" value="movement_confidence" /><span class="choice-label">Chcę poruszać się swobodniej i odzyskać pewność ruchu</span></label>
+          <label class="choice-item"><input type="checkbox" name="Cele" value="long_term_capacity" /><span class="choice-label">Chcę utrzymać sprawność na kolejne lata</span></label>
+          <label class="choice-item"><input type="checkbox" name="Cele" value="other_or_unsure" /><span class="choice-label">Mam inny cel lub jeszcze nie wiem, od czego zacząć</span></label>
+        </div>
+      </fieldset>
 
       <div class="form-group">
-        <label class="form-label" for="pora">Kiedy najlepiej się z Tobą skontaktować? <span class="req">*</span></label>
-        <select class="form-select" id="pora" name="Preferowana pora kontaktu" required>
-          <option value="">— Wybierz —</option>
-          <option>16:00–18:00</option>
-          <option>18:00–20:00</option>
-          <option>20:00–22:00</option>
-          <option>Najpierw napisz SMS i ustalmy termin</option>
-          <option>Inny termin — ustalimy wiadomością</option>
-        </select>
-        <span class="form-err-msg" id="err-pora">Wybierz najwygodniejszą porę lub sposób kontaktu.</span>
+        <label class="form-label" for="zdanie">Czy chcesz coś dodać przed rozmową?</label>
+        <span class="form-sublabel">Opcjonalnie — możesz napisać o swoim celu albo sytuacji. Nie przesyłaj szczegółowych danych zdrowotnych ani dokumentacji medycznej.</span>
+        <textarea class="form-textarea" id="zdanie" name="Dodatkowa wiadomość" maxlength="280" placeholder="Twoja wiadomość — opcjonalnie"></textarea>
       </div>
 
       <div class="divider"></div>
 
-      <div class="form-group">
-        <label class="form-label">Co chciałbyś odzyskać albo poprawić? <span class="req">*</span></label>
-        <span class="form-sublabel">Wybierz jedną odpowiedź, która jest dziś najbliżej Twojego celu.</span>
-        <div class="choice-group" id="goalChoices">
-          <label class="choice-item"><input type="radio" name="Główny cel" value="Swobodniejsze poruszanie się na co dzień" /><span class="choice-label">Swobodniej poruszać się na co dzień</span></label>
-          <label class="choice-item"><input type="radio" name="Główny cel" value="Powrót do aktywności lub sportu" /><span class="choice-label">Wrócić do aktywności albo sportu</span></label>
-          <label class="choice-item"><input type="radio" name="Główny cel" value="Siła i kondycja po przerwie" /><span class="choice-label">Odzyskać siłę i kondycję po przerwie</span></label>
-          <label class="choice-item"><input type="radio" name="Główny cel" value="Większa pewność w ruchu" /><span class="choice-label">Poczuć się pewniej w ruchu</span></label>
-          <label class="choice-item"><input type="radio" name="Główny cel" value="Chcę najpierw porozmawiać" /><span class="choice-label">Jeszcze nie umiem tego nazwać — chcę najpierw porozmawiać</span></label>
+      <fieldset class="form-group choice-fieldset" aria-describedby="methodHint">
+        <legend class="form-label">Jak najlepiej się z Tobą skontaktować? <span class="req">*</span></legend>
+        <span class="form-sublabel" id="methodHint">Wybierz jeden sposób. Poproszę tylko o potrzebne dane kontaktowe.</span>
+        <div class="choice-group" id="methodChoices">
+          <label class="choice-item"><input type="radio" name="Metoda kontaktu" value="phone" required /><span class="choice-label">Zadzwoń do mnie</span></label>
+          <label class="choice-item"><input type="radio" name="Metoda kontaktu" value="sms" /><span class="choice-label">Najpierw napisz SMS</span></label>
+          <label class="choice-item"><input type="radio" name="Metoda kontaktu" value="email" /><span class="choice-label">Napisz e-mail</span></label>
         </div>
-        <span class="form-err-msg" id="err-cel">Wybierz jedną odpowiedź.</span>
+        <span class="form-err-msg" id="err-metoda">Wybierz sposób kontaktu.</span>
+      </fieldset>
+
+      <div class="form-group contact-dependent" id="phoneGroup" hidden>
+        <label class="form-label" for="telefon">Numer telefonu <span class="req">*</span></label>
+        <input class="form-input" id="telefon" name="Telefon" type="tel" autocomplete="tel" maxlength="32" placeholder="np. 600 123 456" disabled />
+        <span class="form-err-msg" id="err-telefon">Podaj poprawny numer telefonu (9–15 cyfr).</span>
       </div>
 
-      <div class="form-group">
-        <label class="form-label" for="zdanie">Jeżeli chcesz: jedno zdanie o tym, co chciałbyś znowu móc robić</label>
-        <span class="form-sublabel">Bez diagnozy i dokumentacji. Przykład: „Chcę znowu spokojnie chodzić po górach z rodziną”.</span>
-        <textarea class="form-textarea" id="zdanie" name="Co chce znowu móc robić" maxlength="280" placeholder="Opcjonalnie — jedno krótkie zdanie"></textarea>
+      <div class="form-group contact-dependent" id="emailGroup" hidden>
+        <label class="form-label" for="email">Adres e-mail <span class="req">*</span></label>
+        <input class="form-input" id="email" name="Email" type="email" autocomplete="email" maxlength="320" placeholder="twoj@email.pl" disabled />
+        <span class="form-err-msg" id="err-email">Podaj poprawny adres e-mail.</span>
+      </div>
+
+      <div class="form-group contact-dependent" id="timeGroup" hidden>
+        <label class="form-label" for="pora">Kiedy najłatwiej Ci odebrać? <span class="req">*</span></label>
+        <select class="form-select" id="pora" name="Preferowana pora kontaktu" disabled>
+          <option value="">— Wybierz —</option>
+          <option value="before_12">Przed 12:00</option>
+          <option value="12_16">12:00–16:00</option>
+          <option value="16_20">16:00–20:00</option>
+          <option value="after_20">Po 20:00</option>
+          <option value="any_time">O dowolnej porze</option>
+          <option value="other">Inna pora — wpiszę poniżej</option>
+        </select>
+        <span class="form-err-msg" id="err-pora">Wybierz porę, która Ci odpowiada.</span>
+        <div class="contact-dependent contact-other-time" id="customTimeGroup" hidden>
+          <label class="form-label" for="customTime">Twoja preferowana pora <span class="req">*</span></label>
+          <input class="form-input" id="customTime" name="Inna pora" type="text" maxlength="64" placeholder="Np. wtorek około 10:30" disabled />
+          <span class="form-err-msg" id="err-customTime">Podaj proponowaną porę kontaktu.</span>
+        </div>
       </div>
 
       <div class="divider"></div>
@@ -137,15 +163,20 @@ footer{background:#16211c;color:rgba(255,255,255,.7);padding:38px 0}.footer-grid
       </div>
       <span class="form-err-msg" id="err-zgoda">Potwierdź prośbę o kontakt.</span>
 
+      <div class="contact-next-step">
+        <strong>Co dalej?</strong>
+        <p>Odezwę się w wybrany przez Ciebie sposób. Porozmawiamy o Twoim celu, odpowiem na pytania i sprawdzimy, czy pierwsza wizyta w Studio Las będzie odpowiednim krokiem. Kontakt do niczego Cię nie zobowiązuje.</p>
+      </div>
+
       <button class="submit-btn" type="submit">Poproś o kontakt →</button>
-      <p class="submit-note">Najpierw krótka rozmowa. Kolejny krok ustalimy dopiero po niej.</p>
+      <p class="submit-note">To prośba o rozmowę, nie rezerwacja wizyty.</p>
       <div class="status" id="formStatus" role="status" aria-live="polite"></div>
     </form>
 
     <div class="success" id="formSuccess" role="status" aria-live="polite">
       <div class="success-mark">✓</div>
-      <h3>Dziękuję. Mam Twój kontakt.</h3>
-      <p>Odezwę się zgodnie z wybraną porą lub najpierw wiadomością, żeby ustalić dogodny moment rozmowy.</p>
+      <h3>Dziękuję. Mam Twoje zgłoszenie.</h3>
+      <p>Odezwę się w wybrany przez Ciebie sposób, żeby ustalić dogodny termin rozmowy.</p>
     </div>
   </section>
 
@@ -186,12 +217,14 @@ document.addEventListener('keydown',e=>{if(e.key==='Escape')setMenu(false)});
 
 const INGRESS_URL='https://ufcumhbnuyernuwepcij.supabase.co/functions/v1/public-inquiry-ingress';
 const REQUEST_STORAGE_KEY='studio-las-first-contact-request-id';
-const FORM_VERSION='first-contact-v1';
+const FORM_VERSION='first-contact-v2';
 const PRIVACY_NOTICE_VERSION='first-contact-consent-v1';
 const form=document.getElementById('mainForm');
 const statusEl=document.getElementById('formStatus');
 const successEl=document.getElementById('formSuccess');
 const byId=id=>document.getElementById(id);
+const getMethod=()=>form.querySelector('input[name="Metoda kontaktu"]:checked')?.value||'';
+const chosenGoals=()=>Array.from(form.querySelectorAll('input[name="Cele"]:checked'),input=>input.value);
 function showError(id,show){byId(id)?.classList.toggle('show',show)}
 function validateField(id,errorId,invalid){const el=byId(id);el.classList.toggle('err',invalid);showError(errorId,invalid);return !invalid}
 function setStatus(message,error=false){statusEl.textContent=message;statusEl.classList.add('show');statusEl.classList.toggle('err',error)}
@@ -203,41 +236,89 @@ function requestId(){
   return value;
 }
 function clearRequestId(){sessionStorage.removeItem(REQUEST_STORAGE_KEY)}
-function buildPayload(goal){return {
-  requestId:requestId(),
-  name:byId('imie').value.trim(),
-  phone:byId('telefon').value.trim(),
-  email:byId('email').value.trim()||null,
-  preferredContactWindow:byId('pora').value,
-  broadGoal:goal.value,
-  personWords:byId('zdanie').value.trim()||null,
-  contactConsent:byId('zgoda').checked,
-  privacyNoticeVersion:PRIVACY_NOTICE_VERSION,
-  formVersion:FORM_VERSION,
-  honeypot:String(form.elements.honeypot?.value||'').trim()
-}}
-
+function syncContactFields(){
+  const method=getMethod();
+  const needsPhone=method==='phone'||method==='sms';
+  const needsEmail=method==='email';
+  const needsTime=method==='phone';
+  const otherTime=needsTime&&byId('pora').value==='other';
+  const fields=[
+    ['phoneGroup','telefon',needsPhone],
+    ['emailGroup','email',needsEmail],
+    ['timeGroup','pora',needsTime],
+    ['customTimeGroup','customTime',otherTime]
+  ];
+  for(const [groupId,fieldId,visible] of fields){
+    const group=byId(groupId),input=byId(fieldId);
+    group.hidden=!visible;input.disabled=!visible;input.required=visible;
+    if(!visible){input.classList.remove('err');input.value='';}
+  }
+  for(const id of ['err-telefon','err-email','err-pora','err-customTime'])showError(id,false);
+  showError('err-metoda',false);
+}
+form.querySelectorAll('input[name="Metoda kontaktu"]').forEach(el=>el.addEventListener('change',syncContactFields));
+byId('pora').addEventListener('change',syncContactFields);
+syncContactFields();
+function buildPayload(method){
+  const windowValue=method==='phone'
+    ?(byId('pora').value==='other'?'other: '+byId('customTime').value.trim():byId('pora').value)
+    :null;
+  return {
+    requestId:requestId(),
+    name:byId('imie').value.trim(),
+    phone:method==='email'?null:byId('telefon').value.trim(),
+    email:method==='email'?byId('email').value.trim():null,
+    contactMethod:method,
+    preferredContactWindow:windowValue,
+    broadGoals:chosenGoals(),
+    personWords:byId('zdanie').value.trim()||null,
+    contactConsent:byId('zgoda').checked,
+    privacyNoticeVersion:PRIVACY_NOTICE_VERSION,
+    formVersion:FORM_VERSION,
+    honeypot:String(form.elements.honeypot?.value||'').trim()
+  };
+}
 form.addEventListener('submit',async event=>{
   event.preventDefault();
   let ok=true;
-  const imie=byId('imie');const telefon=byId('telefon');const email=byId('email');const pora=byId('pora');
-  ok=validateField('imie','err-imie',!imie.value.trim())&&ok;
-  ok=validateField('telefon','err-telefon',telefon.value.replace(/\D/g,'').length<9)&&ok;
-  ok=validateField('email','err-email',Boolean(email.value.trim())&&!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()))&&ok;
-  ok=validateField('pora','err-pora',!pora.value)&&ok;
-  const goal=form.querySelector('input[name="Główny cel"]:checked');showError('err-cel',!goal);if(!goal)ok=false;
+  const name=byId('imie');const method=getMethod();
+  ok=validateField('imie','err-imie',!name.value.trim())&&ok;
+  showError('err-metoda',!method);if(!method)ok=false;
+  if(method==='phone'||method==='sms'){
+    const digits=byId('telefon').value.replace(/\D/g,'');
+    ok=validateField('telefon','err-telefon',digits.length<9||digits.length>15)&&ok;
+  }
+  if(method==='email'){
+    const email=byId('email').value.trim();
+    ok=validateField('email','err-email',!email||!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email))&&ok;
+  }
+  if(method==='phone'){
+    ok=validateField('pora','err-pora',!byId('pora').value)&&ok;
+    if(byId('pora').value==='other'){
+      ok=validateField('customTime','err-customTime',!byId('customTime').value.trim())&&ok;
+    }
+  }
   const consent=byId('zgoda');showError('err-zgoda',!consent.checked);if(!consent.checked)ok=false;
-  if(!ok){form.querySelector('.err,.form-err-msg.show')?.scrollIntoView({behavior:'smooth',block:'center'});return}
-
-  const submit=form.querySelector('button[type="submit"]');const oldText=submit.textContent;submit.disabled=true;submit.textContent='Wysyłam...';setStatus('Wysyłam prośbę o kontakt...');
+  if(!ok){
+    const invalid=form.querySelector('.err,.form-err-msg.show');
+    invalid?.scrollIntoView({behavior:'smooth',block:'center'});return;
+  }
+  const submit=form.querySelector('button[type="submit"]'),oldText=submit.textContent;
+  submit.disabled=true;submit.textContent='Wysyłam...';setStatus('Wysyłam prośbę o kontakt...');
   try{
-    const response=await fetch(INGRESS_URL,{method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},body:JSON.stringify(buildPayload(goal))});
-    if(!response.ok)throw new Error(`Ingress ${response.status}`);
-    clearRequestId();form.reset();form.style.display='none';statusEl.classList.remove('show');successEl.classList.add('show');successEl.scrollIntoView({behavior:'smooth',block:'center'});
+    const response=await fetch(INGRESS_URL,{
+      method:'POST',headers:{'Content-Type':'application/json','Accept':'application/json'},
+      body:JSON.stringify(buildPayload(method))
+    });
+    if(!response.ok)throw new Error('Ingress '+response.status);
+    clearRequestId();form.reset();syncContactFields();
+    form.style.display='none';statusEl.classList.remove('show');
+    successEl.classList.add('show');successEl.scrollIntoView({behavior:'smooth',block:'center'});
   }catch(error){
-    setStatus('Nie udało się wysłać formularza. Spróbuj ponownie za chwilę albo zadzwoń pod 503 975 998.',true);
+    setStatus('Nie udało się wysłać formularza. Spróbuj ponownie później albo napisz na trenermedycznywarszawa@gmail.com.',true);
   }finally{submit.disabled=false;submit.textContent=oldText}
 });
+
 </script>
 </body>
 </html>
