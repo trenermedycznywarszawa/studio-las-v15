@@ -25,17 +25,18 @@
   - original v1 RPC: PASS;
   - malformed email+phone and unknown goal: rejected;
   - subsequent verification: staging ingress remains `enabled=false`, inquiries rows 0, synthetic rate-limit keys 0.
+- `supabase/tests/first_contact_v2_email_pwd_staging.sql`: PASS email-only inquiry → owner PWD decision → client with null phone and retained email. PASS rejection for AAL1 and non-owner trainer. These tests use **simulated JWT claims** within a rolled-back SQL transaction, not live authenticated HTTP requests.
 - New RPC privileges: anon=false, authenticated=false, service_role=true.
 - Static frontend JS syntax was checked in branch; tests with synthetic DOM scenarios for phone/SMS/email passed.
 - Security Advisor shows existing wider project warnings, but no finding for `ingest_public_inquiry_v2`. These unrelated warnings are not declared resolved.
 
 ## BLOCKERS — do not merge/deploy to production yet
 
-1. **Production Supabase status**: `ufcumhbnuyernuwepcij` (`studio-las-os9-test`, the exact endpoint referenced by the public site) reports `INACTIVE`. Listing schema/migrations failed due to DB timeout. **Do not swap in the staging URL.** Confirm whether this is truly the canonical production project and whether it should be restored; verify backups/restore capability and ownership first.
+1. **Production Supabase status**: `ufcumhbnuyernuwepcij` (`studio-las-os9-test`, the exact endpoint referenced by the public site) reports `INACTIVE`. GitHub commit `349a559d87fe07effeecb212a997fc4f955fd326` explicitly installed it as production config; PR #55 transferred public inquiries to it. Supabase notices dated **11 and 12 October 2026** confirm automatic Free-tier pause for inactivity; the 12 Oct email states a 90-day restoration window. Listing schema/migrations still fails while inactive. **Do not swap in staging URL or restore without explicit production authorization and recovery check.** Reference: https://supabase.com/docs/guides/platform/free-project-pausing
 2. **Production schema**: cannot establish which migrations and policies were applied until production is active; do not blindly apply staging migrations.
 3. **Privacy gate**: original form's mandatory contact-consent text remains; repository does not provide a verified, published privacy-policy link for this screen. Privacy/controller/basis/retention and optional disclosure of health-adjacent text require the authorized legal review.
 4. **HTTP integration test not run**: staging ingress is intentionally disabled for public requests. Need synthetic POST from allowed origin and record + notification verification (without exposing any personal data), including invalid/duplicate/forbidden origin/rate-limit.
-5. **Trainer OS projection not verified**: `broad_goal` contains one readable value for legacy views; `broad_goals` carries all selected goals. Confirm current trainer UI shows all relevant goals and supports email-only contact through conversion to PWD. Existing conversion RPC inserts phone into a nullable client column, but full AAL2 workflow was not end-to-end tested.
+5. **Trainer OS projection and real session not verified**: `broad_goal` contains one readable value for legacy views; `broad_goals` carries all selected goals. A rolled-back SQL scenario proved email-only PWD conversion and simulated AAL1/cross-trainer denial, but **does not prove a real trainer AAL2 HTTP session, actual screen presentation, or cross-tenant RLS from client tokens**. Current Netlify project has no declared site-level environment variables in connector results; this is insufficient to establish runtime backend configuration. Trainer UI must visibly show all goals and contact method.
 6. GitHub Pages publishes `main`; merging this PR can expose v2 immediately. Only merge after points 1–5 pass and release approval covers production.
 
 ## Recommended release order
