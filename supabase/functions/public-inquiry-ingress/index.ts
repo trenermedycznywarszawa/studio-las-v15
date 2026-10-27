@@ -113,7 +113,7 @@ function isProductionRuntime(supabaseUrl: string) {
   return supabaseUrl.replace(/\/+$/, "") === PRODUCTION_SUPABASE_ORIGIN;
 }
 
-async async function notifyTrainerNoPii() {
+async function notifyTrainerNoPii() {
   const form = new FormData();
   form.set("_subject", TRAINER_NOTIFICATION_SUBJECT);
   form.set("Powiadomienie", TRAINER_NOTIFICATION_TEXT);
