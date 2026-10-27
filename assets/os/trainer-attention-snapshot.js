@@ -4,11 +4,13 @@ const SOURCE_KEYS = Object.freeze([
   "trainingLoad",
   "preSessionChecks",
   "guidanceEvents",
-  "signalReviews"
+  "signalReviews",
+  "questionnaireAssignments"
 ]);
 
 const REQUIRED_VALUE_FIELDS = Object.freeze({
-  clients: Object.freeze(["id", "name", "status"]),
+  questionnaireAssignments: Object.freeze(["id", "client_id", "status", "submitted_at"]),
+  clients: Object.freeze(["id", "name", "status", "owner_trainer_id"]),
   sessions: Object.freeze(["id", "client_id", "date", "updated_at"]),
   trainingLoad: Object.freeze(["id", "client_id", "observed_at", "updated_at"]),
   preSessionChecks: Object.freeze(["id", "client_id", "check_date", "updated_at"]),
@@ -17,12 +19,22 @@ const REQUIRED_VALUE_FIELDS = Object.freeze({
 });
 
 const READ_CONTRACT = Object.freeze({
+  questionnaireAssignments: Object.freeze({
+    table: "questionnaire_assignments",
+    order: "id.asc",
+    predicates: Object.freeze({
+      status: "eq.submitted",
+      "questionnaire_versions.questionnaire_templates.template_key": "eq.pre_pwd_first_visit"
+    }),
+    select: "id,client_id,status,submitted_at,questionnaire_versions!inner(questionnaire_templates!inner(template_key))",
+    transfer: Object.freeze(["id", "client_id", "status", "submitted_at"])
+  }),
   clients: Object.freeze({
     table: "clients",
     order: "id.asc",
     predicates: Object.freeze({ deleted_at: "is.null" }),
-    select: "id,name,status,stage,next_session_date,next_review_date",
-    transfer: Object.freeze(["id", "name", "status", "stage", "next_session_date", "next_review_date"])
+    select: "id,name,status,owner_trainer_id,stage,next_session_date,next_review_date",
+    transfer: Object.freeze(["id", "name", "status", "owner_trainer_id", "stage", "next_session_date", "next_review_date"])
   }),
   sessions: Object.freeze({
     table: "sessions",
@@ -65,9 +77,13 @@ const READ_CONTRACT = Object.freeze({
 // cannot silently become a quiet client or a false urgent alert. These are DB scalar
 // shapes, not domain thresholds; threshold semantics remain in decision-support.js.
 const TRANSFER_TYPES = Object.freeze({
+  questionnaireAssignments: Object.freeze({
+    id: "string", client_id: "string", status: "string", submitted_at: "string"
+  }),
   clients: Object.freeze({
     id: "string",
     name: "string",
+    owner_trainer_id: "string",
     status: "string",
     stage: "nullable-number",
     next_session_date: "nullable-string",
@@ -190,6 +206,12 @@ function validateRows(source, rows) {
     }
     validateTransferTypes(source, row, index);
 
+    if (source === "clients" && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(row.owner_trainer_id)) {
+      throw new TypeError(`Trainer Attention snapshot: invalid owner_trainer_id at clients[${index}]`);
+    }
+    if (source === "questionnaireAssignments" && (row.status !== "submitted" || !Number.isFinite(Date.parse(row.submitted_at)))) {
+      throw new TypeError(`Trainer Attention snapshot: invalid submitted questionnaire ${index}`);
+    }
     if (source === "signalReviews" && !REVIEW_OUTCOMES.has(row.outcome)) {
       throw new TypeError(`Trainer Attention snapshot: ${source}[${index}].outcome is invalid`);
     }
@@ -198,6 +220,7 @@ function validateRows(source, rows) {
 
 function validateClientReferences(snapshot) {
   const clientIds = new Set(snapshot.clients.map(client => String(client.id)));
+  if (clientIds.size !== snapshot.clients.length) throw new TypeError("Trainer Attention snapshot: duplicate client identity / ambiguous owner");
   for (const source of SOURCE_KEYS.slice(1)) {
     snapshot[source].forEach((row, index) => {
       if (!clientIds.has(String(row.client_id))) {
@@ -242,6 +265,11 @@ export function assembleTrainerAttentionSnapshot(readResults) {
       throw new Error(`Trainer Attention snapshot: ${source} read failed: ${message}`);
     }
     snapshot[source] = result.data;
+    if (source === "questionnaireAssignments" && Array.isArray(result.data)) {
+      snapshot[source] = result.data.map(row => Object.fromEntries(
+        READ_CONTRACT[source].transfer.map(field => [field, row?.[field]])
+      ));
+    }
   }
 
   return Object.freeze(assertTrainerAttentionSnapshot(snapshot));

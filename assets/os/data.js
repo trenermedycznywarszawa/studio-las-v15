@@ -315,7 +315,8 @@ export class StudioLasRepository {
   }
 
   async rest(table, { method = "GET", query = {}, body, prefer } = {}) {
-    if (!WRITE_TABLES.has(table) && table !== "profiles") {
+    const questionnaireRead = table === "questionnaire_assignments" && method === "GET";
+    if (!WRITE_TABLES.has(table) && table !== "profiles" && !questionnaireRead) {
       throw new Error(`Table is not available through the Studio Las repository: ${table}`);
     }
 
@@ -452,7 +453,9 @@ export class StudioLasRepository {
     });
   }
   async createClient(profileId, input) {
-    return this.insert("clients", {
+    const clientId = crypto.randomUUID();
+    const payload = {
+      id: clientId,
       owner_trainer_id: profileId,
       name: String(input.name || "").trim(),
       email: String(input.email || "").trim().toLowerCase() || null,
@@ -474,7 +477,27 @@ export class StudioLasRepository {
       next_milestone: String(input.nextMilestone || "").trim() || null,
       working_hypothesis: String(input.workingHypothesis || "").trim() || null,
       status: "active"
+    };
+    // SELECT policies may re-read clients before this new row is visible.
+    await this.rest("clients", {
+      method: "POST",
+      body: compactObject(payload),
+      prefer: "return=minimal"
     });
+    try {
+      const client = await this.getClient(clientId);
+      if (!client || client.owner_trainer_id !== profileId) {
+        throw new Error("Created client is not visible to its owner");
+      }
+      return client;
+    } catch (cause) {
+      const error = new Error("Klient został zapisany, ale odczyt się nie powiódł. Nie ponawiaj tworzenia.");
+      error.code = "CLIENT_CREATED_READBACK_FAILED";
+      error.clientId = clientId;
+      error.creationCommitted = true;
+      error.cause = cause;
+      throw error;
+    }
   }
 
   async updateClient(clientId, input) {

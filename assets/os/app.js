@@ -1,3 +1,4 @@
+import { assertCurrentReviewOwner } from "./trainer-review-access.js";
 import { TrainerAttentionController } from "./trainer-attention-controller.js";
 import { TrainerWorkspaceLoader } from "./trainer-workspace-loader.js";
 import { collectWorkspaceSignals } from "./trainer-signals.js";
@@ -285,6 +286,10 @@ function renderTrainerState() {
       );
     },
     ...guidanceActions(state.repository, state.activeClientId, withWrite, reloadWorkspace),
+    onResolveSignalContact: (id, note) => withWrite("Zapisywanie kontaktu", async () => {
+      await assertCurrentReviewOwner(state.repository, clientId, state.profile.id);
+      return state.repository.rpc("resolve_trainer_signal_contact", {p_review_id:id,p_note:note});
+    }, reloadWorkspace),
     onPublishHomePlan: async homePlanId => {
       await withWrite("Publikowanie wskazówki", () => state.repository.publishHomePlanGuidance(homePlanId), reloadWorkspace);
     },
@@ -307,9 +312,10 @@ function renderTrainerState() {
       ), reloadWorkspace);
     },
     onReviewSignal: async (signalKey, outcome) => {
-      await withWrite("Zapisywanie przeglądu sygnału", () => state.repository.saveSignalReview(
-        state.profile.id, state.activeClientId, signalKey, outcome
-      ), reloadWorkspace);
+      await withWrite("Zapisywanie przeglądu sygnału", async () => {
+        await assertCurrentReviewOwner(state.repository, clientId, state.profile.id);
+        return state.repository.saveSignalReview(state.profile.id, clientId, signalKey, outcome);
+      }, reloadWorkspace);
     },
     onTransitionReport: (report, action, reason) => withWrite(
       action === "approve" ? "Zatwierdzanie raportu" : action === "publish" ? "Publikowanie raportu" : "Wycofywanie raportu",

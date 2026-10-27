@@ -2,6 +2,7 @@ const DISCLAIMER =
   "To są sygnały do przeglądu przez trenera, nie diagnoza ani automatyczna decyzja o progresji, regresji lub leczeniu.";
 
 const SIGNAL_LABELS = Object.freeze({
+  "questionnaire-submitted": "Ankieta przekazana do przeglądu",
   "scheduled-review": "Zapisany termin przeglądu",
   "client-observation": "Odpowiedź klienta do przeglądu",
   "symptom-increase-after-session": "Zgłoszony poziom dolegliwości wzrósł po sesji.",

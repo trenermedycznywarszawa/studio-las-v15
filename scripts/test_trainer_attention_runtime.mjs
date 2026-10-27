@@ -43,13 +43,13 @@ assert.equal(deniedReads, 0, "AAL1 attempted a Trainer Attention source read");
 
 let stableAal2Reads = 0;
 const aal2Repository = {
-  auth: { getAuthenticatorAssuranceLevel: () => "aal2" },
+  auth: { getAuthenticatorAssuranceLevel: () => "aal2", getProfile: async () => ({id:"11111111-1111-4111-8111-111111111111",role:"trainer"}) },
   rest: async () => { stableAal2Reads += 1; return []; }
 };
 const empty = await loadTrainerAttention(aal2Repository, { today: "2026-09-27" });
 assert.equal(empty.snapshot.clients.length, 0);
 assert.equal(empty.model.counts.situations, 0);
-assert.equal(stableAal2Reads, 6, "Each empty source should terminate after one page");
+assert.equal(stableAal2Reads, 7, "Each empty source should terminate after one page");
 
 const inquiry = Object.create(InquiryController.prototype);
 inquiry.activeInquiryId = "previous-person";
@@ -84,6 +84,7 @@ assert.equal(inquiry.activeInquiryId, "", "Returning to Attention must keep inqu
 let aalChecks = 0;
 const downgradeRepository = {
   auth: {
+    getProfile: async () => ({id:"11111111-1111-4111-8111-111111111111",role:"trainer"}),
     getAuthenticatorAssuranceLevel: () => (++aalChecks === 1 ? "aal2" : "aal1")
   },
   rest: async () => []

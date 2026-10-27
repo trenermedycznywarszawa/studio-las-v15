@@ -1,6 +1,12 @@
 import { collectAttentionSignals, signalIdentity, signalInstanceKey, signalTypeLabel, withoutReviewedSignals } from "./decision-support.js";
 export function collectWorkspaceSignals(workspace = {}) {
  const signals = [
+  ...(workspace.questionnaireAssignments || workspace.questionnaireOverview?.assignments || [])
+   .filter(assignment=>assignment.status === "submitted" && assignment.submitted_at)
+   .map(assignment=>{
+    const source={id:"questionnaire-submitted",source:"questionnaire",sourceDate:assignment.submitted_at,sourceId:assignment.id,sourceRevision:assignment.submitted_at};
+    return {...source,signalKey:signalInstanceKey(source),level:"review",label:"Ankieta przekazana do przeglądu",context:"Klient przekazał ankietę przed PWD. Otwórz kartę, aby zapoznać się z odpowiedziami.",trainerQuestion:"Czy zapoznałeś się z przekazaną ankietą i co wymaga dalszej rozmowy?"};
+   }),
   ...(workspace.sessions || []).flatMap(session=>collectAttentionSignals({session}).signals),
   ...(workspace.trainingLoad || []).flatMap(trainingLoad=>collectAttentionSignals({trainingLoad}).signals),
   ...(workspace.preSessionChecks || []).flatMap(preSessionCheck=>collectAttentionSignals({preSessionCheck}).signals),

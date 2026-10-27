@@ -65,6 +65,12 @@ export async function loadTrainerAttention(repository, { today = studioBusinessD
   // RLS deliberately returns zero trainer rows at AAL1. Without an explicit
   // assurance-level gate that valid denial could be mistaken for an empty inbox.
   requireTrainerAal2(repository);
+  const profile = await repository.auth.getProfile();
+  if (profile?.role !== "trainer") {
+    const error = new Error("Trainer Attention runtime requires a trainer profile");
+    error.status = 403;
+    throw error;
+  }
 
   const sourceKeys = getTrainerAttentionSourceKeys();
   const results = await Promise.all(sourceKeys.map(async source => {
@@ -77,8 +83,8 @@ export async function loadTrainerAttention(repository, { today = studioBusinessD
   requireTrainerAal2(repository);
 
   const snapshot = assembleTrainerAttentionSnapshot(Object.fromEntries(results));
-  const model = buildTrainerAttentionModel(snapshot, { today, reviewSoonDays: 7 });
-  return Object.freeze({ snapshot, model });
+  const model = buildTrainerAttentionModel(snapshot, { today, trainerProfile: profile, reviewSoonDays: 7 });
+  return Object.freeze({ snapshot, model, profile });
 }
 
 export function trainerAttentionPreviewQuery() {

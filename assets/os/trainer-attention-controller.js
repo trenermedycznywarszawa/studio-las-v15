@@ -70,12 +70,14 @@ export class TrainerAttentionController {
   async currentItem(item) {
     const generation = this.generation;
     const repository = this.state.repository;
-    const { model } = await loadTrainerAttention(repository);
+    const { model, profile } = await loadTrainerAttention(repository);
     if (generation !== this.generation || repository !== this.state.repository) throw new Error("Widok zmienił się. Otwórz kolejkę ponownie.");
+    if (profile.id !== this.state.profile.id) throw new Error("Sesja zmieniła się. Odśwież widok.");
     const current = model.attention.find(row => row.clientId === item.clientId && row.signalKey === item.signalKey);
     if (!current || current.currentSourceRevision !== item.currentSourceRevision || current.sourceChangedSinceContact !== item.sourceChangedSinceContact) {
       throw new Error("Sprawa zmieniła się. Odśwież kolejkę i sprawdź kontekst.");
     }
+    if (current.canReview !== true) throw new Error("Przegląd zapisuje właściciel klienta");
     return current;
   }
   async review(item, outcome) {

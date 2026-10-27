@@ -38,3 +38,52 @@ Migracja `20261003181509_client_contact_requests.sql` rozszerza dozwolone rodzaj
 Filtry kolejki i karty klienta obejmują stare check-iny i nowe pytania. Osobne uzupełnienia oraz ręczne raporty akceptują nowy rodzaj oryginalnego źródła, z zachowaniem uprawnień i zatwierdzania publikacji. Starszy frontend nadal może zapisywać check-in, ale nie odczyta nowego rodzaju zdarzenia; po przyjęciu nowych pytań ewentualny rollback musi zachować rozszerzony filtr kolejki.
 
 Test `client_contact_requests.sql` działa na fikcyjnych danych w transakcji z rollback. `e2e_client_contact_requests.mjs` obejmuje pytanie bez check-inu i po nim, utratę potwierdzenia po rzeczywistym zapisie, równoległe ponowienia, kolejne pytanie po zamknięciu kontaktu, oryginalną odpowiedź, relogowanie, historię, prywatność i oba rozmiary ekranu. Poprzedni test kolejki zachowuje test starego pięcioargumentowego zapisu.
+
+
+## Lokalny patch — przekazana ankieta przed PWD (2026-10-26, niewdrożony)
+
+Kolejka odczytuje paginowane metadane `questionnaire_assignments` dla
+`pre_pwd_first_visit`, `status=submitted`: id, client_id, status, submitted_at.
+Nie pobiera odpowiedzi, goal_snapshot ani treści formularza. Generuje jeden sygnał
+„Ankieta przekazana do przeglądu” na przypisanie i czas przekazania. Otwarcie karty
+niczego nie przegląda. Świadomy przycisk „Przejrzane · bez zmiany” zapisuje istniejący
+`trainer_signal_reviews`; historia w karcie zachowuje nazwę źródła i datę przeglądu.
+Klucz zawiera id przypisania oraz pełne submitted_at, więc nowe przypisanie lub
+kolejne przekazanie nie dziedziczy wcześniejszego przeglądu.
+
+Starsze przekazania nie mają daty odcięcia ani automatycznego oznaczenia jako
+przejrzane. Dotyczy to również dostępnych, niezlikwidowanych kart archiwalnych:
+archiwizacja nie stanowi potwierdzenia zapoznania się z ankietą. Może powstać
+początkowa zaległa kolejka; trener zamyka każdą sprawę świadomie.
+
+Odczyt kolejki wymaga profilu trainer i AAL2, a zakres klientów nadal egzekwuje RLS.
+Nie zmieniono polityk ani grantów. Błąd lub niekompletne metadane ankiety blokują
+model całej kolejki i pozostawiają błąd odczytu, zamiast komunikatu „Brak spraw”.
+Istniejące przeglądy wymagają własności klienta (nie samego współdzielonego dostępu).
+Ten patch zachowuje to ograniczenie; trener współdzielony może odczytać ankietę,
+ale zapis przeglądu jest ograniczony przez istniejącą politykę właściciela.
+
+Testy offline: `node scripts/test_questionnaire_attention.mjs`,
+`node scripts/test_trainer_attention_model.mjs`,
+`node scripts/test_trainer_attention_runtime.mjs`.
+Test integracyjny staging `e2e_trainer_attention_staging.mjs` ma rozszerzony odczyt
+parytetu o ankiety, ale nie został uruchomiony w ramach tego patcha.
+Patch nie jest migracją ani dowodem wdrożenia lub pełnego E2E/RLS na stagingu.
+
+
+### Korekta właściciela przeglądu — lokalna, niewdrożona
+
+`clients.owner_trainer_id` jest wymaganym polem kontraktu i walidacji snapshotu.
+Bieżące `profiles.id` pochodzi z uwierzytelnionego odczytu profilu. W modelu kolejki
+zadanie przekazanej ankiety powstaje tylko przy równości tych identyfikatorów.
+Trener współdzielony nie ma trwale otwartej ankiety ani prywatnej historii właściciela;
+jego dozwolony przez RLS odczyt ankiety w karcie pozostaje dostępny.
+
+Przyciski przeglądu i zamknięcia kontaktu w kolejce i karcie nie są dostępne dla
+niewłaściciela. Kontekst informacyjny pokazuje „Przegląd zapisuje właściciel klienta”.
+Dotyczy to także innych sygnałów, ponieważ mają tę samą politykę zapisu przeglądu;
+reguły generowania i priorytety tych sygnałów pozostają bez zmian.
+Brak właściciela/profilu powoduje jawny błąd, a nie cichą pustą kolejkę.
+Przed zapisem z karty następuje ponowne sprawdzenie minimalnych metadanych właściciela,
+profilu i AAL2; kontroler kolejki sprawdza aktualny model i zgodność sesji.
+Są to kontrole interfejsu. RLS pozostaje niezależnym i nadrzędnym ograniczeniem zapisu.

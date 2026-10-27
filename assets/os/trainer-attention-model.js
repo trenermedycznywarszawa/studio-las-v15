@@ -1,3 +1,4 @@
+import { trainerCanReviewClient } from "./trainer-review-access.js";
 import { signalInstanceKey, withoutReviewedSignals } from "./decision-support.js";
 import { collectWorkspaceSignals } from "./trainer-signals.js";
 import { assertTrainerAttentionSnapshot } from "./trainer-attention-snapshot.js";
@@ -9,6 +10,7 @@ const SOURCE_LABELS = Object.freeze({
   "trainer-check": "Sprawdzenie trenera",
   "client-record": "Karta klienta",
   "client-response": "Odpowiedź klienta",
+  questionnaire: "Ankieta przed PWD",
   process: "Proces"
 });
 
@@ -132,6 +134,7 @@ function buildSourceRevisionIndex(snapshot) {
   for (const row of snapshot.trainingLoad) remember(row, "training-load", "updated_at");
   for (const row of snapshot.preSessionChecks) remember(row, "trainer-check", "updated_at");
   for (const row of snapshot.guidanceEvents) remember(row, "client-response", "created_at");
+  for (const row of snapshot.questionnaireAssignments) remember(row, "questionnaire", "submitted_at");
 
   return revisions;
 }
@@ -216,12 +219,16 @@ function attentionRank(item) {
 
 export function buildTrainerAttentionModel(snapshot, {
   today,
+  trainerProfile,
   reviewSoonDays = 7
 } = {}) {
   assertTrainerAttentionSnapshot(snapshot);
   const businessToday = requiredBusinessDate(today);
+  if (typeof trainerProfile?.id !== "string" || !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(trainerProfile.id) || trainerProfile.role !== "trainer") throw new Error("Trainer Attention requires the current trainer profile.");
 
-  const clients = snapshot.clients.filter(client => client.status !== "archived");
+  const questionnaireAssignments = groupByClient(snapshot.questionnaireAssignments);
+  // No age cutoff or automatic acknowledgement, including submitted archived cases.
+  const clients = snapshot.clients.filter(client => client.status !== "archived" || questionnaireAssignments.has(String(client.id)));
   const sessions = groupByClient(snapshot.sessions);
   const trainingLoad = groupByClient(snapshot.trainingLoad);
   const preSessionChecks = groupByClient(snapshot.preSessionChecks);
@@ -235,12 +242,15 @@ export function buildTrainerAttentionModel(snapshot, {
   for (const client of clients) {
     const clientId = String(client.id);
     const reviews = signalReviews.get(clientId) || [];
+    const archived = client.status === "archived";
+    const canReview = trainerCanReviewClient(client, trainerProfile);
     const workspace = {
-      sessions: sessions.get(clientId) || [],
-      trainingLoad: trainingLoad.get(clientId) || [],
-      preSessionChecks: preSessionChecks.get(clientId) || [],
-      guidanceEvents: guidanceEvents.get(clientId) || [],
-      signalReviews: reviews
+      questionnaireAssignments: canReview ? questionnaireAssignments.get(clientId) || [] : [],
+      sessions: archived ? [] : sessions.get(clientId) || [],
+      trainingLoad: archived ? [] : trainingLoad.get(clientId) || [],
+      preSessionChecks: archived ? [] : preSessionChecks.get(clientId) || [],
+      guidanceEvents: archived ? [] : guidanceEvents.get(clientId) || [],
+      signalReviews: reviews.filter(review => (!archived || review.signal_key.startsWith("questionnaire-submitted::")) && (canReview || !review.signal_key.startsWith("questionnaire-submitted::")))
     };
 
     // Generate a review-free view solely to preserve source-revision facts for
@@ -257,7 +267,7 @@ export function buildTrainerAttentionModel(snapshot, {
       rawAttention.push(signalToItem(client, signal));
     }
 
-    const reviewDistance = daysFrom(businessToday, client.next_review_date);
+    const reviewDistance = archived ? null : daysFrom(businessToday, client.next_review_date);
     if (reviewDistance !== null && reviewDistance <= 0) {
       const due = reviewDueItem(client, reviewDistance);
       generatedSourceItems.push(due);
@@ -274,7 +284,9 @@ export function buildTrainerAttentionModel(snapshot, {
     }
   }
 
-  const attention = collapseOpenContactRevisions(rawAttention, generatedSourceItems, sourceRevisions);
+  const clientsById = new Map(clients.map(client => [String(client.id), client]));
+  const attention = collapseOpenContactRevisions(rawAttention, generatedSourceItems, sourceRevisions)
+    .map(item => Object.freeze({...item, canReview: trainerCanReviewClient(clientsById.get(String(item.clientId)), trainerProfile)}));
   attention.sort((left, right) =>
     attentionRank(left) - attentionRank(right)
       || String(right.sourceDate || "").localeCompare(String(left.sourceDate || ""))
@@ -284,7 +296,7 @@ export function buildTrainerAttentionModel(snapshot, {
   const attentionClients = new Set(attention.map(item => String(item.clientId)));
   const upcomingReviewClients = new Set(reviewSoon.map(item => String(item.clientId)));
   const quiet = clients
-    .filter(client => !attentionClients.has(String(client.id)) && !upcomingReviewClients.has(String(client.id)))
+    .filter(client => client.status !== "archived" && !attentionClients.has(String(client.id)) && !upcomingReviewClients.has(String(client.id)))
     .map(client => Object.freeze({
       clientId: client.id,
       client: client.name,

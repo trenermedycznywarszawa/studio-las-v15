@@ -1,7 +1,9 @@
 import { button, checkbox, create, detailsForm, field, formatDate, panel, statusBox, submitForm } from "./common.js";
 function itemView(item, actions) {
   const controls = [button("Otwórz kontekst", {onclick:() => actions.onOpenClientContext(item.clientId)})];
-  if (item.contactReviewId) {
+  if (item.canReview !== true) {
+    controls.push(statusBox("Przegląd zapisuje właściciel klienta"));
+  } else if (item.contactReviewId) {
     controls.push(detailsForm("Kontakt zakończony", submitForm([
       field("Co ustalono po kontakcie?", "note", "textarea", {required:true,maxlength:1000}),
       ...(item.sourceChangedSinceContact ? [checkbox("Sprawdziłem zmieniony zapis", "confirmed", false, {required:true})] : [])

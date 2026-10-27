@@ -42,6 +42,7 @@ jobs:
           node scripts/test_pre_pwd_v31_registration.mjs
           node scripts/test_trainer_attention_model.mjs
           node scripts/test_trainer_attention_runtime.mjs
+          node scripts/test_attention_e2e_helpers.mjs
           node scripts/test_signal_followthrough.mjs
           node scripts/test_client_response_state.mjs
           node scripts/test_client_response_day_rollover.mjs
