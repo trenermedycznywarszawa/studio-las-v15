@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { signalInstanceKey } from "../assets/os/decision-support.js";
 import { freshTotpCode } from "./e2e_trainer_attention_staging.mjs";
 const origin = "https://ulauyoqjoetjqktegeuq.supabase.co";
 const url = process.env.STUDIO_LAS_E2E_URL;
@@ -24,7 +25,46 @@ export async function login(page,email,password,trainer=false) {
  return session.access_token;
 }
 export async function queue(page) { await page.getByRole("button",{name:"Uwaga trenera",exact:true}).click(); await page.getByRole("heading",{name:"Uwaga trenera",exact:true}).waitFor(); }
-export async function empty(page) { await page.getByText("Brak spraw do przejrzenia.",{exact:true}).waitFor(); assert.equal(await page.locator(".attention-case").count(),0); }
+
+export function questionnaireBacklogKeys(assignments, reviews) {
+ const reviewed=new Map(reviews.map(row=>[row.signal_key,row]));
+ return assignments.map(row=>{
+  assert.equal(row.status,"submitted");assert.ok(row.id && row.submitted_at);
+  return signalInstanceKey({id:"questionnaire-submitted",source:"questionnaire",sourceId:row.id,sourceDate:row.submitted_at,sourceRevision:row.submitted_at});
+ }).filter(key=>{const review=reviewed.get(key);return !review || (review.outcome==="contact_required"&&!review.contact_resolved_at);}).sort();
+}
+export async function questionnaireBacklog(token) {
+ const query=new URLSearchParams({client_id:`eq.${clientId}`,status:"eq.submitted",select:"id,status,submitted_at,questionnaire_versions!inner(questionnaire_templates!inner(template_key))","questionnaire_versions.questionnaire_templates.template_key":"eq.pre_pwd_first_visit",order:"id.asc"});
+ const assignments=await api(`/rest/v1/questionnaire_assignments?${query}`,token);
+ const reviews=await api(`/rest/v1/trainer_signal_reviews?client_id=eq.${clientId}&select=signal_key,outcome,contact_resolved_at`,token);
+ return questionnaireBacklogKeys(assignments,reviews);
+}
+export function assertQueueKeys(actual, backlog, additions=[]) {
+ assert.ok(Array.isArray(backlog),"Explicit questionnaire baseline required");
+ const expected=[...backlog,...additions].sort();
+ assert.equal(new Set(expected).size,expected.length,"New test signal must be distinct from questionnaire backlog");
+ assert.deepEqual([...actual].sort(),expected,"Queue must retain every unreviewed questionnaire and exactly the expected test signals");
+}
+export async function expectQueue(page,backlog,additions=[]) {
+ const expected=[...backlog,...additions].sort();
+ await page.waitForFunction(keys=>JSON.stringify([...document.querySelectorAll('.attention-case')].map(row=>row.getAttribute('data-signal-key')).sort())===JSON.stringify(keys),expected);
+ assertQueueKeys(await page.locator('.attention-case').evaluateAll(rows=>rows.map(row=>row.getAttribute('data-signal-key'))),backlog,additions);
+ assert.equal(await page.getByText("Nie udało się wczytać spraw. Sprawdź dostęp i spróbuj ponownie.",{exact:true}).count(),0);
+ if(expected.length===0) await page.getByText("Brak spraw do przejrzenia.",{exact:true}).waitFor();
+ else assert.equal(await page.getByText("Brak spraw do przejrzenia.",{exact:true}).count(),0);
+}
+export function testSignalCase(page,key) {
+ assert.ok(key && !key.startsWith('questionnaire-submitted::'),"Test must never act on a historical questionnaire");
+ return page.locator(`.attention-case[data-signal-key=${JSON.stringify(key)}]`);
+}
+export function eventSignalKey(event) {
+ assert.ok(event.id && event.savedAt && event.eventDate,"Response must include exact persisted event identity");
+ return signalInstanceKey({id:"client-observation",source:"client-response",sourceId:event.id,sourceDate:event.eventDate,sourceRevision:event.savedAt});
+}
+export function sessionSignalKey(session) {
+ assert.ok(session.id && session.updated_at && session.date,"Response must include exact persisted session revision");
+ return signalInstanceKey({id:"low-readiness",source:"session",sourceId:session.id,sourceDate:session.date,sourceRevision:session.updated_at});
+}
 export async function screenshot(page,name) {
  assert.equal(await page.getByLabel("Wybierz klienta").locator("option").count(),2,"Screenshot must contain only the isolated synthetic client");
  assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth+2),false,"Horizontal overflow");
