@@ -105,11 +105,7 @@ footer{background:#16211c;color:rgba(255,255,255,.7);padding:38px 0}.footer-grid
         </div>
       </fieldset>
 
-      <div class="form-group">
-        <label class="form-label" for="zdanie">Czy chcesz coś dodać przed rozmową?</label>
-        <span class="form-sublabel">Opcjonalnie — możesz napisać o swoim celu albo sytuacji. Nie przesyłaj szczegółowych danych zdrowotnych ani dokumentacji medycznej.</span>
-        <textarea class="form-textarea" id="zdanie" name="Dodatkowa wiadomość" maxlength="280" placeholder="Twoja wiadomość — opcjonalnie"></textarea>
-      </div>
+      <p class="form-sublabel">Szczegóły omówimy podczas kontaktu. Nie wpisuj tutaj informacji o zdrowiu ani dokumentacji medycznej.</p>
 
       <div class="divider"></div>
 
@@ -271,7 +267,7 @@ function buildPayload(method){
     contactMethod:method,
     preferredContactWindow:windowValue,
     broadGoals:chosenGoals(),
-    personWords:byId('zdanie').value.trim()||null,
+    personWords:null,
     contactConsent:byId('zgoda').checked,
     privacyNoticeVersion:PRIVACY_NOTICE_VERSION,
     formVersion:FORM_VERSION,

@@ -1,4 +1,4 @@
-import { createClient } from "npm:@supabase/supabase-js@^2";
+import { createClient } from "npm:@supabase/supabase-js@2.118.0";
 
 const MAX_BODY_BYTES = 8 * 1024;
 const SOURCE_VERSION = "public-ingress-v1";
@@ -149,6 +149,7 @@ async function hmacHex(secret: string, value: string) {
 }
 
 function boundedText(value: unknown, max: number, required = false) {
+  if (value !== null && value !== undefined && typeof value !== "string") return null;
   const text = String(value ?? "").trim();
   if (required && !text) return null;
   if (!text) return "";
@@ -172,7 +173,7 @@ function validatePayload(raw: unknown): PublicPayload | null {
   const formVersion = boundedText(object.formVersion, 64, true);
 
   if (!requestId || !REQUEST_ID_PATTERN.test(requestId) || !name || !phone || !preferredContactWindow || !broadGoal
-      || !privacyNoticeVersion || !formVersion) return null;
+      || !privacyNoticeVersion || !formVersion || emailRaw === null || personWordsRaw === null) return null;
   if (!CONTACT_WINDOWS.has(preferredContactWindow) || !BROAD_GOALS.has(broadGoal)) return null;
   if (!FORM_VERSIONS.has(formVersion) || !PRIVACY_VERSIONS.has(privacyNoticeVersion)) return null;
 
@@ -213,6 +214,8 @@ function validateV2Payload(raw: unknown): V2Payload | null {
       !PRIVACY_VERSIONS.has(privacyNoticeVersion) ||
       (contactMethod !== "phone" && contactMethod !== "sms" && contactMethod !== "email") ||
       phone === null || email === null || windowValue === null || personWords === null) return null;
+  // Free-form messages are withheld from v2 pending the privacy decision. v1 stays compatible.
+  if (personWords) return null;
   if (!Array.isArray(o.broadGoals) || o.broadGoals.length > 6 ||
       o.broadGoals.some(goal => typeof goal !== "string" || !V2_GOALS.has(goal)) ||
       new Set(o.broadGoals).size !== o.broadGoals.length) return null;
@@ -276,7 +279,10 @@ Deno.serve(async (req: Request) => {
       return response(origin, { ok: false, error: "invalid_request" }, 400);
     }
 
-    if (String(raw?.honeypot ?? "").trim()) {
+    if (!raw || typeof raw !== "object" || Array.isArray(raw)) {
+      return response(origin, { ok: false, error: "invalid_request" }, 400);
+    }
+    if (String(raw.honeypot ?? "").trim()) {
       return response(origin, { ok: true }, 202);
     }
 

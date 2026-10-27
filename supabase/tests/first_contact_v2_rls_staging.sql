@@ -47,5 +47,24 @@ BEGIN
  THEN RAISE EXCEPTION 'Owner AAL1 can read inquiry';END IF;
 END $assert$;
 RESET ROLE;
-SELECT 'PASS: owner AAL2 read, other-trainer AAL2 and owner AAL1 denied' AS result;
+-- A client cannot read the still-existing synthetic trainer inquiry, even with AAL2.
+DO $identity$
+DECLARE client_auth uuid;
+BEGIN
+ SELECT auth_user_id INTO client_auth FROM public.profiles
+ WHERE role='client' AND auth_user_id IS NOT NULL ORDER BY id LIMIT 1;
+ IF client_auth IS NULL THEN RAISE EXCEPTION 'Client fixture identity required'; END IF;
+ PERFORM set_config('request.jwt.claim.sub',client_auth::text,true);
+ PERFORM set_config('request.jwt.claims',jsonb_build_object('sub',client_auth::text,'aal','aal2','role','authenticated')::text,true);
+END $identity$;
+SET LOCAL ROLE authenticated;
+DO $assert$
+BEGIN
+ IF EXISTS(SELECT 1 FROM public.inquiries WHERE source_request_key='rls-fixture-cross-tenant-20261026')
+ THEN RAISE EXCEPTION 'Client can read trainer inquiry'; END IF;
+ IF has_function_privilege('authenticated','public.ingest_public_inquiry_v2(text,text,text,text,text,text,text,text[],text,text,text,text)','EXECUTE')
+ THEN RAISE EXCEPTION 'V2 ingestion exposed to authenticated'; END IF;
+END $assert$;
+RESET ROLE;
+SELECT 'PASS: owner AAL2 read; other-trainer AAL2, client AAL2 and owner AAL1 denied; v2 RPC restricted' AS result;
 ROLLBACK;

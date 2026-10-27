@@ -1,5 +1,13 @@
 # Studio Las — pierwszy kontakt v2: protokół akceptacji prywatności
 
+## Aktualizacja 27.10.2026 — nadal NOT APPROVED
+
+Właściciel potwierdził brak zatwierdzonej polityki dla v2 i zlecił przygotowanie projektu. Projekt do uzupełnienia: [first-contact-v2-privacy-notice-draft.md](first-contact-v2-privacy-notice-draft.md). Nie opublikowano go jako obowiązującej klauzuli.
+
+W aktualnym kandydacie usunięto pole `personWords` z UI (payload zawiera null), a Edge v8 na stagingu odrzuca niepustą wiadomość v2. V1 pozostaje obsługiwane. Historyczny opis pola poniżej dotyczy wcześniejszego HEAD. Pole niestandardowej pory nadal przyjmuje krótki tekst; redukcja danych nie gwarantuje braku incydentalnych informacji zdrowotnych. RPC service_role nadal ma parametr wiadomości dla zgodności; publiczny dostęp jest przez walidujący Edge, anon/authenticated nie mają EXECUTE.
+
+Nie zmieniono samodzielnie podstaw prawnych, retencji ani identyfikatora `first-contact-consent-v1`. Publikacja wymaga wypełnienia i akceptacji projektu oraz spójnego wersjonowania frontend/Edge/RPC. Publiczna strona v1 podczas odczytu HTTP 200 nadal nie miała odnośnika do polityki prywatności.
+
 **Data:** 2026-10-26  
 **Status:** DRAFT / NOT APPROVED — NIE PUBLIKOWAĆ JAKO POLITYKI PRYWATNOŚCI.  
 **Przedmiot:** publiczny formularz `ankieta-kontakt.html` z PR #102.
