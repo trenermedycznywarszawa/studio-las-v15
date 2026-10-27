@@ -9,6 +9,12 @@ Status 27.10.2026: **NIEWYKONANE / NO-GO**. Produkcja `ufcumhbnuyernuwepcij`, Po
 - Brak zmiennych procesu z połączeniem produkcyjnym i hasłem do lokalnego odtworzenia. Konektor SQL nie jest kanałem eksportu danych klientów.
 - Lokalny checkout zawiera wcześniejsze `scripts/backup_and_verify_target.ps1` i `scripts/run_studio_las_backup_once.ps1`. Drugi wskazuje dawny worktree i może usuwać lokalną bazę testową: **nie uruchomiono go**. Sam skrypt ani jego stara deklaracja `restoreVerified` nie zamykają bramki.
 
+## Ważne: wcześniejszy zaszyfrowany wolumin (wskazówka do sprawdzenia, NIE dowód aktualnego backupu)
+
+W poprzednich pracach operator używał kontenera **VeraCrypt** pod ścieżką lokalną `C:\\StudioLasSecure\\studio-las-backup.hc`, montowanego jako dysk `V:`. Zapis z 21.07.2026 odnosił się do `V:\\StudioLasBackup\\20260721T172308Z`; wcześniejsza walidacja odtworzenia Supabase miała ograniczenia związane z rozszerzeniem `supabase_vault`. Brak `V:` w aktualnej sesji może oznaczać **niezamontowany wolumin**, a nie brak samego kontenera.
+
+Operator lokalny: **najpierw sprawdzić obecność kontenera bez jego edycji; montować wyłącznie przez VeraCrypt, hasło wpisać bezpośrednio w aplikacji lokalnie (nigdy w czacie ani logach).** Nie wnioskować z samego istnienia plików, że obejmują obecną produkcję: od lipca były kolejne migracje i zapisy. Kopia aktualna wymaga nowego dumpa i skutecznego, izolowanego odtworzenia. Nie uruchamiać starych skryptów bez audytu ścieżek i destrukcyjnych komend.
+
 ## Bezpieczna procedura do wykonania po udostępnieniu zasobów
 
 1. Właściciel wskazuje istniejący, zatwierdzony zaszyfrowany wolumin poza repo i synchronizacją chmurową. Sprawdzić montowanie, szyfrowanie oraz ACL ograniczone do operatora/SYSTEM, wolne miejsce i wykluczenie z indeksowania. Nie tworzyć zastępczego katalogu z danymi w repo.
