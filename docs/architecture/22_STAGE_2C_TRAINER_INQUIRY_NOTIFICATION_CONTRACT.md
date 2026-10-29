@@ -83,3 +83,7 @@ Add stronger delivery infrastructure only if real operational evidence shows the
 Production form cutover may proceed only after this notification slice passes static/security tests, staging regressions and audit.
 
 The production form cutover itself remains a separate minimal PR to `main` with an explicit rollback to the prior Formspree client-data transport blob.
+
+## Separate client confirmation addition
+
+The owner-approved client confirmation is a separate path described in `docs/deployment/INQUIRY_CONFIRMATION_EMAIL.md`. It does not expand the Formspree trainer relay payload. The earlier complexity boundary above applies to that original trainer-only slice, not to the subsequently requested client confirmation.

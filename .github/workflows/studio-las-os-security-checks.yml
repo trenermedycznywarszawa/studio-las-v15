@@ -212,6 +212,9 @@ jobs:
       - name: Type-check authenticated client access Edge Function
         run: deno check supabase/functions/client-access/index.ts
 
+      - name: Verify inquiry confirmation email behavior
+        run: node scripts/test_inquiry_confirmation.mjs
+
       - name: Type-check public inquiry ingress Edge Function
         run: deno check supabase/functions/public-inquiry-ingress/index.ts
 
