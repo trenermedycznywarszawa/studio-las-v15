@@ -5,11 +5,11 @@ import { collectWorkspaceSignals } from "./trainer-signals.js";
 import { loadClientAppRuntime } from "./client-app-runtime.js";
 import { QuestionnaireApi } from "./questionnaire-api.js";
 import { guidanceActions } from "./guidance-actions.js";
-import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, submitPasswordLogin, userSafeError } from "./runtime.js";
+import { assertNoPersistentHealthData, clearAuthArtifactsFromUrl, getPasswordSetupContext, getRuntimeConfig, isInsufficientAal, submitPasswordLogin, userSafeError } from "./runtime.js";
 import { StudioLasRepository, SupabaseAuth } from "./data.js";
 import { InquiryController } from "./inquiries-controller.js";
 import { withoutReviewedSignals } from "./decision-support.js";
-import { consumePasswordCallback, renderPasswordSetup, renderRecoveryRequest, requestPasswordRecovery, updatePassword } from "./password-auth.js";
+import { consumePasswordCallback, preparePasswordSetup, renderPasswordSetup, renderRecoveryRequest, requestPasswordRecovery, updatePassword } from "./password-auth.js";
 import { renderFatal, renderLoading, renderLogin } from "./ui/common.js";
 import { renderTrainer } from "./ui/trainer.js";
 import { TrainerMfaController } from "./trainer-mfa.js";
@@ -101,7 +101,12 @@ function showRecoveryRequest({ sent = false, message = "" } = {}) {
   });
 }
 
-function showPasswordSetup(context, message = "") {
+async function showPasswordSetup(context, message = "") {
+  const view = await preparePasswordSetup(state.auth, state.mfa);
+  if (view.status !== "verified") {
+    renderMfaView(view, message);
+    return;
+  }
   renderPasswordSetup(root, {
     context,
     message,
@@ -112,7 +117,7 @@ function showPasswordSetup(context, message = "") {
         await updatePassword(state.auth, password);
         await loadAuthenticatedRuntime();
       } catch (error) {
-        showPasswordSetup(context, userSafeError(error, state.config?.mode));
+        await showPasswordSetup(context, userSafeError(error, state.config?.mode));
       }
     }
   });
@@ -165,7 +170,9 @@ async function advanceMfa(operation, loadingMessage) {
     const next = await operation();
     if (next.status === "verified") {
       state.mfaView = null;
-      await loadTrainer(state.activeClientId).catch(handleRuntimeError);
+      const pending = getPasswordSetupContext();
+      if (pending) await showPasswordSetup(pending);
+      else await loadTrainer(state.activeClientId).catch(handleRuntimeError);
       return;
     }
     renderMfaView(next);
@@ -195,7 +202,9 @@ async function removeMfaFactor(index) {
     const next = await state.mfa.removeFactor(index);
     if (next.status === "verified") {
       state.mfaView = null;
-      await loadTrainer(state.activeClientId).catch(handleRuntimeError);
+      const pending = getPasswordSetupContext();
+      if (pending) await showPasswordSetup(pending);
+      else await loadTrainer(state.activeClientId).catch(handleRuntimeError);
       return;
     }
     renderMfaView(next);
@@ -339,7 +348,11 @@ function handleRuntimeError(error) {
   const message = error?.displayMessage || userSafeError(error, state.config?.mode);
   announce(message, "error", error?.retryRefresh);
   const status = Number(error?.status || 0);
-  if (status === 401) showLogin(message);
+  if (isInsufficientAal(error)) {
+    const pending = getPasswordSetupContext();
+    if (pending) showPasswordSetup(pending, message).catch(() => showLogin(message));
+    else enforceTrainerMfa().catch(() => showLogin(message));
+  } else if (status === 401) showLogin(message);
   else if (status === 403 && state.profile?.role === "trainer"
     && state.auth.getAuthenticatorAssuranceLevel() !== "aal2") {
     enforceTrainerMfa().catch(() => showLogin(message));
@@ -360,7 +373,7 @@ async function initialize() {
     if (callback) {
       renderLoading(root, "Weryfikowanie bezpiecznego linku…");
       await state.auth.getUser();
-      showPasswordSetup(callback.type);
+      await showPasswordSetup(callback.type);
       return;
     }
 
@@ -375,7 +388,7 @@ async function initialize() {
     const pendingContext = getPasswordSetupContext();
     if (pendingContext) {
       await state.auth.getUser();
-      showPasswordSetup(pendingContext);
+      await showPasswordSetup(pendingContext);
       return;
     }
     await loadAuthenticatedRuntime();
