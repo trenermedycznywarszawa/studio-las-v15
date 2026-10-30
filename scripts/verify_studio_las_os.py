@@ -161,7 +161,9 @@ def check_password_flows() -> None:
         'new set(["invite", "recovery"])',
         "access_token",
         "refresh_token",
-        "saveauthsession",
+        "auth.suspendsessionpersistence()",
+        "preparepasswordsetup",
+        "insufficient_aal",
         "markpasswordsetuppending",
         "clearpasswordsetuppending",
         "history.replacestate",
@@ -189,7 +191,7 @@ def check_password_flows() -> None:
     storage_guard_position = app.find("assertNoPersistentHealthData()")
     cleanup_position = app.find("clearAuthArtifactsFromUrl()")
     restore_position = app.find("state.auth.restore()")
-    pending_check_position = app.find("getPasswordSetupContext()")
+    pending_check_position = app.find("getPasswordSetupContext()", restore_position)
 
     require(consume_position >= 0, "password callback consumption missing")
     require(storage_guard_position > consume_position, "local data gate can leave password tokens in the URL")

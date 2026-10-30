@@ -3,6 +3,7 @@ import * as guidance from "./guidance-data.js";
 import {
   clearAuthSession,
   loadAuthSession,
+  isInsufficientAal,
   saveAuthSession
 } from "./runtime.js";
 import {
@@ -61,12 +62,12 @@ export class SupabaseAuth {
         : options.body
     });
 
-    if (response.status === 401 && allowRefresh && this.session?.refresh_token) {
+    const payload = await parseResponse(response);
+    if (response.status === 401 && !isInsufficientAal({ details: payload }) && allowRefresh && this.session?.refresh_token) {
       await this.refresh();
       return this.request(path, options, false);
     }
 
-    const payload = await parseResponse(response);
     if (!response.ok) {
       throw new SupabaseHttpError(
         payload?.msg || payload?.message || payload?.error_description || "Supabase request failed",
