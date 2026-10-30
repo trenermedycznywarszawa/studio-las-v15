@@ -30,10 +30,10 @@ Nie stosować tych instrukcji do starej wersji produkcyjnej przed jej aktualizac
 
 ## 3. Powtarzalna procedura (Windows PowerShell)
 
-**Okno A — repo / serwer.** Uruchom w istniejącym izolowanym worktree poprawki:
+**Okno A — repo / serwer.** Otwórz PowerShell w katalogu głównym repozytorium i przejdź do istniejącego izolowanego worktree poprawki:
 
 ```powershell
-cd "C:\Users\Damian\Documents\Panel\studio-las-v15-gh\.worktrees\recovery-mfa-fix"
+cd .worktrees\recovery-mfa-fix
 git rev-parse --short HEAD
 node scripts/build_studio_las_os_deploy.mjs --staging
 py -m http.server 8796 --bind 127.0.0.1 --directory .deploy/studio-las-os
