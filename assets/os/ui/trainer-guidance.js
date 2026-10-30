@@ -125,6 +125,7 @@ export function plansSection(workspace, model) {
       : null
   ]);
   const section = panel("Prowadzenie klienta", create("div", { className: "two-column" }, [planColumn, items]));
+  section.id = "trainer-guidance";
   section.addEventListener("input", event => {
     if (!event.target.closest(".guidance-record, .draft-items")) return;
     section.querySelectorAll(".guidance-approve").forEach(action => {

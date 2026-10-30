@@ -52,3 +52,14 @@ function setup() {
  await x.controller.load(); resolveOld(snapshot()); await old; assert.equal(x.view.snapshot.serverDate,"2026-09-10");
 }
 console.log("CLIENT_RESPONSE_STATE_PASS: saved, failed, refresh failed, uncertain retries, revocation, read ordering");
+
+{
+ const x=setup(); await x.controller.load();
+ x.repo.saveClientCheckin=async input=>{x.writes.push({...input});if(x.writes.length===1)throw Error("request lost");return receipt;};
+ await x.controller.submit("item","Explicit question",true);
+ await x.controller.retry("item");
+ assert.equal(x.writes.length,2);
+ assert.equal(x.writes[0].contactRequested,true);
+ assert.equal(x.writes[1].contactRequested,true,"uncertain retry preserves explicit intent");
+ assert.equal(x.writes[0].submissionId,x.writes[1].submissionId);
+}

@@ -1,0 +1,13 @@
+import assert from "node:assert/strict";
+import { QuestionnaireApi } from "../assets/os/questionnaire-api.js";
+import { questionnaireStatusLabel } from "../assets/os/ui/trainer-questionnaire.js";
+const calls=[];
+const api=new QuestionnaireApi({auth:{request:async(path,args)=>{calls.push({path,args});return [];}},rest:async(table,args)=>{calls.push({table,args});return [{status:"active"}];}});
+assert.equal((await api.trainerOverview("owned")).hasActiveAccess,true);
+const query=new URL("https://test"+calls[0].path).searchParams;
+assert.equal(query.get("client_id"),"eq.owned");
+assert.ok(!query.get("select").includes("answers"));
+assert.equal(calls[1].args.query.client_id,"eq.owned");
+await api.assignActive("owned");assert.deepEqual(calls[2].args.body,{p_client_id:"owned",p_template_key:"pre_pwd_first_visit"});
+assert.equal(questionnaireStatusLabel("in_progress"),"W trakcie");
+console.log("Trainer questionnaire transport PASS");

@@ -5,7 +5,7 @@ export function clientResponseForm(item, model) {
   if (receipt) return create("section", {className:"client-response"}, [
     statusBox(`Odpowiedź zapisana · ${formatDate(receipt.eventDate)}`, "ok"),
     create("p", {text:receipt.text || (receipt.legacyCompleted === true ? "Zapisano wykonanie." : "Zapisano odpowiedź.")}),
-    create("p", {className:"muted",text:"Jeśli chcesz coś wyjaśnić, skontaktuj się z Damianem. Oryginalna odpowiedź pozostaje bez zmian."})
+    create("p", {className:"muted",text:"Oryginalna odpowiedź pozostaje bez zmian. Pytanie możesz wysłać osobno."})
   ]);
   if (entry?.status === "saving") return statusBox("Zapisywanie odpowiedzi…");
   if (entry?.status === "uncertain") return create("section", {}, [
@@ -17,6 +17,6 @@ export function clientResponseForm(item, model) {
     create("p",{className:"muted",text:"Możesz opisać wykonanie zgodnie z ustaleniem, uzgodnioną krótszą wersję, przerwanie, brak próby lub to, że dziś wskazówka nie miała zastosowania."}),
     entry?.status === "failed" ? statusBox(entry.message,"error") : null,
     submitForm([field("Twoja odpowiedź — opcjonalnie", "response", "textarea", {required:true,maxlength:500,rows:2,value:entry?.response || ""})],
-      "Zapisz odpowiedź", values=>model.onSaveCheckin(item.id,values.response),"form-grid",{disabled:model.loading})
+      "Zapisz odpowiedź", values=>model.onSaveCheckin(item.id,values.response,false),"form-grid",{disabled:model.loading})
   ]);
 }

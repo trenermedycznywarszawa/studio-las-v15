@@ -1,3 +1,5 @@
+import { trainerCanReviewClient, OWNER_REVIEW_MESSAGE } from "../trainer-review-access.js";
+import { processHistoryPanel } from "./process-history.js";
 import { manualReportComposer, evidenceReportRecord } from "./report-evidence.js";
 import {
   currentCycleDecision,
@@ -22,6 +24,7 @@ const SIGNAL_SOURCE_LABELS = Object.freeze({
   "trainer-check": "Sprawdzenie trenera",
   "client-record": "Karta klienta",
   "client-response": "Odpowiedź klienta",
+  questionnaire: "Ankieta przed PWD",
   process: "Proces"
 });
 
@@ -77,6 +80,7 @@ export function nowPanel(workspace, attentionSignals) {
       nowItem("Otwarty sygnał wymagający uwagi", openSignal?.label || "Brak otwartego sygnału wymagającego uwagi.", signalMeta),
       nowItem(brief.nextStep.label, brief.nextStep.value, nextMeta, "now-item wide")
     ]),
+    processHistoryPanel(workspace),
     brief.requiresCycleDecision
       ? create("div", { className: "cycle-decision-required", text: "Wymaga decyzji co dalej" })
       : null
@@ -128,6 +132,9 @@ function signalSourceLine(signal) {
 }
 
 export function signalsSection(workspace, attentionSignals, model) {
+  let canReview;
+  try { canReview = trainerCanReviewClient(workspace.client, model.profile); }
+  catch (error) { return panel("Sygnały do przeglądu", create("p", {className:"status error",text:error.message})); }
   const openSignals = attentionSignals?.signals || [];
   const reviews = workspace.signalReviews || [];
   const open = recordList(openSignals, signal => create("article", { className: `signal ${signal.level}` }, [
@@ -135,7 +142,7 @@ export function signalsSection(workspace, attentionSignals, model) {
     signal.context ? create("p", { text: signal.context }) : null,
     create("p", { className: "muted", text: signalSourceLine(signal) }),
     create("p", { className: "muted", text: `Pytanie dla trenera: ${signal.trainerQuestion}` }),
-    signal.contactReviewId ? create("div", {}, [
+    !canReview ? create("p", {className:"muted",text:OWNER_REVIEW_MESSAGE}) : signal.contactReviewId ? create("div", {}, [
       create("strong", {text:"Kontakt nadal wymagany"}),
       detailsForm("Potwierdź wykonany kontakt", submitForm([
         field("Co ustalono po kontakcie?", "note", "textarea", {required:true,maxlength:1000})
@@ -197,7 +204,7 @@ export function reportsSection(workspace, model) {
     report.type === "twelveWeeks" && isInCurrentCycle(workspace, report.created_at)
   ) || null;
   const decision = currentCycleDecision(workspace);
-  return panel("Raporty", create("div", {}, [
+  const section = panel("Raporty", create("div", {}, [
     recordList(reports, report => report.workflow_version === 1 ? evidenceReportRecord(report, model.onTransitionReport) : reportRecord(
       report,
       decision,
@@ -205,4 +212,6 @@ export function reportsSection(workspace, model) {
     ), "Brak raportów."),
     manualReportComposer(workspace, model.onSaveReport)
   ]), "Raport pokazuje wzorzec; nie tworzy decyzji automatycznie");
+  section.id = "trainer-reports";
+  return section;
 }

@@ -1,0 +1,18 @@
+import assert from "node:assert/strict";
+import { processReviewPoints, processChanges } from "../assets/os/process-history.js";
+import { reportCandidates } from "../assets/os/report-evidence.js";
+import { loadReportGuidanceEvents } from "../assets/os/process-history-data.js";
+const session={id:"s",date:"2026-09-01",created_at:"2026-09-01T12:00:00Z",updated_at:"2026-09-01T12:00:00Z",session_type:"pwd",client_summary:"Original goal"};
+const old={id:"old",date:"2026-08-01",updated_at:"2026-08-01T12:00:00Z",trainer_observation:"Older context"};
+const question={id:"q",event_date:"2026-08-15",created_at:"2026-09-02T12:00:00Z",updated_at:"2026-09-02T12:00:00Z",kind:"client_contact_request",payload:{note:"Later recorded question about an earlier day"}};
+const w={sessions:[session,old],reportGuidanceEvents:[question],homePlans:[{id:"draft",focus:"Not published",updated_at:question.updated_at},{id:"plan",title:"Agreed",published_at:"2026-09-01T15:00:00Z",updated_at:"2026-09-01T15:00:00Z"}]};
+const point=processReviewPoints(w)[0];assert.equal(point.id,"session:s");
+const changes=processChanges(w,point);assert.deepEqual(changes.recent.map(x=>x.id),["q","plan"]);assert.equal(changes.older.length,2);
+assert.equal(changes.recent[0].date,"2026-08-15");assert.equal(changes.recent[0].label,"Pytanie klienta");
+assert.ok(!reportCandidates(w).some(x=>x.id==="draft"));assert.equal(processChanges({sessions:[session]},point).recent.length,0);
+assert.equal(processChanges(w,null).recent.length,4);
+const calls=[], all=Array.from({length:237},(_,id)=>({id}));
+const result=await loadReportGuidanceEvents({rest:async(table,{query})=>{calls.push(query);return all.slice(query.offset,query.offset+Math.min(73,query.limit));}},"owned");
+assert.equal(result.length,237);assert.ok(calls.every(q=>q.client_id==="eq.owned" && q.kind==="in.(client_checkin,client_contact_request)"));assert.equal(calls.at(-1).offset,237);
+await assert.rejects(loadReportGuidanceEvents({rest:async()=>{throw {status:403};}},"other"));
+console.log("Process history: source dates, saved-time boundaries, quiet absence, full paginated own history PASS");

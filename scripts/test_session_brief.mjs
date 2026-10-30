@@ -62,7 +62,7 @@ assert.equal(empty.latestClientSignal, null);
 assert.deepEqual(empty.activeGuidance, []);
 
 const dataSource = readFileSync(new URL("../assets/os/data.js", import.meta.url), "utf8");
-assert.match(dataSource, /this\.rest\("guidance_events"[\s\S]*kind: "eq\.client_checkin"[\s\S]*limit: 1/);
+assert.match(dataSource, /this\.rest\("guidance_events"[\s\S]*kind: "in\.\(client_checkin,client_contact_request\)"[\s\S]*limit: 1/);
 assert.doesNotMatch(dataSource, /insert\("guidance_events"/);
 
 console.log("Trainer Session Brief tests completed");

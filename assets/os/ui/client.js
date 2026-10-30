@@ -8,6 +8,7 @@ import {
   statusBox,
   detailsForm
 } from "./common.js";
+import { clientContactForm } from "./client-contact.js";
 import { clientResponseForm } from "./client-response.js";
 import { activeQuestionnaire, questionnaireList } from "./client-questionnaires.js";
 
@@ -59,7 +60,8 @@ export function renderClient(root, model) {
             ? create("p", { className: "stop-note", text: `Ustalona granica: ${item.stopCriteria}` })
             : null,
           guidanceVideo(item.videoUrl),
-          clientResponseForm(item, model)
+          clientResponseForm(item, model),
+          clientContactForm(item, model)
         ]), "Brak przypisanych zadań.")
       ])
     : create("p", { className: "muted", text: "Nie ma teraz opublikowanej wskazówki. Nie musisz wykonywać ani zgłaszać dodatkowego zadania." });
@@ -88,6 +90,8 @@ export function renderClient(root, model) {
     panel("Teraz · Twoje ustalenia", plan),
     ...Object.entries(model.responseStates || {}).filter(([id]) => !snapshot.homePlan?.items?.some(item=>item.id===id)).map(([id]) =>
       panel("Odpowiedź do poprzedniej wskazówki",clientResponseForm({id},model))),
+    ...Object.keys(model.contactStates || {}).filter(id=>!snapshot.homePlan?.items?.some(item=>item.id===id)).map(id=>
+      panel("Pytanie do poprzedniej wskazówki",clientContactForm({id},model))),
     panel("Następne spotkanie i kierunek", stage),
     snapshot.questionnaires?.length ? panel("ANKIETY", questionnaireList(snapshot.questionnaires, questionnaire)) : null,
     activeQuestionnaire(questionnaire),

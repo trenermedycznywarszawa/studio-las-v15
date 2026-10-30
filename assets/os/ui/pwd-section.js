@@ -1,5 +1,6 @@
 import { PWD_OBSERVATION_TYPES } from "../pwd.js";
 import { create, detailsForm, formatDate, panel, recordList } from "./common.js";
+import { firstGuidanceComposer } from "./first-guidance.js";
 import { pwdForm } from "./pwd-form.js";
 
 function renderPwdObservation(observation) {
@@ -43,6 +44,7 @@ export function pwdSection(workspace, model) {
   return panel("Pierwsza wizyta diagnostyczna", create("div", {}, [
     create("p", { className: "muted", text: "Cel klienta → kontekst i granice → maksymalnie 3 adekwatne obserwacje → interpretacja trenera → świadoma decyzja. System nie wybiera obserwacji ani decyzji automatycznie." }),
     latest ? renderPwdSession(latest) : create("p", { className: "muted", text: "Brak zapisanej pierwszej wizyty diagnostycznej." }),
+    latest ? firstGuidanceComposer(latest, model) : null,
     history,
     latest
       ? create("p", { className: "muted", text: "Poprzednia pierwsza wizyta diagnostyczna pozostanie w historii." })
