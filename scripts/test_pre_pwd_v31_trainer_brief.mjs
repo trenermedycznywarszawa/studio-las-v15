@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { buildPrePwdV31TrainerBrief } from "../assets/os/questionnaires/pre-pwd-v31-trainer-brief.js";
-import { latestPrePwdV31Submission } from "../assets/os/ui/questionnaire-brief.js";
+import { buildPrePwdV31TrainerBrief, buildPrePwdV31FullAnswers } from "../assets/os/questionnaires/pre-pwd-v31-trainer-brief.js";
+import { latestPrePwdV31Submission, submittedPrePwdV31Submissions } from "../assets/os/ui/questionnaire-brief.js";
 
 const migration = readFileSync(
   new URL("../supabase/migrations/20260912072120_questionnaire_trainer_submission_snapshot.sql", import.meta.url),
@@ -99,5 +99,56 @@ assert.doesNotMatch(mapperSource, /GREEN|YELLOW|RED|score|risk_score|diagnos/i,
   "Trainer brief must not become a scoring or diagnostic engine.");
 assert.doesNotMatch(mapperSource, /home_plan|publish|guidance/i,
   "Trainer brief must not modify Guidance/Home Plan.");
+
+
+
+// The short brief is deliberately selective; the complete trainer view is not.
+// Every source answer, including free text, consent confirmations and fields
+// outside the known definition, must remain accessible for an authorized read.
+const allSubmittedAnswers = {
+  q2_goal_current: "yes",
+  q7_exertion_symptoms: ["none"],
+  q11_supplements: "regular",
+  q11_supplement_names: "Testowy preparat, bez danych klienta",
+  q21_weekly_time: "2",
+  q23_adherence_barriers: ["time"],
+  q30_training_preferences: ["explain_why"],
+  q31_dislikes: ["none"],
+  q32_other: "Przed wizytą chcę omówić dodatkowy ważny sygnał.",
+  confirm_best_knowledge: true,
+  confirm_trainer_not_doctor: true,
+  unexpected_legacy_key: "Wartość historyczna"
+};
+const full = buildPrePwdV31FullAnswers({
+  assignmentId: "synthetic-full",
+  rendererKey: "pre_pwd_v31",
+  versionCode: "3.3",
+  submittedAt: "2026-11-03T12:00:00Z",
+  answers: allSubmittedAnswers
+});
+const everyLine = full.sections.flatMap(section => section.lines);
+assert.equal(full.answerCount, Object.keys(allSubmittedAnswers).length);
+assert.equal(full.displayedCount, full.answerCount);
+for (const [questionId, value] of Object.entries(allSubmittedAnswers)) {
+  const line = everyLine.find(item => item.questionId === questionId);
+  assert(line, "Missing submitted source answer: " + questionId);
+  assert(line.label && line.value, "Missing readable label/value for: " + questionId);
+  if (typeof value === "string" && questionId === "q32_other") assert.equal(line.value, value);
+}
+assert(everyLine.some(line => line.questionId === "unexpected_legacy_key"));
+assert.throws(
+  () => buildPrePwdV31FullAnswers({ rendererKey: "unsupported", answers: allSubmittedAnswers }),
+  /Nieobsługiwany sposób wyświetlania/,
+  "Full view must reject unsupported renderer versions."
+);
+
+const submittedHistory = submittedPrePwdV31Submissions([
+  { assignmentId: "draft", status: "in_progress", rendererKey: "pre_pwd_v31", submittedAt: "2026-11-04T12:00:00Z", answers: allSubmittedAnswers },
+  { assignmentId: "missing-submit-date", rendererKey: "pre_pwd_v31", answers: allSubmittedAnswers },
+  { assignmentId: "new", status: "submitted", rendererKey: "pre_pwd_v31", submittedAt: "2026-11-03T12:00:00Z", answers: allSubmittedAnswers },
+  { assignmentId: "old", status: "submitted", rendererKey: "pre_pwd_v31", submittedAt: "2026-10-03T12:00:00Z", answers: { q2_goal_current: "changed" } },
+  { assignmentId: "unrelated", status: "submitted", rendererKey: "other_renderer", submittedAt: "2026-11-03T13:00:00Z", answers: allSubmittedAnswers }
+]);
+assert.deepEqual(submittedHistory.map(item => item.assignmentId), ["new", "old"]);
 
 console.log("pre-PWD v3.1 deterministic trainer brief contract PASS");
