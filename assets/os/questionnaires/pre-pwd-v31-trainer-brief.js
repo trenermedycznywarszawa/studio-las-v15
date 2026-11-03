@@ -137,6 +137,6 @@ export function buildPrePwdV31FullAnswers(snapshot = {}) {
     submittedAt: snapshot.submittedAt || null,
     sections,
     answerCount: Object.keys(answers).length,
-    displayedCount: sections.reduce((total, section) => total + section.lines.length, 0)
+    displayedCount: sections.flatMap(section => section.lines).length
   };
 }
