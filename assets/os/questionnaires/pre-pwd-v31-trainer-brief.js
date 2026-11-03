@@ -87,3 +87,56 @@ export function buildPrePwdV31TrainerBrief(snapshot = {}) {
     guardrail: "To są informacje przekazane przez klienta do przygotowania rozmowy. Znaczenie nadaje trener; podsumowanie nie stawia rozpoznań, nie kwalifikuje medycznie i nie zmienia planu automatycznie."
   };
 }
+
+
+// Full, read-only presentation of a consciously submitted answer set.
+// The brief remains selective; this view must never silently omit source answers.
+export function buildPrePwdV31FullAnswers(snapshot = {}) {
+  // Reuse the existing strict renderer/version guard.
+  buildPrePwdV31TrainerBrief(snapshot);
+  const answers = snapshot.answers && typeof snapshot.answers === "object" && !Array.isArray(snapshot.answers)
+    ? snapshot.answers
+    : {};
+  const visited = new Set();
+  const sections = PRE_PWD_V31_DEFINITION.sections.map(section => {
+    const lines = (section.questions || []).flatMap(field => {
+      if (!Object.prototype.hasOwnProperty.call(answers, field.id)) return [];
+      visited.add(field.id);
+      const value = answers[field.id];
+      const displayedValue = value === null || value === "" || (Array.isArray(value) && !value.length)
+        ? "(nie podano)"
+        : value !== null && typeof value === "object" && !Array.isArray(value)
+          ? JSON.stringify(value)
+          : formatAnswer(field, value);
+      return [{
+        questionId: field.id,
+        label: field.label,
+        value: displayedValue,
+        sourceRef: field.sourceRef || field.id
+      }];
+    });
+    return lines.length ? { id: section.id, label: section.title, lines } : null;
+  }).filter(Boolean);
+
+  const unexpected = Object.keys(answers).filter(id => !visited.has(id)).sort();
+  if (unexpected.length) {
+    sections.push({
+      id: "unmapped_source_answers",
+      label: "Odpowiedzi spoza znanej definicji — sprawdź źródło",
+      lines: unexpected.map(id => ({
+        questionId: id,
+        label: "Nieznane pole: " + id,
+        value: typeof answers[id] === "object" ? JSON.stringify(answers[id]) : String(answers[id]),
+        sourceRef: id
+      }))
+    });
+  }
+  return {
+    assignmentId: snapshot.assignmentId || null,
+    versionCode: snapshot.versionCode || null,
+    submittedAt: snapshot.submittedAt || null,
+    sections,
+    answerCount: Object.keys(answers).length,
+    displayedCount: sections.reduce((total, section) => total + section.lines.length, 0)
+  };
+}
