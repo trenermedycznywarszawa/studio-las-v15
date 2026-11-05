@@ -16,7 +16,10 @@ const closed={...pending,contact_resolved_at:"2026-09-09T12:00:00Z"};
 assert.ok(!withoutReviewedSignals(two,[closed]).signals.some(s=>s.signalKey===key));
 const changed=collectAttentionSignals({session:{...a,updated_at:"2026-09-09T13:00:00Z"}}).signals[0];
 assert.notEqual(changed.signalKey,key,"source revision creates new review identity");
-const observations=collectWorkspaceSignals({guidanceEvents:[{id:"response-a",event_date:"2026-09-09",created_at:"2026-09-09T12:00:00Z",payload:{note:"Reduced as agreed"}}]});
+const observations=collectWorkspaceSignals({guidanceEvents:[{id:"response-a",event_date:"2026-09-09",created_at:"2026-09-09T12:00:00Z",payload:{note:"Reduced as agreed",contact_requested:true}}]});
 assert.equal(observations.signals[0].context,"Reduced as agreed");
 assert.equal(observations.signals[0].level,"review","narrative is not a failure score");
 console.log("SIGNAL_FOLLOWTHROUGH_PASS: exact source, revisions, unresolved contact, narrative evidence");
+
+assert.equal(collectWorkspaceSignals({guidanceEvents:[{id:"routine",payload:{note:"Wykonane",contact_requested:false}}]}).signals.length,0);
+assert.equal(collectWorkspaceSignals({guidanceEvents:[{id:"legacy",payload:{note:"Wykonane"}}]}).signals.length,0);

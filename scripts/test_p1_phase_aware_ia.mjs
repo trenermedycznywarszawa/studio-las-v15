@@ -99,9 +99,13 @@ const inquiryControllerSource = readFileSync(
 assert.match(trainerStateSource, /const goal = String\(client\.goal \|\| ""\)\.trim\(\)/);
 assert.match(trainerStateSource, /"Cel klienta"[\s\S]*goal \|\| "Cel nie został jeszcze zapisany\."/);
 assert.doesNotMatch(trainerStateSource, /life_goal|north_star/);
-assert.match(trainerSource, /questionnaireBrief:\s*questionnaireBriefPanel\(workspace\)/,
+assert.match(trainerSource, /questionnaireBrief:\s*trainerQuestionnairePanel\(workspace, model\)/,
   "Trainer workspace must expose the submitted pre-PWD brief as a phase-aware section.");
 assert.match(trainerSource, /orderTrainerSections\(workspace\.client\.stage, sections\)/);
+assert.doesNotMatch(trainerSource, /newClientForm|Jedno źródło prawdy|Supabase/,
+  "The trainer home must not show direct client creation or technical storage copy.");
+assert.doesNotMatch(appSource, /onCreateClient:/,
+  "Client creation must begin with the first-contact workflow.");
 assert.match(
   dataSource,
   /select: "id,name,email,phone,engagement_type,stage,start_date,next_session_date,next_review_date,goal,next_milestone,status,created_at,updated_at"/
@@ -114,3 +118,5 @@ assert.match(inquiryControllerSource, /render\(workspace, \{ activeClientId = ""
 assert.doesNotMatch(inquiryControllerSource, /document\.querySelector\("\.client-select"\)/);
 
 console.log("P1-A phase-aware information architecture tests completed");
+
+assert.match(readFileSync(new URL("../assets/os/ui/trainer-questionnaire.js", import.meta.url), "utf8"), /questionnaireBriefPanel\(workspace\)/);

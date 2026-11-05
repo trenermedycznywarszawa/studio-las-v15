@@ -205,6 +205,11 @@ export function assertNoPersistentHealthData() {
   }
 }
 
+export function isInsufficientAal(error) {
+  const payload = error?.details || error?.payload;
+  return (payload?.code || payload?.error_code) === "insufficient_aal";
+}
+
 export function userSafeError(error, environment = "") {
   if (error instanceof RuntimeConfigurationError) return error.message;
 
@@ -219,6 +224,7 @@ export function userSafeError(error, environment = "") {
     return "Adres poczty elektronicznej lub hasło są nieprawidłowe.";
   }
   if (status === 400) return "Dane formularza nie spełniają wymagań. Sprawdź pola i spróbuj ponownie.";
+  if (isInsufficientAal(error)) return "Potwierdź kod MFA z aplikacji uwierzytelniającej, aby kontynuować.";
   if (status === 401) return "Sesja wygasła albo link jest nieprawidłowy. Zaloguj się ponownie.";
   if (status === 403) return "Nie masz dostępu do tych danych.";
   if (status === 409) return "Taki zapis już istnieje albo narusza regułę danych.";
