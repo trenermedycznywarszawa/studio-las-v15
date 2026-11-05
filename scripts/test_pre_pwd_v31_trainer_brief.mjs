@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
 import { buildPrePwdV31TrainerBrief, buildPrePwdV31FullAnswers } from "../assets/os/questionnaires/pre-pwd-v31-trainer-brief.js";
-import { latestPrePwdV31Submission, submittedPrePwdV31Submissions } from "../assets/os/ui/questionnaire-brief.js";
+import { latestPrePwdV31Submission, questionnaireBriefPanel, submittedPrePwdV31Submissions } from "../assets/os/ui/questionnaire-brief.js";
 
 const migration = readFileSync(
   new URL("../supabase/migrations/20260912072120_questionnaire_trainer_submission_snapshot.sql", import.meta.url),
@@ -150,5 +150,108 @@ const submittedHistory = submittedPrePwdV31Submissions([
   { assignmentId: "unrelated", status: "submitted", rendererKey: "other_renderer", submittedAt: "2026-11-03T13:00:00Z", answers: allSubmittedAnswers }
 ]);
 assert.deepEqual(submittedHistory.map(item => item.assignmentId), ["new", "old"]);
+
+// Synthetic DOM adapter for UI presentation contract verification
+class SyntheticNode {
+  constructor(tag) {
+    this.tagName = String(tag || "").toUpperCase();
+    this.children = [];
+    this.attributes = {};
+    this.className = "";
+    this._text = "";
+  }
+  get textContent() {
+    return this._text || this.children.map(c => c.textContent).join("");
+  }
+  set textContent(v) {
+    this._text = String(v ?? "");
+    this.children = [];
+  }
+  setAttribute(k, v) { this.attributes[k] = String(v); }
+  getAttribute(k) { return this.attributes[k]; }
+  addEventListener() {}
+  append(...nodes) {
+    for (const node of nodes) {
+      if (node) this.children.push(node);
+    }
+  }
+  querySelectorAll(selector) {
+    const results = [];
+    const walk = (node) => {
+      if (!node || typeof node !== "object") return;
+      if (selector.startsWith(".")) {
+        const cls = selector.slice(1);
+        if (node.className && node.className.split(/\s+/).includes(cls)) results.push(node);
+      } else if (node.tagName === selector.toUpperCase()) {
+        results.push(node);
+      }
+      for (const child of node.children || []) walk(child);
+    };
+    for (const child of this.children) walk(child);
+    return results;
+  }
+  querySelector(selector) {
+    return this.querySelectorAll(selector)[0] || null;
+  }
+}
+class SyntheticTextNode extends SyntheticNode {
+  constructor(text) {
+    super("#text");
+    this._text = String(text ?? "");
+  }
+}
+
+globalThis.Node = SyntheticNode;
+globalThis.document = {
+  createElement: tag => new SyntheticNode(tag),
+  createTextNode: text => new SyntheticTextNode(text)
+};
+
+const submissionNew = {
+  assignmentId: "asg-new",
+  status: "submitted",
+  rendererKey: "pre_pwd_v31",
+  versionCode: "3.3",
+  submittedAt: "2026-11-03T12:00:00Z",
+  answers: { ...allSubmittedAnswers, q32_other: "Najnowsza uwaga listopada" }
+};
+const submissionOld = {
+  assignmentId: "asg-old",
+  status: "submitted",
+  rendererKey: "pre_pwd_v31",
+  versionCode: "3.3",
+  submittedAt: "2026-10-03T12:00:00Z",
+  answers: { q2_goal_current: "yes", q32_other: "Wcześniejsza uwaga października" }
+};
+const submissionDraft = {
+  assignmentId: "asg-draft",
+  status: "in_progress",
+  rendererKey: "pre_pwd_v31",
+  submittedAt: "2026-11-04T12:00:00Z",
+  answers: { q32_other: "Sekretny szkic nieujawniony" }
+};
+
+const panel = questionnaireBriefPanel({
+  questionnaireSubmissions: [submissionOld, submissionDraft, submissionNew]
+});
+
+assert(panel, "Questionnaire brief panel must be rendered");
+assert.equal(panel.querySelector("h2")?.textContent, "PRZED WIZYTĄ — 60 SEKUND");
+
+const summaries = panel.querySelectorAll("summary").map(s => s.textContent);
+assert(summaries.includes("Wszystkie odpowiedzi z najnowszej ankiety"), "Must include newest full answers section");
+assert(summaries.some(s => s.includes("Wcześniejsze przekazane ankiety (1)")), "Must include previous submissions section");
+
+const detailsCards = panel.querySelectorAll(".details-card");
+const newestSection = detailsCards.find(d => d.querySelector("summary")?.textContent === "Wszystkie odpowiedzi z najnowszej ankiety");
+const previousSection = detailsCards.find(d => d.querySelector("summary")?.textContent.includes("Wcześniejsze przekazane ankiety"));
+
+assert(newestSection.textContent.includes("Najnowsza uwaga listopada"), "Newest section must contain newest answer");
+assert(!newestSection.textContent.includes("Wcześniejsza uwaga października"), "Newest section must not leak older answers");
+
+assert(previousSection.textContent.includes("Wcześniejsza uwaga października"), "Previous section must contain previous answer");
+assert(!previousSection.textContent.includes("Najnowsza uwaga listopada"), "Previous section must not leak newest answers");
+
+assert(!panel.textContent.includes("Sekretny szkic nieujawniony"), "In-progress draft answers must never enter the panel DOM");
 
 console.log("pre-PWD v3.1 deterministic trainer brief contract PASS");
