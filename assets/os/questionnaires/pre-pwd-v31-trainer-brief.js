@@ -196,7 +196,7 @@ export function buildPrePwdV31FullAnswers(snapshot = {}) {
       lines: unexpected.map(id => ({
         questionId: id,
         label: "Nieznane pole: " + id,
-        value: typeof answers[id] === "object" ? JSON.stringify(answers[id]) : String(answers[id]),
+        value: answers[id] === null ? "(nie podano)" : typeof answers[id] === "object" ? JSON.stringify(answers[id]) : String(answers[id]),
         sourceRef: id
       }))
     });

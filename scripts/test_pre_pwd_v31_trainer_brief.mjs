@@ -117,7 +117,8 @@ const allSubmittedAnswers = {
   q32_other: "Przed wizytą chcę omówić dodatkowy ważny sygnał.",
   confirm_best_knowledge: true,
   confirm_trainer_not_doctor: true,
-  unexpected_legacy_key: "Wartość historyczna"
+  unexpected_legacy_key: "Wartość historyczna",
+  unexpected_legacy_null_key: null
 };
 const full = buildPrePwdV31FullAnswers({
   assignmentId: "synthetic-full",
@@ -136,6 +137,12 @@ for (const [questionId, value] of Object.entries(allSubmittedAnswers)) {
   if (typeof value === "string" && questionId === "q32_other") assert.equal(line.value, value);
 }
 assert(everyLine.some(line => line.questionId === "unexpected_legacy_key"));
+const unexpectedTextLine = everyLine.find(line => line.questionId === "unexpected_legacy_key");
+assert.equal(unexpectedTextLine?.value, "Wartość historyczna", "Non-empty unknown field formatting must be preserved");
+
+const unexpectedNullLine = everyLine.find(line => line.questionId === "unexpected_legacy_null_key");
+assert(unexpectedNullLine, "Missing unexpected legacy null line");
+assert.equal(unexpectedNullLine.value, "(nie podano)", "Unknown legacy field with null value must render as '(nie podano)'");
 assert.throws(
   () => buildPrePwdV31FullAnswers({ rendererKey: "unsupported", answers: allSubmittedAnswers }),
   /Nieobsługiwany sposób wyświetlania/,
