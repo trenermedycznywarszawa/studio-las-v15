@@ -8,15 +8,20 @@ import {
  getTrainerAttentionSourceKeys
 } from "../assets/os/trainer-attention-snapshot.js";
 import { freshTotpCode } from "./e2e_trainer_attention_staging.mjs";
+import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
 const origin = "https://ulauyoqjoetjqktegeuq.supabase.co";
 const url = process.env.STUDIO_LAS_E2E_URL;
 const key = process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY;
 const dir = process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
 export async function api(path, token, method="GET", body) {
+ if (String(method || "GET").toUpperCase() !== "GET" && String(method || "GET").toUpperCase() !== "HEAD") {
+  assertE2eSafetyGate(process.env);
+ }
  const r=await fetch(`${origin}${path}`,{method,headers:{apikey:key,Authorization:`Bearer ${token}`,"Content-Type":"application/json",Prefer:"return=representation"},body:body===undefined?undefined:JSON.stringify(body)});
  const text=await r.text(); assert.ok(r.ok,`${method} ${path.split("?")[0]}: ${r.status} ${text.slice(0,200)}`); return text?JSON.parse(text):null;
 }
 export async function login(page,email,password,trainer=false) {
+ assertE2eSafetyGate(process.env);
  await page.goto(url);
  await page.getByLabel("Adres poczty elektronicznej").fill(email);
  await page.getByLabel("Hasło").fill(password);
