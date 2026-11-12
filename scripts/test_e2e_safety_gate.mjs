@@ -385,16 +385,48 @@ try {
   assert.ok(outputText.includes("status=BLOCKED\n"));
   assert.ok(outputText.includes("code=BLOCKED: isolation/cleanup unverified\n"));
   const summaryText = readFileSync(githubSummaryFile, "utf8");
-  assert.ok(summaryText.includes("BLOCKED: isolation/cleanup unverified"));
+  assert.ok(summaryText.includes("NOT RUN / BLOCKED (BLOCKED: isolation/cleanup unverified)"));
+  assert.ok(summaryText.includes("See local-regressions job"));
+
+  // PR summary report-only run: exits 0 for local-regressions notice, but unambiguously reports NOT RUN / BLOCKED.
+  const prSummaryFile = path.join(tmpDir, "pr_summary.md");
+  const prNoticeRun = spawnSync(
+    process.execPath,
+    ["scripts/e2e_safety_gate.mjs", "--report-only", "--github-summary"],
+    {
+      cwd: repoRoot,
+      env: {
+        PATH: process.env.PATH,
+        GITHUB_ACTIONS: "true",
+        STUDIO_LAS_E2E_PROJECT_REF: CANONICAL_STAGING_REF,
+        STUDIO_LAS_E2E_SUPABASE_URL: `https://${CANONICAL_STAGING_REF}.supabase.co`,
+        STUDIO_LAS_E2E_URL: "http://127.0.0.1:8790/",
+        STUDIO_LAS_QA_EMAIL: ALLOWED_SYNTHETIC_QA_EMAILS[0],
+        STUDIO_LAS_E2E_MARKER: "ATTENTION-123456789-1",
+        GITHUB_STEP_SUMMARY: prSummaryFile
+      },
+      encoding: "utf8"
+    }
+  );
+  assert.equal(prNoticeRun.status, 0, prNoticeRun.stderr);
+  assert.ok(prNoticeRun.stderr.includes("::notice title=Staging browser E2E NOT RUN / BLOCKED::"), prNoticeRun.stderr);
+  const prSummaryText = readFileSync(prSummaryFile, "utf8");
+  assert.ok(prSummaryText.includes("PASS (offline scope only)"));
+  assert.ok(prSummaryText.includes("NOT RUN / BLOCKED (BLOCKED: isolation/cleanup unverified)"));
 } finally {
   rmSync(tmpDir, { recursive: true, force: true });
 }
 
-// Verify workflow structure: local-regressions is independent; staging-browser-e2e enforces gate without --report-only.
+// Verify workflow structure and YAML hygiene: PR runs local-regressions + notice; staging-browser-e2e is manual dispatch only & fail-closed.
 const workflowText = readFileSync(path.join(repoRoot, ".github", "workflows", "trainer-attention-production.yml"), "utf8");
-assert.ok(!workflowText.includes("--report-only"), "Workflow must not mask BLOCKED status with exit-0 --report-only");
+assert.ok(!workflowText.includes("\t"), "Workflow YAML must not contain tabs");
+for (const topKey of ["name:", "on:", "permissions:", "concurrency:", "jobs:"]) {
+  assert.ok(workflowText.includes(`\n${topKey}`) || workflowText.startsWith(topKey), `Missing top-level YAML key ${topKey}`);
+}
 assert.ok(workflowText.includes("local-regressions:"), "Workflow must keep independent local-regressions job");
 assert.ok(workflowText.includes("staging-browser-e2e:"), "Workflow must define staging-browser-e2e job");
+assert.ok(workflowText.includes("if: github.event_name == 'workflow_dispatch'"), "Mutating staging E2E job must never auto-run on pull_request");
+assert.ok(workflowText.includes("node scripts/e2e_safety_gate.mjs --report-only --github-summary"));
 assert.ok(workflowText.includes("node scripts/e2e_safety_gate.mjs --github-output --github-summary"));
 assert.ok(workflowText.includes("steps.gate.outputs.allowed == 'true' && github.event_name == 'workflow_dispatch'"));
 

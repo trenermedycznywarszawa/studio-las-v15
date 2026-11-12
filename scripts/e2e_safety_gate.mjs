@@ -441,17 +441,21 @@ function writeGithubOutput(verdict) {
   appendFileSync(outputPath, `${lines.join("\n")}\n`, "utf8");
 }
 
-function writeGithubSummary(verdict) {
+function writeGithubSummary(verdict, reportOnly = false) {
   const summaryPath = String(process.env.GITHUB_STEP_SUMMARY || "").trim();
   if (!summaryPath) return;
+  const e2eStatus = verdict.allowed
+    ? "READY (isolated disposable environment verified)"
+    : `NOT RUN / BLOCKED (${verdict.code})`;
   const markdown = [
-    "### Staging Browser E2E Safety Gate",
+    "### Studio Las OS — Regression vs. Staging Browser E2E Status",
     "",
-    `- **Status:** \`${verdict.code}\``,
-    `- **Allowed to execute mutating staging E2E:** \`${verdict.allowed}\``,
-    `- **Reason:** ${verdict.reason}`,
+    "| Scope | Status | Details |",
+    "| --- | --- | --- |",
+    `| Local offline regressions | ${reportOnly ? "PASS (offline scope only)" : "See local-regressions job"} | Independent of shared staging; no remote data mutation |`,
+    `| Mutating staging browser E2E | \`${e2eStatus}\` | ${verdict.reason} |`,
     "",
-    "_Local Node regression tests run independently in `local-regressions`._",
+    "_Do not treat local PASS as staging E2E PASS._",
     ""
   ].join("\n");
   appendFileSync(summaryPath, markdown, "utf8");
@@ -459,19 +463,22 @@ function writeGithubSummary(verdict) {
 
 if (process.argv[1] && import.meta.url === pathToFileURL(process.argv[1]).href) {
   const args = new Set(process.argv.slice(2));
+  const reportOnly = args.has("--report-only");
   const verdict = evaluateE2eSafetyGate(process.env);
   if (args.has("--github-output")) writeGithubOutput(verdict);
-  if (args.has("--github-summary")) writeGithubSummary(verdict);
+  if (args.has("--github-summary")) writeGithubSummary(verdict, reportOnly);
 
   if (verdict.allowed) {
     console.log(`E2E_SAFETY_GATE_READY: ${verdict.reason}`);
   } else {
-    if (process.env.GITHUB_ACTIONS === "true" && !args.has("--report-only")) {
-      console.error(`::error title=${verdict.code}::${verdict.reason}`);
+    if (process.env.GITHUB_ACTIONS === "true") {
+      const level = reportOnly ? "notice" : "error";
+      const title = reportOnly ? "Staging browser E2E NOT RUN / BLOCKED" : verdict.code;
+      console.error(`::${level} title=${title}::${verdict.reason}`);
     }
     console.error(verdict.code);
     console.error(verdict.reason);
-    if (!args.has("--report-only")) {
+    if (!reportOnly) {
       process.exitCode = 1;
     }
   }

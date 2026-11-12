@@ -52,10 +52,19 @@ jobs:
           node scripts/test_e2e_safety_gate.mjs
       - name: Build staging artifact
         run: node scripts/build_studio_las_os_deploy.mjs --staging
+      - name: Report staging E2E status (NOT RUN / BLOCKED)
+        if: github.event_name == 'pull_request'
+        env:
+          STUDIO_LAS_E2E_PROJECT_REF: ulauyoqjoetjqktegeuq
+          STUDIO_LAS_E2E_SUPABASE_URL: https://ulauyoqjoetjqktegeuq.supabase.co
+          STUDIO_LAS_E2E_URL: http://127.0.0.1:8790/
+          STUDIO_LAS_QA_EMAIL: attention.trainer@example.test
+          STUDIO_LAS_E2E_MARKER: ATTENTION-${{ github.run_id }}-${{ github.run_attempt }}
+        run: node scripts/e2e_safety_gate.mjs --report-only --github-summary
 
   staging-browser-e2e:
-    name: Staging browser E2E (BLOCKED until isolated)
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    name: Staging browser E2E (manual dispatch only; fail-closed)
+    if: github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
@@ -78,12 +87,6 @@ jobs:
       - name: Enforce fail-closed E2E safety gate
         id: gate
         run: node scripts/e2e_safety_gate.mjs --github-output --github-summary
-      - name: Require manual workflow_dispatch for mutating E2E
-        if: github.event_name != 'workflow_dispatch'
-        shell: bash
-        run: |
-          echo "::error title=BLOCKED: manual dispatch required::Mutating staging E2E is blocked on automatic pull_request runs." >&2
-          exit 1
       - name: Build staging artifact
         if: steps.gate.outputs.allowed == 'true' && github.event_name == 'workflow_dispatch'
         run: node scripts/build_studio_las_os_deploy.mjs --staging
