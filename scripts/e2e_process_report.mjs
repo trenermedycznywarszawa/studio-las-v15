@@ -1,10 +1,13 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
-import { chromium } from "playwright";
+// playwright is dynamically imported only after assertE2eSafetyGate succeeds.
 import { api, login } from "./attention_e2e_helpers.mjs";
+import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
 const id="c7200000-0000-4000-8000-000000000001", dir=process.env.STUDIO_LAS_E2E_ARTIFACT_DIR;
 const marker=process.env.STUDIO_LAS_E2E_MARKER, title=`Raport procesu · ${marker}`;
 const clientText=`Ustalenia z fikcyjnej współpracy · ${marker}. Wrócimy do omówienia wskazówki na przeglądzie.`;
+assertE2eSafetyGate(process.env);
+const { chromium } = await import("playwright");
 await mkdir(dir,{recursive:true});
 const browser=await chromium.launch();
 const tc=await browser.newContext({viewport:{width:1440,height:1000}}),cc=await browser.newContext({viewport:{width:390,height:844}});

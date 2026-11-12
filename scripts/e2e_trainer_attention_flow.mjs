@@ -1,14 +1,17 @@
 import assert from "node:assert/strict";
 import { mkdir, writeFile } from "node:fs/promises";
 import { randomUUID } from "node:crypto";
-import { chromium } from "playwright";
+// playwright is dynamically imported only after assertE2eSafetyGate succeeds.
 import { freshTotpCode, studioToday } from "./e2e_trainer_attention_staging.mjs";
 import { api,login,queue,expectQueue,questionnaireBacklog,testSignalCase,eventSignalKey,sessionSignalKey,screenshot } from "./attention_e2e_helpers.mjs";
+import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
 const origin="https://ulauyoqjoetjqktegeuq.supabase.co";
 const dir=process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
 const clientId="c7200000-0000-4000-8000-000000000001";
 const results=[];
 const resolutionNote=`Ustalenie wyjaśnione. Dane fikcyjne. ${process.env.STUDIO_LAS_E2E_MARKER || randomUUID()}`;
+assertE2eSafetyGate(process.env);
+const { chromium } = await import("playwright");
 await mkdir(dir,{recursive:true});
 const browser=await chromium.launch();
 const context=await browser.newContext({viewport:{width:1440,height:1000}});
