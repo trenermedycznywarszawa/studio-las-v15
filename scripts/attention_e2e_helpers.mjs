@@ -1,11 +1,17 @@
 import assert from "node:assert/strict";
 import { signalInstanceKey } from "../assets/os/decision-support.js";
+import { trainerCanReviewClient } from "../assets/os/trainer-review-access.js";
+import {
+ assembleTrainerAttentionSnapshot,
+ collectTrainerAttentionPages,
+ getTrainerAttentionReadContract,
+ getTrainerAttentionSourceKeys
+} from "../assets/os/trainer-attention-snapshot.js";
 import { freshTotpCode } from "./e2e_trainer_attention_staging.mjs";
 const origin = "https://ulauyoqjoetjqktegeuq.supabase.co";
 const url = process.env.STUDIO_LAS_E2E_URL;
 const key = process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY;
 const dir = process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
-const clientId = "c7200000-0000-4000-8000-000000000001";
 export async function api(path, token, method="GET", body) {
  const r=await fetch(`${origin}${path}`,{method,headers:{apikey:key,Authorization:`Bearer ${token}`,"Content-Type":"application/json",Prefer:"return=representation"},body:body===undefined?undefined:JSON.stringify(body)});
  const text=await r.text(); assert.ok(r.ok,`${method} ${path.split("?")[0]}: ${r.status} ${text.slice(0,200)}`); return text?JSON.parse(text):null;
@@ -33,11 +39,39 @@ export function questionnaireBacklogKeys(assignments, reviews) {
   return signalInstanceKey({id:"questionnaire-submitted",source:"questionnaire",sourceId:row.id,sourceDate:row.submitted_at,sourceRevision:row.submitted_at});
  }).filter(key=>{const review=reviewed.get(key);return !review || (review.outcome==="contact_required"&&!review.contact_resolved_at);}).sort();
 }
-export async function questionnaireBacklog(token) {
- const query=new URLSearchParams({client_id:`eq.${clientId}`,status:"eq.submitted",select:"id,status,submitted_at,questionnaire_versions!inner(questionnaire_templates!inner(template_key))","questionnaire_versions.questionnaire_templates.template_key":"eq.pre_pwd_first_visit",order:"id.asc"});
- const assignments=await api(`/rest/v1/questionnaire_assignments?${query}`,token);
- const reviews=await api(`/rest/v1/trainer_signal_reviews?client_id=eq.${clientId}&select=signal_key,outcome,contact_resolved_at`,token);
- return questionnaireBacklogKeys(assignments,reviews);
+export async function questionnaireBacklog(token, filterClientId = null) {
+ // Read the current trainer profile through the same auth_user_id projection as
+ // the staging verifier. Decoding sub is only query construction, not JWT trust:
+ // the server still authorizes every GET with the supplied token and RLS.
+ const subject=JSON.parse(Buffer.from(String(token).split(".")[1] || "", "base64url").toString("utf8")).sub;
+ assert.match(String(subject || ""), /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, "Trainer token subject required");
+ const profiles=await api(`/rest/v1/profiles?${new URLSearchParams({auth_user_id:`eq.${subject}`,select:"id,role",limit:"2"})}`,token);
+ assert.ok(Array.isArray(profiles) && profiles.length===1,"Exactly one current trainer profile required");
+ const profile=profiles[0];
+ assert.equal(profile.role,"trainer","Questionnaire baseline requires a trainer profile");
+ assert.match(String(profile.id || ""), /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i,"Valid trainer profile id required");
+ const contracts=getTrainerAttentionReadContract();
+ const reads=await Promise.all(["clients","questionnaireAssignments","signalReviews"].map(async source=>{
+  const contract=contracts[source];
+  const data=await collectTrainerAttentionPages(({offset,limit})=>{
+   const query={...contract.predicates,select:contract.select,order:contract.order,offset:String(offset),limit:String(limit)};
+   if(filterClientId) query[source==="clients"?"id":"client_id"]=`eq.${filterClientId}`;
+   return api(`/rest/v1/${contract.table}?${new URLSearchParams(query)}`,token);
+  });
+  return [source,{data,error:null}];
+ }));
+ // Validate the same client/source boundary as the runtime. In particular, an
+ // assignment or review outside the non-deleted client snapshot must fail closed,
+ // rather than silently disappear and make the expected queue falsely quiet.
+ const snapshot=assembleTrainerAttentionSnapshot({
+  ...Object.fromEntries(getTrainerAttentionSourceKeys().map(source=>[source,{data:[],error:null}])),
+  ...Object.fromEntries(reads)
+ });
+ const owned=new Set(snapshot.clients.filter(client=>trainerCanReviewClient(client,profile)).map(client=>client.id));
+ return questionnaireBacklogKeys(
+  snapshot.questionnaireAssignments.filter(row=>owned.has(row.client_id)),
+  snapshot.signalReviews.filter(row=>owned.has(row.client_id))
+ );
 }
 export function assertQueueKeys(actual, backlog, additions=[]) {
  assert.ok(Array.isArray(backlog),"Explicit questionnaire baseline required");
@@ -47,7 +81,16 @@ export function assertQueueKeys(actual, backlog, additions=[]) {
 }
 export async function expectQueue(page,backlog,additions=[]) {
  const expected=[...backlog,...additions].sort();
- await page.waitForFunction(keys=>JSON.stringify([...document.querySelectorAll('.attention-case')].map(row=>row.getAttribute('data-signal-key')).sort())===JSON.stringify(keys),expected);
+ try {
+  await page.waitForFunction(keys=>JSON.stringify([...document.querySelectorAll('.attention-case')].map(row=>row.getAttribute('data-signal-key')).sort())===JSON.stringify(keys),expected);
+ } catch (error) {
+  const actual = await page.locator('.attention-case').evaluateAll(rows=>rows.map(row=>row.getAttribute('data-signal-key'))).catch(()=>[]);
+  const missing = expected.filter(k=>!actual.includes(k));
+  const unexpected = actual.filter(k=>!expected.includes(k));
+  const details = `expectQueue timeout: expected ${expected.length} signals, found ${actual.length}. Missing: [${missing.join(", ")}], Unexpected: [${unexpected.join(", ")}]. Expected keys: [${expected.join(", ")}], Actual keys in DOM: [${actual.join(", ")}].`;
+  console.error(details);
+  throw new Error(`${details} Cause: ${error.message}`);
+ }
  assertQueueKeys(await page.locator('.attention-case').evaluateAll(rows=>rows.map(row=>row.getAttribute('data-signal-key'))),backlog,additions);
  assert.equal(await page.getByText("Nie udało się wczytać spraw. Sprawdź dostęp i spróbuj ponownie.",{exact:true}).count(),0);
  if(expected.length===0) await page.getByText("Brak spraw do przejrzenia.",{exact:true}).waitFor();
