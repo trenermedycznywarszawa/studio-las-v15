@@ -15,7 +15,7 @@ import {
 import { signalIdentity, signalTypeLabel } from "../decision-support.js";
 import { CANONICAL_ENGAGEMENTS, CANONICAL_STAGES } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
-import { cycleDecisionForm, signalReviewForm } from "./forms.js";
+import { clientProcessForm, cycleDecisionForm, signalReviewForm } from "./forms.js";
 import { create, detailsForm, field, formatDate, panel, recordList, submitForm } from "./common.js";
 
 const SIGNAL_SOURCE_LABELS = Object.freeze({
@@ -57,7 +57,7 @@ export function clientIdentityPanel(client) {
   ]));
 }
 
-export function nowPanel(workspace, attentionSignals) {
+export function nowPanel(workspace, attentionSignals, model = {}) {
   const brief = buildTrainerSessionBrief(workspace);
   const openSignal = attentionSignals?.signals?.[0] || null;
   const plan = brief.activePlan;
@@ -74,12 +74,15 @@ export function nowPanel(workspace, attentionSignals) {
 
   return panel("Teraz", create("div", { className: "now-block" }, [
     create("div", { className: "now-grid" }, [
-      nowItem("Etap procesu", CANONICAL_STAGES[workspace.client.stage] || "Proces Studio Las"),
+      nowItem("Etap procesu", CANONICAL_STAGES[workspace.client.stage]
+        ? `${workspace.client.stage} · ${CANONICAL_STAGES[workspace.client.stage]}` : "Proces Studio Las"),
       nowItem("Aktualny cel", brief.currentFocus?.value || "Cel nie został jeszcze zapisany.", focusMeta),
       nowItem("Ostatnia obowiązująca decyzja trenera", brief.lastDecision?.value || "Brak zapisanej decyzji trenera.", decisionMeta),
       nowItem("Otwarty sygnał wymagający uwagi", openSignal?.label || "Brak otwartego sygnału wymagającego uwagi.", signalMeta),
       nowItem(brief.nextStep.label, brief.nextStep.value, nextMeta, "now-item wide")
     ]),
+    typeof model.onUpdateClient === "function"
+      ? detailsForm("Zmień etap i terminy", clientProcessForm(workspace.client, model.onUpdateClient)) : null,
     processHistoryPanel(workspace),
     brief.requiresCycleDecision
       ? create("div", { className: "cycle-decision-required", text: "Wymaga decyzji co dalej" })

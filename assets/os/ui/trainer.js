@@ -198,7 +198,7 @@ export function renderTrainer(root, model) {
     const workspace = model.workspace;
     const sections = {
       identity: clientIdentityPanel(workspace.client),
-      now: nowPanel(workspace, model.attentionSignals),
+      now: nowPanel(workspace, model.attentionSignals, model),
       cycleDecision: Number(workspace.client.stage) === 4 || workspace.cycleDecisions?.length
         ? cycleDecisionSection(workspace, model)
         : null,
