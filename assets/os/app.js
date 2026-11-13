@@ -1,4 +1,5 @@
 import { assertCurrentReviewOwner } from "./trainer-review-access.js";
+import { clientUpdateAction } from "./client-update-action.js";
 import { TrainerAttentionController } from "./trainer-attention-controller.js";
 import { TrainerWorkspaceLoader } from "./trainer-workspace-loader.js";
 import { collectWorkspaceSignals } from "./trainer-signals.js";
@@ -270,6 +271,7 @@ function renderTrainerState() {
     onReload: () => loadTrainer(state.activeClientId).catch(handleRuntimeError),
     onLogout: () => logout().catch(handleRuntimeError),
     onManageMfa: () => showMfaManagement(),
+    onUpdateClient: clientUpdateAction(state, trainerLoader, trainerAttentionController, withWrite, loadTrainerWorkspace),
     onAssignQuestionnaire: () => withWrite("Przypisywanie ankiety", () => state.questionnaireApi.assignActive(clientId), reloadWorkspace).catch(handleRuntimeError),
     onSavePwd: async values => {
       await withWrite("Zapisywanie pierwszej wizyty diagnostycznej", () => savePwdWorkflow(state.repository, state.activeClientId, values), reloadWorkspace);
