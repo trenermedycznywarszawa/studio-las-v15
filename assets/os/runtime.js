@@ -215,6 +215,9 @@ export function userSafeError(error, environment = "") {
 
   const status = Number(error?.status || 0);
   const errorCode = String(error?.payload?.code || error?.payload?.error_code || "").toLowerCase();
+  if (status === 400 && errorCode === "23514" && error?.payload?.message === "first guidance requires a current permitting PWD decision") {
+    return "Aktualna decyzja PWD nie pozwala rozpocząć pierwszego prowadzenia. Odśwież kartę i sprawdź zapisany kolejny krok.";
+  }
   if (error instanceof TypeError && /fetch|network/i.test(String(error.message || ""))) {
     return environment === "staging"
       ? "Nie można połączyć się z wersją testową. Sprawdź konfigurację środowiska."

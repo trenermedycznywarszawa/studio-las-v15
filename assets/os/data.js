@@ -417,7 +417,7 @@ export class StudioLasRepository {
       this.rest("trainer_signal_reviews", {query: {client_id: `eq.${clientId}`, select: "*", order: "reviewed_at.desc,created_at.desc"}})
     ]);
     if (!client) throw new SupabaseHttpError("Client not found or access denied", 404);
-    const workspace = {client, intakes, sessions, preSessionChecks, trainingLoad, assessments,
+    const workspace = {client, intakes, sessions, preSessionChecks, trainingLoad, assessments, guidanceStartGate: guidanceSnapshot.startGate,
       homePlans: guidanceSnapshot.plans, homePlanItems: guidanceSnapshot.items,
       guidanceEvents, cycleDecisions, signalReviews, reports: [], measurements: [],
       sectionStatus: {reports: "loading", measurements: "loading"}};
