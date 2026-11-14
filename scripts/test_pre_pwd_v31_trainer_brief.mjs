@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { readFileSync } from "node:fs";
-import { buildPrePwdV31TrainerBrief } from "../assets/os/questionnaires/pre-pwd-v31-trainer-brief.js";
-import { latestPrePwdV31Submission } from "../assets/os/ui/questionnaire-brief.js";
+import { buildPrePwdV31TrainerBrief, buildPrePwdV31FullAnswers } from "../assets/os/questionnaires/pre-pwd-v31-trainer-brief.js";
+import { latestPrePwdV31Submission, questionnaireBriefPanel, submittedPrePwdV31Submissions } from "../assets/os/ui/questionnaire-brief.js";
 
 const migration = readFileSync(
   new URL("../supabase/migrations/20260912072120_questionnaire_trainer_submission_snapshot.sql", import.meta.url),
@@ -99,5 +99,166 @@ assert.doesNotMatch(mapperSource, /GREEN|YELLOW|RED|score|risk_score|diagnos/i,
   "Trainer brief must not become a scoring or diagnostic engine.");
 assert.doesNotMatch(mapperSource, /home_plan|publish|guidance/i,
   "Trainer brief must not modify Guidance/Home Plan.");
+
+
+
+// The short brief is deliberately selective; the complete trainer view is not.
+// Every source answer, including free text, consent confirmations and fields
+// outside the known definition, must remain accessible for an authorized read.
+const allSubmittedAnswers = {
+  q2_goal_current: "yes",
+  q7_exertion_symptoms: ["none"],
+  q11_supplements: "regular",
+  q11_supplement_names: "Testowy preparat, bez danych klienta",
+  q21_weekly_time: "2",
+  q23_adherence_barriers: ["time"],
+  q30_training_preferences: ["explain_why"],
+  q31_dislikes: ["none"],
+  q32_other: "Przed wizytą chcę omówić dodatkowy ważny sygnał.",
+  confirm_best_knowledge: true,
+  confirm_trainer_not_doctor: true,
+  unexpected_legacy_key: "Wartość historyczna",
+  unexpected_legacy_null_key: null
+};
+const full = buildPrePwdV31FullAnswers({
+  assignmentId: "synthetic-full",
+  rendererKey: "pre_pwd_v31",
+  versionCode: "3.3",
+  submittedAt: "2026-11-03T12:00:00Z",
+  answers: allSubmittedAnswers
+});
+const everyLine = full.sections.flatMap(section => section.lines);
+assert.equal(full.answerCount, Object.keys(allSubmittedAnswers).length);
+assert.equal(full.displayedCount, full.answerCount);
+for (const [questionId, value] of Object.entries(allSubmittedAnswers)) {
+  const line = everyLine.find(item => item.questionId === questionId);
+  assert(line, "Missing submitted source answer: " + questionId);
+  assert(line.label && line.value, "Missing readable label/value for: " + questionId);
+  if (typeof value === "string" && questionId === "q32_other") assert.equal(line.value, value);
+}
+assert(everyLine.some(line => line.questionId === "unexpected_legacy_key"));
+const unexpectedTextLine = everyLine.find(line => line.questionId === "unexpected_legacy_key");
+assert.equal(unexpectedTextLine?.value, "Wartość historyczna", "Non-empty unknown field formatting must be preserved");
+
+const unexpectedNullLine = everyLine.find(line => line.questionId === "unexpected_legacy_null_key");
+assert(unexpectedNullLine, "Missing unexpected legacy null line");
+assert.equal(unexpectedNullLine.value, "(nie podano)", "Unknown legacy field with null value must render as '(nie podano)'");
+assert.throws(
+  () => buildPrePwdV31FullAnswers({ rendererKey: "unsupported", answers: allSubmittedAnswers }),
+  /Nieobsługiwany sposób wyświetlania/,
+  "Full view must reject unsupported renderer versions."
+);
+
+const submittedHistory = submittedPrePwdV31Submissions([
+  { assignmentId: "draft", status: "in_progress", rendererKey: "pre_pwd_v31", submittedAt: "2026-11-04T12:00:00Z", answers: allSubmittedAnswers },
+  { assignmentId: "missing-submit-date", rendererKey: "pre_pwd_v31", answers: allSubmittedAnswers },
+  { assignmentId: "new", status: "submitted", rendererKey: "pre_pwd_v31", submittedAt: "2026-11-03T12:00:00Z", answers: allSubmittedAnswers },
+  { assignmentId: "old", status: "submitted", rendererKey: "pre_pwd_v31", submittedAt: "2026-10-03T12:00:00Z", answers: { q2_goal_current: "changed" } },
+  { assignmentId: "unrelated", status: "submitted", rendererKey: "other_renderer", submittedAt: "2026-11-03T13:00:00Z", answers: allSubmittedAnswers }
+]);
+assert.deepEqual(submittedHistory.map(item => item.assignmentId), ["new", "old"]);
+
+// Synthetic DOM adapter for UI presentation contract verification
+class SyntheticNode {
+  constructor(tag) {
+    this.tagName = String(tag || "").toUpperCase();
+    this.children = [];
+    this.attributes = {};
+    this.className = "";
+    this._text = "";
+  }
+  get textContent() {
+    return this._text || this.children.map(c => c.textContent).join("");
+  }
+  set textContent(v) {
+    this._text = String(v ?? "");
+    this.children = [];
+  }
+  setAttribute(k, v) { this.attributes[k] = String(v); }
+  getAttribute(k) { return this.attributes[k]; }
+  addEventListener() {}
+  append(...nodes) {
+    for (const node of nodes) {
+      if (node) this.children.push(node);
+    }
+  }
+  querySelectorAll(selector) {
+    const results = [];
+    const walk = (node) => {
+      if (!node || typeof node !== "object") return;
+      if (selector.startsWith(".")) {
+        const cls = selector.slice(1);
+        if (node.className && node.className.split(/\s+/).includes(cls)) results.push(node);
+      } else if (node.tagName === selector.toUpperCase()) {
+        results.push(node);
+      }
+      for (const child of node.children || []) walk(child);
+    };
+    for (const child of this.children) walk(child);
+    return results;
+  }
+  querySelector(selector) {
+    return this.querySelectorAll(selector)[0] || null;
+  }
+}
+class SyntheticTextNode extends SyntheticNode {
+  constructor(text) {
+    super("#text");
+    this._text = String(text ?? "");
+  }
+}
+
+globalThis.Node = SyntheticNode;
+globalThis.document = {
+  createElement: tag => new SyntheticNode(tag),
+  createTextNode: text => new SyntheticTextNode(text)
+};
+
+const submissionNew = {
+  assignmentId: "asg-new",
+  status: "submitted",
+  rendererKey: "pre_pwd_v31",
+  versionCode: "3.3",
+  submittedAt: "2026-11-03T12:00:00Z",
+  answers: { ...allSubmittedAnswers, q32_other: "Najnowsza uwaga listopada" }
+};
+const submissionOld = {
+  assignmentId: "asg-old",
+  status: "submitted",
+  rendererKey: "pre_pwd_v31",
+  versionCode: "3.3",
+  submittedAt: "2026-10-03T12:00:00Z",
+  answers: { q2_goal_current: "yes", q32_other: "Wcześniejsza uwaga października" }
+};
+const submissionDraft = {
+  assignmentId: "asg-draft",
+  status: "in_progress",
+  rendererKey: "pre_pwd_v31",
+  submittedAt: "2026-11-04T12:00:00Z",
+  answers: { q32_other: "Sekretny szkic nieujawniony" }
+};
+
+const panel = questionnaireBriefPanel({
+  questionnaireSubmissions: [submissionOld, submissionDraft, submissionNew]
+});
+
+assert(panel, "Questionnaire brief panel must be rendered");
+assert.equal(panel.querySelector("h2")?.textContent, "PRZED WIZYTĄ — 60 SEKUND");
+
+const summaries = panel.querySelectorAll("summary").map(s => s.textContent);
+assert(summaries.includes("Wszystkie odpowiedzi z najnowszej ankiety"), "Must include newest full answers section");
+assert(summaries.some(s => s.includes("Wcześniejsze przekazane ankiety (1)")), "Must include previous submissions section");
+
+const detailsCards = panel.querySelectorAll(".details-card");
+const newestSection = detailsCards.find(d => d.querySelector("summary")?.textContent === "Wszystkie odpowiedzi z najnowszej ankiety");
+const previousSection = detailsCards.find(d => d.querySelector("summary")?.textContent.includes("Wcześniejsze przekazane ankiety"));
+
+assert(newestSection.textContent.includes("Najnowsza uwaga listopada"), "Newest section must contain newest answer");
+assert(!newestSection.textContent.includes("Wcześniejsza uwaga października"), "Newest section must not leak older answers");
+
+assert(previousSection.textContent.includes("Wcześniejsza uwaga października"), "Previous section must contain previous answer");
+assert(!previousSection.textContent.includes("Najnowsza uwaga listopada"), "Previous section must not leak newest answers");
+
+assert(!panel.textContent.includes("Sekretny szkic nieujawniony"), "In-progress draft answers must never enter the panel DOM");
 
 console.log("pre-PWD v3.1 deterministic trainer brief contract PASS");

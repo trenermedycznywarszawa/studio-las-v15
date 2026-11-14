@@ -1,7 +1,8 @@
+import { SupabaseHttpError } from "./data.js";
 import {
   clearPasswordSetupPending,
-  markPasswordSetupPending,
-  saveAuthSession
+  getPasswordSetupContext,
+  markPasswordSetupPending
 } from "./runtime.js";
 import {
   button,
@@ -67,8 +68,8 @@ export function consumePasswordCallback(auth) {
     expires_at: expiresAt
   };
 
+  auth.suspendSessionPersistence();
   auth.session = session;
-  saveAuthSession(session);
   markPasswordSetupPending(type);
   clearCallbackUrl();
   return { type, session };
@@ -100,6 +101,22 @@ export async function requestPasswordRecovery(auth, email, redirectTo) {
   );
 }
 
+// Only verified factors require step-up; clients without MFA keep their flow.
+export async function preparePasswordSetup(auth, mfa) {
+  if (auth.getAuthenticatorAssuranceLevel() !== "aal2") {
+    const context = getPasswordSetupContext();
+    auth.suspendSessionPersistence();
+    if (context) markPasswordSetupPending(context);
+  }
+  const factors = await auth.listTotpFactors();
+  if (factors.some(factor => factor.status === "verified")) {
+    return mfa.prepare();
+  }
+  const profile = await auth.getProfile();
+  if (profile.role === "client") auth.persistCurrentSession();
+  return { status: "verified" };
+}
+
 export async function updatePassword(auth, password) {
   const value = String(password || "");
   if (value.length < 12 || value.length > 128) {
@@ -108,6 +125,11 @@ export async function updatePassword(auth, password) {
     throw error;
   }
 
+  const factors = await auth.listTotpFactors();
+  if (factors.some(factor => factor.status === "verified")
+    && auth.getAuthenticatorAssuranceLevel() !== "aal2") {
+    throw new SupabaseHttpError("MFA verification required", 401, { code: "insufficient_aal" });
+  }
   const result = await auth.request("/auth/v1/user", {
     method: "PUT",
     body: { password: value }

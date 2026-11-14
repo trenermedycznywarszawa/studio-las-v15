@@ -136,7 +136,7 @@ function buildNextStep(workspace) {
 
 function buildLatestClientSignal(workspace) {
   const event = latest(
-    (workspace.guidanceEvents || []).filter(item => item.kind === "client_checkin"),
+    (workspace.guidanceEvents || []).filter(item => ["client_checkin","client_contact_request"].includes(item.kind)),
     "event_date",
     "created_at"
   );

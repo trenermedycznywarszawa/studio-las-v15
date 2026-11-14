@@ -13,6 +13,7 @@ export class QuestionnaireApi {
   constructor(repository) {
     if (!repository?.auth?.request) throw new Error("Questionnaire API requires the canonical authenticated repository");
     this.auth = repository.auth;
+    this.repository = repository;
   }
 
   async rpc(name, args = {}) {
@@ -68,6 +69,20 @@ export class QuestionnaireApi {
 
   trainerSubmissions(clientId) {
     return this.rpc("trainer_questionnaire_submissions", { p_client_id: clientId });
+  }
+
+  async trainerOverview(clientId) {
+    const query = new URLSearchParams({
+      client_id: `eq.${clientId}`,
+      select: "id,status,assigned_at,started_at,submitted_at,questionnaire_versions!inner(questionnaire_templates!inner(template_key))",
+      "questionnaire_versions.questionnaire_templates.template_key": "eq.pre_pwd_first_visit",
+      order: "assigned_at.desc,id.desc"
+    });
+    const [assignments, access] = await Promise.all([
+      this.auth.request(`/rest/v1/questionnaire_assignments?${query}`),
+      this.repository.rest("client_users", {query: {client_id: `eq.${clientId}`, select: "status", status: "eq.active"}})
+    ]);
+    return { assignments, hasActiveAccess: access.some(item => item.status === "active") };
   }
 
   assignActive(clientId, templateKey = "pre_pwd_first_visit") {

@@ -1,11 +1,13 @@
+import { ClientContactController } from "./client-contact-controller.js";
 // Ephemeral UI state only: never persist response text or receipts in browser storage.
 export class ClientPortalController {
   constructor(repository, onChange, makeId = () => crypto.randomUUID()) {
     this.repository = repository; this.onChange = onChange; this.makeId = makeId;
-    this.snapshot = null; this.responses = {}; this.error = ""; this.loading = false; this.disposed = false; this.readVersion = 0;
+    this.contacts = new ClientContactController(this);
+    this.snapshot = null; this.responses = {}; this.contacts.reset(); this.error = ""; this.loading = false; this.disposed = false; this.readVersion = 0;
   }
-  emit() { if (!this.disposed) this.onChange({snapshot:this.snapshot,responseStates:this.responses,error:this.error,loading:this.loading}); }
-  reset() { this.disposed = true; this.snapshot = null; this.responses = {}; }
+  emit() { if (!this.disposed) this.onChange({snapshot:this.snapshot,responseStates:this.responses,contactStates:this.contacts.states,error:this.error,loading:this.loading}); }
+  reset() { this.disposed = true; this.snapshot = null; this.responses = {}; this.contacts.reset(); }
   async load(afterSave = null) {
     const version = ++this.readVersion;
     this.loading = true; this.error = ""; this.emit();
@@ -13,6 +15,7 @@ export class ClientPortalController {
       const snapshot = await this.repository.getClientPortalSnapshot();
       if (this.disposed || version !== this.readVersion) return;
       this.snapshot = snapshot;
+      this.contacts.reconcile(snapshot);
       for (const [id, entry] of Object.entries(this.responses)) {
         const saved = snapshot.homePlan?.items?.find(item => item.id === id)?.todayResponse;
         if (saved) { entry.status = "saved"; entry.receipt = saved; continue; }
@@ -25,7 +28,7 @@ export class ClientPortalController {
     } catch (error) {
       if (this.disposed || version !== this.readVersion) return;
       if ([401,403].includes(Number(error.status))) {
-        this.snapshot = null; this.responses = {};
+        this.snapshot = null; this.responses = {}; this.contacts.reset();
         this.error = "Nie można potwierdzić dostępu. Zaloguj się ponownie lub skontaktuj się z Damianem.";
       } else {
         this.error = afterSave ? "Odpowiedź została zapisana. Nie udało się odświeżyć widoku. Nie wysyłaj jej ponownie." : "Nie udało się odświeżyć danych. Możesz spróbować ponownie.";
@@ -33,7 +36,7 @@ export class ClientPortalController {
       }
     } finally { if (version === this.readVersion) { this.loading = false; this.emit(); } }
   }
-  async submit(itemId, text) {
+  async submit(itemId, text, contactRequested = false) {
     const existing = this.responses[itemId];
     if (existing && ["saving","saved","saved_refresh_failed"].includes(existing.status)) return;
     const item = this.snapshot?.homePlan?.items?.find(row => row.id === itemId);
@@ -41,7 +44,7 @@ export class ClientPortalController {
     if (!item && existing?.status !== "uncertain") return;
     const entry = existing?.status === "uncertain" ? existing : {
       homePlanItemId:itemId, homePlanId:this.snapshot.homePlan.id,
-      response:String(text || "").trim(), submissionId:this.makeId(), serverDate:this.snapshot.serverDate
+      contactRequested:contactRequested === true, response:String(text || "").trim(), submissionId:this.makeId(), serverDate:this.snapshot.serverDate
     };
     entry.status = "saving"; entry.message = ""; this.responses[itemId] = entry; this.emit();
     try {
@@ -52,7 +55,7 @@ export class ClientPortalController {
     } catch (error) {
       if (this.disposed) return;
       const status = Number(error.status || 0);
-      if ([401,403].includes(status)) { this.snapshot = null; this.responses = {}; this.error = "Nie można potwierdzić dostępu. Zaloguj się ponownie."; }
+      if ([401,403].includes(status)) { this.snapshot = null; this.responses = {}; this.contacts.reset(); this.error = "Nie można potwierdzić dostępu. Zaloguj się ponownie."; }
       else {
         entry.status = status >= 400 && status < 500 && ![408,409,429].includes(status) ? "failed" : "uncertain";
         entry.message = entry.status === "failed" ? "Odpowiedź nie została zapisana. Sprawdź treść i odśwież ustalenia przed ponowieniem." : "Nie udało się potwierdzić zapisu. Zachowaliśmy tę próbę; sprawdź ją przed wysłaniem kolejnej odpowiedzi.";

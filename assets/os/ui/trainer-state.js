@@ -1,3 +1,5 @@
+import { trainerCanReviewClient, OWNER_REVIEW_MESSAGE } from "../trainer-review-access.js";
+import { processHistoryPanel } from "./process-history.js";
 import { manualReportComposer, evidenceReportRecord } from "./report-evidence.js";
 import {
   currentCycleDecision,
@@ -13,7 +15,7 @@ import {
 import { signalIdentity, signalTypeLabel } from "../decision-support.js";
 import { CANONICAL_ENGAGEMENTS, CANONICAL_STAGES } from "../runtime.js";
 import { buildTrainerSessionBrief } from "../session-brief.js";
-import { cycleDecisionForm, signalReviewForm } from "./forms.js";
+import { clientProcessForm, cycleDecisionForm, signalReviewForm } from "./forms.js";
 import { create, detailsForm, field, formatDate, panel, recordList, submitForm } from "./common.js";
 
 const SIGNAL_SOURCE_LABELS = Object.freeze({
@@ -22,6 +24,7 @@ const SIGNAL_SOURCE_LABELS = Object.freeze({
   "trainer-check": "Sprawdzenie trenera",
   "client-record": "Karta klienta",
   "client-response": "Odpowiedź klienta",
+  questionnaire: "Ankieta przed PWD",
   process: "Proces"
 });
 
@@ -54,7 +57,7 @@ export function clientIdentityPanel(client) {
   ]));
 }
 
-export function nowPanel(workspace, attentionSignals) {
+export function nowPanel(workspace, attentionSignals, model = {}) {
   const brief = buildTrainerSessionBrief(workspace);
   const openSignal = attentionSignals?.signals?.[0] || null;
   const plan = brief.activePlan;
@@ -71,12 +74,16 @@ export function nowPanel(workspace, attentionSignals) {
 
   return panel("Teraz", create("div", { className: "now-block" }, [
     create("div", { className: "now-grid" }, [
-      nowItem("Etap procesu", CANONICAL_STAGES[workspace.client.stage] || "Proces Studio Las"),
+      nowItem("Etap procesu", CANONICAL_STAGES[workspace.client.stage]
+        ? `${workspace.client.stage} · ${CANONICAL_STAGES[workspace.client.stage]}` : "Proces Studio Las"),
       nowItem("Aktualny cel", brief.currentFocus?.value || "Cel nie został jeszcze zapisany.", focusMeta),
       nowItem("Ostatnia obowiązująca decyzja trenera", brief.lastDecision?.value || "Brak zapisanej decyzji trenera.", decisionMeta),
       nowItem("Otwarty sygnał wymagający uwagi", openSignal?.label || "Brak otwartego sygnału wymagającego uwagi.", signalMeta),
       nowItem(brief.nextStep.label, brief.nextStep.value, nextMeta, "now-item wide")
     ]),
+    typeof model.onUpdateClient === "function"
+      ? detailsForm("Zmień etap i terminy", clientProcessForm(workspace.client, model.onUpdateClient)) : null,
+    processHistoryPanel(workspace),
     brief.requiresCycleDecision
       ? create("div", { className: "cycle-decision-required", text: "Wymaga decyzji co dalej" })
       : null
@@ -128,6 +135,9 @@ function signalSourceLine(signal) {
 }
 
 export function signalsSection(workspace, attentionSignals, model) {
+  let canReview;
+  try { canReview = trainerCanReviewClient(workspace.client, model.profile); }
+  catch (error) { return panel("Sygnały do przeglądu", create("p", {className:"status error",text:error.message})); }
   const openSignals = attentionSignals?.signals || [];
   const reviews = workspace.signalReviews || [];
   const open = recordList(openSignals, signal => create("article", { className: `signal ${signal.level}` }, [
@@ -135,7 +145,7 @@ export function signalsSection(workspace, attentionSignals, model) {
     signal.context ? create("p", { text: signal.context }) : null,
     create("p", { className: "muted", text: signalSourceLine(signal) }),
     create("p", { className: "muted", text: `Pytanie dla trenera: ${signal.trainerQuestion}` }),
-    signal.contactReviewId ? create("div", {}, [
+    !canReview ? create("p", {className:"muted",text:OWNER_REVIEW_MESSAGE}) : signal.contactReviewId ? create("div", {}, [
       create("strong", {text:"Kontakt nadal wymagany"}),
       detailsForm("Potwierdź wykonany kontakt", submitForm([
         field("Co ustalono po kontakcie?", "note", "textarea", {required:true,maxlength:1000})
@@ -197,7 +207,7 @@ export function reportsSection(workspace, model) {
     report.type === "twelveWeeks" && isInCurrentCycle(workspace, report.created_at)
   ) || null;
   const decision = currentCycleDecision(workspace);
-  return panel("Raporty", create("div", {}, [
+  const section = panel("Raporty", create("div", {}, [
     recordList(reports, report => report.workflow_version === 1 ? evidenceReportRecord(report, model.onTransitionReport) : reportRecord(
       report,
       decision,
@@ -205,4 +215,6 @@ export function reportsSection(workspace, model) {
     ), "Brak raportów."),
     manualReportComposer(workspace, model.onSaveReport)
   ]), "Raport pokazuje wzorzec; nie tworzy decyzji automatycznie");
+  section.id = "trainer-reports";
+  return section;
 }
