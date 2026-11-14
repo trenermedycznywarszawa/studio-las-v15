@@ -26,6 +26,7 @@ on:
       - "scripts/test_password_recovery_mfa.mjs"
       - "scripts/test_pwd_trainer_workflow.mjs"
       - "scripts/test_guidance_release_workflow.mjs"
+      - "scripts/test_first_guidance_gate.mjs"
       - "scripts/test_decision_state_integrity.mjs"
       - "scripts/test_stage2_production_runtime.mjs"
       - "scripts/test_public_inquiry_ingress.mjs"
@@ -143,6 +144,9 @@ jobs:
 
       - name: Verify Guidance Release regression
         run: node scripts/test_guidance_release_workflow.mjs
+
+      - name: Verify first guidance PWD gate
+        run: node scripts/test_first_guidance_gate.mjs
 
       - name: Verify decision and state integrity
         run: node scripts/test_decision_state_integrity.mjs
