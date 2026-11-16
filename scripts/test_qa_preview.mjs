@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { execFileSync, spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { isolatedQaTarget } from "./e2e_qa_target.mjs";
+import { getRuntimeConfig, runtimeEnvironmentLabel } from "../assets/os/runtime.js";
 
 const ref = "isolatedqa0000000001";
 const key = "sb_publishable_" + "a".repeat(40);
@@ -36,8 +37,25 @@ const wrong = spawnSync(process.execPath, ["scripts/build_studio_las_os_deploy.m
 assert.notEqual(wrong.status, 0);
 assert.match(wrong.stderr, /BLOCKED/);
 
+// The same runtime code must refuse a QA config when hosted publicly or pointed at
+// production/shared staging. Normal runtime modes stay pinned.
+const qaConfig = { mode: "qa", supabase: { projectRef: ref,
+  url: `https://${ref}.supabase.co`, publishableKey: key } };
+globalThis.window = { location: { hostname: "127.0.0.1" }, STUDIO_LAS_CONFIG: qaConfig };
+assert.equal(getRuntimeConfig().projectRef, ref);
+assert.equal(runtimeEnvironmentLabel("qa"), "IZOLOWANE QA");
+window.location.hostname = "studio-las-os.netlify.app";
+assert.throws(() => getRuntimeConfig(), /Izolowane QA wymaga lokalnego podglądu/);
+window.location.hostname = "localhost";
+window.STUDIO_LAS_CONFIG = { mode: "qa", supabase: { projectRef: "ulauyoqjoetjqktegeuq",
+  url: "https://ulauyoqjoetjqktegeuq.supabase.co", publishableKey: key } };
+assert.throws(() => getRuntimeConfig(), /Izolowane QA wymaga lokalnego podglądu/);
+window.STUDIO_LAS_CONFIG = { mode: "production", supabase: qaConfig.supabase };
+assert.throws(() => getRuntimeConfig(), /Błędna konfiguracja wersji produkcyjnej/);
+delete globalThis.window;
+
 // Public canonical source config remains unchanged; the QA preview is a separate artifact.
 const sourceConfig = readFileSync("studio-las-config.js", "utf8");
 assert(sourceConfig.includes('mode: "production"'));
 assert(sourceConfig.includes('projectRef: "ufcumhbnuyernuwepcij"'));
-console.log("PASS: local isolated QA preview, exact backend CSP, immutable production source config, conflicting build flags denied");
+console.log("PASS: local isolated QA preview, strict runtime on localhost, production/staging refusal, exact backend CSP, untouched production config");
