@@ -7,6 +7,7 @@ on:
       - 'scripts/*client_contact*'
       - 'scripts/*e2e_safety_gate*'
       - 'scripts/e2e_*.mjs'
+      - 'scripts/*isolated_qa_preview*'
       - 'scripts/attention_e2e_helpers.mjs'
       - '.github/workflows/trainer-attention-production.yml'
       - 'supabase/migrations/**'
@@ -53,6 +54,8 @@ jobs:
           node scripts/test_e2e_safety_gate.mjs
           node scripts/test_e2e_qa_target.mjs
           node scripts/test_qa_preview.mjs
+          node --check scripts/start_isolated_qa_preview.mjs
+          node scripts/test_start_isolated_qa_preview.mjs
       - name: Build staging artifact
         run: node scripts/build_studio_las_os_deploy.mjs --staging
       - name: Report staging E2E status (NOT RUN / BLOCKED)
