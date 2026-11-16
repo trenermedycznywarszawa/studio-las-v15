@@ -64,7 +64,6 @@ function createSyntheticIsolatedFixture(targetRef = "isolatedqa0000000001") {
     "scripts/e2e_questionnaire_assignment.mjs",
     "scripts/e2e_trainer_attention_flow.mjs",
     "scripts/e2e_client_contact_requests.mjs",
-    "scripts/e2e_questionnaire_assignment.mjs",
     "scripts/e2e_trainer_attention_staging.mjs",
     "studio-las-config.js",
     ".deploy/studio-las-os/studio-las-config.js"
