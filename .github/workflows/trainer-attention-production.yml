@@ -51,6 +51,8 @@ jobs:
           node scripts/test_report_evidence.mjs
           node scripts/test_guidance_integrity_transport.mjs
           node scripts/test_e2e_safety_gate.mjs
+          node scripts/test_e2e_qa_target.mjs
+          node scripts/test_qa_preview.mjs
       - name: Build staging artifact
         run: node scripts/build_studio_las_os_deploy.mjs --staging
       - name: Report staging E2E status (NOT RUN / BLOCKED)
@@ -69,12 +71,19 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 20
     env:
-      STUDIO_LAS_E2E_PROJECT_REF: ulauyoqjoetjqktegeuq
-      STUDIO_LAS_E2E_SUPABASE_URL: https://ulauyoqjoetjqktegeuq.supabase.co
-      STUDIO_LAS_STAGING_PUBLISHABLE_KEY: sb_publishable_5IVYDd1a02rye5szV80sLA_UWzwjZRk
+      # These settings MUST point to an independently verified disposable QA project.
+      # Missing vars/secrets fail before a browser or remote write is attempted.
+      STUDIO_LAS_E2E_PROJECT_REF: ${{ vars.STUDIO_LAS_DISPOSABLE_QA_PROJECT_REF }}
+      STUDIO_LAS_E2E_SUPABASE_URL: ${{ vars.STUDIO_LAS_DISPOSABLE_QA_SUPABASE_URL }}
+      STUDIO_LAS_E2E_PUBLISHABLE_KEY: ${{ secrets.STUDIO_LAS_DISPOSABLE_QA_PUBLISHABLE_KEY }}
+      STUDIO_LAS_E2E_ISOLATION_MODE: isolated-disposable
+      STUDIO_LAS_E2E_ISOLATION_VERIFIED: ${{ vars.STUDIO_LAS_DISPOSABLE_QA_ISOLATION_VERIFIED }}
+      STUDIO_LAS_E2E_CLEANUP_STRATEGY: disposable-environment-teardown
+      STUDIO_LAS_E2E_CLEANUP_VERIFIED: ${{ vars.STUDIO_LAS_DISPOSABLE_QA_CLEANUP_VERIFIED }}
+      STUDIO_LAS_E2E_VERIFICATION_EVIDENCE: ${{ vars.STUDIO_LAS_DISPOSABLE_QA_VERIFICATION_EVIDENCE }}
       STUDIO_LAS_QA_EMAIL: attention.trainer@example.test
-      STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_ATTENTION_QA_PASSWORD }}
-      STUDIO_LAS_ATTENTION_CLIENT_PASSWORD: ${{ secrets.STUDIO_LAS_ATTENTION_CLIENT_PASSWORD }}
+      STUDIO_LAS_QA_PASSWORD: ${{ secrets.STUDIO_LAS_DISPOSABLE_QA_TRAINER_PASSWORD }}
+      STUDIO_LAS_ATTENTION_CLIENT_PASSWORD: ${{ secrets.STUDIO_LAS_DISPOSABLE_QA_CLIENT_PASSWORD }}
       STUDIO_LAS_E2E_URL: http://127.0.0.1:8790/
       STUDIO_LAS_E2E_ARTIFACT_DIR: artifacts/attention
       STUDIO_LAS_E2E_MARKER: ATTENTION-${{ github.run_id }}-${{ github.run_attempt }}
@@ -85,12 +94,14 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
+      - name: Prepare isolated QA preview (build only, no remote writes)
+        run: node scripts/build_studio_las_os_deploy.mjs --qa
       - name: Enforce fail-closed E2E safety gate
         id: gate
         run: node scripts/e2e_safety_gate.mjs --github-output --github-summary
-      - name: Build staging artifact
+      - name: Verify isolated QA preview after gate
         if: steps.gate.outputs.allowed == 'true' && github.event_name == 'workflow_dispatch'
-        run: node scripts/build_studio_las_os_deploy.mjs --staging
+        run: grep -q '"mode": "qa"' .deploy/studio-las-os/studio-las-config.js
       - name: Install browser runtime
         if: steps.gate.outputs.allowed == 'true' && github.event_name == 'workflow_dispatch'
         run: |
