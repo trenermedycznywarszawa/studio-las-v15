@@ -198,7 +198,7 @@ try {
       name: "mismatched backend Supabase URL",
       env: { ...baseEnv, STUDIO_LAS_E2E_SUPABASE_URL: `https://${CANONICAL_STAGING_REF}.supabase.co` },
       expectedCode: "BLOCKED: wrong backend URL: exact HTTPS Supabase origin must match isolated project ref",
-      expectedFragment: "does not match STUDIO_LAS_E2E_PROJECT_REF"
+      expectedFragment: "exact HTTPS Supabase origin must match isolated project ref"
     },
     {
       name: "malformed backend URL",
