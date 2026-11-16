@@ -223,6 +223,7 @@ jobs:
         run: |
           node scripts/test_qa_preview.mjs
           node --check scripts/start_isolated_qa_preview.mjs
+          node --check scripts/qa_http_boundary_runner.mjs
           node scripts/test_start_isolated_qa_preview.mjs
 
       - name: Verify target preflight remains read-only
