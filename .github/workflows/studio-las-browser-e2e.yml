@@ -41,7 +41,9 @@ concurrency:
 jobs:
   browser-e2e-staging:
     name: Browser E2E — canonical staging
-    if: github.event_name == 'workflow_dispatch' || github.event.pull_request.head.repo.full_name == github.repository
+    # Legacy workflow targets shared staging with durable data. No mutating E2E here.
+    # The isolated QA workflow in trainer-attention-production.yml is its successor.
+    if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
 
