@@ -5,7 +5,8 @@ import {randomUUID} from "node:crypto";
 import {api,login,queue,expectQueue,questionnaireBacklog,testSignalCase,eventSignalKey,screenshot} from "./attention_e2e_helpers.mjs";
 import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
 import { isolatedQaTarget } from "./e2e_qa_target.mjs";
-const { origin } = isolatedQaTarget();
+const origin = process.env.STUDIO_LAS_E2E_SUPABASE_URL;
+// Resolved only after the gate passes; no environment can run an E2E without proof.
 const clientId="c7200000-0000-4000-8000-000000000001";
 const dir=process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
 const marker=process.env.STUDIO_LAS_E2E_MARKER || randomUUID();
@@ -13,6 +14,7 @@ const q1=`Pytanie przed odpowiedzią · ${marker}`;
 const q2=`Pytanie później tego samego dnia · ${marker}`;
 const q3=`Kolejne pytanie po kontakcie · ${marker}`;
 assertE2eSafetyGate(process.env);
+isolatedQaTarget(process.env);
 const { chromium } = await import("playwright");
 await mkdir(dir,{recursive:true});
 const browser=await chromium.launch();
