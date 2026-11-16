@@ -19,9 +19,10 @@ const RUNTIME_AND_E2E_FILES_TO_CHECK = Object.freeze([
   "assets/os/runtime.js",
   "scripts/build_studio_las_os_deploy.mjs",
   "scripts/attention_e2e_helpers.mjs",
+  "scripts/e2e_mfa_bootstrap.mjs",
+  "scripts/e2e_questionnaire_assignment.mjs",
   "scripts/e2e_trainer_attention_flow.mjs",
   "scripts/e2e_client_contact_requests.mjs",
-  "scripts/e2e_questionnaire_assignment.mjs",
   "scripts/e2e_trainer_attention_staging.mjs"
 ]);
 
@@ -158,6 +159,18 @@ function inspectCodebaseIsolation(repoRoot, expectedProjectRef) {
     }
     const content = readFileSync(absPath, "utf8");
     if (content.includes(CANONICAL_STAGING_REF) || content.includes(CANONICAL_PRODUCTION_REF)) {
+      // These two files must preserve canonical protections for normal modes.
+      // Their QA branch is separately constrained and only targets a local preview.
+      if (relPath === "assets/os/runtime.js"
+        && content.includes('mode === "qa"')
+        && content.includes('["localhost", "127.0.0.1", "::1", "[::1]"]')
+        && content.includes('[CANONICAL_PRODUCTION_REF, CANONICAL_STAGING_REF].includes(projectRef)')
+        && content.includes('mode === "staging" ? CANONICAL_STAGING_REF : projectRef')) continue;
+      if (relPath === "scripts/build_studio_las_os_deploy.mjs"
+        && content.includes('const qaTarget = qa ? isolatedQaTarget() : null;')
+        && content.includes('if (staging && qa) throw')
+        && content.includes('if (staging || qa)')
+        && content.includes('const backend = qa ? qaTarget.origin :')) continue;
       pinnedFiles.push(relPath);
     }
   }
@@ -169,20 +182,29 @@ function inspectCodebaseIsolation(repoRoot, expectedProjectRef) {
   }
 
   const deployedConfigPath = path.join(repoRoot, ".deploy", "studio-las-os", "studio-las-config.js");
-  if (existsSync(deployedConfigPath)) {
+  if (!existsSync(deployedConfigPath)) {
+    findings.push("isolation/cleanup unverified: isolated QA preview config has not been built");
+  } else {
     const deployedConfig = readFileSync(deployedConfigPath, "utf8");
     if (deployedConfig.includes(CANONICAL_PRODUCTION_REF) || deployedConfig.includes(CANONICAL_STAGING_REF)) {
       findings.push("isolation/cleanup unverified: built .deploy/studio-las-os/studio-las-config.js targets canonical production or shared staging");
-    } else if (expectedProjectRef && !deployedConfig.includes(expectedProjectRef)) {
-      findings.push("isolation/cleanup unverified: built .deploy/studio-las-os/studio-las-config.js does not target STUDIO_LAS_E2E_PROJECT_REF");
+    } else if (expectedProjectRef && (!deployedConfig.includes(expectedProjectRef)
+      || !deployedConfig.includes('"mode": "qa"')
+      || !deployedConfig.includes(`"url": "https://${expectedProjectRef}.supabase.co"`))) {
+      findings.push("isolation/cleanup unverified: built QA config must be localhost QA mode for the exact isolated project");
     }
   }
 
   const rootConfigPath = path.join(repoRoot, "studio-las-config.js");
   if (existsSync(rootConfigPath)) {
     const rootConfig = readFileSync(rootConfigPath, "utf8");
-    if (rootConfig.includes(CANONICAL_PRODUCTION_REF) || rootConfig.includes(CANONICAL_STAGING_REF)) {
-      findings.push("isolation/cleanup unverified: studio-las-config.js pins canonical Supabase project ref");
+    const unchangedProductionSource = rootConfig.includes('mode: "production"')
+      && rootConfig.includes(`projectRef: "${CANONICAL_PRODUCTION_REF}"`)
+      && rootConfig.includes(`url: "https://${CANONICAL_PRODUCTION_REF}.supabase.co"`)
+      && !rootConfig.includes(CANONICAL_STAGING_REF);
+    if ((rootConfig.includes(CANONICAL_PRODUCTION_REF) || rootConfig.includes(CANONICAL_STAGING_REF))
+      && !unchangedProductionSource) {
+      findings.push("isolation/cleanup unverified: source runtime configuration is not canonically production-pinned");
     }
   }
 
@@ -273,11 +295,10 @@ export function evaluateE2eSafetyGate(env = process.env, options = {}) {
   if (supabaseUrl) {
     try {
       const parsedBackend = new URL(supabaseUrl);
-      if (parsedBackend.protocol !== "https:" || supabaseUrl.includes(CANONICAL_PRODUCTION_REF)) {
-        failures.push("wrong backend URL: invalid or production Supabase origin");
-      } else if (projectRef && parsedBackend.hostname.endsWith(".supabase.co")
-        && parsedBackend.hostname !== `${projectRef}.supabase.co`) {
-        failures.push("wrong backend URL: Supabase origin does not match STUDIO_LAS_E2E_PROJECT_REF");
+      if (parsedBackend.protocol !== "https:" || parsedBackend.origin !== supabaseUrl
+        || supabaseUrl.includes(CANONICAL_PRODUCTION_REF)
+        || (projectRef && supabaseUrl !== `https://${projectRef}.supabase.co`)) {
+        failures.push("wrong backend URL: exact HTTPS Supabase origin must match isolated project ref");
       }
     } catch {
       failures.push("wrong backend URL: malformed STUDIO_LAS_E2E_SUPABASE_URL");
