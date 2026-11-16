@@ -1,9 +1,12 @@
 import { createHmac } from "node:crypto";
 import { appendFile } from "node:fs/promises";
+import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
+import { isolatedQaTarget } from "./e2e_qa_target.mjs";
 
-const STAGING_REF = "ulauyoqjoetjqktegeuq";
-const STAGING_ORIGIN = `https://${STAGING_REF}.supabase.co`;
-const PUBLISHABLE_KEY = String(process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY || "").trim();
+// The gate applies even to MFA bootstrap/cleanup, not only the browser scripts.
+assertE2eSafetyGate(process.env);
+
+const { ref: STAGING_REF, origin: STAGING_ORIGIN, key: PUBLISHABLE_KEY } = isolatedQaTarget();
 const QA_EMAIL = String(process.env.STUDIO_LAS_QA_EMAIL || "").trim();
 const QA_PASSWORD = String(process.env.STUDIO_LAS_QA_PASSWORD || "");
 const RUN_MARKER = String(process.env.STUDIO_LAS_E2E_MARKER || `GHA-${Date.now()}`)

@@ -60,9 +60,10 @@ function createSyntheticIsolatedFixture(targetRef = "isolatedqa0000000001") {
     "assets/os/runtime.js",
     "scripts/build_studio_las_os_deploy.mjs",
     "scripts/attention_e2e_helpers.mjs",
+    "scripts/e2e_mfa_bootstrap.mjs",
+    "scripts/e2e_questionnaire_assignment.mjs",
     "scripts/e2e_trainer_attention_flow.mjs",
     "scripts/e2e_client_contact_requests.mjs",
-    "scripts/e2e_questionnaire_assignment.mjs",
     "scripts/e2e_trainer_attention_staging.mjs",
     "studio-las-config.js",
     ".deploy/studio-las-os/studio-las-config.js"
@@ -72,6 +73,10 @@ function createSyntheticIsolatedFixture(targetRef = "isolatedqa0000000001") {
     mkdirSync(path.dirname(abs), { recursive: true });
     writeFileSync(abs, `// isolated fixture for ${targetRef}\nexport const projectRef = "${targetRef}";\n`, "utf8");
   }
+  // The built preview must explicitly target QA, not just contain the QA ref.
+  writeFileSync(path.join(dir, ".deploy/studio-las-os/studio-las-config.js"),
+    JSON.stringify({ mode: "qa", supabase: { projectRef: targetRef,
+      url: `https://${targetRef}.supabase.co`, publishableKey: "sb_publishable_" + "a".repeat(40) } }, null, 2), "utf8");
   const evidenceRel = "artifacts/isolated-recovery-proof.json";
   const evidenceAbs = path.join(dir, evidenceRel);
   mkdirSync(path.dirname(evidenceAbs), { recursive: true });
@@ -96,7 +101,7 @@ const fixture = createSyntheticIsolatedFixture("isolatedqa0000000001");
 try {
   const envWithProof = validIsolatedEnv({ STUDIO_LAS_E2E_VERIFICATION_EVIDENCE: fixture.evidenceRel });
   const readyVerdict = evaluateE2eSafetyGate(envWithProof, { repoRoot: fixture.dir });
-  assert.equal(readyVerdict.allowed, true);
+  assert.equal(readyVerdict.allowed, true, readyVerdict.reason);
   assert.equal(readyVerdict.status, "READY");
   assert.equal(readyVerdict.code, "READY");
   assert.deepEqual(readyVerdict.failures, []);
@@ -135,15 +140,13 @@ try {
   rmSync(fixture.dir, { recursive: true, force: true });
 }
 
-// 2. Anti-bypass check against REAL repo: setting VERIFIED + fake ref cannot bypass hardcoded Supabase addresses!
+// 2. Anti-bypass check against REAL repo: VERIFIED flags without real QA proof cannot authorize anything.
 const spoofedEnvOnRealRepo = validIsolatedEnv();
 const realRepoSpoofVerdict = evaluateE2eSafetyGate(spoofedEnvOnRealRepo);
 assert.equal(realRepoSpoofVerdict.allowed, false, "Setting VERIFIED env vars on real repo must stay BLOCKED");
 assert.equal(realRepoSpoofVerdict.status, "BLOCKED");
 assert.equal(realRepoSpoofVerdict.code, "BLOCKED: isolation/cleanup unverified");
-assert.ok(realRepoSpoofVerdict.reason.includes("assets/os/runtime.js"), realRepoSpoofVerdict.reason);
-assert.ok(realRepoSpoofVerdict.reason.includes("scripts/attention_e2e_helpers.mjs"), realRepoSpoofVerdict.reason);
-assert.ok(realRepoSpoofVerdict.reason.includes("scripts/build_studio_las_os_deploy.mjs"), realRepoSpoofVerdict.reason);
+assert.ok(realRepoSpoofVerdict.reason.includes("STUDIO_LAS_E2E_VERIFICATION_EVIDENCE"), realRepoSpoofVerdict.reason);
 assert.throws(
   () => assertE2eSafetyGate(spoofedEnvOnRealRepo),
   err => err instanceof Error && err.message.startsWith("BLOCKED: isolation/cleanup unverified")
@@ -193,8 +196,8 @@ try {
     {
       name: "mismatched backend Supabase URL",
       env: { ...baseEnv, STUDIO_LAS_E2E_SUPABASE_URL: `https://${CANONICAL_STAGING_REF}.supabase.co` },
-      expectedCode: "BLOCKED: wrong backend URL: Supabase origin does not match STUDIO_LAS_E2E_PROJECT_REF",
-      expectedFragment: "does not match STUDIO_LAS_E2E_PROJECT_REF"
+      expectedCode: "BLOCKED: wrong backend URL: exact HTTPS Supabase origin must match isolated project ref",
+      expectedFragment: "exact HTTPS Supabase origin must match isolated project ref"
     },
     {
       name: "malformed backend URL",
