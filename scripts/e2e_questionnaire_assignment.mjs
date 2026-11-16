@@ -3,6 +3,7 @@ import { mkdir, writeFile } from "node:fs/promises";
 // playwright is dynamically imported only after assertE2eSafetyGate succeeds.
 import { api, login, screenshot } from "./attention_e2e_helpers.mjs";
 import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
+import { isolatedQaTarget } from "./e2e_qa_target.mjs";
 const id="c7200000-0000-4000-8000-000000000001";
 const dir=process.env.STUDIO_LAS_E2E_ARTIFACT_DIR;
 const rpc=(name,token,body)=>api(`/rest/v1/rpc/${name}`,token,"POST",body);
@@ -105,7 +106,7 @@ try {
  await login(t,process.env.STUDIO_LAS_QA_EMAIL,process.env.STUDIO_LAS_QA_PASSWORD,true);
  await t.getByLabel("Wybierz klienta").selectOption(id);
  await t.getByRole("link",{name:"Zobacz przekazane odpowiedzi",exact:true}).waitFor();
- const origin="https://ulauyoqjoetjqktegeuq.supabase.co", key=process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY;
+ const { origin, key } = isolatedQaTarget();
  const request=async(path,bearer,body)=>fetch(origin+path,{method:body?"POST":"GET",headers:{apikey:key,Authorization:`Bearer ${bearer}`,"Content-Type":"application/json"},body:body?JSON.stringify(body):undefined});
  const auth=await request("/auth/v1/token?grant_type=password",key,{email:process.env.STUDIO_LAS_QA_EMAIL,password:process.env.STUDIO_LAS_QA_PASSWORD});assert.ok(auth.ok);
  const aal1=(await auth.json()).access_token;
