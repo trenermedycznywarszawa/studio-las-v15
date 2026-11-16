@@ -77,7 +77,7 @@ function createSyntheticIsolatedFixture(targetRef = "isolatedqa0000000001") {
   // The built preview must explicitly target QA, not just contain the QA ref.
   writeFileSync(path.join(dir, ".deploy/studio-las-os/studio-las-config.js"),
     JSON.stringify({ mode: "qa", supabase: { projectRef: targetRef,
-      url: `https://${targetRef}.supabase.co`, publishableKey: "sb_publishable_" + "a".repeat(40) } }), "utf8");
+      url: `https://${targetRef}.supabase.co`, publishableKey: "sb_publishable_" + "a".repeat(40) } }, null, 2), "utf8");
   const evidenceRel = "artifacts/isolated-recovery-proof.json";
   const evidenceAbs = path.join(dir, evidenceRel);
   mkdirSync(path.dirname(evidenceAbs), { recursive: true });
@@ -102,7 +102,7 @@ const fixture = createSyntheticIsolatedFixture("isolatedqa0000000001");
 try {
   const envWithProof = validIsolatedEnv({ STUDIO_LAS_E2E_VERIFICATION_EVIDENCE: fixture.evidenceRel });
   const readyVerdict = evaluateE2eSafetyGate(envWithProof, { repoRoot: fixture.dir });
-  assert.equal(readyVerdict.allowed, true);
+  assert.equal(readyVerdict.allowed, true, readyVerdict.reason);
   assert.equal(readyVerdict.status, "READY");
   assert.equal(readyVerdict.code, "READY");
   assert.deepEqual(readyVerdict.failures, []);
