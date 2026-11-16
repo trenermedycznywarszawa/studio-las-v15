@@ -64,6 +64,23 @@ try {
   assert(config.includes('"mode": "qa"'));
   assert(config.includes(qaRef));
   assert(!config.includes("ufcumhbnuyernuwepcij") && !config.includes("ulauyoqjoetjqktegeuq"));
+  const boundary = await fetch(url + "__qa_security/");
+  assert.equal(boundary.status, 200);
+  assert.match(boundary.headers.get("content-security-policy") || "",
+    /default-src 'none'/);
+  assert((boundary.headers.get("content-security-policy") || "").includes(
+    `connect-src https://${qaRef}.supabase.co`));
+  const qaPage = await boundary.text();
+  assert(qaPage.includes("Test rzeczywistych granic bezpieczeństwa"));
+  assert(!qaPage.includes("ufcumhbnuyernuwepcij"));
+  const browserRunner = await fetch(url + "__qa_security/runner.mjs");
+  assert.equal(browserRunner.status, 200);
+  const browserCode = await browserRunner.text();
+  assert(browserCode.includes("/auth/v1/token?grant_type=password"));
+  assert(browserCode.includes("/rest/v1/rpc/client_portal_snapshot"));
+  assert(browserCode.includes("/auth/v1/factors/"));
+  assert(!browserCode.includes("localStorage") && !browserCode.includes("sessionStorage"));
+  assert(!browserCode.includes("ufcumhbnuyernuwepcij") && !browserCode.includes("ulauyoqjoetjqktegeuq"));
   assert.equal((await fetch(url + "_headers")).status, 403);
   assert.equal((await fetch(url + "deploy-manifest.json")).status, 403);
   assert.equal((await fetch(url, { method: "POST" })).status, 405);
