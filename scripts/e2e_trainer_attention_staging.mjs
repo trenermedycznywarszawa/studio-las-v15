@@ -12,10 +12,12 @@ import {
 import { buildTrainerAttentionModel } from "../assets/os/trainer-attention-model.js";
 import { collectWorkspaceSignals } from "../assets/os/trainer-signals.js";
 import { withoutReviewedSignals } from "../assets/os/decision-support.js";
+import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
+import { isolatedQaTarget } from "./e2e_qa_target.mjs";
 
-const STAGING_REF = "ulauyoqjoetjqktegeuq";
-const STAGING_ORIGIN = `https://${STAGING_REF}.supabase.co`;
-const PUBLISHABLE_KEY = String(process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY || "").trim();
+const STAGING_REF = String(process.env.STUDIO_LAS_E2E_PROJECT_REF || "").trim();
+const STAGING_ORIGIN = String(process.env.STUDIO_LAS_E2E_SUPABASE_URL || "").trim();
+const PUBLISHABLE_KEY = String(process.env.STUDIO_LAS_E2E_PUBLISHABLE_KEY || "").trim();
 const QA_EMAIL = String(process.env.STUDIO_LAS_QA_EMAIL || "").trim();
 const QA_PASSWORD = String(process.env.STUDIO_LAS_QA_PASSWORD || "");
 const QA_TOTP_SECRET = String(process.env.STUDIO_LAS_QA_TOTP_SECRET || "").trim();
@@ -297,7 +299,9 @@ async function assertPerClientParity(token, snapshot, model, trainerProfile) {
 }
 
 async function run() {
-  assert(PUBLISHABLE_KEY.length >= 40, "Missing staging publishable key");
+  assertE2eSafetyGate(process.env);
+  isolatedQaTarget(process.env);
+  assert(PUBLISHABLE_KEY.length >= 40, "Missing isolated QA publishable key");
   assert(QA_EMAIL && QA_PASSWORD && QA_TOTP_SECRET && QA_FACTOR_ID,
     "QA credentials or ephemeral MFA handoff are missing");
 
