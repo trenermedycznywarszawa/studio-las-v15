@@ -43,3 +43,22 @@ The old staging project is PAUSED, not deleted, and production is unchanged. Dis
 - **Not yet tested**: actual sign-in (no credentials supplied to assistant), TOTP enrollment/AAL2, cross-client negative permissions, full browser/API/DB workflow, cleanup/recovery. These remain `NOT RUN` and cannot be converted to `PASS` on the basis of role-binding SQL.
 - Auth setup is now **PASS**; the former prerequisite instructing the owner to create three Auth accounts has been satisfied and must not be repeated.
 - Next priority: isolated QA `--qa` preview and trainer-only MFA enrollment with credentials kept local to owner; then verifiable negative auth tests and the full client journey, only after genuine teardown/recovery evidence. Privacy-qualification gating for the PWD template remains deliberately unmodified.
+
+
+## Local Windows preview launch (isolated QA, no Docker/WSL)
+
+**Validated on GitHub Actions:** Node launcher build, local-only HTTP server, config/CSP target and fail-closed refusals for canonical prod/shared staging, arbitrary QA ref, mismatched URL and secret API key. CI success is **not** Auth login or browser E2E.
+
+1. In **Antigravity**, open an independent checkout/worktree of GitHub Draft PR #115 branch `codex/isolated-qa-e2e-preparation-20261116`. Do not discard uncommitted work in another checkout. Install/use Node.js 22+ and Git already available in the workspace.
+2. In that checkout's Windows PowerShell terminal run:
+   `& .\scripts\start_isolated_qa_preview.ps1`
+   The script requires that exact branch; it builds and runs on **127.0.0.1 only**, without Docker/WSL/production.
+3. If prompted, obtain ONLY the **publishable** `sb_publishable_...` key from Supabase Dashboard for project **`yipsjvbgxdmdicijxcph`** → Project Settings → API Keys. Never supply `sb_secret_`, service_role, password or MFA code in chat or repo. The public key is held in this PowerShell process environment and embedded in the local static QA preview only.
+4. Open `http://127.0.0.1:8790/` in the local browser. Login with `attention.trainer@example.test` and the owner-held QA password. The trainer app's existing MFA flow should request enrollment because the account initially has zero TOTP factors. Enroll by scanning the QR privately and confirming the current six-digit code. **Do not capture/share QR images, manual TOTP secret or bearer tokens.**
+5. Successful result means the trainer panel is visible after MFA in the **QA** context (not a screenshot of an MFA secret); the operator reports UI status and no private data. Assistant can independently check `auth.mfa_factors` verified count read-only on exact QA. Don't call it AAL2 PASS solely because the factor exists; successful trainer UI is required.
+6. Press **Ctrl+C** in the PowerShell terminal to stop the localhost server. Keep the browser session private; don't record credentials.
+
+If the PowerShell execution policy blocks the local script, **do not weaken system security policies**; let Antigravity use the equivalent Node launcher with the same three environment variables in a dedicated terminal or provide the exact blocker. Never substitute the production site or canonical staging.
+
+No auto data-writing E2E is started by this launcher. `scripts/e2e_safety_gate.mjs` remains mandatory before mutating multi-step QA tests; continue keeping PWD v3.3 template inactive pending its qualified legal/privacy gate.
+
