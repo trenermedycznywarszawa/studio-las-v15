@@ -1,21 +1,25 @@
 import { REPORT_QUESTIONS, EVIDENCE_LABELS, reportCandidates, reportInput } from "../report-evidence.js";
 import { button, checkbox, create, detailsForm, field, formatDate, statusBox, submitForm } from "./common.js";
 export function manualReportComposer(workspace, onSave) {
+ if(workspace.sectionStatus && (workspace.sectionStatus.reports !== "ready" || workspace.sectionStatus.measurements !== "ready")) return statusBox("Źródła raportu są niepełne. Dokończ odczyt raportów i pomiarów przed przygotowaniem szkicu.");
  const candidates=reportCandidates(workspace);
  if(candidates.length<3) return statusBox("Do raportu potrzebne są co najmniej 3 datowane źródła z opisem. Nie twórz zastępczych obserwacji tylko po to, by uzupełnić raport.");
- return detailsForm("Przygotuj raport 12 tygodni",submitForm([
+ const composer = detailsForm("Przygotuj raport 12 tygodni",submitForm([
   statusBox("Wybierz 3–7 istotnych źródeł. Napisz własną interpretację, decyzję i materiał dla klienta. Zapis tworzy wyłącznie szkic; zatwierdzenie i publikacja są oddzielne."),
   field("Tytuł raportu","title","text",{required:true,maxlength:240}),
-  ...Object.entries(REPORT_QUESTIONS).map(([key,label])=>field(label,key,"textarea",{required:true,maxlength:12000})),
   create("fieldset",{className:"report-evidence-picker"},[
    create("legend",{text:"Datowane źródła — wybierz 3–7"}),
-   ...candidates.map((item,index)=>create("div",{className:"record"},[
-    checkbox(`${formatDate(item.date)} · ${EVIDENCE_LABELS[item.table]} · ${item.excerpt.slice(0,180)}`,`evidence_${index}`),
+   ...candidates.map((item,index)=>create("div",{className:"record","data-source-table":item.table,"data-source-id":item.id},[
+    checkbox(`${formatDate(item.date)} · ${item.label} · ${item.excerpt.slice(0,180)}`,`evidence_${index}`),
+    create("p",{className:"muted",text:`Źródło: ${item.table}/${item.id} · wersja zapisu: ${new Date(item.updated_at).toLocaleString("pl-PL")}`}),
     create("details",{},[create("summary",{text:"Pełny opis źródła"}),create("p",{className:"preserve-lines",text:item.excerpt})])
    ]))
   ]),
+  ...Object.entries(REPORT_QUESTIONS).map(([key,label])=>field(label,key,"textarea",{required:true,maxlength:12000})),
   field("Materiał dla klienta — dokładnie ten tekst będzie widoczny po publikacji","client_material","textarea",{required:true,rows:10,maxlength:12000})
  ],"Zapisz szkic raportu",values=>onSave(reportInput(values,candidates))));
+ composer.classList.add("report-composer");
+ return composer;
 }
 export function evidenceReportRecord(report, onTransition) {
  const date=value=>value?new Date(value).toLocaleString("pl-PL"):"—";

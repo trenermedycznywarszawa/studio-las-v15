@@ -29,6 +29,10 @@ insert into public.client_users(client_id,user_id,status) values
  ('c1000000-0000-4000-8000-000000000002','b1000000-0000-4000-8000-000000000003','active');
 set local role authenticated;
 select set_config('request.jwt.claims','{"sub":"a1000000-0000-4000-8000-000000000001","role":"authenticated","aal":"aal2"}',true);
+-- First publication now requires the trainer's explicit permitting PWD.
+select public.save_pwd_workflow('c1000000-0000-4000-8000-000000000001', current_date,
+ 'Fictional goal', 'Fictional meaning', 'Fictional boundaries', 'Trainer interpretation',
+ 'continue_guidance', 'Prepare an explicitly reviewed first release', '[]'::jsonb);
 insert into public.home_plans(id,client_id,title,focus,guidance_channel,status) values
  ('d1000000-0000-4000-8000-000000000001','c1000000-0000-4000-8000-000000000001','Fictional guidance','Practice an agreed action','app','draft');
 select pg_temp.expect_error($q$select public.approve_home_plan_guidance('d1000000-0000-4000-8000-000000000001',1)$q$,'23514');

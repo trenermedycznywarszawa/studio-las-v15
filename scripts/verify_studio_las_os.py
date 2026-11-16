@@ -161,7 +161,9 @@ def check_password_flows() -> None:
         'new set(["invite", "recovery"])',
         "access_token",
         "refresh_token",
-        "saveauthsession",
+        "auth.suspendsessionpersistence()",
+        "preparepasswordsetup",
+        "insufficient_aal",
         "markpasswordsetuppending",
         "clearpasswordsetuppending",
         "history.replacestate",
@@ -189,7 +191,7 @@ def check_password_flows() -> None:
     storage_guard_position = app.find("assertNoPersistentHealthData()")
     cleanup_position = app.find("clearAuthArtifactsFromUrl()")
     restore_position = app.find("state.auth.restore()")
-    pending_check_position = app.find("getPasswordSetupContext()")
+    pending_check_position = app.find("getPasswordSetupContext()", restore_position)
 
     require(consume_position >= 0, "password callback consumption missing")
     require(storage_guard_position > consume_position, "local data gate can leave password tokens in the URL")
@@ -312,7 +314,7 @@ def check_session_brief_contract() -> None:
     styles = read(ROOT / "assets/os/styles.css")
 
     require('this.rest("guidance_events"' in data, "session brief does not read client check-ins")
-    require('kind: "eq.client_checkin"' in data, "session brief read is not limited to client check-ins")
+    require('kind: "in.(client_checkin,client_contact_request)"' in data, "session brief read is not limited to client check-ins and contact requests")
     require('limit: 1' in data, "session brief client check-in read is not bounded")
     require("guidanceEvents" in data, "session brief data is absent from workspace")
     require("buildTrainerSessionBrief" in trainer, "trainer UI does not compose the session brief")

@@ -40,6 +40,18 @@ export function newClientForm(onSubmit) {
   ], "Dodaj klienta", onSubmit);
 }
 
+export function clientProcessForm(client, onSubmit) {
+  return submitForm([
+    field("Etap klienta", "stage", "select", {
+      required: true, value: String(client.stage),
+      options: Object.entries(CANONICAL_STAGES).map(([value, label]) => ({ value, label: `${value} · ${label}` }))
+    }),
+    field("Następna sesja", "nextSessionDate", "date", { value: client.next_session_date || "", min: "0001-01-01", max: "9999-12-31" }),
+    field("Następny Review", "nextReviewDate", "date", { value: client.next_review_date || "", min: "0001-01-01", max: "9999-12-31" }),
+    create("p", { className: "muted", text: "Zapisz świadomie wybrany etap i terminy. Pusty termin usuwa zaplanowaną datę." })
+  ], "Zapisz etap i terminy", onSubmit);
+}
+
 export function sessionForm(onSubmit) {
   return submitForm([
     field("Data", "date", "date", { value: today(), required: true }),

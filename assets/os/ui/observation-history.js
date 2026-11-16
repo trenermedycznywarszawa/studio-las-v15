@@ -16,7 +16,7 @@ export function observationHistory(workspace, model) {
       const payload = event.payload || {};
       return create("article", { className: "record" }, [
         create("h4", { text: `${formatDate(event.event_date)} · ${item?.name || "Odpowiedź do wskazówki"}` }),
-        create("strong", { text: "Oryginalna odpowiedź klienta" }),
+        create("strong", { text: event.kind === "client_contact_request" ? "Pytanie klienta / prośba o kontakt" : "Oryginalna odpowiedź klienta" }),
         create("p", { text: [event.completed === true ? "Wykonane" : event.completed === false ? "Niewykonane" : "",
           payload.energyScore != null ? `Energia: ${payload.energyScore}/10` : "",
           payload.symptomScore != null ? `Dolegliwości: ${payload.symptomScore}/10` : "", payload.note].filter(Boolean).join(" · ") }),

@@ -205,11 +205,19 @@ export function assertNoPersistentHealthData() {
   }
 }
 
+export function isInsufficientAal(error) {
+  const payload = error?.details || error?.payload;
+  return (payload?.code || payload?.error_code) === "insufficient_aal";
+}
+
 export function userSafeError(error, environment = "") {
   if (error instanceof RuntimeConfigurationError) return error.message;
 
   const status = Number(error?.status || 0);
   const errorCode = String(error?.payload?.code || error?.payload?.error_code || "").toLowerCase();
+  if (status === 400 && errorCode === "23514" && error?.payload?.message === "first guidance requires a current permitting PWD decision") {
+    return "Aktualna decyzja PWD nie pozwala rozpocząć pierwszego prowadzenia. Odśwież kartę i sprawdź zapisany kolejny krok.";
+  }
   if (error instanceof TypeError && /fetch|network/i.test(String(error.message || ""))) {
     return environment === "staging"
       ? "Nie można połączyć się z wersją testową. Sprawdź konfigurację środowiska."
@@ -219,6 +227,7 @@ export function userSafeError(error, environment = "") {
     return "Adres poczty elektronicznej lub hasło są nieprawidłowe.";
   }
   if (status === 400) return "Dane formularza nie spełniają wymagań. Sprawdź pola i spróbuj ponownie.";
+  if (isInsufficientAal(error)) return "Potwierdź kod MFA z aplikacji uwierzytelniającej, aby kontynuować.";
   if (status === 401) return "Sesja wygasła albo link jest nieprawidłowy. Zaloguj się ponownie.";
   if (status === 403) return "Nie masz dostępu do tych danych.";
   if (status === 409) return "Taki zapis już istnieje albo narusza regułę danych.";

@@ -41,7 +41,7 @@ export function createRuntimeFeedback(getEnvironment) {
     announce(`${label}…`);
     try {
       const result = await writeThenRefresh(operation, refresh);
-      announce(`${label}: zapisano w Supabase.`, "ok");
+      announce(`${label}: zapisano.`, "ok");
       return result;
     } catch (error) {
       const message = error.writeConfirmed
