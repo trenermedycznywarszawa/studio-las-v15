@@ -41,8 +41,9 @@ concurrency:
 jobs:
   browser-e2e-staging:
     name: Browser E2E — canonical staging
-    # Legacy workflow targets shared staging with durable data. No mutating E2E here.
-    # The isolated QA workflow in trainer-attention-production.yml is its successor.
+    # SAFETY HOLD (2026-11-16): shared staging is being retired as a writable E2E target.
+    # This legacy workflow must not mutate canonical staging or production, including manual runs.
+    # Use disposable isolated QA only after verified safety/recovery gate.
     if: ${{ false }}
     runs-on: ubuntu-latest
     timeout-minutes: 25
