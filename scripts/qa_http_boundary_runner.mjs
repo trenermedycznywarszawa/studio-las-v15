@@ -198,16 +198,15 @@ $("clientBTest").addEventListener("click", async () => {
   $("clientBTest").disabled = true;
   const password = cleanInput("clientBPass");
   try {
-    await checkClient("qa.foreign@example.test",password,CLIENT_B,
+    const clientBToken = await checkClient("qa.foreign@example.test",password,CLIENT_B,
       "TestB",CLIENT_A,"TestA");
     const aLinks = await getRows("/rest/v1/client_users?select=client_id,status",clientAToken);
+    const bLinks = await getRows("/rest/v1/client_users?select=client_id,status",clientBToken);
     assert(idsEqual(aLinks,[CLIENT_A],"client_id") && aLinks[0].status==="active",
       "Klient B zmodyfikował klienta A");
-    const bLinks = await getRows("/rest/v1/client_users?select=client_id,status",
-      await login("qa.foreign@example.test",password));
-    // The password input was already cleared; the checks above are sufficient,
-    // but this is intentionally never a claim about an independent second login.
-    report("Klient B",true,"własny portal, odmowa dostępu do A; relacja A nadal aktywna");
+    assert(idsEqual(bLinks,[CLIENT_B],"client_id") && bLinks[0].status==="active",
+      "Klient A zmodyfikował klienta B");
+    report("Klient B",true,"własny portal, obie próby cudzego zapisu odmówione");
     report("Wynik końcowy",true,"HTTP Auth/REST: 4/4; zamknij stronę; brak trwałych sesji");
     trainerAal1Token=null;
     clientAToken=null;
