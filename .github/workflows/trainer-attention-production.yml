@@ -34,6 +34,7 @@ jobs:
           node --check scripts/e2e_safety_gate.mjs
           node --check scripts/test_e2e_safety_gate.mjs
           node scripts/test_pwd_trainer_workflow.mjs
+          node scripts/test_client_process_update.mjs
           node scripts/test_decision_state_integrity.mjs
           node scripts/test_stage2_production_runtime.mjs
           node scripts/test_pre_pwd_v31_registration.mjs
