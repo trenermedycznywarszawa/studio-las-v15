@@ -32,3 +32,14 @@ The old staging project is PAUSED, not deleted, and production is unchanged. Dis
 - QA-only ingress and client access Edge Functions: deployed ACTIVE, but functional browser tests NOT RUN.
 - QA synthetic Auth users: **BLOCKED until the owner creates the three accounts through the Dashboard**.
 - RLS/AAL1/AAL2/cross-client/browser→API→DB: **NOT RUN**.
+
+
+## Update 16 Nov 2026, after owner-created Auth accounts — EXECUTED
+
+- Owner added the three allowlisted synthetic Auth accounts in the **disposable QA** Supabase Dashboard; identity/email-confirmation state verified by read-only SQL against `yipsjvbgxdmdicijxcph`: `auth.users=3`, all three email-confirmed, no extra Auth users.
+- Ran the **exact approved** repository script `supabase/dev/qa_bootstrap_synthetic_profiles.sql` through QA-only Supabase SQL (no Auth internal table writes). Result: no SQL error.
+- Independent read-only verification: `public.profiles=3`, account `attention.trainer@example.test` is `trainer`; `qa.client@example.test` and `qa.foreign@example.test` are `client`; every profile `auth_user_id` correctly matches corresponding `auth.users.id` and every email is confirmed. No real client records.
+- Clean state preserved: `public.clients=0`, questionnaire assignments `0`, MFA factors `0`, `pre_pwd_first_visit.active=false`, `34` public RLS-enabled tables.
+- **Not yet tested**: actual sign-in (no credentials supplied to assistant), TOTP enrollment/AAL2, cross-client negative permissions, full browser/API/DB workflow, cleanup/recovery. These remain `NOT RUN` and cannot be converted to `PASS` on the basis of role-binding SQL.
+- Auth setup is now **PASS**; the former prerequisite instructing the owner to create three Auth accounts has been satisfied and must not be repeated.
+- Next priority: isolated QA `--qa` preview and trainer-only MFA enrollment with credentials kept local to owner; then verifiable negative auth tests and the full client journey, only after genuine teardown/recovery evidence. Privacy-qualification gating for the PWD template remains deliberately unmodified.
