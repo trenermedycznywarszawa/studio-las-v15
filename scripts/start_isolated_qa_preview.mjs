@@ -84,6 +84,39 @@ const server = createServer((req, res) => {
     return respond(400, "Invalid path");
   }
   if (pathname === "/") pathname = "/index.html";
+
+  // The signed-JWT security runner is local-only and NEVER copied to .deploy.
+  // It has no login proxy: credentials go directly from the browser to QA GoTrue.
+  const runnerFiles = {
+    "/__qa_security/": { file: "qa_http_boundary_runner.html", mime: "text/html; charset=utf-8" },
+    "/__qa_security/runner.mjs": { file: "qa_http_boundary_runner.mjs", mime: "text/javascript; charset=utf-8" }
+  };
+  const testAsset = runnerFiles[pathname];
+  if (testAsset) {
+    const expectedHost = `127.0.0.1:${server.address()?.port}`;
+    if (String(req.headers.host || "") !== expectedHost) {
+      return respond(403, "QA preview hostname mismatch");
+    }
+    const safePath = resolve(root, "scripts", testAsset.file);
+    const csp = [
+      "default-src 'none'",
+      "script-src 'self'",
+      "style-src 'unsafe-inline'",
+      `connect-src ${qa.origin}`,
+      "form-action 'none'",
+      "base-uri 'none'",
+      "frame-ancestors 'none'",
+      "object-src 'none'",
+      "img-src 'none'"
+    ].join("; ");
+    res.writeHead(200, {
+      ...headers,
+      "Content-Type": testAsset.mime,
+      "Content-Security-Policy": csp
+    });
+    if (req.method === "HEAD") return res.end();
+    return createReadStream(safePath).on("error", () => res.destroy()).pipe(res);
+  }
   if (!pathname.startsWith("/") || pathname.includes("\\") || pathname.includes("\0")
     || pathname.split("/").some(part => part === ".." || part.startsWith("."))) {
     return respond(403, "Forbidden");
