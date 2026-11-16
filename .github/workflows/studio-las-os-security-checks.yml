@@ -214,6 +214,14 @@ jobs:
       - name: Verify browser E2E infrastructure boundaries
         run: python3 scripts/verify_browser_e2e_infra.py
 
+      - name: Verify isolated QA target and fail-closed E2E gate
+        run: |
+          node scripts/test_e2e_qa_target.mjs
+          node scripts/test_e2e_safety_gate.mjs
+
+      - name: Verify isolated QA local preview build
+        run: node scripts/test_qa_preview.mjs
+
       - name: Verify target preflight remains read-only
         run: python3 scripts/verify_target_preflight_read_only.py
 
