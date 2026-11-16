@@ -4,7 +4,8 @@ import {randomUUID} from "node:crypto";
 // playwright is dynamically imported only after assertE2eSafetyGate succeeds.
 import {api,login,queue,expectQueue,questionnaireBacklog,testSignalCase,eventSignalKey,screenshot} from "./attention_e2e_helpers.mjs";
 import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
-const origin="https://ulauyoqjoetjqktegeuq.supabase.co";
+import { isolatedQaTarget } from "./e2e_qa_target.mjs";
+const { origin } = isolatedQaTarget();
 const clientId="c7200000-0000-4000-8000-000000000001";
 const dir=process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
 const marker=process.env.STUDIO_LAS_E2E_MARKER || randomUUID();
