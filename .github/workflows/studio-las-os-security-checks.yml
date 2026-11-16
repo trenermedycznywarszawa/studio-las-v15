@@ -220,7 +220,10 @@ jobs:
           node scripts/test_e2e_safety_gate.mjs
 
       - name: Verify isolated QA local preview build
-        run: node scripts/test_qa_preview.mjs
+        run: |
+          node scripts/test_qa_preview.mjs
+          node --check scripts/start_isolated_qa_preview.mjs
+          node scripts/test_start_isolated_qa_preview.mjs
 
       - name: Verify target preflight remains read-only
         run: python3 scripts/verify_target_preflight_read_only.py
