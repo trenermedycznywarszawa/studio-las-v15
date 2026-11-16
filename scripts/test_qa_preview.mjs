@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { execFileSync, spawnSync } from "node:child_process";
+import { spawnSync } from "node:child_process";
 import { readFileSync } from "node:fs";
 import { isolatedQaTarget } from "./e2e_qa_target.mjs";
 import { getRuntimeConfig, runtimeEnvironmentLabel } from "../assets/os/runtime.js";
