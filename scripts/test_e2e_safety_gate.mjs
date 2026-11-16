@@ -141,15 +141,13 @@ try {
   rmSync(fixture.dir, { recursive: true, force: true });
 }
 
-// 2. Anti-bypass check against REAL repo: setting VERIFIED + fake ref cannot bypass hardcoded Supabase addresses!
+// 2. Anti-bypass check against REAL repo: VERIFIED flags without real QA proof cannot authorize anything.
 const spoofedEnvOnRealRepo = validIsolatedEnv();
 const realRepoSpoofVerdict = evaluateE2eSafetyGate(spoofedEnvOnRealRepo);
 assert.equal(realRepoSpoofVerdict.allowed, false, "Setting VERIFIED env vars on real repo must stay BLOCKED");
 assert.equal(realRepoSpoofVerdict.status, "BLOCKED");
 assert.equal(realRepoSpoofVerdict.code, "BLOCKED: isolation/cleanup unverified");
-assert.ok(realRepoSpoofVerdict.reason.includes("assets/os/runtime.js"), realRepoSpoofVerdict.reason);
-assert.ok(realRepoSpoofVerdict.reason.includes("scripts/attention_e2e_helpers.mjs"), realRepoSpoofVerdict.reason);
-assert.ok(realRepoSpoofVerdict.reason.includes("scripts/build_studio_las_os_deploy.mjs"), realRepoSpoofVerdict.reason);
+assert.ok(realRepoSpoofVerdict.reason.includes("STUDIO_LAS_E2E_VERIFICATION_EVIDENCE"), realRepoSpoofVerdict.reason);
 assert.throws(
   () => assertE2eSafetyGate(spoofedEnvOnRealRepo),
   err => err instanceof Error && err.message.startsWith("BLOCKED: isolation/cleanup unverified")
