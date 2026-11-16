@@ -60,6 +60,8 @@ function createSyntheticIsolatedFixture(targetRef = "isolatedqa0000000001") {
     "assets/os/runtime.js",
     "scripts/build_studio_las_os_deploy.mjs",
     "scripts/attention_e2e_helpers.mjs",
+    "scripts/e2e_mfa_bootstrap.mjs",
+    "scripts/e2e_questionnaire_assignment.mjs",
     "scripts/e2e_trainer_attention_flow.mjs",
     "scripts/e2e_client_contact_requests.mjs",
     "scripts/e2e_questionnaire_assignment.mjs",
@@ -72,6 +74,10 @@ function createSyntheticIsolatedFixture(targetRef = "isolatedqa0000000001") {
     mkdirSync(path.dirname(abs), { recursive: true });
     writeFileSync(abs, `// isolated fixture for ${targetRef}\nexport const projectRef = "${targetRef}";\n`, "utf8");
   }
+  // The built preview must explicitly target QA, not just contain the QA ref.
+  writeFileSync(path.join(dir, ".deploy/studio-las-os/studio-las-config.js"),
+    JSON.stringify({ mode: "qa", supabase: { projectRef: targetRef,
+      url: `https://${targetRef}.supabase.co`, publishableKey: "sb_publishable_" + "a".repeat(40) } }), "utf8");
   const evidenceRel = "artifacts/isolated-recovery-proof.json";
   const evidenceAbs = path.join(dir, evidenceRel);
   mkdirSync(path.dirname(evidenceAbs), { recursive: true });
