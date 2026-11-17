@@ -281,6 +281,8 @@ export class SupabaseAuth {
   }
 }
 
+const READ_ONLY_TABLES = new Set(["knowledge_cards"]);
+
 const WRITE_TABLES = new Set([
   "clients",
   "client_trainers",
@@ -314,8 +316,12 @@ export class StudioLasRepository {
   }
 
   async rest(table, { method = "GET", query = {}, body, prefer } = {}) {
-    if (!WRITE_TABLES.has(table) && table !== "profiles") {
+    const readOnly = READ_ONLY_TABLES.has(table);
+    if (!WRITE_TABLES.has(table) && !readOnly && table !== "profiles") {
       throw new Error(`Table is not available through the Studio Las repository: ${table}`);
+    }
+    if (readOnly && String(method).toUpperCase() !== "GET") {
+      throw new Error(`Table is read-only through the Studio Las repository: ${table}`);
     }
 
     const headers = {};
@@ -371,6 +377,17 @@ export class StudioLasRepository {
       prefer: "return=representation"
     });
     return Array.isArray(rows) ? rows[0] : rows;
+  }
+
+  async listKnowledgeCards() {
+    return this.rest("knowledge_cards", {
+      query: {
+        select: "id,slk_id,card_version,source_sha256,title,author,publication_year,source_name,source_locator,category,tags,evidence_strength,extraction_note,source_assessment,summary,key_concepts,studio_usefulness,limitations,notes,information_type,review_state,publication_state,analysis_id,imported_at",
+        is_active: "eq.true",
+        order: "slk_id.asc",
+        limit: 200
+      }
+    });
   }
 
   async listClients() {

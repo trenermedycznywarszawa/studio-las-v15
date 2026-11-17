@@ -30,7 +30,11 @@ const state = {
   activeClientId: "",
   workspace: null,
   clientPortal: null,
-  snapshot: null
+  snapshot: null,
+  knowledgeCards: [],
+  knowledgeQuery: "",
+  knowledgeLoading: false,
+  knowledgeError: ""
 };
 
 const { announce, withWrite, reset: resetFeedback } = createRuntimeFeedback(() => state.config?.mode);
@@ -51,6 +55,10 @@ async function logout() {
   state.activeClientId = "";
   state.workspace = null;
   state.snapshot = null;
+  state.knowledgeCards = [];
+  state.knowledgeQuery = "";
+  state.knowledgeLoading = false;
+  state.knowledgeError = "";
   state.mfaView = null;
   showLogin();
 }
@@ -200,6 +208,24 @@ async function loadQuestionnaireSubmissionsForTrainer(workspace, clientId) {
   workspace.questionnaireSubmissions = Array.isArray(submissions) ? submissions : [];
 }
 
+async function loadKnowledgeLibrary(force = false) {
+  if (!force && state.knowledgeCards.length) return;
+  state.knowledgeLoading = true;
+  state.knowledgeError = "";
+  renderTrainerState();
+  try {
+    const cards = await state.repository.listKnowledgeCards();
+    state.knowledgeCards = Array.isArray(cards) ? cards : [];
+  } catch (error) {
+    state.knowledgeCards = [];
+    state.knowledgeError = "Nie udało się wczytać biblioteki wiedzy. Pozostały panel trenera nadal działa.";
+    console.error("Studio Las OS: trainer knowledge library read failed", error);
+  } finally {
+    state.knowledgeLoading = false;
+    renderTrainerState();
+  }
+}
+
 async function loadTrainerWorkspace(clientId, refreshClients = false) {
   await trainerLoader.load(clientId, refreshClients, loadQuestionnaireSubmissionsForTrainer);
 }
@@ -218,7 +244,10 @@ async function loadTrainer(preferredClientId = state.activeClientId) {
     return;
   }
   state.mfaView = null;
-  await loadTrainerWorkspace(preferredClientId, true);
+  await Promise.all([
+    loadTrainerWorkspace(preferredClientId, true),
+    loadKnowledgeLibrary()
+  ]);
   await state.inquiryController.refresh().catch(error => { state.inquiryController.error = error; });
   renderTrainerState();
 }
@@ -241,6 +270,15 @@ function renderTrainerState() {
     workspace: state.workspace,
     loading: state.loading,
     loadError: state.loadError,
+    knowledgeCards: state.knowledgeCards,
+    knowledgeQuery: state.knowledgeQuery,
+    knowledgeLoading: state.knowledgeLoading,
+    knowledgeError: state.knowledgeError,
+    onKnowledgeQuery: query => {
+      state.knowledgeQuery = String(query || "").trim();
+      renderTrainerState();
+    },
+    onReloadKnowledge: () => loadKnowledgeLibrary(true),
     onRetrySection: section => trainerLoader.section(section).catch(handleRuntimeError),
     attentionSignals,
     onSelectClient: clientId => selectClient(clientId).catch(handleRuntimeError),

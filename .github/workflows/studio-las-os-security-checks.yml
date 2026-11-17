@@ -23,6 +23,7 @@ on:
       - "scripts/verify_access_lifecycle.py"
       - "scripts/verify_trainer_mfa.py"
       - "scripts/test_trainer_mfa.mjs"
+      - "scripts/test_knowledge_library.mjs"
       - "scripts/test_pwd_trainer_workflow.mjs"
       - "scripts/test_guidance_release_workflow.mjs"
       - "scripts/test_decision_state_integrity.mjs"
@@ -133,6 +134,9 @@ jobs:
 
       - name: Verify trainer TOTP browser flows
         run: node scripts/test_trainer_mfa.mjs
+
+      - name: Verify trainer-only Knowledge Library contract
+        run: node scripts/test_knowledge_library.mjs
 
       - name: Verify atomic trainer PWD workflow
         run: node scripts/test_pwd_trainer_workflow.mjs
