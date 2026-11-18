@@ -96,6 +96,10 @@ export function renderClient(root, model) {
     snapshot.questionnaires?.length ? panel("ANKIETY", questionnaireList(snapshot.questionnaires, questionnaire)) : null,
     activeQuestionnaire(questionnaire),
     panel("Ostatnie ustalenie", agreement),
+    detailsForm("Biblioteka edukacyjna (DEMO)", create("div", {}, [
+      create("p", { text: "Wersja demonstracyjna. Nie zmienia Twojego planu." }),
+      create("a", { href: "./assets/os/education/index.html", text: "Otwórz bibliotekę edukacyjną", target: "_blank", rel: "noopener noreferrer" })
+    ])),
     snapshot.reports?.length ? detailsForm("Podsumowania postępu", reports) : null,
     snapshot.measurements?.length ? detailsForm("Pomiary do omówienia", measurements) : null,
     create("p", { className: "client-disclaimer", text: "Panel nie diagnozuje i nie zmienia planu automatycznie. Znaczenie sygnałów omawiasz z trenerem." })
