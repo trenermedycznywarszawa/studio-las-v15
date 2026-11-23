@@ -1,0 +1,15 @@
+[build]
+  command = "node scripts/build_studio_las_os_deploy.mjs"
+  publish = ".deploy/studio-las-os"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+[context.production]
+  command = "node scripts/build_studio_las_os_deploy.mjs"
+
+[context.deploy-preview]
+  command = "node scripts/build_studio_las_os_deploy.mjs"
+
+[context.branch-deploy]
+  command = "node scripts/build_studio_las_os_deploy.mjs"

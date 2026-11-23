@@ -16,14 +16,14 @@ It defines how observations, signals, interpretation, decisions, guidance, and r
 
 Studio Las OS should preserve the right information at the right moment for the right person.
 
-Information flow must protect the sequence:
+Information flow must protect the intent of this heuristic:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
 
-The app must not become the beginning of the client's day.
+This is not a mandatory technical sequence. The selected channel may be paper, app, or hybrid.
 
 The report must not become raw data.
 
@@ -54,9 +54,9 @@ Studio Las OS should support this flow:
 2. Trainer observation
 3. Trainer interpretation
 4. Trainer decision
-5. Paper-first guidance
-6. Client action offline
-7. App-recorded signal
+5. Trainer-approved guidance in the selected channel
+6. Client action
+7. Decision-relevant result, response, note, or question
 8. Trainer review
 9. Pattern recognition
 10. Client-safe report
@@ -154,11 +154,11 @@ Decision must be explicit enough to preserve process continuity.
 
 The OS must not make the decision.
 
-### 5. Paper-first guidance
+### 5. Trainer-approved guidance
 
 Role:
 
-The client receives simple offline guidance.
+The client receives simple guidance through the selected primary channel.
 
 Examples:
 
@@ -166,19 +166,19 @@ Examples:
 - when to do it,
 - what to notice,
 - when to stop,
-- when to record a signal later.
+- what result, response, note, or question to record when relevant.
 
 Architectural rule:
 
-Paper carries the morning.
+Paper, app, or a deliberate hybrid may carry guidance.
 
-The app must not replace the paper guide.
+There must be one authoritative instruction version. The app must not silently diverge from paper, and paper must not remain active after it becomes stale.
 
-### 6. Client action offline
+### 6. Client action
 
 Role:
 
-The client performs the assigned guidance offline, outside the app.
+The client performs the assigned guidance. The action itself may be offline even when the app presents the instruction or captures the result.
 
 Examples:
 
@@ -190,15 +190,13 @@ Examples:
 
 Architectural rule:
 
-The action is not an app ritual.
+The action must not become an engagement ritual. App use is justified only when it improves clarity, accessibility, continuity, or useful feedback.
 
-The client should be able to complete it without opening Studio Las OS.
-
-### 7. App-recorded signal
+### 7. Decision-relevant client input
 
 Role:
 
-The client records the smallest useful signal after offline action.
+The client records the smallest useful result, response, note, or question at the appropriate moment.
 
 Examples:
 
@@ -211,7 +209,7 @@ Examples:
 
 Architectural rule:
 
-The app records the signal.
+The app records only the requested input and its source context.
 
 It does not score the person.
 
@@ -371,7 +369,7 @@ The following should not flow into architecture without justification:
 
 Information flow has failed if:
 
-- the client needs the phone to begin the morning,
+- the client is forced into unnecessary app use or duplicate guidance,
 - the trainer becomes a data clerk,
 - the OS creates meaning before the trainer,
 - reports become raw exports,
@@ -382,10 +380,10 @@ Information flow has failed if:
 
 ## First architecture slice: information flow
 
-The first architecture slice should define only these responsibilities:
+The first guidance architecture slice should define only these responsibilities:
 
-1. Trainer assigns paper-first guidance.
-2. Client records a minimal signal later.
+1. Trainer assigns guidance and selects the primary channel.
+2. Client receives one authoritative instruction and records only the requested input.
 3. Trainer reviews signals in context.
 4. Trainer records the next decision.
 5. Selected information supports report preparation.

@@ -1,5 +1,7 @@
 # Schema Gap Analysis: Paper-first Process Tracking
 
+**Status note (2026-08-01): HISTORICAL PRODUCT DIRECTION.** Schema analysis remains evidence; the document does not require paper as the current primary channel.
+
 This document analyzes whether Paper-first Process Tracking should create new tables or reuse existing Studio Las OS structures.
 
 No application code was changed.

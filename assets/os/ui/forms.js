@@ -1,0 +1,203 @@
+import {
+  checkbox,
+  create,
+  field,
+  submitForm
+} from "./common.js";
+import {
+  CANONICAL_ENGAGEMENTS,
+  CANONICAL_STAGES
+} from "../runtime.js";
+import {
+  CYCLE_DECISION_OPTIONS,
+  SIGNAL_REVIEW_OPTIONS
+} from "../decision-state.js";
+
+function today() {
+  return new Date().toISOString().slice(0, 10);
+}
+
+export function newClientForm(onSubmit) {
+  return submitForm([
+    field("Imię i nazwisko", "name", "text", { required: true, maxlength: 180 }),
+    field("Adres poczty elektronicznej", "email", "email", { maxlength: 254 }),
+    field("Telefon", "phone", "tel", { maxlength: 40 }),
+    field("Typ współpracy", "engagementType", "select", {
+      required: true,
+      options: Object.entries(CANONICAL_ENGAGEMENTS).map(([value, label]) => ({ value, label }))
+    }),
+    field("Etap", "stage", "select", {
+      required: true,
+      options: Object.entries(CANONICAL_STAGES).map(([value, label]) => ({ value, label }))
+    }),
+    field("Data startu", "startDate", "date"),
+    field("Następna sesja", "nextSessionDate", "date"),
+    field("Następny przegląd", "nextReviewDate", "date"),
+    field("Cel procesu", "goal", "textarea", { rows: 2, maxlength: 4000 }),
+    field("Kontekst zdrowotny", "healthStatus", "textarea", { rows: 2, maxlength: 6000 }),
+    field("Przeciwwskazania", "contraindications", "textarea", { rows: 2, maxlength: 6000 }),
+    field("Kontekst wymagający uwagi", "redFlagsText", "textarea", { rows: 2, maxlength: 6000 })
+  ], "Dodaj klienta", onSubmit);
+}
+
+export function clientProcessForm(client, onSubmit) {
+  return submitForm([
+    field("Etap klienta", "stage", "select", {
+      required: true, value: String(client.stage),
+      options: Object.entries(CANONICAL_STAGES).map(([value, label]) => ({ value, label: `${value} · ${label}` }))
+    }),
+    field("Następna sesja", "nextSessionDate", "date", { value: client.next_session_date || "", min: "0001-01-01", max: "9999-12-31" }),
+    field("Następny Review", "nextReviewDate", "date", { value: client.next_review_date || "", min: "0001-01-01", max: "9999-12-31" }),
+    create("p", { className: "muted", text: "Zapisz świadomie wybrany etap i terminy. Pusty termin usuwa zaplanowaną datę." })
+  ], "Zapisz etap i terminy", onSubmit);
+}
+
+export function sessionForm(onSubmit) {
+  return submitForm([
+    field("Data", "date", "date", { value: today(), required: true }),
+    create("details", {className: "details-card"}, [
+      create("summary", {text: "Dodatkowe obserwacje — tylko gdy wpływają na decyzję"}),
+      create("div", {className: "form-grid"}, [
+    field("Gotowość 1–10", "readiness", "number", { min: 1, max: 10 }),
+    field("Dolegliwość przed 0–10", "vasBefore", "number", { min: 0, max: 10 }),
+    field("Dolegliwość po 0–10", "vasAfter", "number", { min: 0, max: 10 }),
+    field("Sen", "sleepQuality", "select", {
+      options: [{ value: "", label: "Nie podano" }, ...["Bardzo słaby", "Słaby", "Przeciętny", "Dobry", "Bardzo dobry"].map(value => ({ value, label: value }))]
+    }),
+      ])
+    ]),
+    field("Ćwiczenia — po jednym w linii", "exercises", "textarea", { maxlength: 8000 }),
+    field("Obserwacja trenera", "trainerObservation", "textarea", { maxlength: 12000 }),
+    field("Decyzja trenera", "trainerDecision", "textarea", { maxlength: 8000 }),
+    field("Podsumowanie dla klienta", "clientSummary", "textarea", { maxlength: 8000 }),
+    field("Następny krok dla klienta", "clientNextStep", "textarea", { maxlength: 4000 }),
+    checkbox("Opublikuj klientowi", "clientVisible")
+  ], "Zapisz sesję w Supabase", onSubmit);
+}
+
+
+export function measurementForm(onSubmit) {
+  return submitForm([
+    field("Data", "date", "date", { value: today(), required: true }),
+    field("Waga w kilogramach", "weightKg", "number", { step: 0.1, min: 0 }),
+    field("Udział tkanki tłuszczowej w procentach", "fatPercent", "number", { step: 0.1, min: 0, max: 100 }),
+    field("Masa mięśniowa w kilogramach", "muscleMassKg", "number", { step: 0.1, min: 0 }),
+    field("Interpretacja trenera", "trainerInterpretation", "textarea", { maxlength: 8000 }),
+    field("Podsumowanie dla klienta", "clientSummary", "textarea", { maxlength: 4000 }),
+    checkbox("Opublikuj klientowi", "clientVisible")
+  ], "Zapisz pomiar", onSubmit, "form-grid compact");
+}
+
+export function trainingLoadForm(onSubmit) {
+  return submitForm([
+    field("Data", "date", "date", { value: today(), required: true }),
+    field("Typ sesji", "sessionType", "text", { maxlength: 160 }),
+    field("Czas w minutach", "durationMin", "number", { min: 0 }),
+    field("Średnie tętno", "hrAvg", "number", { min: 0 }),
+    field("Najwyższe tętno", "hrMax", "number", { min: 0 }),
+    field("Czas w wysokiej strefie tętna w minutach", "zoneHighMin", "number", { min: 0 }),
+    field("Odczuwany wysiłek od 1 do 10", "rpe", "number", { min: 1, max: 10 }),
+    field("Notatka trenera", "trainerNote", "textarea", { maxlength: 8000 }),
+    field("Podsumowanie dla klienta", "clientSummary", "textarea", { maxlength: 4000 }),
+    checkbox("Opublikuj klientowi", "clientVisible")
+  ], "Zapisz odczyt", onSubmit, "form-grid compact");
+}
+
+export function assessmentForm(onSubmit) {
+  return submitForm([
+    field("Data", "date", "date", { value: today(), required: true }),
+    field("Nazwa obserwacji/testu", "testName", "text", { required: true, maxlength: 240 }),
+    field("Strona", "side", "select", {
+      options: [
+        { value: "", label: "Brak" },
+        { value: "lewa", label: "Lewa" },
+        { value: "prawa", label: "Prawa" },
+        { value: "obie", label: "Obie" }
+      ]
+    }),
+    field("Wynik opisowy", "resultText", "textarea", { maxlength: 8000 }),
+    field("Dolegliwość przed", "painBefore", "number", { min: 0, max: 10 }),
+    field("Dolegliwość po", "painAfter", "number", { min: 0, max: 10 }),
+    field("Jakość/tolerancja", "quality", "select", {
+      options: [{ value: "", label: "Nie podano" }, ...["dobrze tolerowane", "ograniczone", "do obserwacji", "przerwać i skonsultować"].map(value => ({ value, label: value }))]
+    }),
+    field("Interpretacja trenera", "interpretation", "textarea", { maxlength: 8000 }),
+    field("Następny krok", "nextStep", "textarea", { maxlength: 4000 })
+  ], "Zapisz obserwację", onSubmit);
+}
+
+export function homePlanForm(onSubmit) {
+  return submitForm([
+    field("Tytuł", "title", "text", { required: true, maxlength: 240 }),
+    field("Cel wskazówki — po co", "focus", "textarea", { required: true, maxlength: 4000 }),
+    field("Częstotliwość", "frequency", "text", { maxlength: 160 }),
+    field("Czas", "duration", "text", { maxlength: 160 }),
+    field("Instrukcja ogólna", "instructions", "textarea", { maxlength: 8000 }),
+    field("Kanał prowadzenia", "guidanceChannel", "select", {
+      required: true,
+      options: [
+        { value: "app", label: "Aplikacja" },
+        { value: "paper", label: "Papier" },
+        { value: "hybrid", label: "Hybrydowo: papier + aplikacja" }
+      ]
+    })
+  ], "Zapisz plan", onSubmit);
+}
+
+export function homePlanItemForm(homePlans, onSubmit) {
+  const plans = (homePlans || []).map(plan => ({
+    value: plan.id,
+    label: `Szkic: ${plan.title || "Bez nazwy"}`
+  }));
+  const hasPlan = plans.length > 0;
+
+  return submitForm([
+    field("Plan", "homePlanId", "select", {
+      required: true,
+      disabled: !hasPlan,
+      options: hasPlan ? plans : [{ value: "", label: "Najpierw utwórz plan" }]
+    }),
+    field("Nazwa zadania", "name", "text", { required: true, maxlength: 240, disabled: !hasPlan }),
+    field("Kategoria", "category", "text", { maxlength: 160, disabled: !hasPlan }),
+    field("Region", "region", "text", { maxlength: 160, disabled: !hasPlan }),
+    field("Dawkowanie", "dosage", "text", { maxlength: 240, disabled: !hasPlan }),
+    field("Częstotliwość", "frequency", "text", { maxlength: 240, disabled: !hasPlan }),
+    field("Wskazówka dla klienta", "clientCue", "textarea", { maxlength: 4000, disabled: !hasPlan }),
+    field("Kiedy przerwać / co zgłosić", "stopCriteria", "textarea", { maxlength: 4000, disabled: !hasPlan }),
+    field("Adres filmu", "videoUrl", "url", { maxlength: 2000, disabled: !hasPlan }),
+
+  ], "Dodaj zadanie do planu", values => onSubmit(values.homePlanId, values), "form-grid", {
+    disabled: !hasPlan,
+    disabledReason: hasPlan ? "" : "Najpierw utwórz plan domowy. Zadanie nie może istnieć bez planu nadrzędnego."
+  });
+}
+
+export function cycleDecisionForm(onSubmit) {
+  return submitForm([
+    field("Decyzja co dalej", "decision", "select", {
+      required: true,
+      options: [
+        { value: "", label: "Wybierz decyzję", disabled: true, selected: true },
+        ...CYCLE_DECISION_OPTIONS
+      ]
+    }),
+    field("Krótkie uzasadnienie trenera", "rationale", "textarea", {
+      required: true,
+      rows: 3,
+      minlength: 1,
+      maxlength: 4000
+    })
+  ], "Zapisz decyzję co dalej", onSubmit);
+}
+
+export function signalReviewForm(signalKey, onSubmit) {
+  return submitForm([
+    field("Wynik przeglądu", "outcome", "select", {
+      required: true,
+      options: [
+        { value: "", label: "Wybierz wynik", disabled: true, selected: true },
+        ...SIGNAL_REVIEW_OPTIONS
+      ]
+    })
+  ], "Zapisz wynik", values => onSubmit(signalKey, values.outcome), "form-grid compact");
+}

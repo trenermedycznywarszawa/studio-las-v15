@@ -33,6 +33,8 @@ Core rule:
 > App records the signal.  
 > Report shows the pattern.
 
+This is a design heuristic, not a required interface sequence. Report meaning still requires trainer review regardless of whether guidance was delivered on paper, in the app, or through a deliberate hybrid.
+
 ## Report doctrine
 
 The report is trainer-led interpretation.
@@ -234,13 +236,13 @@ Over years, reports can become Studio Las internal evidence.
 
 ## Report and AI
 
-AI may later support the trainer by organizing notes, surfacing patterns, or drafting report sections.
+AI may support the trainer by organizing notes, surfacing candidate patterns, or drafting report sections.
 
 AI must not become the source of authority.
 
 The trainer owns interpretation and final decision.
 
-The client should not receive an AI verdict.
+The client should not receive an unreviewed AI verdict.
 
 ## Report and Studio Las OS
 

@@ -1,0 +1,220 @@
+import { trainerCanReviewClient, OWNER_REVIEW_MESSAGE } from "../trainer-review-access.js";
+import { processHistoryPanel } from "./process-history.js";
+import { manualReportComposer, evidenceReportRecord } from "./report-evidence.js";
+import {
+  currentCycleDecision,
+  cycleDecisionLabel,
+  guidanceChannelLabel,
+  isCycleDecisionStage,
+  isInCurrentCycle,
+  reportAudienceLabel,
+  reportStatusLabel,
+  reportTypeLabel,
+  signalReviewOutcomeLabel
+} from "../decision-state.js";
+import { signalIdentity, signalTypeLabel } from "../decision-support.js";
+import { CANONICAL_ENGAGEMENTS, CANONICAL_STAGES } from "../runtime.js";
+import { buildTrainerSessionBrief } from "../session-brief.js";
+import { clientProcessForm, cycleDecisionForm, signalReviewForm } from "./forms.js";
+import { create, detailsForm, field, formatDate, panel, recordList, submitForm } from "./common.js";
+
+const SIGNAL_SOURCE_LABELS = Object.freeze({
+  session: "Sesja",
+  "training-load": "Tolerancja obciążenia",
+  "trainer-check": "Sprawdzenie trenera",
+  "client-record": "Karta klienta",
+  "client-response": "Odpowiedź klienta",
+  questionnaire: "Ankieta przed PWD",
+  process: "Proces"
+});
+
+function detailsBlock(summary, content) {
+  return create("details", { className: "details-card" }, [
+    create("summary", { text: summary }),
+    create("div", { className: "details-content" }, content)
+  ]);
+}
+
+function nowItem(label, value, meta = "", className = "now-item") {
+  return create("article", { className }, [
+    create("span", { text: label }),
+    create("strong", { text: value }),
+    meta ? create("p", { className: "muted", text: meta }) : null
+  ]);
+}
+
+export function clientIdentityPanel(client) {
+  const goal = String(client.goal || "").trim();
+  return panel(client.name, create("div", { className: "now-grid" }, [
+    nowItem(
+      "Współpraca",
+      CANONICAL_ENGAGEMENTS[client.engagement_type] || "Współpraca Studio Las"
+    ),
+    nowItem(
+      "Cel klienta",
+      goal || "Cel nie został jeszcze zapisany."
+    )
+  ]));
+}
+
+export function nowPanel(workspace, attentionSignals, model = {}) {
+  const brief = buildTrainerSessionBrief(workspace);
+  const openSignal = attentionSignals?.signals?.[0] || null;
+  const plan = brief.activePlan;
+  const focusMeta = plan
+    ? `Obowiązująca wskazówka: ${plan.title || "Bez nazwy"} · Wersja ${plan.release_version || 1} · ${guidanceChannelLabel(plan.guidance_channel)}`
+    : "Brak aktywnej wskazówki.";
+  const decisionMeta = brief.lastDecision?.sourceDate
+    ? `${brief.lastDecision.sourceType} · ${formatDate(brief.lastDecision.sourceDate)}`
+    : "Brak zapisanej decyzji trenera.";
+  const signalMeta = openSignal
+    ? `${SIGNAL_SOURCE_LABELS[openSignal.source] || "Źródło procesu"} · ${formatDate(openSignal.sourceDate)}`
+    : "Przejrzane sygnały pozostają w historii.";
+  const nextMeta = brief.nextStep.date ? formatDate(brief.nextStep.date) : "Bez zaplanowanej daty";
+
+  return panel("Teraz", create("div", { className: "now-block" }, [
+    create("div", { className: "now-grid" }, [
+      nowItem("Etap procesu", CANONICAL_STAGES[workspace.client.stage]
+        ? `${workspace.client.stage} · ${CANONICAL_STAGES[workspace.client.stage]}` : "Proces Studio Las"),
+      nowItem("Aktualny cel", brief.currentFocus?.value || "Cel nie został jeszcze zapisany.", focusMeta),
+      nowItem("Ostatnia obowiązująca decyzja trenera", brief.lastDecision?.value || "Brak zapisanej decyzji trenera.", decisionMeta),
+      nowItem("Otwarty sygnał wymagający uwagi", openSignal?.label || "Brak otwartego sygnału wymagającego uwagi.", signalMeta),
+      nowItem(brief.nextStep.label, brief.nextStep.value, nextMeta, "now-item wide")
+    ]),
+    typeof model.onUpdateClient === "function"
+      ? detailsForm("Zmień etap i terminy", clientProcessForm(workspace.client, model.onUpdateClient)) : null,
+    processHistoryPanel(workspace),
+    brief.requiresCycleDecision
+      ? create("div", { className: "cycle-decision-required", text: "Wymaga decyzji co dalej" })
+      : null
+  ]), "Krótki zapis faktów · bez automatycznej interpretacji");
+}
+
+function cycleDecisionRecord(decision) {
+  return create("article", { className: "record" }, [
+    create("strong", { text: cycleDecisionLabel(decision.decision) }),
+    create("p", { text: decision.rationale }),
+    create("p", { className: "muted", text: `Decyzja trenera · ${formatDate(decision.decided_at)}` })
+  ]);
+}
+
+export function cycleDecisionSection(workspace, model) {
+  const decisions = [...(workspace.cycleDecisions || [])].sort((left, right) =>
+    String(right.decided_at || right.created_at || "").localeCompare(String(left.decided_at || left.created_at || ""))
+  );
+  const current = currentCycleDecision(workspace);
+  const previousDecisions = decisions.filter(decision => decision.id !== current?.id);
+  const content = [
+    current
+      ? create("div", { className: "latest-cycle-decision" }, [
+          create("span", { text: "Aktualna decyzja" }),
+          create("strong", { text: cycleDecisionLabel(current.decision) }),
+          create("p", { text: current.rationale }),
+          create("p", { className: "muted", text: formatDate(current.decided_at) })
+        ])
+      : create("p", { className: "muted", text: "Nie zapisano jeszcze decyzji zamykającej cykl." }),
+    previousDecisions.length
+      ? detailsBlock("Pokaż historię decyzji", [
+          recordList(previousDecisions, cycleDecisionRecord, "Brak wcześniejszych decyzji.")
+        ])
+      : null,
+    isCycleDecisionStage(workspace)
+      ? detailsForm(
+          current ? "Dodaj nową decyzję co dalej" : "Zapisz decyzję co dalej",
+          cycleDecisionForm(model.onSaveCycleDecision)
+        )
+      : null
+  ];
+  return panel("Decyzja co dalej", create("div", {}, content));
+}
+
+function signalSourceLine(signal) {
+  const revision = signal.sourceRevision ? new Date(signal.sourceRevision) : null;
+  const time = revision && !Number.isNaN(revision.getTime()) ? ` · zapis ${revision.toLocaleString("pl-PL")}` : "";
+  return `${SIGNAL_SOURCE_LABELS[signal.source] || "Źródło procesu"} · ${formatDate(signal.sourceDate)}${time}`;
+}
+
+export function signalsSection(workspace, attentionSignals, model) {
+  let canReview;
+  try { canReview = trainerCanReviewClient(workspace.client, model.profile); }
+  catch (error) { return panel("Sygnały do przeglądu", create("p", {className:"status error",text:error.message})); }
+  const openSignals = attentionSignals?.signals || [];
+  const reviews = workspace.signalReviews || [];
+  const open = recordList(openSignals, signal => create("article", { className: `signal ${signal.level}` }, [
+    create("strong", { text: signal.label }),
+    signal.context ? create("p", { text: signal.context }) : null,
+    create("p", { className: "muted", text: signalSourceLine(signal) }),
+    create("p", { className: "muted", text: `Pytanie dla trenera: ${signal.trainerQuestion}` }),
+    !canReview ? create("p", {className:"muted",text:OWNER_REVIEW_MESSAGE}) : signal.contactReviewId ? create("div", {}, [
+      create("strong", {text:"Kontakt nadal wymagany"}),
+      detailsForm("Potwierdź wykonany kontakt", submitForm([
+        field("Co ustalono po kontakcie?", "note", "textarea", {required:true,maxlength:1000})
+      ], "Zapisz potwierdzenie kontaktu", values=>model.onResolveSignalContact(signal.contactReviewId,values.note)))
+    ]) : detailsForm("Zapisz wynik przeglądu", signalReviewForm(signal.signalKey, model.onReviewSignal))
+  ]), "Brak otwartych sygnałów wymagających przeglądu.");
+
+  const history = reviews.length
+    ? detailsBlock("Pokaż historię przejrzanych sygnałów", [
+        recordList(reviews, review => {
+          const identity = signalIdentity(review.signal_key);
+          return create("article", { className: "record" }, [
+            create("strong", { text: signalTypeLabel(review.signal_key) }),
+            create("p", { text: signalReviewOutcomeLabel(review.outcome) }),
+            review.contact_resolved_at ? create("p", {text:`Kontakt potwierdzony: ${formatDate(review.contact_resolved_at)} · ${review.contact_resolution_note}`}) : null,
+            create("p", { className: "muted", text: `Źródło: ${SIGNAL_SOURCE_LABELS[identity.source] || "Proces"} · ${formatDate(identity.sourceDate)} · Przegląd: ${formatDate(review.reviewed_at)}` })
+          ]);
+        }, "Brak historii przeglądu.")
+      ])
+    : null;
+
+  return panel("Sygnały do przeglądu", create("div", { className: "signal-list" }, [
+    open,
+    history,
+    create("p", { className: "disclaimer", text: attentionSignals?.disclaimer || "Program nie podejmuje decyzji za trenera." })
+  ]), "Domyślnie widoczne są tylko otwarte sygnały");
+}
+
+function reportRecord(report, cycleDecision, isCurrentTwelveWeekReport) {
+  const typeLabel = reportTypeLabel(report.type);
+  const decision = isCurrentTwelveWeekReport ? cycleDecision : null;
+  const content = String(report.content || "");
+  return create("article", { className: "record report-record" }, [
+    create("strong", { text: report.title || typeLabel }),
+    create("p", { className: "muted", text: typeLabel }),
+    create("p", { text: `${content.slice(0, 260)}${content.length > 260 ? "…" : ""}` }),
+    create("p", { className: "muted", text: `${reportAudienceLabel(report.audience)} · ${reportStatusLabel(report.status)}` }),
+    isCurrentTwelveWeekReport
+      ? create("div", { className: "report-decision" }, decision ? [
+          create("span", { text: "Decyzja co dalej" }),
+          create("strong", { text: cycleDecisionLabel(decision.decision) }),
+          create("p", { text: decision.rationale }),
+          create("p", { className: "muted", text: formatDate(decision.decided_at) })
+        ] : [
+          create("span", { text: "Decyzja co dalej" }),
+          create("p", { className: "muted", text: "Brak zapisanej decyzji. Raport jej nie generuje." })
+        ])
+      : null
+  ]);
+}
+
+export function reportsSection(workspace, model) {
+  const reports = [...(workspace.reports || [])].sort((left, right) => {
+    if (left.type === "twelveWeeks" && right.type !== "twelveWeeks") return -1;
+    if (right.type === "twelveWeeks" && left.type !== "twelveWeeks") return 1;
+    return String(right.created_at || "").localeCompare(String(left.created_at || ""));
+  });
+  const currentReport = reports.find(report =>
+    report.type === "twelveWeeks" && isInCurrentCycle(workspace, report.created_at)
+  ) || null;
+  const decision = currentCycleDecision(workspace);
+  const section = panel("Raporty", create("div", {}, [
+    recordList(reports, report => report.workflow_version === 1 ? evidenceReportRecord(report, model.onTransitionReport) : reportRecord(
+      report,
+      decision,
+      report === currentReport
+    ), "Brak raportów."),
+    manualReportComposer(workspace, model.onSaveReport)
+  ]), "Raport pokazuje wzorzec; nie tworzy decyzji automatycznie");
+  section.id = "trainer-reports";
+  return section;
+}

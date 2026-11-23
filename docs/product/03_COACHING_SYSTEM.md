@@ -165,9 +165,9 @@ Success is a better next decision.
 
 Home guidance connects sessions.
 
-It should be short, calm, and paper-first.
+It should be short, calm, and delivered through the channel selected for the client and task.
 
-It should help the client continue the process without turning the phone into the coach.
+Paper, the app, or a deliberate hybrid may carry it. The channel must improve clarity without turning technology into an autonomous coach.
 
 Home guidance should answer:
 
@@ -223,7 +223,7 @@ The trainer may correct:
 - the exercise,
 - the instruction,
 - the dose,
-- the paper guide,
+- the guidance channel,
 - the session focus,
 - the expected signal,
 - the timeline.
@@ -281,6 +281,6 @@ Studio Las OS should support the coaching cycle by preserving:
 
 Studio Las OS should not create a parallel coaching system.
 
-The client should experience guidance from the trainer and paper first.
+The client should experience trainer-approved guidance through one clear primary channel.
 
-The app remains a narrow recording layer.
+The app may present guidance, collect a checklist, record task-specific results, and receive questions. It remains subordinate to the trainer-led process.

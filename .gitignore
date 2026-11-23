@@ -2,3 +2,15 @@ tmp/
 *.local
 .env
 .env.*
+.deploy/
+
+# Studio Las target backup and local restore evidence — never commit.
+studio-las-target-backup-*/
+*.studio-las-backup.sql
+studio-las-backup-manifest.json
+studio-las-restore-preflight.log
+
+# Generated local verification artifacts.
+.playwright-cli/
+output/playwright/
+supabase/.temp/

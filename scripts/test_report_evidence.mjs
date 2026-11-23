@@ -1,0 +1,15 @@
+import assert from "node:assert/strict";
+import { reportCandidates, reportInput, REPORT_QUESTIONS } from "../assets/os/report-evidence.js";
+import { StudioLasRepository } from "../assets/os/data.js";
+const sessions=[1,2,3].map(i=>({id:`s${i}`,date:`2026-07-0${i}`,updated_at:`2026-07-0${i}T12:00:00Z`,trainer_observation:`Fictional ${i}`}));
+const candidates=reportCandidates({sessions}); assert.equal(candidates.length,3);
+assert.equal(reportCandidates({sessions:[{id:"missing",date:"2026-07-01"}]}).length,0);
+assert.throws(()=>reportInput({},candidates),/3 do 7/);
+const values={title:"Manual",client_material:"Client text",evidence_0:true,evidence_1:true,evidence_2:true,...Object.fromEntries(Object.keys(REPORT_QUESTIONS).map(key=>[key,`Manual ${key}`]))};
+const input=reportInput(values,candidates); assert.equal(input.sources.length,3); assert.equal(input.report.client_material,"Client text");
+assert.equal(input.sources[0].excerpt,undefined); assert.equal(input.sources[0].updated_at,sessions[0].updated_at);
+const repo=new StudioLasRepository({},{});let captured;
+repo.rpc=async(name,args)=>{captured={name,args};};
+await repo.saveReport("forged-author","client",input); assert.equal(captured.name,"create_evidence_report");assert.equal(captured.args.p_report.client_material,"Client text");assert.equal(captured.args.created_by,undefined);
+await repo.transitionReport({id:"r",updated_at:"2026-07-01T12:00:00Z"},"approve");assert.deepEqual(captured.args,{p_report_id:"r",p_action:"approve",p_expected_updated_at:"2026-07-01T12:00:00Z",p_reason:null});
+console.log("REPORT_EVIDENCE_PASS: explicit source choices, server-captured excerpts, separate transition payload");

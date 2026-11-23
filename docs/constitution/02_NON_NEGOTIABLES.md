@@ -8,14 +8,11 @@ These constraints cannot be overridden by Product, Architecture, PRD, implementa
 
 ## Primary non-negotiable
 
-> Paper guides the morning.  
-> Trainer gives meaning.  
-> App records the signal.  
-> Report shows the pattern.
+The trainer remains accountable for interpretation, decisions, and client-safe publication.
 
-This is the central constitutional constraint.
+Technology may analyze, organize, suggest, draft, guide, and record. It may not silently authorize a decision, present a suggestion as a fact, or publish client-facing meaning without trainer approval.
 
-Any change that breaks this order is rejected.
+The phrase `Paper guides the morning. Trainer gives meaning. App records the signal. Report shows the pattern.` remains a design heuristic. It does not prohibit digital guidance.
 
 ## Non-negotiable 1 — Product is the method
 
@@ -47,19 +44,17 @@ Automation may support organization.
 
 Automation must not own meaning.
 
-## Non-negotiable 3 — Paper-first morning
+## Non-negotiable 3 — Right channel, one source of guidance
 
-The client must be able to begin the morning without the app.
+The trainer chooses the primary channel for each client and task: paper, app, or a deliberate hybrid.
 
-The paper guide carries the morning ritual.
+The choice must improve clarity, accessibility, continuity, or useful feedback. It must not be driven by ideology, novelty, or engagement metrics.
 
-The app may record a short signal later.
+The same instruction must not be maintained independently in two competing places. A hybrid must define which channel is authoritative and what the second channel contributes.
 
-The app must not become the morning guide.
+## Non-negotiable 4 — App as purposeful tool, not engagement engine
 
-## Non-negotiable 4 — App as record, not ritual
-
-The app records selected signals.
+The app may present current guidance, support a checklist, collect decision-relevant inputs, make questions easy to record, and preserve selected signals.
 
 The app must not become:
 
@@ -70,6 +65,8 @@ The app must not become:
 - a daily dashboard,
 - a compliance scoreboard,
 - a source of automatic meaning.
+
+A checklist is allowed when the trainer assigns it for a clear reason and its data can improve a conversation, decision, or report. It must not create streaks, discipline scores, shame, or universal daily surveillance.
 
 ## Non-negotiable 5 — Report as pattern, not dashboard
 
@@ -124,7 +121,7 @@ Studio Las OS must not become:
 - a client-facing AI coach,
 - a wearable platform,
 - a gamified engagement system,
-- a product that increases screen time.
+- a product optimized to increase screen time rather than improve the guided process.
 
 ## Non-negotiable 9 — Privacy and dignity
 
@@ -146,13 +143,14 @@ They may only project or implement approved truth.
 
 Reject any change that:
 
-- makes the client start with the phone,
-- makes the app the coach,
+- makes the app an autonomous coach or decision-maker,
+- creates a competing source of guidance,
 - makes data more important than trainer meaning,
 - makes the report a dashboard,
 - exposes trainer-only information,
 - creates duplicate truth,
 - increases self-monitoring pressure,
+- publishes an AI suggestion as fact or guidance without trainer approval,
 - turns Studio Las into a generic app/product.
 
 ## Final rule

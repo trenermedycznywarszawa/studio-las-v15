@@ -19,6 +19,8 @@ Core rule:
 > App records the signal.  
 > Report shows the pattern.
 
+Under Constitution v1.1 this is a design heuristic. Report evidence may come from paper-, app-, or hybrid-delivered guidance; trainer review and publication authority remain unchanged.
+
 The report should make the client feel guided, not judged.
 
 ## User roles
@@ -67,7 +69,7 @@ The report may use selected, trainer-reviewed inputs:
 - stated goals or desired recovery,
 - trainer hypotheses,
 - session observations,
-- selected client signals recorded after paper-first guidance,
+- selected client signals recorded through paper-, app-, or hybrid-delivered guidance,
 - selected measurements that clarify a pattern or decision,
 - relevant process changes,
 - trainer decisions,

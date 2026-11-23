@@ -1,0 +1,174 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; connect-src 'none'; object-src 'none'; base-uri 'none'; form-action 'none'">
+  <title>Studio Las OS — Stage 4A</title>
+  <link rel="icon" href="data:,">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <div>
+      <p class="eyebrow">Studio Las OS · Stage 4A</p>
+      <h1>PWD: rozmowa i decyzja Damiana</h1>
+      <p class="lede">Fikcyjny kontrakt decyzji. Źródła, obserwacje, reakcje i interpretacja pozostają odrębne.</p>
+    </div>
+    <button id="reset-session" class="button quiet" type="button">Wyczyść sesję</button>
+  </header>
+
+  <div class="boundary" role="note">
+    <strong>FIKCYJNE DANE · BRAK AI RUNTIME · BRAK SIECI · BRAK ZAPISU · BRAK WYSYŁKI</strong>
+    <span>To nie jest diagnoza, kwalifikacja, sprzedaż ani produkcja.</span>
+  </div>
+
+  <nav class="step-nav" aria-label="Kroki Stage 4A">
+    <button class="step is-active" type="button" data-screen="handoff">1. Handoff</button>
+    <button class="step" type="button" data-screen="evidence" disabled>2. PWD</button>
+    <button class="step" type="button" data-screen="conversation" disabled>3. Rozmowa</button>
+    <button class="step" type="button" data-screen="decision" disabled>4. Decyzja</button>
+  </nav>
+
+  <main>
+    <p id="global-status" class="status" role="status" aria-live="polite"></p>
+
+    <section id="screen-handoff" class="screen is-active" aria-labelledby="handoff-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Krok 1</p><h2 id="handoff-title" tabindex="-1">Dokładny handoff z Etapu 3</h2></div>
+        <p>Wybierz pseudonimowy przypadek. Handoff jest dowodem gotowości do przygotowania PWD, a nie wynikiem PWD.</p>
+      </div>
+      <div class="panel controls-grid">
+        <label>Fikcyjny przypadek
+          <select id="fixture-select"></select>
+        </label>
+        <button id="create-workspace" class="button primary" type="button">Utwórz workspace w sesji</button>
+      </div>
+      <div id="handoff-content" class="panel empty-state">Wybierz przypadek i utwórz workspace.</div>
+    </section>
+
+    <section id="screen-evidence" class="screen" aria-labelledby="evidence-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Krok 2</p><h2 id="evidence-title" tabindex="-1">PWD: wybrane dowody</h2></div>
+        <p>Damian wybiera obserwacje. Tanita jest opcjonalna, a porównywalność nigdy nie jest ustawiana automatycznie.</p>
+      </div>
+
+      <section id="tanita-panel" class="panel" aria-labelledby="tanita-title"></section>
+      <section class="panel" aria-labelledby="observations-title">
+        <div class="section-heading compact">
+          <div><p class="eyebrow">Wybrane przez Damiana</p><h3 id="observations-title">Obserwacje PWD</h3></div>
+          <p>To mały zestaw fikcyjnych kandydatów z handoffu, nie katalog testów.</p>
+        </div>
+        <div id="candidate-list" class="stack"></div>
+      </section>
+
+      <section class="panel" aria-labelledby="interpretation-title">
+        <h3 id="interpretation-title">Interpretacja trenera</h3>
+        <p class="muted">Oddzielna od obserwacji i wypowiedzi klienta.</p>
+        <label>Jak Damian interpretuje wybrane dowody?
+          <textarea id="interpretation-content" rows="4"></textarea>
+        </label>
+        <label>Co pozostaje niepewne?
+          <textarea id="interpretation-uncertainty" rows="3"></textarea>
+        </label>
+        <button id="save-interpretation" class="button" type="button">Zapisz interpretację Damiana</button>
+        <p id="evidence-error" class="error" role="alert"></p>
+      </section>
+    </section>
+
+    <section id="screen-conversation" class="screen" aria-labelledby="conversation-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Krok 3</p><h2 id="conversation-title" tabindex="-1">Przygotowanie rozmowy</h2></div>
+        <p>Symulacja może przygotować wyłącznie brzmienie pytań. Nie tworzy decyzji ani warunków.</p>
+      </div>
+      <section class="panel">
+        <fieldset>
+          <legend>Tryb przygotowania</legend>
+          <label class="choice"><input type="radio" name="conversation-mode" value="assisted"> Fikcyjna deterministyczna symulacja</label>
+          <label class="choice"><input type="radio" name="conversation-mode" value="manual"> Pełna ścieżka ręczna bez AI</label>
+        </fieldset>
+        <button id="prepare-conversation" class="button primary" type="button">Rozpocznij przygotowanie</button>
+        <p id="conversation-error" class="error" role="alert"></p>
+      </section>
+
+      <section id="manual-option" class="panel" hidden>
+        <h3>Ręczna notatka do rozmowy</h3>
+        <label>Treść Damiana
+          <textarea id="manual-option-content" rows="3"></textarea>
+        </label>
+        <button id="add-manual-option" class="button" type="button">Dodaj notatkę Damiana</button>
+      </section>
+
+      <div id="suggestion-list" class="stack"></div>
+      <div class="panel action-panel">
+        <div><h3>Bramka rozmowy</h3><p id="conversation-gate">Najpierw wybierz tryb.</p></div>
+        <button id="open-decision" class="button primary" type="button" disabled>Przejdź do decyzji</button>
+      </div>
+    </section>
+
+    <section id="screen-decision" class="screen" aria-labelledby="decision-title">
+      <div class="section-heading">
+        <div><p class="eyebrow">Krok 4</p><h2 id="decision-title" tabindex="-1">Jawna decyzja Damiana</h2></div>
+        <p>Cztery równorzędne kierunki. Żaden nie jest wybrany domyślnie.</p>
+      </div>
+      <section class="panel">
+        <fieldset id="decision-fieldset">
+          <legend>Wynik rozmowy PWD</legend>
+          <label class="decision-choice"><input type="radio" name="pwd-decision" value="START"> <span><strong>START</strong><small>Właściwy kierunek; brak nazwanego warunku blokującego rozpoczęcie.</small></span></label>
+          <label class="decision-choice"><input type="radio" name="pwd-decision" value="START_CONDITIONAL"> <span><strong>START CONDITIONAL</strong><small>Kierunek zaakceptowany; rozpoczęcie zablokowane do weryfikowalnego spełnienia warunków Damiana.</small></span></label>
+          <label class="decision-choice"><input type="radio" name="pwd-decision" value="DEFER_CONSULT"> <span><strong>DEFER / CONSULT</strong><small>Najpierw dodatkowa informacja, czas albo konsultacja.</small></span></label>
+          <label class="decision-choice"><input type="radio" name="pwd-decision" value="NOT_THIS_PRODUCT"> <span><strong>NOT THIS PRODUCT</strong><small>Aktualna potrzeba nie odpowiada metodzie lub zakresowi Studio Las.</small></span></label>
+        </fieldset>
+
+        <div id="condition-fields" class="condition-fields" hidden>
+          <p><strong>Warunek tworzy wyłącznie Damian.</strong> System nie podpowiada treści.</p>
+          <label>Warunek blokujący rozpoczęcie
+            <textarea id="condition-statement" rows="2"></textarea>
+          </label>
+          <label>Jak zostanie jawnie zweryfikowany?
+            <textarea id="condition-verification" rows="2"></textarea>
+          </label>
+        </div>
+
+        <label>Uzasadnienie decyzji
+          <textarea id="decision-rationale" rows="4"></textarea>
+        </label>
+        <fieldset>
+          <legend>Dokładne bieżące dowody</legend>
+          <div id="decision-evidence" class="evidence-list"></div>
+        </fieldset>
+        <button id="save-decision" class="button primary" type="button">Zapisz decyzję Damiana</button>
+        <p id="decision-error" class="error" role="alert"></p>
+      </section>
+
+      <section id="decision-result" class="panel empty-state">Decyzja nie została zapisana.</section>
+
+      <section id="followup-panel" class="panel" hidden>
+        <h3>Niewysłany szkic dalszego kontaktu</h3>
+        <p class="muted">Tylko trener · unpublished · technicznie bez wysyłki.</p>
+        <label>Treść szkicu
+          <textarea id="followup-content" rows="4"></textarea>
+        </label>
+        <button id="save-followup" class="button" type="button">Zachowaj szkic w tej sesji</button>
+        <p id="followup-error" class="error" role="alert"></p>
+      </section>
+
+      <section class="panel danger-zone">
+        <h3>Kontrolowany test invalidacji</h3>
+        <p>Materialna zmiana handoffu musi unieważnić aktywny workspace i decyzję, pozostawiając historię.</p>
+        <button id="material-change" class="button danger" type="button">Zasymuluj materialną zmianę handoffu</button>
+      </section>
+
+      <section class="panel" aria-labelledby="history-title">
+        <h3 id="history-title">Historia wersji</h3>
+        <div id="history-list" class="stack"><p class="empty-state">Historia pojawi się po utworzeniu workspace.</p></div>
+      </section>
+    </section>
+  </main>
+
+  <footer>
+    Stage 4A · fictional contract prototype only · Draft until independent read-only audit and separate Damian merge decision.
+  </footer>
+  <script type="module" src="app.js"></script>
+</body>
+</html>

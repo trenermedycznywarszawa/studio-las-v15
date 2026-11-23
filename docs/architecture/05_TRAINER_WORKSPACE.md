@@ -127,7 +127,7 @@ The workspace must not present hypotheses as diagnosis or client-facing truth.
 
 Question:
 
-> What should change in the client's paper-first home guidance?
+> What should change in the client's home guidance, signal request, or primary channel?
 
 The workspace may support access to:
 

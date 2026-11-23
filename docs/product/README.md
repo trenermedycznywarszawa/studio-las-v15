@@ -1,17 +1,21 @@
 # Studio Las Product
 
+**Authority update 2026-09-07: SUBORDINATE.** The [Master Spec 1.1](../STUDIO_LAS_OS_MASTER_SPEC.md) is the main product and implementation document under Constitution. Product contracts elaborate it; detailed security, provenance and publication rules remain authoritative in their scope. Older references to a design heuristic are read under the binding Owner Decision on philosophy and per-release delivery channel in the Master Spec.
+
 This folder defines the Studio Las product layer.
 
 It does not describe screens, features, database tables, or app behavior.
 
 It describes the Studio Las Method: the private trainer-led method for helping a person recover functional capacity, trust in the body, and long-term independence.
 
-Core rule:
+Design heuristic:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
+
+This heuristic protects the trainer-led method; it does not require paper for every client or task. Home guidance may use paper, the app, or a deliberate hybrid. The trainer remains accountable for meaning and publication.
 
 ## Reading order
 
@@ -21,7 +25,12 @@ Core rule:
 4. `03_COACHING_SYSTEM.md` — the trainer-led operating cycle.
 5. `04_MEASUREMENT_SYSTEM.md` — what is measured, why, when, and what is intentionally not measured.
 6. `05_REPORT_SYSTEM.md` — how reports turn process history into the next decision.
-7. `06_HOME_GUIDANCE_SYSTEM.md` — how guidance works between sessions without turning the app into the morning ritual.
+7. `06_HOME_GUIDANCE_SYSTEM.md` — how the trainer selects paper, app, or hybrid guidance without creating duplicate truth or engagement pressure.
+8. `07_INQUIRY_TO_PHONE_DECISION_SYSTEM.md` — how an inquiry becomes a trainer-owned phone decision without automatic qualification.
+9. `08_FULL_INTAKE_AND_PWD_PREPARATION_SYSTEM.md` — how the adaptive full intake becomes a traceable trainer brief and explicit PWD-readiness decision.
+10. `09_PWD_WORKSPACE_AND_DECISION_CONVERSATION_SYSTEM.md` — how PWD evidence becomes Damian's explicit decision and calm client conversation without diagnosis or sales pressure.
+11. `10_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP.md` — the Stage 5 product decision brief for one authoritative twelve-week guidance, signal, adaptation, and report-ready loop.
+12. `STAGE_3_SOURCE_ARTIFACT_MANIFEST.md` — controlled-source filenames, SHA-256 verification, archive evidence, and bounded access procedure.
 
 ## Boundary
 

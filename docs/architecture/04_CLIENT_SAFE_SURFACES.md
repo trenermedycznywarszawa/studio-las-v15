@@ -18,6 +18,8 @@ The client should see what helps them act with more clarity and trust.
 
 The client should not see everything the trainer knows, thinks, questions, or records.
 
+The trainer chooses the primary guidance channel for each client and task: paper, the app, or a deliberate hybrid. The choice should reduce friction and avoidable dependency while preserving one authoritative version of every instruction.
+
 ## Authority
 
 This document is subordinate to:
@@ -96,13 +98,26 @@ Trainer-only means not visible in client UI, client-safe views, downloadable cli
 
 ## Surface types
 
+## Guidance channel rule
+
+Paper and the app are both valid primary channels.
+
+The app may present the complete trainer-approved instruction and guide the client through the assigned task. Paper may carry the complete instruction independently of the app.
+
+A deliberate hybrid is allowed only when:
+
+- one channel is the authoritative source of the instruction,
+- each channel has a distinct role,
+- stale instructions are retired,
+- the same plan is not maintained independently in two places.
+
 ## 1. Paper guide
 
 ### Role
 
-The paper guide carries the morning.
+Paper may be the primary guidance channel.
 
-It tells the client what to do offline.
+When selected, it carries the complete trainer-approved instruction and supports action without requiring the app.
 
 ### Client may see
 
@@ -112,7 +127,7 @@ It tells the client what to do offline.
 - time estimate,
 - stop criteria,
 - what to notice,
-- when to record a short signal later.
+- how and where to record a short signal, when a signal is needed.
 
 ### Client must not see
 
@@ -124,7 +139,7 @@ It tells the client what to do offline.
 
 ### Architecture rule
 
-Paper must work without the app.
+When paper is primary, it must work without the app.
 
 The paper guide is not a dashboard printed on paper.
 
@@ -132,13 +147,13 @@ The paper guide is not a dashboard printed on paper.
 
 ### Role
 
-The app records the signal and gives simple orientation.
+The app may be the primary guidance channel.
 
-It does not guide the morning ritual.
+When selected, it may present the complete trainer-approved instruction, guide execution of the assigned task, collect decision-relevant signals, and give simple orientation.
 
 ### Client may see
 
-- today's assigned guidance summary,
+- today's complete trainer-approved guidance when the app is primary,
 - minimal signal entry,
 - simple process orientation,
 - client-safe summaries,
@@ -151,13 +166,15 @@ It does not guide the morning ritual.
 - hypothesis details,
 - risk flags,
 - internal scoring,
-- compliance rankings,
-- automated interpretation,
+- discipline scores or compliance rankings,
+- unapproved automated interpretation,
 - other client data.
 
 ### Architecture rule
 
-The client app view should be quiet and narrow.
+The client app view should be quiet and narrow, whether it guides execution or only records a signal.
+
+It must remain free from pressure, streaks, rankings, discipline scoring, and raw trainer reasoning.
 
 It should not invite exploration, comparison, optimization, or self-diagnosis.
 
@@ -165,7 +182,9 @@ It should not invite exploration, comparison, optimization, or self-diagnosis.
 
 ### Role
 
-A short recording surface after offline action.
+A short recording surface used at the point defined by the trainer-approved flow.
+
+It may follow paper-based action or be embedded in app-guided execution.
 
 ### Client may see
 
@@ -213,9 +232,9 @@ A short explanation written for the client.
 
 ### Architecture rule
 
-A summary is client-safe only after trainer intention.
+A summary may be written by the trainer or drafted by AI. It becomes client-safe only after Damian deliberately approves it for publication.
 
-Do not auto-convert trainer notes into client summaries.
+Do not auto-publish or auto-convert trainer notes into client summaries.
 
 ## 5. Published report
 
@@ -239,7 +258,7 @@ The report shows the pattern and supports the next decision.
 - raw data dumps,
 - draft notes,
 - internal uncertainty not prepared for discussion,
-- AI-generated verdicts,
+- unapproved AI-generated interpretations or verdicts,
 - diagnostic claims outside scope,
 - private trainer-only rationale.
 
@@ -247,7 +266,7 @@ The report shows the pattern and supports the next decision.
 
 A report is published intentionally.
 
-Draft report content is trainer-only.
+Draft report content, including AI-prepared material, is trainer-only until Damian deliberately approves publication.
 
 ## 6. Trainer workspace
 
@@ -369,7 +388,8 @@ Any future feature must define:
 5. Can it be misunderstood as diagnosis?
 6. Can it create compliance pressure?
 7. Does the client need it now?
-8. Can it remain in conversation or paper instead?
+8. Which channel best limits friction, avoidable dependency, and duplicate sources of truth for this client and task?
+9. If a hybrid is proposed, which channel is authoritative and what distinct role does the other channel play?
 
 If visibility is unclear, default to trainer-only.
 
@@ -380,7 +400,7 @@ Do not build:
 - shared raw note fields,
 - client dashboards full of numbers,
 - automatic client summaries from trainer notes,
-- AI-generated advice shown to clients,
+- publishing AI-generated materials, interpretations, or advice to clients without Damian's deliberate approval,
 - compliance charts,
 - streak views,
 - red warning-heavy status screens,

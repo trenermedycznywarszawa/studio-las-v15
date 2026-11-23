@@ -207,27 +207,19 @@ The trainer does not use the method to replace healthcare.
 
 The safe decision may be to stop, refer, or wait.
 
-## Role of paper
+## Role of guidance channels
 
-Paper carries the morning because it protects the client from starting the day in the app.
+The trainer chooses paper, the app, or a deliberate hybrid for each client and task.
 
-Paper should contain only what the client needs to do calmly and independently.
+Paper is valuable when a visible, tactile, screen-free cue reduces friction or distraction.
 
-Paper is not a productivity system.
+The app is valuable when guidance changes frequently, a checklist improves clarity, repetitions or responses affect the next decision, or the client needs a direct place for questions.
 
-Paper is a quiet guide.
+A hybrid must define one authoritative instruction source. It must not ask the trainer or client to maintain two independent versions of the same plan.
 
-## Role of the app
+The app may guide and record. It should not ask the client to manage the method or produce unreviewed meaning for the client.
 
-The app records the signal after the offline action.
-
-It should not become the ritual.
-
-It should not ask the client to manage the method.
-
-It should not produce automated meaning for the client.
-
-The app supports trainer memory and future pattern recognition.
+Both channels support trainer memory, continuity, and future pattern recognition.
 
 ## Role of the report
 

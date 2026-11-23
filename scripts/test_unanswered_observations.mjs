@@ -1,0 +1,16 @@
+import assert from "node:assert/strict";
+import { StudioLasRepository } from "../assets/os/data.js";
+import { asNullableNumber } from "../assets/os/data-utils.js";
+const repo = new StudioLasRepository({}, {});
+let saved;
+repo.insert = async (table, body) => { saved = {table, body}; return body; };
+await repo.saveSession("fictional", {date:"2026-09-10", sleepQuality:"", readiness:"", vasBefore:"", vasAfter:""});
+assert.equal(saved.body.sleep_quality, null);
+assert.equal(saved.body.readiness, null);
+assert.equal(saved.body.vas_before, null);
+await repo.saveAssessment("fictional", {date:"2026-09-10",testName:"Fictional",quality:"",painBefore:"",painAfter:""});
+assert.equal(saved.body.quality, null);
+assert.equal(saved.body.pain_before, null);
+assert.equal(asNullableNumber("0"), 0);
+assert.equal(asNullableNumber(""), null);
+console.log("UNANSWERED_OBSERVATIONS_PASS: blank remains null, deliberate zero remains zero");

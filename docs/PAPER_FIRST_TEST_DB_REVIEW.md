@@ -1,5 +1,7 @@
 # Paper-first test DB review
 
+**Status note (2026-08-01): HISTORICAL PRODUCT DIRECTION.** Database and security findings remain evidence; the document does not define the current guidance channel.
+
 ## 1. Summary
 
 Reviewed the Paper-first test DB readiness after the V1 immutable client check-in decision.

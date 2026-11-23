@@ -156,7 +156,7 @@ Record what can matter later.
 
 ### 5. Home Guidance
 
-Trainer-assigned between-session guidance, usually paper-first.
+Trainer-assigned between-session guidance delivered through paper, app, or a deliberate hybrid.
 
 Relevant data:
 
@@ -172,7 +172,7 @@ Boundary:
 
 Home guidance must not become a digital habit tracker.
 
-Paper remains the morning interface.
+The trainer-selected primary channel remains authoritative for that client and task.
 
 ### 6. Client Signal
 

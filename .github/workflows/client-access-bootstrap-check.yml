@@ -1,0 +1,21 @@
+name: Client access bootstrap check
+
+on:
+  pull_request:
+    paths:
+      - "tools/client-access-admin.html"
+      - "tools/client-access-bootstrap.js"
+      - "scripts/build_studio_las_os_deploy.mjs"
+      - "scripts/test_client_access_bootstrap.mjs"
+      - ".github/workflows/client-access-bootstrap-check.yml"
+
+jobs:
+  bootstrap-contract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+      - run: node scripts/test_client_access_bootstrap.mjs
+      - run: node scripts/build_studio_las_os_deploy.mjs

@@ -227,9 +227,9 @@ Possible decisions:
 
 OS boundary:
 
-The app records later.
+The chosen channel carries the trainer-approved guidance.
 
-Paper guides the morning.
+The app may guide and record when it is the primary channel. Paper may guide when a physical, screen-free cue is better.
 
 ### 5. Measurement decision
 

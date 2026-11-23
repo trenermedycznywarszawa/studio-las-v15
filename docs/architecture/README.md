@@ -1,5 +1,7 @@
 # Studio Las OS Architecture
 
+**Authority update 2026-09-07: SUBORDINATE for direction.** The [Master Spec 1.1](../STUDIO_LAS_OS_MASTER_SPEC.md) owns product and implementation direction under Constitution. These contracts retain authoritative security, provenance and publication detail in their scope. Prototype acceptance, target design and deployed implementation are distinct; see the [document classification](../reviews/2026-09-07_MASTER_SPEC_1_1_RECONCILIATION.md#document-classification).
+
 This folder defines the Architecture layer for Studio Las OS.
 
 Architecture translates the Studio Las Method into OS decisions.
@@ -21,12 +23,14 @@ This layer is subordinate to:
 3. `docs/product/00_PRODUCT_MODEL.md`
 4. `docs/product/02_STUDIO_LAS_METHOD.md`
 
-All architecture decisions must preserve the core rule:
+All architecture decisions must preserve the intent of this design heuristic:
 
 > Paper guides the morning.  
 > Trainer gives meaning.  
 > App records the signal.  
 > Report shows the pattern.
+
+The heuristic is not a fixed interface sequence. Architecture may support paper, app, or hybrid guidance. It must preserve trainer accountability, purposeful data, one authoritative instruction source, and trainer-approved publication.
 
 ## Reading order
 
@@ -39,6 +43,16 @@ All architecture decisions must preserve the core rule:
 7. `06_REPORT_GENERATION_ARCHITECTURE.md` — how report architecture supports pattern recognition and next decisions.
 8. `07_DECISION_ARCHITECTURE.md` — trainer-owned decisions, decision boundaries, and automation limits.
 9. `08_INFORMATION_FLOW.md` — how context, observations, signals, decisions, guidance, and reports move through the method.
+10. `09_SECURITY_RUNTIME_ARCHITECTURE.md` — runtime trust boundaries and the existing deterministic module boundary.
+11. `10_INFORMATION_PROVENANCE_AND_APPROVAL_CONTRACT.md` — closed information types, review, publication, provenance, and version rules.
+12. `11_AI_RUNTIME_AND_PROVIDER_CONTRACT.md` — provider-neutral AI boundary and blocked provider decision.
+13. `12_FILE_INGESTION_AND_SOURCE_INTEGRITY_CONTRACT.md` — immutable source, parser, attachment, and prompt-injection boundaries.
+14. `13_DATA_LIFECYCLE_ACCESS_AUDIT_AND_DELETION_CONTRACT.md` — lifecycle, access, audit, deletion, and legal-review boundaries.
+15. `14_STAGE_1_DOMAIN_MAPPING_AND_ACCEPTANCE.md` — domain mapping and Stage 1 acceptance cases.
+16. `15_STAGE_2_INQUIRY_PHONE_DECISION_CONTRACT.md` — first inquiry, phone notes, client reaction, and trainer decision.
+17. `16_STAGE_3_FULL_INTAKE_PWD_PREPARATION_CONTRACT.md` — adaptive intake, traceable PWD brief, observation candidates, and trainer readiness decision.
+18. `17_STAGE_4_PWD_DECISION_CONVERSATION_CONTRACT.md` — PWD evidence, reviewed conversation support, and Damian's exact Stage 4 decision.
+19. `18_STAGE_5_TWELVE_WEEK_GUIDANCE_AND_ADAPTATION_LOOP_CONTRACT.md` — exact Stage 4 entry, one authoritative guidance release, minimum client input, trainer adaptation, and report-ready evidence.
 
 ## Architecture rule
 
