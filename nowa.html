@@ -4,26 +4,29 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Studio Las — Damian Krawiec | Prywatny trening 1:1, Prace Duże (gm. Tarczyn)</title>
-  <meta name="description" content="Prywatne studio treningu siłowego i profilaktyki ruchowej 1:1 przy lesie w Pracach Dużych (gmina Tarczyn, okolice Piaseczna i Magdalenki). Spokojne prowadzenie dla dorosłych 35–60+.">
+  <meta name="description" content="Prywatne studio treningu siłowego, wzmacniania siły, sprawności i tolerancji na codzienne obciążenia 1:1 przy lesie w Pracach Dużych (gmina Tarczyn, okolice Piaseczna i Magdalenki). Spokojne prowadzenie dla dorosłych 35–60+.">
   <meta name="author" content="Damian Krawiec — Studio Las">
 
-  <!-- TODO PRZED PUBLIKACJĄ: Zweryfikuj docelową domenę HTTPS -->
-  <link rel="canonical" href="https://studiolas.pl/">
+  <link rel="canonical" href="https://trenermedycznywarszawa.github.io/studio-las-v15/nowa.html">
 
   <!-- Open Graph i Twitter Card (bezwzględne adresy HTTPS, JPEG 1200x630 < 250 KB) -->
   <meta property="og:title" content="Studio Las — Sprawność na lata, nie na sezon">
   <meta property="og:description" content="Prywatny trening 1:1 przy lesie w Pracach Dużych (gm. Tarczyn) dla dorosłych 35–60+. Prowadzi Damian Krawiec.">
   <meta property="og:type" content="website">
   <meta property="og:locale" content="pl_PL">
-  <meta property="og:url" content="https://studiolas.pl/">
-  <meta property="og:image" content="https://studiolas.pl/images/og-studio-las.jpg">
+  <meta property="og:url" content="https://trenermedycznywarszawa.github.io/studio-las-v15/nowa.html">
+  <meta property="og:image" content="https://trenermedycznywarszawa.github.io/studio-las-v15/images/og-studio-las.jpg">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Studio Las w Pracach Dużych — prywatne studio treningu 1:1 przy lesie">
   <meta name="twitter:card" content="summary_large_image">
   <meta name="twitter:title" content="Studio Las — Sprawność na lata, nie na sezon">
   <meta name="twitter:description" content="Prywatny trening 1:1 przy lesie w Pracach Dużych dla dorosłych 35–60+.">
-  <meta name="twitter:image" content="https://studiolas.pl/images/og-studio-las.jpg">
+  <meta name="twitter:image" content="https://trenermedycznywarszawa.github.io/studio-las-v15/images/og-studio-las.jpg">
+
+  <!-- Preload kluczowego zasobu LCP (Hero WebP na desktop i mobile) -->
+  <link rel="preload" as="image" href="./images/las-hero-desktop-1600.webp" media="(min-width: 768px)" type="image/webp">
+  <link rel="preload" as="image" href="./images/las-hero-mobile-780.webp" media="(max-width: 767px)" type="image/webp">
 
   <!-- Inline SVG Favicon -->
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23162620'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23F4F1EA' font-family='Georgia, serif' font-size='26' letter-spacing='1'%3ESL%3C/text%3E%3C/svg%3E">
@@ -34,12 +37,12 @@
     "@context": "https://schema.org",
     "@type": ["LocalBusiness", "HealthClub"],
     "name": "Studio Las — Damian Krawiec",
-    "description": "Prywatne studio treningu siłowego i profilaktyki ruchowej 1:1 przy lesie dla dorosłych 35–60+.",
-    "url": "https://studiolas.pl/",
-    "image": "https://studiolas.pl/images/og-studio-las.jpg",
+    "description": "Prywatne studio treningu siłowego, wzmacniania siły, sprawności i tolerancji na codzienne obciążenia 1:1 przy lesie dla dorosłych 35–60+.",
+    "url": "https://trenermedycznywarszawa.github.io/studio-las-v15/nowa.html",
+    "image": "https://trenermedycznywarszawa.github.io/studio-las-v15/images/og-studio-las.jpg",
     "telephone": "+48503975998",
     "email": "trenermedycznywarszawa@gmail.com",
-    "priceRange": "200–240 PLN",
+    "priceRange": "220–250 PLN",
     "hasMap": "https://www.google.com/maps/search/?api=1&query=ul.+Pracka+1J,+05-504+Prace+Du%C5%BCe",
     "address": {
       "@type": "PostalAddress",
@@ -147,6 +150,7 @@
 
     html {
       scroll-behavior: smooth;
+      scroll-padding-top: 96px;
       background-color: var(--paper);
     }
 
@@ -159,6 +163,7 @@
       background-color: var(--paper);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
+      font-synthesis-weight: none;
       overflow-x: hidden;
     }
 
@@ -252,7 +257,7 @@
     /* Typografia redakcyjna */
     .eyebrow {
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 13px;
       letter-spacing: 0.14em;
       text-transform: uppercase;
       color: var(--sage);
@@ -488,6 +493,9 @@
       text-decoration: none;
       color: var(--ink);
     }
+    .nav-mobile a.btn-primary {
+      color: var(--card);
+    }
     .nav-mobile .btn {
       width: 100%;
       margin-top: 18px;
@@ -520,6 +528,7 @@
       inset: 0;
       z-index: 0;
     }
+    .hero-bg picture,
     .hero-bg img {
       width: 100%;
       height: 100%;
@@ -537,7 +546,7 @@
       inset: 0;
       z-index: 1;
       background:
-        linear-gradient(180deg, rgba(15, 28, 23, 0.56) 0%, rgba(15, 28, 23, 0.38) 42%, rgba(15, 28, 23, 0.86) 100%);
+        linear-gradient(180deg, rgba(15, 28, 23, 0.80) 0%, rgba(15, 28, 23, 0.76) 45%, rgba(15, 28, 23, 0.88) 100%);
     }
 
     .hero-content {
@@ -691,7 +700,7 @@
     }
     .tab-num {
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 13px;
       color: var(--cedar);
       flex-shrink: 0;
     }
@@ -718,7 +727,7 @@
     .tab-detail-block:first-of-type { margin-top: 24px; }
     .kicker {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 13px;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       color: var(--sage);
@@ -830,14 +839,14 @@
       background-color: var(--paper);
       padding: 16px 0;
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 13px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
       color: var(--muted);
     }
 
     /* =========================================================
-       SEKCJA 6 — 03 / ZASADY I POZIOM INWESTYCJI (LEDGER)
+       SEKCJA 6 — 03 / CENY I ZASADY WSPÓŁPRACY (LEDGER)
        ========================================================= */
     .price-figure {
       font-family: var(--font-serif);
@@ -1019,7 +1028,7 @@
     }
     .info-dl dt {
       font-family: var(--font-mono);
-      font-size: 11px;
+      font-size: 13px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--sage);
@@ -1146,7 +1155,7 @@
     .field label, .field legend {
       display: block;
       font-family: var(--font-mono);
-      font-size: 11.5px;
+      font-size: 13px;
       text-transform: uppercase;
       letter-spacing: 0.08em;
       color: var(--sage);
@@ -1335,7 +1344,7 @@
       font-size: 14.5px;
       color: var(--muted);
     }
-    .modal-body strong { color: var(--ink); font-weight: 600; }
+    .modal-body strong { color: var(--ink); font-weight: 500; }
 
     .modal-foot {
       margin-top: 24px;
@@ -1363,21 +1372,25 @@
     }
     #toast.is-visible { opacity: 1; transform: translateY(0); }
 
-    /* Subtelny scroll-reveal */
+    /* Subtelny scroll-reveal (treść widoczna domyślnie = 100% odporna na brak/błąd JS) */
     .reveal {
+      opacity: 1;
+      transform: none;
+    }
+    .js-anim .reveal {
       opacity: 0;
       transform: translateY(16px);
       transition: opacity 0.7s ease, transform 0.7s ease;
     }
-    .reveal.is-visible {
+    .js-anim .reveal.is-visible {
       opacity: 1;
       transform: translateY(0);
     }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .reveal { opacity: 1; transform: none; transition: none; }
-      .faq-panel, .faq-plus, #toast, .site-header, .hero-bg img, .photo-frame img { transition: none; }
+      .reveal, .js-anim .reveal { opacity: 1; transform: none; transition: none; }
+      .faq-panel, .faq-plus, #toast, .site-header, .hero-bg img, .hero-bg picture, .photo-frame img { transition: none; }
     }
   </style>
 
@@ -1452,7 +1465,7 @@
     <nav id="mobile-menu" aria-label="Nawigacja mobilna" class="nav-mobile">
       <a href="#podejscie" class="mobile-link">Punkt wyjścia</a>
       <a href="#proces" class="mobile-link">Cykl 12 tygodni</a>
-      <a href="#inwestycja" class="mobile-link">Zasady i poziom inwestycji</a>
+      <a href="#inwestycja" class="mobile-link">Ceny i zasady współpracy</a>
       <a href="#o-mnie" class="mobile-link">O mnie</a>
       <a href="#dojazd" class="mobile-link">Dojazd</a>
       <a href="#pytania" class="mobile-link">Pytania</a>
@@ -1467,29 +1480,35 @@
          ========================================================= -->
     <section id="hero" class="hero">
       <div class="hero-bg" aria-hidden="true">
-        <img
-          src="./images/las-hero.webp"
-          alt=""
-          width="1920"
-          height="1280"
-          onload="window.slPhotoLoad(this)"
-          onerror="window.slPhotoError(this)"
-        >
+        <picture>
+          <source media="(min-width: 768px)" srcset="./images/las-hero-desktop-1600.webp 1600w, ./images/las-hero-desktop-960.webp 960w" sizes="100vw">
+          <source media="(max-width: 767px)" srcset="./images/las-hero-mobile-780.webp 780w, ./images/las-hero-mobile-480.webp 480w" sizes="100vw">
+          <img
+            src="./images/las-hero-desktop-1600.webp"
+            alt="Ściana lasu przy Studio Las w Pracach Dużych"
+            width="1600"
+            height="900"
+            fetchpriority="high"
+            decoding="async"
+            onload="window.slPhotoLoad(this)"
+            onerror="window.slPhotoError(this)"
+          >
+        </picture>
       </div>
       <div class="hero-overlay" aria-hidden="true"></div>
 
       <div class="container hero-content">
         <p class="eyebrow eyebrow-light">
           <span class="eyebrow-rule" aria-hidden="true"></span>
-          Prace Duże &middot; gm. Tarczyn &middot; prywatne studio 1:1 przy lesie
+          Prace Duże &middot; gm. Tarczyn &middot; 5 min od trasy S7 &middot; prywatne studio 1:1 przy lesie
         </p>
         <h1>Sprawność na lata,<br><em>nie na sezon.</em></h1>
         <p class="hero-lead">
-          Prywatna przestrzeń treningu siłowego i profilaktyki ruchowej 1:1 dla dorosłych 35–60+. Spokojne prowadzenie bez tłumu, hałasu i presji dużych klubów fitness.
+          Prywatny trening siłowy i ruchowy 1:1 dla dorosłych 35–60+. W czasie Twojej sesji cała sala przy lesie jest wyłącznie dla Ciebie — pracujemy spokojnie, 1–2 razy w tygodniu, w cyklu 12-tygodniowym.
         </p>
         <div class="hero-actions">
           <a href="#kontakt" class="btn btn-on-dark">Umów rozmowę wstępną</a>
-          <a href="#inwestycja" class="btn btn-ghost-dark">Zasady i poziom inwestycji</a>
+          <a href="#inwestycja" class="btn btn-ghost-dark">Ceny i zasady współpracy</a>
         </div>
         <p class="hero-microcopy">
           Bezpłatna, 15-minutowa rozmowa telefoniczna przed pierwszą wizytą — bez zobowiązań.
@@ -1554,7 +1573,7 @@
             </button>
             <button type="button" role="tab" id="tab-kontuzja" aria-selected="false" aria-controls="panel-kontuzja" tabindex="-1" class="tab-btn" data-tab="kontuzja">
               <span class="tab-num">03</span>
-              <span class="tab-label">Powrót do pełnej sprawności po rehabilitacji</span>
+              <span class="tab-label">Trening po zakończonej rehabilitacji</span>
             </button>
             <button type="button" role="tab" id="tab-sila" aria-selected="false" aria-controls="panel-sila" tabindex="-1" class="tab-btn" data-tab="sila">
               <span class="tab-num">04</span>
@@ -1588,10 +1607,10 @@
             </div>
 
             <div id="panel-kontuzja" role="tabpanel" aria-labelledby="tab-kontuzja" class="ctx-tabpanel" hidden>
-              <h3>Powrót do pełnej sprawności po rehabilitacji</h3>
+              <h3>Trening po zakończonej rehabilitacji</h3>
               <div class="tab-detail-block">
                 <p class="kicker">Jak zaczynamy</p>
-                <p style="margin:0;color:var(--muted);">Kiedy kończysz etap gabinetowy u fizjoterapeuty, ale obawiasz się powrotu na zatłoczoną siłownię, spokojnie domykamy odbudowę siły i stabilności — w oparciu o zalecenia Twojego lekarza lub fizjoterapeuty.</p>
+                <p style="margin:0;color:var(--muted);">Kiedy kończysz etap gabinetowy u fizjoterapeuty, ale obawiasz się powrotu na zatłoczoną siłownię, rozpoczynamy spokojny trening siłowy po zakończonej rehabilitacji, z uwzględnieniem zaleceń Twojego lekarza lub fizjoterapeuty.</p>
               </div>
               <div class="tab-detail-block">
                 <p class="kicker is-cedar">Rytm w tygodniu</p>
@@ -1669,6 +1688,9 @@
           <div class="section-head" style="margin-bottom:32px;">
             <p class="eyebrow eyebrow-cedar">Przykładowe scenariusze pracy</p>
             <h3 style="font-size:clamp(1.65rem, 2.8vw, 2.2rem);">Jak dobieram rytm w najczęstszych sytuacjach</h3>
+            <p style="margin:12px 0 0;font-size:14.5px;color:var(--muted);">
+              To przykładowe modele organizacji współpracy — nie są historiami konkretnych klientów ani gwarancją wyniku.
+            </p>
           </div>
 
           <div class="ledger-3">
@@ -1716,10 +1738,13 @@
       <div class="visual-break-frame">
         <img
           src="./images/las-detal.webp"
+          srcset="./images/las-detal.webp 960w, ./images/las-detal-600.webp 600w"
+          sizes="(min-width: 960px) 960px, 100vw"
           alt="Paprocie i leśne runo tuż przy Studio Las w Pracach Dużych"
           loading="lazy"
-          width="1920"
-          height="1080"
+          decoding="async"
+          width="960"
+          height="1280"
           onload="window.slPhotoLoad(this)"
           onerror="window.slPhotoError(this)"
         >
@@ -1732,12 +1757,12 @@
     </section>
 
     <!-- =========================================================
-         SEKCJA 6 — 03 / ZASADY I POZIOM INWESTYCJI (LEDGER)
+         SEKCJA 6 — 03 / CENY I ZASADY WSPÓŁPRACY (LEDGER)
          ========================================================= -->
     <section id="inwestycja" class="bg-card">
       <div class="container reveal">
         <div class="section-head">
-          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>03 / Zasady i poziom inwestycji</p>
+          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>03 / Ceny i zasady współpracy</p>
           <h2>Przejrzyste warunki od pierwszego kontaktu</h2>
           <p class="lead">
             Nie musisz kupować długiego pakietu w ciemno. Zaczynamy od bezpłatnej rozmowy telefonicznej i pojedynczego spotkania wprowadzającego, a o dalszej współpracy decydujesz spokojnie na podstawie konkretów.
@@ -1750,7 +1775,7 @@
             <h3>Rozmowa telefoniczna</h3>
             <p class="price-figure">0 zł <span class="price-unit">/ ok. 15 min</span></p>
             <p style="margin:0;font-size:15px;color:var(--muted);">
-              Krótka rozmowa o Twojej sytuacji, oczekiwaniach i dostępnych godzinach w grafiku.
+              Krótka, bezpłatna rozmowa o Twojej sytuacji, oczekiwaniach i dostępnych terminach w grafiku.
             </p>
           </article>
 
@@ -1759,21 +1784,30 @@
             <h3>Spotkanie wprowadzające</h3>
             <p class="price-figure">220 zł <span class="price-unit">/ 60–75 min</span></p>
             <p style="margin:0;font-size:15px;color:var(--muted);">
-              Wywiad, spokojna ocena podstawowych wzorców ruchu oraz pisemny kierunek pracy na pierwsze tygodnie.
+              Wywiad, spokojne sprawdzenie zakresu ruchu, stabilności i tolerancji na podstawowe ruchy codzienne pod bezpieczny dobór obciążeń oraz pisemny kierunek pracy na pierwsze tygodnie (jednorazowo, bez obowiązku dalszej współpracy).
             </p>
           </article>
 
           <article class="ledger-col">
-            <p class="kicker">Stała opieka 1:1</p>
-            <h3>Prowadzenie w cyklu</h3>
-            <p class="price-figure">200–240 zł <span class="price-unit">/ sesja 60 min</span></p>
+            <p class="kicker">Krok 3 &middot; Stała opieka 1:1</p>
+            <h3>Prowadzenie w cyklu 12 tygodni</h3>
+            <p class="price-figure">250 zł <span class="price-unit">/ sesja 60 min</span></p>
             <p style="margin:0;font-size:15px;color:var(--muted);">
-              Stawka zależy od rytmu (1× lub 2× w tygodniu). Obejmuje prywatną salę 1:1, plan między sesjami oraz przegląd co 12 tygodni.
+              Rytm 1&times; lub 2&times; w tygodniu. W cenie prywatna sala 1:1, krótki zestaw domowy oraz przegląd postępów co 12 tygodni.
             </p>
           </article>
         </div>
 
-        <p class="capacity-note">
+        <p style="margin:24px 0 0;font-size:15px;color:var(--muted);line-height:1.6;">
+          12 tygodni to okres planowania i przeglądu postępów — szczegółowe zasady rozliczeń i odwoływania wizyt otrzymasz przed rozpoczęciem współpracy.
+        </p>
+
+        <div style="margin-top:32px;display:flex;flex-wrap:wrap;align-items:center;gap:16px;">
+          <a href="#kontakt" class="btn btn-primary">Zapytaj o termin rozmowy</a>
+          <span style="font-size:13.5px;color:var(--muted);">15 minut telefonicznie, bez opłat i zobowiązań</span>
+        </div>
+
+        <p class="capacity-note" style="margin-top:24px;">
           Prowadzę ograniczoną liczbę podopiecznych jednocześnie, aby zachować bufor czasowy między wizytami i pełną ciągłość prowadzenia. Aktualną dostępność terminów potwierdzam podczas rozmowy wstępnej.
         </p>
       </div>
@@ -1845,7 +1879,7 @@
             </ul>
 
             <div class="boundary-note">
-              <strong>Granica kompetencji:</strong> Studio Las zajmuje się treningiem siłowym, poprawą sprawności i profilaktyką przeciążeń. Nie zastępuje diagnozy lekarskiej ani fizjoterapii klinicznej. W stanach ostrych i przy świeżych urazach współpracuję z zaleceniami lekarza lub rekomenduję najpierw wizytę w gabinecie fizjoterapii.
+              <strong>Granica kompetencji:</strong> Studio Las zajmuje się treningiem siłowym, wzmacnianiem siły, sprawności i tolerancji na codzienne obciążenia. Nie zastępuje diagnozy lekarskiej ani fizjoterapii klinicznej. W stanach ostrych i przy świeżych urazach współpracuję z zaleceniami lekarza lub rekomenduję najpierw wizytę w gabinecie fizjoterapii.
             </div>
           </div>
         </div>
@@ -1855,10 +1889,13 @@
             <div class="photo-frame">
               <img
                 src="./images/studio-drewno.webp"
-                alt="Kameralne, drewniane wnętrze Studio Las do pracy indywidualnej 1:1"
+                srcset="./images/studio-drewno.webp 1200w, ./images/studio-drewno-640.webp 640w"
+                sizes="(min-width: 768px) 50vw, 100vw"
+                alt="Wizualizacja kierunku wnętrza — docelowe zdjęcia sali w Pracach Dużych opublikuję po zakończeniu aranżacji."
                 loading="lazy"
-                width="960"
-                height="600"
+                decoding="async"
+                width="1200"
+                height="800"
                 onload="window.slPhotoLoad(this)"
                 onerror="window.slPhotoError(this)"
               >
@@ -1868,21 +1905,24 @@
                 </svg>
                 <div class="photo-fallback-label">
                   <strong>Wnętrze Studio Las</strong>
-                  <span>Kameralna przestrzeń 1:1 z naturalnym światłem</span>
+                  <span>Wizualizacja kierunku wnętrza</span>
                 </div>
               </div>
             </div>
-            <figcaption>Wnętrze studia — prywatna sala 1:1 bez kolejek do sprzętu i głośnej muzyki</figcaption>
+            <figcaption>Wizualizacja kierunku wnętrza — docelowe zdjęcia sali w Pracach Dużych opublikuję po zakończeniu aranżacji.</figcaption>
           </figure>
 
           <figure>
             <div class="photo-frame">
               <img
                 src="./images/las-sciezka.webp"
+                srcset="./images/las-sciezka.webp 880w, ./images/las-sciezka-640.webp 640w"
+                sizes="(min-width: 768px) 50vw, 100vw"
                 alt="Ścieżka wśród drzew tuż przy Studio Las w Pracach Dużych"
                 loading="lazy"
-                width="960"
-                height="600"
+                decoding="async"
+                width="880"
+                height="660"
                 onload="window.slPhotoLoad(this)"
                 onerror="window.slPhotoError(this)"
               >
@@ -1914,26 +1954,26 @@
 
         <div class="split-2">
           <div class="split-col">
-            <p class="kicker is-cedar">3 kroki na start</p>
-            <h3>Przebieg pierwszego kontaktu</h3>
+            <p class="kicker is-cedar">Spotkanie wprowadzające (220 zł)</p>
+            <h3>Jak wygląda start krok po kroku</h3>
             <dl class="info-dl">
               <div>
-                <dt>1. Rozmowa telefoniczna (ok. 15 min)</dt>
-                <dd>Sprawdzamy, czy mogę pomóc w Twojej sytuacji oraz dopasowujemy terminy.</dd>
+                <dt>Przed spotkaniem</dt>
+                <dd>Bezpłatna rozmowa telefoniczna (ok. 15 min) oraz krótki formularz startowy. Sprawdzamy, czy Studio Las to właściwy adres dla Twoich celów, i ustalamy dogodny termin.</dd>
               </div>
               <div>
-                <dt>2. Krótkie pytania przed wizytą</dt>
-                <dd>Otrzymujesz kilka prostych pytań o historię ruchu, abym mógł dobrze przygotować się przed spotkaniem.</dd>
+                <dt>W trakcie spotkania (60–75 min)</dt>
+                <dd>Szczegółowy wywiad, spokojne sprawdzenie zakresu ruchu, stabilności i tolerancji na podstawowe ruchy codzienne pod bezpieczny dobór obciążeń. Cała sala jest wyłącznie dla Ciebie — bez pośpiechu i bez testów wydolnościowych.</dd>
               </div>
               <div>
-                <dt>3. Pierwsza wizyta w studiu (60–75 min)</dt>
-                <dd>Rozmowa i spokojna ocena podstawowych wzorców ruchu. Wystarczy wygodny strój i czyste obuwie zmienne.</dd>
+                <dt>Po spotkaniu</dt>
+                <dd>Otrzymujesz pisemne podsumowanie startowe oraz pierwszy prosty zestaw domowy (10–15 min). O rozpoczęciu cyklu 12 tygodni decydujesz spokojnie po powrocie do domu.</dd>
               </div>
             </dl>
           </div>
 
           <div class="split-col">
-            <p class="kicker">Lokalizacja</p>
+            <p class="kicker">Lokalizacja i dojazd</p>
             <h3>Prace Duże (gmina Tarczyn)</h3>
             <dl class="info-dl" style="margin-bottom:28px;">
               <div>
@@ -1941,8 +1981,8 @@
                 <dd><strong>ul. Pracka 1J, 05-504 Prace Duże</strong>, gm. Tarczyn (woj. mazowieckie)</dd>
               </div>
               <div>
-                <dt>Dojazd i parking</dt>
-                <dd>Wygodny dojazd z okolic Tarczyna, Piaseczna, Magdalenki, Zalesia Górnego i południowej Warszawy (bliskość trasy S7). Prywatny parking bezpośrednio przy studiu.</dd>
+                <dt>Dojazd z okolic Piaseczna i Warszawy</dt>
+                <dd>Dla osób dojeżdżających z okolic Piaseczna, Magdalenki, Zalesia Górnego i południowej Warszawy (5 min od trasy S7): pełna wyłączność sali na czas Twojej sesji, prywatny parking bezpośrednio pod drzwiami oraz wygodna opcja rytmu 1× w tygodniu wspartego prostym zestawem domowym.</dd>
               </div>
               <div>
                 <dt>Godziny spotkań</dt>
@@ -1974,11 +2014,11 @@
 
         <div class="faq-list">
           <div class="faq-item" data-open="false">
-            <button type="button" class="faq-trigger" aria-expanded="false">
+            <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-ans-1">
               <span class="faq-q">Czy muszę być w dobrej kondycji, żeby zacząć?</span>
               <span class="faq-plus" aria-hidden="true">+</span>
             </button>
-            <div class="faq-panel">
+            <div id="faq-ans-1" class="faq-panel" hidden>
               <div class="faq-inner">
                 <p>Nie. Większość osób zaczyna po kilkuletniej przerwie lub pracy siedzącej. Obciążenie i tempo zawsze dobieram do aktualnych możliwości, żeby ciało miało czas na spokojną adaptację.</p>
               </div>
@@ -1986,11 +2026,11 @@
           </div>
 
           <div class="faq-item" data-open="false">
-            <button type="button" class="faq-trigger" aria-expanded="false">
+            <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-ans-2">
               <span class="faq-q">Ile czasu w tygodniu wymaga taka współpraca?</span>
               <span class="faq-plus" aria-hidden="true">+</span>
             </button>
-            <div class="faq-panel">
+            <div id="faq-ans-2" class="faq-panel" hidden>
               <div class="faq-inner">
                 <p>Dla większości zapracowanych dorosłych optymalne jest 1 lub 2 dobrze ułożone spotkania w tygodniu w studiu, wsparte prostym zestawem krótkich ćwiczeń w domu.</p>
               </div>
@@ -1998,11 +2038,11 @@
           </div>
 
           <div class="faq-item" data-open="false">
-            <button type="button" class="faq-trigger" aria-expanded="false">
+            <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-ans-3">
               <span class="faq-q">Czy pierwsza rozmowa do czegoś zobowiązuje?</span>
               <span class="faq-plus" aria-hidden="true">+</span>
             </button>
-            <div class="faq-panel">
+            <div id="faq-ans-3" class="faq-panel" hidden>
               <div class="faq-inner">
                 <p>Nie. 15-minutowa rozmowa telefoniczna jest bezpłatna i służy wyłącznie wzajemnemu poznaniu, sprawdzeniu dostępności terminów oraz omówieniu zasad współpracy.</p>
               </div>
@@ -2010,11 +2050,11 @@
           </div>
 
           <div class="faq-item" data-open="false">
-            <button type="button" class="faq-trigger" aria-expanded="false">
+            <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-ans-4">
               <span class="faq-q">Co jeśli w trakcie cyklu mam wyjazd służbowy albo słabszy tydzień?</span>
               <span class="faq-plus" aria-hidden="true">+</span>
             </button>
-            <div class="faq-panel">
+            <div id="faq-ans-4" class="faq-panel" hidden>
               <div class="faq-inner">
                 <p>Plan dopasowuję do realnego życia — przed wyjazdem lub w bardziej intensywnym tygodniu zmniejszam obciążenia albo przygotowuję krótki wariant wyjazdowy, bez presji i poczucia winy.</p>
               </div>
@@ -2022,13 +2062,13 @@
           </div>
 
           <div class="faq-item" data-open="false">
-            <button type="button" class="faq-trigger" aria-expanded="false">
+            <button type="button" class="faq-trigger" aria-expanded="false" aria-controls="faq-ans-5">
               <span class="faq-q">Co trzeba zabrać na pierwsze spotkanie?</span>
               <span class="faq-plus" aria-hidden="true">+</span>
             </button>
-            <div class="faq-panel">
+            <div id="faq-ans-5" class="faq-panel" hidden>
               <div class="faq-inner">
-                <p>Wygodny strój sportowy, czyste obuwie zmienne oraz — jeśli posiadasz — opisy badań lub zalecenia po przebytej rehabilitacji.</p>
+                <p>Wygodny strój sportowy, czyste obuwie zmienne oraz — jeśli posiadasz — opisy badań lub zalecenia po zakończonej rehabilitacji.</p>
               </div>
             </div>
           </div>
@@ -2073,64 +2113,36 @@
           </div>
 
           <div class="form-panel">
-            <p class="eyebrow eyebrow-cedar">Szybkie zapytanie</p>
-            <h3>Napisz kilka słów o swoim punkcie wyjścia</h3>
-            <p style="margin:0 0 26px;font-size:14.5px;color:var(--muted);">
-              Odpowiadam osobiście, bez automatycznych serii reklamowych.
+            <p class="eyebrow eyebrow-cedar">Formularz zapytania</p>
+            <h3>Umów bezpłatną rozmowę wstępną</h3>
+            <p style="margin:0 0 24px;font-size:15px;color:var(--muted);line-height:1.6;">
+              Wybierz najdogodniejszy sposób kontaktu. Możesz od razu przejść do krótkiego formularza startowego albo skontaktować się bezpośrednio telefonicznie lub wiadomością.
             </p>
 
-            <form id="contact-form" novalidate>
-              <div class="form-row-2">
-                <div class="field">
-                  <label for="field-name">Imię</label>
-                  <input id="field-name" name="name" type="text" class="input" required autocomplete="given-name" placeholder="Np. Anna lub Marek">
-                </div>
-                <div class="field">
-                  <label for="field-contact">Telefon lub e-mail</label>
-                  <input id="field-contact" name="contact" type="text" class="input" required placeholder="Numer telefonu lub e-mail">
-                </div>
-              </div>
+            <div style="margin-bottom:28px;">
+              <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary" style="width:100%;text-align:center;">
+                Przejdź do krótkiego formularza kontaktu &rarr;
+              </a>
+              <p style="margin:10px 0 0;font-size:13px;color:var(--muted);text-align:center;">
+                Wystarczy 1 minuta — bez konieczności wpisywania diagnoz ani wyników badań.
+              </p>
+            </div>
 
-              <div class="field">
-                <label for="field-context">Krótki kontekst</label>
-                <textarea id="field-context" name="context" rows="3" class="input" required placeholder="Np. praca siedząca, powrót do ruchu po przerwie, godziny popołudniowe..."></textarea>
-              </div>
-
-              <fieldset class="field">
-                <legend>Preferowana pora kontaktu (opcjonalnie)</legend>
-                <div class="btn-row">
-                  <button type="button" class="chip-btn pref-btn" data-pref="przed południem" aria-pressed="false">Przed południem</button>
-                  <button type="button" class="chip-btn pref-btn" data-pref="po południu" aria-pressed="false">Po południu</button>
-                  <button type="button" class="chip-btn pref-btn" data-pref="SMS lub e-mail" aria-pressed="false">SMS lub e-mail</button>
-                </div>
-              </fieldset>
-
-              <p id="form-error" role="alert" class="form-error"></p>
-
-              <button id="submit-btn" type="submit" class="btn btn-primary" style="width:100%;">
-                Przygotuj wiadomość do wysłania
-              </button>
-            </form>
-
-            <div id="form-result" aria-live="polite" class="form-result">
-              <div style="display:flex;justify-content:space-between;align-items:center;gap:12px;">
-                <strong id="result-title" style="color:var(--forest);font-size:15px;">Wiadomość gotowa</strong>
-                <button id="reset-form-btn" type="button" class="text-link-btn">Edytuj treść</button>
-              </div>
-              <p id="result-desc" style="margin:6px 0 0;font-size:14px;color:var(--muted);"></p>
-              <pre id="result-text"></pre>
+            <div style="border-top:1px solid var(--hairline);padding-top:24px;">
+              <p class="eyebrow eyebrow-cedar" style="margin-bottom:12px;">Bezpośredni kontakt</p>
               <div class="btn-row">
-                <button id="copy-result-btn" type="button" class="btn btn-primary btn-sm">Kopiuj</button>
-                <a id="mailto-result-link" href="mailto:trenermedycznywarszawa@gmail.com" class="btn btn-secondary btn-sm">Wyślij e-mailem</a>
-                <a id="wa-result-link" href="https://wa.me/48503975998" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">Wyślij przez WhatsApp</a>
+                <a href="tel:+48503975998" class="btn btn-secondary btn-sm">Zadzwoń: 503 975 998</a>
+                <a href="sms:+48503975998" class="btn btn-secondary btn-sm">SMS</a>
+                <a href="https://wa.me/48503975998" target="_blank" rel="noopener noreferrer" class="btn btn-secondary btn-sm">WhatsApp</a>
+                <a href="mailto:trenermedycznywarszawa@gmail.com?subject=Studio%20Las%20%E2%80%94%20rozmowa%20wst%C4%99pna" class="btn btn-secondary btn-sm">E-mail</a>
               </div>
             </div>
 
-            <div class="legal-note">
-              Korzystając z formularza, akceptujesz
-              <button type="button" class="text-link-btn open-modal-btn" data-modal="terms-modal">Regulamin świadczenia usług drogą elektroniczną</button>.
+            <div class="legal-note" style="margin-top:28px;">
               Zasady przetwarzania danych opisuje
               <button type="button" class="text-link-btn open-modal-btn" data-modal="privacy-modal">Polityka prywatności (RODO)</button>.
+              Informacje o usługach drogą elektroniczną znajdziesz w
+              <button type="button" class="text-link-btn open-modal-btn" data-modal="terms-modal">Regulaminie (UŚUDE)</button>.
             </div>
           </div>
         </div>
@@ -2145,7 +2157,7 @@
   <footer class="site-footer">
     <div class="container footer-inner">
       <div>
-        <!-- TODO: dopisać NIP i nazwę CEIDG po aktualizacji -->
+        <!-- TODO: NIP/CEIDG przed uruchomieniem -->
         <p style="margin:0;color:var(--ink);font-weight:500;">
           Damian Krawiec — Studio Las
         </p>
@@ -2175,12 +2187,17 @@
         <button type="button" class="modal-close" aria-label="Zamknij okno polityki prywatności">&times;</button>
       </div>
       <div class="modal-body">
-        <!-- TODO: dopisać NIP i nazwę CEIDG po aktualizacji -->
+        <!-- TODO: NIP/CEIDG przed uruchomieniem -->
         <p><strong>1. Administrator danych:</strong> Damian Krawiec — Studio Las, ul. Pracka 1J, 05-504 Prace Duże, e-mail: trenermedycznywarszawa@gmail.com, tel.: 503 975 998.</p>
-        <p><strong>2. Cel i podstawa przetwarzania:</strong> Dane przekazane w kontakcie telefonicznym, mailowym, przez SMS, WhatsApp lub formularz (imię, dane kontaktowe, opis zapytania) przetwarzane są wyłącznie w celu udzielenia odpowiedzi, weryfikacji dostępności terminów oraz podjęcia działań zmierzających do zawarcia umowy o współpracę treningową (art. 6 ust. 1 lit. b oraz f RODO).</p>
-        <p><strong>3. Odbiorcy i okres przechowywania:</strong> Dane nie są przekazywane podmiotom marketingowym ani sprzedawane. W przypadku podpięcia zewnętrznego operatora poczty lub formularza dane przetwarzane są na podstawie umów powierzenia wyłącznie przez czas niezbędny do prowadzenia korespondencji lub realizacji obowiązków prawnych.</p>
-        <p><strong>4. Prawa osoby, której dane dotyczą:</strong> Masz prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, wniesienia sprzeciwu oraz złożenia skargi do Prezesa Urzędu Ochrony Danych Osobowych (PUODO).</p>
-        <p><strong>5. Brak zewnętrznych trackerów:</strong> Niniejsza strona nie ładuje zewnętrznych skryptów reklamowych, pikseli śledzących ani zdalnych fontów przesyłających adres IP do podmiotów trzecich.</p>
+        <p><strong>2. Cele i podstawy prawne przetwarzania danych:</strong> Dane przekazane w toku kontaktu (imię, numer telefonu, adres e-mail, preferowana pora kontaktu, ogólny kierunek celu) przetwarzane są w celach:</p>
+        <ul style="margin:6px 0 14px 20px;padding:0;color:var(--muted);font-size:14.5px;">
+          <li><strong style="color:var(--ink);font-weight:500;">art. 6 ust. 1 lit. b RODO:</strong> podjęcie działań na żądanie osoby, której dane dotyczą, przed zawarciem umowy (udzielenie odpowiedzi na zapytanie, ustalenie terminu bezpłatnej rozmowy telefonicznej lub spotkania wprowadzającego);</li>
+          <li><strong style="color:var(--ink);font-weight:500;">art. 6 ust. 1 lit. f RODO:</strong> prawnie uzasadniony interes Administratora polegający na sprawnej bieżącej komunikacji, budowaniu relacji z klientami oraz ewentualnym ustaleniu, dochodzeniu lub obronie przed roszczeniami.</li>
+        </ul>
+        <p><strong>3. Okres przechowywania danych:</strong> Dane z korespondencji i zapytań przechowywane są przez czas niezbędny do zakończenia kontaktu lub do momentu wycofania prośby o kontakt. W przypadku nawiązania współpracy treningowej dane przechowywane są przez okres realizacji cyklu współpracy oraz późniejszy okres przedawnienia ewentualnych roszczeń lub okres wynikający z przepisów podatkowo-księgowych (5 lat licząc od końca roku kalendarzowego).</p>
+        <p><strong>4. Odbiorcy danych:</strong> Dane nie są sprzedawane ani udostępniane podmiotom marketingowym. Odbiorcami danych mogą być wyłącznie zaufane podmioty świadczące usługi techniczne i hostingowe na podstawie umów powierzenia przetwarzania danych: dostawca hostingu strony (GitHub Inc. — usługa GitHub Pages), dostawca poczty elektronicznej (Google Ireland Limited) oraz w przypadku skorzystania z formularza pierwszego kontaktu — dostawca bezpiecznej infrastruktury bazy danych (Supabase Inc. z serwerami w regionie Unii Europejskiej).</p>
+        <p><strong>5. Prawa osoby, której dane dotyczą:</strong> Masz prawo żądania dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, wniesienia sprzeciwu wobec przetwarzania oraz prawo wniesienia skargi do organu nadzorczego — Prezesa Urzędu Ochrony Danych Osobowych (PUODO, ul. Stawki 2, 00-193 Warszawa).</p>
+        <p><strong>6. Brak zewnętrznych trackerów i profilowania:</strong> Niniejsza strona nie stosuje zewnętrznych skryptów śledzących, pikseli reklamowych ani zdalnych fontów przesyłających dane do podmiotów trzecich. Wszystkie fonty i grafiki są serwowane w 100% lokalnie.</p>
       </div>
       <div class="modal-foot">
         <button type="button" class="btn btn-primary btn-sm modal-close-btn">Zamknij</button>
@@ -2201,12 +2218,12 @@
         <button type="button" class="modal-close" aria-label="Zamknij okno regulaminu">&times;</button>
       </div>
       <div class="modal-body">
-        <!-- TODO: dopisać NIP i nazwę CEIDG po aktualizacji -->
+        <!-- TODO: NIP/CEIDG przed uruchomieniem -->
         <p><strong>1. Usługodawca:</strong> Damian Krawiec — Studio Las, ul. Pracka 1J, 05-504 Prace Duże, e-mail: trenermedycznywarszawa@gmail.com, tel.: 503 975 998.</p>
-        <p><strong>2. Rodzaj i zakres usług elektronicznych:</strong> Usługodawca udostępnia nieodpłatnie na stronie internetowej możliwość zapoznania się z ofertą oraz przesłania zapytania za pośrednictwem formularza kontaktowego. Umowa o świadczenie usługi elektronicznej zawierana jest na czas jednorazowego skorzystania z formularza i rozwiązuje się z chwilą jego wysłania lub opuszczenia strony.</p>
-        <p><strong>3. Wymagania techniczne:</strong> Do korzystania ze strony niezbędne jest urządzenie z dostępem do sieci Internet oraz aktualna przeglądarka internetowa z włączoną obsługą JavaScript.</p>
-        <p><strong>4. Zakaz treści bezprawnych:</strong> Użytkownik zobowiązany jest do korzystania ze strony w sposób zgodny z prawem oraz dobrymi obyczajami; zakazane jest dostarczanie treści o charakterze bezprawnym.</p>
-        <p><strong>5. Tryb postępowania reklamacyjnego:</strong> Reklamacje dotyczące funkcjonowania strony lub usług elektronicznych można zgłaszać drogą mailową na adres trenermedycznywarszawa@gmail.com. Usługodawca rozpatruje reklamację w terminie 14 dni od jej otrzymania i udziela odpowiedzi na adres nadawcy.</p>
+        <p><strong>2. Rodzaj i zakres usług elektronicznych:</strong> Usługodawca udostępnia nieodpłatnie na stronie internetowej możliwość zapoznania się z ofertą, bezpośredniego kontaktu (telefonicznie, SMS, WhatsApp, e-mail) oraz przejścia do dedykowanego formularza zapytania o pierwszy kontakt (pod adresem <code>ankieta-kontakt.html</code>). Umowa o świadczenie usług drogą elektroniczną zawierana jest na czas przeglądania treści strony lub korzystania z odnośników kontaktowych i ulega rozwiązaniu z chwilą opuszczenia serwisu.</p>
+        <p><strong>3. Wymagania techniczne:</strong> Do korzystania ze strony niezbędne jest urządzenie końcowe z dostępem do sieci Internet oraz aktualna przeglądarka internetowa (np. Chrome, Firefox, Safari, Edge) obsługująca standardy HTML5 i CSS3.</p>
+        <p><strong>4. Zakaz treści bezprawnych:</strong> Użytkownik zobowiązany jest do korzystania ze strony zgodnie z prawem i dobrymi obyczajami; zakazane jest dostarczanie treści o charakterze bezprawnym.</p>
+        <p><strong>5. Tryb postępowania reklamacyjnego:</strong> Wszelkie uwagi i reklamacje dotyczące funkcjonowania strony można zgłaszać na adres e-mail: trenermedycznywarszawa@gmail.com. Usługodawca rozpatruje reklamacje w terminie 14 dni od ich wpływu.</p>
       </div>
       <div class="modal-foot">
         <button type="button" class="btn btn-primary btn-sm modal-close-btn">Zamknij</button>
@@ -2219,6 +2236,13 @@
 
   <script>
     (function () {
+      /* Inicjalizacja animacji: klasa .js-anim dodawana dopiero po starcie JS */
+      document.documentElement.classList.add('js-anim');
+
+      function getScrollBehavior() {
+        return window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth';
+      }
+
       /* 1. STICKY HEADER + PASEK POSTĘPU CZYTANIA */
       var header = document.getElementById('site-header');
       var progressBar = document.getElementById('scroll-progress');
@@ -2315,21 +2339,25 @@
         });
       });
 
-      /* 6. AKORDEON FAQ */
+      /* 6. AKORDEON FAQ (ARIA-EXPANDED, ARIA-CONTROLS I HIDDEN) */
       var faqItems = document.querySelectorAll('.faq-item');
       faqItems.forEach(function (item) {
         var btn = item.querySelector('.faq-trigger');
-        if (!btn) return;
+        var panel = item.querySelector('.faq-panel');
+        if (!btn || !panel) return;
         btn.addEventListener('click', function () {
           var wasOpen = item.getAttribute('data-open') === 'true';
           faqItems.forEach(function (other) {
             other.setAttribute('data-open', 'false');
             var b = other.querySelector('.faq-trigger');
+            var p = other.querySelector('.faq-panel');
             if (b) b.setAttribute('aria-expanded', 'false');
+            if (p) p.setAttribute('hidden', '');
           });
           if (!wasOpen) {
             item.setAttribute('data-open', 'true');
             btn.setAttribute('aria-expanded', 'true');
+            panel.removeAttribute('hidden');
           }
         });
       });
@@ -2384,124 +2412,7 @@
         });
       });
 
-      /* 8. UCZCIWY FORMULARZ KONTAKTOWY */
-      var FORM_ENDPOINT = '';
-      var RECIPIENT_EMAIL = 'trenermedycznywarszawa@gmail.com';
-
-      var form = document.getElementById('contact-form');
-      var submitBtn = document.getElementById('submit-btn');
-      var formError = document.getElementById('form-error');
-      var formResult = document.getElementById('form-result');
-      var resultTitle = document.getElementById('result-title');
-      var resultDesc = document.getElementById('result-desc');
-      var resultText = document.getElementById('result-text');
-      var copyResultBtn = document.getElementById('copy-result-btn');
-      var mailtoResultLink = document.getElementById('mailto-result-link');
-      var waResultLink = document.getElementById('wa-result-link');
-      var resetFormBtn = document.getElementById('reset-form-btn');
-
-      if (submitBtn) {
-        submitBtn.textContent = FORM_ENDPOINT
-          ? 'Wyślij wiadomość'
-          : 'Przygotuj wiadomość do wysłania';
-      }
-
-      var selectedPref = '';
-      var lastMessage = '';
-
-      document.querySelectorAll('.pref-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          var val = btn.getAttribute('data-pref');
-          selectedPref = selectedPref === val ? '' : val;
-          document.querySelectorAll('.pref-btn').forEach(function (b) {
-            b.setAttribute('aria-pressed', String(b.getAttribute('data-pref') === selectedPref));
-          });
-        });
-      });
-
-      function showResult(msg, sentOnline) {
-        lastMessage = msg;
-        resultText.textContent = msg;
-        var enc = encodeURIComponent(msg);
-        waResultLink.href = 'https://wa.me/48503975998?text=' + enc;
-        mailtoResultLink.href = 'mailto:' + RECIPIENT_EMAIL + '?subject=' + encodeURIComponent('Studio Las — rozmowa wstępna') + '&body=' + enc;
-
-        if (sentOnline) {
-          resultTitle.textContent = 'Wiadomość została wysłana';
-          resultDesc.textContent = 'Dziękuję za kontakt. Odpowiem osobiście w najbliższym wolnym oknie. Poniżej zachowujesz kopię treści.';
-        } else {
-          resultTitle.textContent = 'Wiadomość gotowa do przekazania';
-          resultDesc.textContent = 'Wybierz poniżej najwygodniejszy sposób wysłania: e-mail, WhatsApp albo skopiowanie treści.';
-        }
-
-        formResult.classList.add('is-visible');
-        formResult.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }
-
-      if (form) {
-        form.addEventListener('submit', function (e) {
-          e.preventDefault();
-          formError.classList.remove('is-visible');
-
-          var name = document.getElementById('field-name').value.trim();
-          var contact = document.getElementById('field-contact').value.trim();
-          var context = document.getElementById('field-context').value.trim();
-
-          if (!name || !contact || !context) {
-            formError.textContent = 'Uzupełnij proszę imię, dane do kontaktu zwrotnego oraz krótki kontekst.';
-            formError.classList.add('is-visible');
-            return;
-          }
-
-          var lines = [
-            'Dzień dobry, Panie Damianie,',
-            '',
-            'chciałbym/chciałabym umówić rozmowę wstępną w sprawie treningu 1:1 w Studio Las.',
-            'Imię: ' + name,
-            'Kontakt zwrotny: ' + contact,
-            'Kontekst: ' + context
-          ];
-          if (selectedPref) lines.push('Preferowana pora/forma kontaktu: ' + selectedPref);
-          var composed = lines.join('\n');
-
-          if (FORM_ENDPOINT) {
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Wysyłanie...';
-            fetch(FORM_ENDPOINT, {
-              method: 'POST',
-              headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' },
-              body: JSON.stringify({ name: name, contact: contact, context: context, preference: selectedPref || 'brak', message: composed })
-            })
-              .then(function (res) {
-                if (!res.ok) throw new Error('HTTP error');
-                showResult(composed, true);
-              })
-              .catch(function () {
-                showResult(composed, false);
-              })
-              .finally(function () {
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Wyślij wiadomość';
-              });
-          } else {
-            showResult(composed, false);
-          }
-        });
-      }
-
-      if (copyResultBtn) {
-        copyResultBtn.addEventListener('click', function () {
-          if (lastMessage) copyText(lastMessage, 'Treść wiadomości skopiowana');
-        });
-      }
-      if (resetFormBtn) {
-        resetFormBtn.addEventListener('click', function () {
-          formResult.classList.remove('is-visible');
-          document.getElementById('field-context').focus();
-        });
-      }
-
-      /* 9. MODALE (RODO + UŚUDE) Z PEŁNYM FOCUS TRAPEM I ESC */
+      /* 8. MODALE (RODO + UŚUDE) Z ATTRIBUTE INERT, FOCUS TRAPEM I ESC */
       var activeModal = null;
       var lastTrigger = null;
 
@@ -2518,6 +2429,9 @@
         activeModal = modal;
         modal.classList.add('is-open');
         document.body.classList.add('modal-open');
+        document.querySelectorAll('header, main, footer').forEach(function (el) {
+          el.setAttribute('inert', '');
+        });
         var focusables = getFocusable(modal);
         if (focusables.length) focusables[0].focus();
       }
@@ -2526,9 +2440,50 @@
         if (!activeModal) return;
         activeModal.classList.remove('is-open');
         document.body.classList.remove('modal-open');
+        document.querySelectorAll('header, main, footer').forEach(function (el) {
+          el.removeAttribute('inert');
+        });
         activeModal = null;
         if (lastTrigger && typeof lastTrigger.focus === 'function') lastTrigger.focus();
       }
+
+      document.querySelectorAll('.open-modal-btn').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          openModal(btn.getAttribute('data-modal'), btn);
+        });
+      });
+
+      document.querySelectorAll('.modal-backdrop').forEach(function (backdrop) {
+        backdrop.addEventListener('click', function (e) {
+          if (e.target === backdrop) closeActiveModal();
+        });
+        backdrop.querySelectorAll('.modal-close, .modal-close-btn').forEach(function (btn) {
+          btn.addEventListener('click', closeActiveModal);
+        });
+      });
+
+      document.addEventListener('keydown', function (e) {
+        if (!activeModal) return;
+        if (e.key === 'Escape') {
+          closeActiveModal();
+          return;
+        }
+        if (e.key === 'Tab') {
+          var focusables = getFocusable(activeModal);
+          if (!focusables.length) return;
+          var first = focusables[0];
+          var last = focusables[focusables.length - 1];
+          if (e.shiftKey && document.activeElement === first) {
+            e.preventDefault();
+            last.focus();
+          } else if (!e.shiftKey && document.activeElement === last) {
+            e.preventDefault();
+            first.focus();
+          }
+        }
+      });
+    })();
+  </script>
 
       document.querySelectorAll('.open-modal-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
