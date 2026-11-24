@@ -2484,43 +2484,5 @@
       });
     })();
   </script>
-
-      document.querySelectorAll('.open-modal-btn').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          openModal(btn.getAttribute('data-modal'), btn);
-        });
-      });
-
-      document.querySelectorAll('.modal-backdrop').forEach(function (backdrop) {
-        backdrop.addEventListener('click', function (e) {
-          if (e.target === backdrop) closeActiveModal();
-        });
-        backdrop.querySelectorAll('.modal-close, .modal-close-btn').forEach(function (btn) {
-          btn.addEventListener('click', closeActiveModal);
-        });
-      });
-
-      document.addEventListener('keydown', function (e) {
-        if (!activeModal) return;
-        if (e.key === 'Escape') {
-          closeActiveModal();
-          return;
-        }
-        if (e.key === 'Tab') {
-          var focusables = getFocusable(activeModal);
-          if (!focusables.length) return;
-          var first = focusables[0];
-          var last = focusables[focusables.length - 1];
-          if (e.shiftKey && document.activeElement === first) {
-            e.preventDefault();
-            last.focus();
-          } else if (!e.shiftKey && document.activeElement === last) {
-            e.preventDefault();
-            first.focus();
-          }
-        }
-      });
-    })();
-  </script>
 </body>
 </html>
