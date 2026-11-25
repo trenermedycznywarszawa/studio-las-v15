@@ -29,7 +29,7 @@
   <link rel="preload" as="image" href="./images/las-hero-mobile-780.webp" media="(max-width: 767px)" type="image/webp">
 
   <!-- Inline SVG Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='10' fill='%23162620'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23F4F1EA' font-family='Georgia, serif' font-size='26' letter-spacing='1'%3ESL%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080C0A'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23A7C4B1' font-family='system-ui, sans-serif' font-weight='500' font-size='24' letter-spacing='-1'%3ESL%3C/text%3E%3C/svg%3E">
 
   <!-- Lokalne SEO: JSON-LD (LocalBusiness / HealthClub) -->
   <script type="application/ld+json">
@@ -83,33 +83,13 @@
 
   <style>
     /* =====================================================================
-       VIEW TRANSITIONS & LOKALNE FONTY WOFF2 (ZERO GOOGLE FONTS = 100% RODO)
+       OBSIDIAN FOREST & ALABASTER PRECISION (FLAGSHIP 2026)
+       Lokalne fonty WOFF2 — zero Google Fonts
        ===================================================================== */
     @view-transition {
       navigation: auto;
     }
 
-    @font-face {
-      font-family: 'Newsreader Local';
-      src: url('./fonts/newsreader-regular.woff2') format('woff2');
-      font-weight: 400;
-      font-style: normal;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'Newsreader Local';
-      src: url('./fonts/newsreader-italic.woff2') format('woff2');
-      font-weight: 400;
-      font-style: italic;
-      font-display: swap;
-    }
-    @font-face {
-      font-family: 'Newsreader Local';
-      src: url('./fonts/newsreader-medium.woff2') format('woff2');
-      font-weight: 500;
-      font-style: normal;
-      font-display: swap;
-    }
     @font-face {
       font-family: 'Inter Local';
       src: url('./fonts/inter-regular.woff2') format('woff2');
@@ -124,30 +104,40 @@
       font-style: normal;
       font-display: swap;
     }
+    @font-face {
+      font-family: 'Newsreader Local';
+      src: url('./fonts/newsreader-italic.woff2') format('woff2');
+      font-weight: 400;
+      font-style: italic;
+      font-display: swap;
+    }
 
     :root {
-      /* Paleta zweryfikowana pod WCAG 2.1 AA / 2.2 */
-      --paper: #F4F1EA;
-      --card: #FAF8F4;
-      --forest: #162620;
-      --forest-deep: #0F1C17;
-      --sage: #385044;
-      --cedar: #83633F;
-      --cedar-light: #D4B48C;
-      --ink: #1B221E;
-      --muted: #4D5650;
-      --border-ui: #8A847B;
-      --hairline: #DCD5C9;
-      --hairline-dark: rgba(250, 248, 244, 0.18);
-      --error: #9E3B2B;
-      --light-on-dark: #D5DDD8;
+      --obsidian: #080C0A;
+      --obsidian-card: #111814;
+      --obsidian-card-hi: #16201B;
+      --obsidian-border: rgba(244, 246, 244, 0.08);
+      --obsidian-hairline: rgba(244, 246, 244, 0.12);
 
-      --font-serif: 'Newsreader Local', Georgia, 'Iowan Old Style', 'Palatino Linotype', serif;
+      --alabaster: #F6F7F5;
+      --alabaster-card: #FFFFFF;
+      --alabaster-border: #E4E6E3;
+
+      --ink-dark: #F4F6F4;
+      --muted-dark: #96A49B;
+      --ink-light: #0D120F;
+      --muted-light: #556059;
+
+      --sage-glow: #A7C4B1;
+      --sage-deep: #24382D;
+
       --font-sans: 'Inter Local', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      --font-serif: 'Newsreader Local', Georgia, 'Iowan Old Style', serif;
       --font-mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
 
-      --max-w: 1180px;
-      --radius-sm: 4px;
+      --max-w: 86rem; /* 1376px */
+      --radius-bento: 22px;
+      --radius-pill: 999px;
     }
 
     *, *::before, *::after {
@@ -157,16 +147,16 @@
     html {
       scroll-behavior: smooth;
       scroll-padding-top: 96px;
-      background-color: var(--paper);
+      background-color: var(--obsidian);
     }
 
     body {
       margin: 0;
       font-family: var(--font-sans);
       font-size: 16px;
-      line-height: 1.7;
-      color: var(--ink);
-      background-color: var(--paper);
+      line-height: 1.65;
+      color: var(--ink-dark);
+      background-color: var(--obsidian);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-synthesis-weight: none;
@@ -178,9 +168,7 @@
       max-width: 100%;
     }
 
-    a {
-      color: inherit;
-    }
+    a { color: inherit; }
 
     button {
       font: inherit;
@@ -190,8 +178,14 @@
     a:focus-visible,
     button:focus-visible,
     summary:focus-visible {
-      outline: 2px solid var(--cedar);
+      outline: 2px solid var(--sage-glow);
       outline-offset: 3px;
+    }
+
+    .act-light a:focus-visible,
+    .act-light button:focus-visible,
+    .act-light summary:focus-visible {
+      outline-color: var(--ink-light);
     }
 
     /* Skip link */
@@ -201,23 +195,24 @@
       top: 12px;
       z-index: 200;
       padding: 12px 20px;
-      background: var(--forest);
-      color: var(--card);
+      border-radius: var(--radius-pill);
+      background: var(--sage-glow);
+      color: var(--obsidian);
       text-decoration: none;
       font-size: 14px;
       font-weight: 500;
     }
     .skip-link:focus { left: 16px; }
 
-    /* Pasek postępu czytania — CSS Scroll-Driven Animation + fallback */
+    /* 1px świetlny pasek postępu czytania u góry */
     #scroll-progress {
       position: fixed;
       top: 0;
       left: 0;
       width: 100%;
-      height: 2px;
-      background-color: var(--cedar);
-      z-index: 70;
+      height: 1px;
+      background: linear-gradient(90deg, var(--sage-glow), #E4ECE7);
+      z-index: 90;
       pointer-events: none;
       transform-origin: left center;
       transform: scaleX(0);
@@ -235,71 +230,51 @@
       }
     }
 
-    /* Kontenery i rytm sekcji */
+    /* Kontenery */
     .container {
       width: 100%;
       max-width: var(--max-w);
       margin: 0 auto;
       padding: 0 20px;
     }
-    .container-narrow {
-      width: 100%;
-      max-width: 820px;
-      margin: 0 auto;
-      padding: 0 20px;
-    }
     @media (min-width: 768px) {
-      .container, .container-narrow { padding: 0 40px; }
+      .container { padding: 0 40px; }
     }
 
     section {
-      padding: 64px 0;
-      border-bottom: 1px solid var(--hairline);
+      padding: 72px 0;
       scroll-margin-top: 96px;
     }
     @media (min-width: 900px) {
-      section { padding: 108px 0; }
+      section { padding: 112px 0; }
     }
 
-    .bg-paper { background-color: var(--paper); }
-    .bg-card { background-color: var(--card); }
-    .bg-forest {
-      background-color: var(--forest);
-      color: var(--card);
-      border-bottom: none;
+    .act-dark {
+      background-color: var(--obsidian);
+      color: var(--ink-dark);
+    }
+    .act-light {
+      background-color: var(--alabaster);
+      color: var(--ink-light);
     }
 
-    /* Typografia redakcyjna */
-    .eyebrow {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      letter-spacing: 0.14em;
-      text-transform: uppercase;
-      color: var(--sage);
-      margin: 0 0 14px;
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-    .eyebrow-cedar { color: var(--cedar); }
-    .eyebrow-light { color: var(--light-on-dark); }
-    .eyebrow-rule {
-      width: 24px;
-      height: 1px;
-      background-color: currentColor;
-      opacity: 0.65;
-      flex-shrink: 0;
-    }
-
-    h1, h2, h3, h4, .manifesto-quote {
-      font-family: var(--font-serif);
-      font-weight: 400;
+    /* Typografia: 90% Engineered Inter + 10% Surgical Newsreader Italic */
+    h1, h2, h3, h4 {
+      font-family: var(--font-sans);
+      font-weight: 500;
       margin: 0;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.036em;
       text-wrap: balance;
     }
 
-    p, .lead, .hero-lead, dd {
+    h1 em, h2 em, h3 em, .manifesto-quote em {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+    }
+
+    p, .lead, dd {
       text-wrap: pretty;
     }
 
@@ -308,112 +283,111 @@
     }
 
     h1 {
-      font-size: clamp(2.6rem, 6vw, 4.65rem);
-      line-height: 1.04;
-      margin-bottom: 20px;
+      font-size: clamp(2.85rem, 6.6vw, 5.95rem);
+      line-height: 0.98;
+      letter-spacing: -0.042em;
+      margin-bottom: 24px;
     }
-    h1 em { font-style: italic; }
 
     h2 {
-      font-size: clamp(1.95rem, 3.8vw, 3rem);
-      line-height: 1.12;
+      font-size: clamp(2rem, 4vw, 3.25rem);
+      line-height: 1.06;
+      letter-spacing: -0.038em;
       margin-bottom: 16px;
     }
 
     h3 {
-      font-size: clamp(1.35rem, 2.2vw, 1.7rem);
-      line-height: 1.24;
-      margin-bottom: 12px;
+      font-size: clamp(1.3rem, 2.1vw, 1.65rem);
+      line-height: 1.2;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+
+    .eyebrow {
+      font-family: var(--font-mono);
+      font-size: 12.5px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: var(--sage-glow);
+      margin: 0 0 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .act-light .eyebrow {
+      color: var(--muted-light);
+    }
+    .eyebrow-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background-color: var(--sage-glow);
+      flex-shrink: 0;
+    }
+    .act-light .eyebrow-dot {
+      background-color: var(--ink-light);
     }
 
     .lead {
-      font-size: 17px;
-      line-height: 1.65;
-      color: var(--muted);
+      font-size: clamp(1rem, 1.3vw, 1.15rem);
+      line-height: 1.6;
+      color: var(--muted-dark);
       max-width: 600px;
       margin: 0 0 28px;
     }
-    .bg-forest .lead { color: var(--light-on-dark); }
+    .act-light .lead { color: var(--muted-light); }
 
-    .section-head {
-      max-width: 680px;
-      margin-bottom: 40px;
-    }
-    @media (min-width: 900px) {
-      .section-head { margin-bottom: 48px; }
-    }
-
-    .kicker {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      color: var(--sage);
-      margin: 0 0 8px;
-    }
-    .kicker.is-cedar { color: var(--cedar); }
-    .kicker.is-light { color: var(--cedar-light); }
-
-    /* Przyciski */
+    /* Przyciski-kapsuły */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
       gap: 10px;
       min-height: 48px;
-      padding: 12px 24px;
-      border-radius: var(--radius-sm);
+      padding: 12px 26px;
+      border-radius: var(--radius-pill);
       font-size: 14.5px;
       font-weight: 500;
-      letter-spacing: 0.01em;
+      letter-spacing: -0.01em;
       text-decoration: none;
       border: 1px solid transparent;
       cursor: pointer;
-      transition: background-color 0.22s ease, border-color 0.22s ease, color 0.22s ease;
+      transition: background-color 0.22s ease, border-color 0.22s ease, color 0.22s ease, transform 0.2s ease;
     }
+    .btn:active { transform: scale(0.99); }
 
-    .btn-primary {
-      background-color: var(--forest);
-      color: var(--card);
+    .btn-sage {
+      background-color: var(--sage-glow);
+      color: var(--obsidian);
     }
-    .btn-primary:hover { background-color: var(--forest-deep); }
-
-    .btn-secondary {
-      background-color: transparent;
-      color: var(--forest);
-      border-color: var(--border-ui);
-    }
-    .btn-secondary:hover {
-      border-color: var(--forest);
-      background-color: rgba(22, 38, 32, 0.04);
-    }
-
-    .btn-on-dark {
-      background-color: var(--card);
-      color: var(--forest);
-    }
-    .btn-on-dark:hover { background-color: var(--paper); }
+    .btn-sage:hover { background-color: #BDD6C6; }
 
     .btn-ghost-dark {
-      background-color: transparent;
-      color: var(--card);
-      border-color: rgba(250, 248, 244, 0.42);
+      background-color: rgba(244, 246, 244, 0.04);
+      color: var(--ink-dark);
+      border-color: rgba(244, 246, 244, 0.2);
     }
     .btn-ghost-dark:hover {
-      background-color: rgba(250, 248, 244, 0.1);
-      border-color: var(--card);
+      background-color: rgba(244, 246, 244, 0.1);
+      border-color: rgba(244, 246, 244, 0.45);
     }
 
+    .btn-obsidian {
+      background-color: var(--ink-light);
+      color: var(--alabaster);
+    }
+    .btn-obsidian:hover { background-color: #1F2A23; }
+
     .btn-sm {
-      min-height: 44px;
-      padding: 10px 18px;
-      font-size: 14px;
+      min-height: 42px;
+      padding: 9px 18px;
+      font-size: 13.5px;
     }
 
     .text-link-btn {
       background: none;
       border: none;
-      padding: 8px 2px;
+      padding: 6px 2px;
       min-height: 44px;
       display: inline-flex;
       align-items: center;
@@ -421,37 +395,46 @@
       text-decoration: underline;
       text-underline-offset: 4px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13.5px;
     }
-    .text-link-btn:hover { opacity: 0.82; }
+    .text-link-btn:hover { color: var(--sage-glow); }
 
     /* =========================================================
-       STICKY MINIMAL HEADER (4 POZYCJE + CTA)
+       NAWIGACJA HUD (PŁYWAJĄCA KAPSUŁA)
        ========================================================= */
-    .site-header {
+    .hud-wrap {
       position: fixed;
-      top: 0;
+      top: 14px;
       left: 0;
       right: 0;
-      z-index: 50;
-      color: var(--card);
-      background-color: transparent;
-      border-bottom: 1px solid rgba(250, 248, 244, 0.14);
-      transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+      z-index: 60;
+      padding: 0 16px;
+      pointer-events: none;
     }
-    .site-header.is-scrolled {
-      color: var(--ink);
-      background-color: rgba(244, 241, 234, 0.95);
-      -webkit-backdrop-filter: blur(10px);
-      backdrop-filter: blur(10px);
-      border-bottom-color: var(--hairline);
+    @media (min-width: 768px) {
+      .hud-wrap {
+        top: 18px;
+        padding: 0 40px;
+      }
     }
 
-    .header-inner {
+    .hud-bar {
+      pointer-events: auto;
+      max-width: var(--max-w);
+      margin: 0 auto;
+      min-height: 58px;
+      padding: 6px 8px 6px 20px;
+      border-radius: var(--radius-pill);
+      background-color: rgba(12, 18, 15, 0.72);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      backdrop-filter: blur(20px) saturate(140%);
+      border: 1px solid rgba(244, 246, 244, 0.12);
+      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      color: var(--ink-dark);
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 68px;
+      gap: 16px;
     }
 
     .brand {
@@ -460,45 +443,33 @@
       gap: 10px;
       text-decoration: none;
       min-height: 44px;
-      padding: 4px 0;
+      font-weight: 500;
+      font-size: 16px;
+      letter-spacing: -0.025em;
     }
-    .brand-name {
-      font-family: var(--font-serif);
-      font-size: 22px;
-      letter-spacing: -0.01em;
+    .brand-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background-color: var(--sage-glow);
     }
 
     .nav-desktop {
       display: none;
       align-items: center;
-      gap: 28px;
+      gap: 24px;
     }
     .nav-desktop a:not(.btn) {
       text-decoration: none;
-      font-size: 14px;
-      letter-spacing: 0.02em;
-      opacity: 0.9;
-      padding: 10px 2px;
+      font-size: 13.5px;
+      color: var(--muted-dark);
+      padding: 8px 4px;
       min-height: 44px;
       display: inline-flex;
       align-items: center;
-      transition: opacity 0.2s ease;
+      transition: color 0.2s ease;
     }
-    .nav-desktop a:not(.btn):hover { opacity: 1; }
-
-    .site-header .nav-cta {
-      background-color: var(--card);
-      color: var(--forest);
-      border-color: var(--card);
-    }
-    .site-header .nav-cta:hover { background-color: var(--paper); }
-
-    .site-header.is-scrolled .nav-cta {
-      background-color: var(--forest);
-      color: var(--card);
-      border-color: var(--forest);
-    }
-    .site-header.is-scrolled .nav-cta:hover { background-color: var(--forest-deep); }
+    .nav-desktop a:not(.btn):hover { color: var(--ink-dark); }
 
     .menu-toggle {
       display: inline-flex;
@@ -506,65 +477,60 @@
       justify-content: center;
       min-width: 44px;
       min-height: 44px;
-      padding: 8px;
-      border-radius: var(--radius-sm);
-      border: 1px solid currentColor;
-      background: transparent;
-      color: inherit;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(244, 246, 244, 0.18);
+      background: rgba(244, 246, 244, 0.06);
+      color: var(--ink-dark);
       cursor: pointer;
     }
 
     .nav-mobile {
       display: none;
-      background-color: var(--card);
-      color: var(--ink);
-      border-bottom: 1px solid var(--hairline);
-      padding: 12px 20px 24px;
+      pointer-events: auto;
+      max-width: var(--max-w);
+      margin: 10px auto 0;
+      padding: 16px 20px 20px;
+      border-radius: var(--radius-bento);
+      background-color: rgba(14, 21, 17, 0.96);
+      -webkit-backdrop-filter: blur(20px);
+      backdrop-filter: blur(20px);
+      border: 1px solid rgba(244, 246, 244, 0.14);
+      color: var(--ink-dark);
     }
     .nav-mobile.is-open { display: block; }
-    .nav-mobile a {
+    .nav-mobile a:not(.btn) {
       display: flex;
       align-items: center;
       min-height: 48px;
-      padding: 10px 4px;
-      border-bottom: 1px solid var(--hairline);
+      padding: 8px 4px;
+      border-bottom: 1px solid var(--obsidian-hairline);
       text-decoration: none;
-      color: var(--ink);
+      color: var(--ink-dark);
+      font-size: 15px;
     }
-    .nav-mobile a.btn-primary {
-      color: var(--card);
-    }
-    .nav-mobile .btn {
+    .nav-mobile a.btn {
       width: 100%;
-      margin-top: 16px;
-      border-bottom: none;
+      margin-top: 14px;
     }
 
-    @media (min-width: 900px) {
+    @media (min-width: 940px) {
       .nav-desktop { display: flex; }
       .menu-toggle, .nav-mobile { display: none !important; }
     }
 
     /* =========================================================
-       ROZDZIAŁ 1 — HERO + METRYKI + KRÓTKI MANIFEST
+       AKT I — KINOWY HERO FULL-BLEED (100SVH, #080C0A)
        ========================================================= */
     .hero {
       position: relative;
-      min-height: max(92svh, 620px);
+      min-height: 100svh;
       display: flex;
       flex-direction: column;
       justify-content: flex-end;
-      padding: 112px 0 0;
-      background-color: var(--forest-deep);
-      color: var(--card);
-      border-bottom: none;
+      padding: 120px 0 0;
+      background-color: var(--obsidian);
+      color: var(--ink-dark);
       overflow: hidden;
-    }
-    @media (min-width: 900px) {
-      .hero {
-        min-height: max(100svh, 680px);
-        padding-top: 132px;
-      }
     }
 
     .hero-bg {
@@ -577,35 +543,45 @@
       width: 100%;
       height: 100%;
       object-fit: cover;
-      object-position: center 45%;
-      filter: saturate(0.86) contrast(1.04);
+      object-position: 65% 42%;
+      filter: saturate(0.88) contrast(1.06);
       opacity: 0;
       transition: opacity 0.6s ease;
     }
     .hero-bg img.is-loaded { opacity: 1; }
     .hero-bg img.is-hidden { display: none; }
 
+    /* Wielowarstwowy scrim: mocniejszy po lewej dla kontrastu >4.5:1, więcej światła lasu po prawej */
     .hero-overlay {
       position: absolute;
       inset: 0;
       z-index: 1;
       background:
-        linear-gradient(180deg, rgba(15, 28, 23, 0.80) 0%, rgba(15, 28, 23, 0.76) 45%, rgba(15, 28, 23, 0.88) 100%);
+        linear-gradient(90deg, rgba(8, 12, 10, 0.90) 0%, rgba(8, 12, 10, 0.72) 48%, rgba(8, 12, 10, 0.26) 100%),
+        linear-gradient(180deg, rgba(8, 12, 10, 0.58) 0%, rgba(8, 12, 10, 0.14) 44%, rgba(8, 12, 10, 0.92) 100%);
     }
 
-    .hero-content {
+    .hero-grid {
       position: relative;
       z-index: 2;
-      padding-bottom: 40px;
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 32px;
+      align-items: end;
+      padding-bottom: 44px;
     }
-    @media (min-width: 900px) {
-      .hero-content { padding-bottom: 52px; }
+    @media (min-width: 1024px) {
+      .hero-grid {
+        grid-template-columns: 7.5fr 4.5fr;
+        gap: 48px;
+        padding-bottom: 56px;
+      }
     }
 
     .hero-lead {
-      font-size: clamp(1.02rem, 1.8vw, 1.2rem);
-      line-height: 1.65;
-      color: var(--light-on-dark);
+      font-size: clamp(1rem, 1.5vw, 1.18rem);
+      line-height: 1.6;
+      color: #D2DCD5;
       max-width: 560px;
       margin: 0 0 28px;
     }
@@ -614,326 +590,297 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 12px 20px;
+      gap: 12px 16px;
       margin-bottom: 14px;
     }
 
-    .hero-microcopy {
-      font-size: 13.5px;
-      color: var(--light-on-dark);
-      opacity: 0.92;
+    .hero-micro {
       margin: 0;
+      font-size: 13.5px;
+      color: var(--muted-dark);
     }
 
-    .hero-metrics-bar {
+    /* Szklana karta kontekstu po prawej (desktop) */
+    .hero-glass-card {
+      display: none;
+      padding: 24px 26px;
+      border-radius: var(--radius-bento);
+      background: rgba(14, 21, 17, 0.62);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      backdrop-filter: blur(20px) saturate(140%);
+      border: 1px solid rgba(244, 246, 244, 0.12);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+    @media (min-width: 1024px) {
+      .hero-glass-card { display: block; }
+    }
+    .glass-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 12px;
+      padding: 11px 0;
+      border-bottom: 1px solid rgba(244, 246, 244, 0.09);
+      font-size: 14px;
+    }
+    .glass-row:last-child { border-bottom: none; padding-bottom: 0; }
+    .glass-row span { color: var(--muted-dark); }
+    .glass-row strong { color: var(--ink-dark); font-weight: 500; }
+
+    /* 4 punkty telemetrii u dołu Hero */
+    .telemetry-bar {
       position: relative;
       z-index: 2;
-      border-top: 1px solid rgba(250, 248, 244, 0.22);
-      background-color: rgba(15, 28, 23, 0.52);
-      -webkit-backdrop-filter: blur(8px);
-      backdrop-filter: blur(8px);
+      border-top: 1px solid rgba(244, 246, 244, 0.12);
+      background-color: rgba(8, 12, 10, 0.72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
     }
-
-    .hero-metrics {
+    .telemetry-grid {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
-    }
-    .hero-metric {
-      padding: 16px 10px 16px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
-    .hero-metric + .hero-metric {
-      border-left: 1px solid rgba(250, 248, 244, 0.18);
-      padding-left: 12px;
-    }
-    .metric-val {
-      font-family: var(--font-serif);
-      font-size: clamp(1.35rem, 2.8vw, 2.2rem);
-      line-height: 1.05;
-      color: var(--card);
-      white-space: nowrap;
-    }
-    .metric-desc {
-      font-size: 12.5px;
-      line-height: 1.4;
-      color: var(--light-on-dark);
+      grid-template-columns: repeat(2, 1fr);
     }
     @media (min-width: 820px) {
-      .hero-metric {
-        padding: 24px 24px 24px 0;
-        flex-direction: row;
-        align-items: baseline;
-        gap: 16px;
+      .telemetry-grid { grid-template-columns: repeat(4, 1fr); }
+    }
+    .telemetry-item {
+      padding: 16px 12px 16px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    @media (min-width: 820px) {
+      .telemetry-item {
+        padding: 20px 20px 20px 0;
       }
-      .hero-metric + .hero-metric { padding-left: 24px; }
-      .metric-desc { font-size: 13.5px; }
+      .telemetry-item + .telemetry-item {
+        border-left: 1px solid rgba(244, 246, 244, 0.1);
+        padding-left: 20px;
+      }
     }
-
-    /* Krótki typograficzny Manifest */
-    .manifesto {
-      padding: 56px 0;
-      text-align: center;
-      background-color: var(--paper);
+    .telemetry-val {
+      font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      color: var(--ink-dark);
     }
-    @media (min-width: 900px) {
-      .manifesto { padding: 84px 0; }
-    }
-    .manifesto-quote {
-      font-family: var(--font-serif);
-      font-size: clamp(1.5rem, 3vw, 2.35rem);
-      line-height: 1.32;
-      color: var(--ink);
-      margin: 0 auto 16px;
-      max-width: 780px;
-    }
-    .manifesto-quote em {
-      font-style: italic;
-      color: var(--forest);
-    }
-    .manifesto-sub {
-      font-size: 15px;
-      color: var(--muted);
-      max-width: 560px;
-      margin: 0 auto;
+    .telemetry-label {
+      font-size: 13px;
+      color: var(--muted-dark);
     }
 
     /* =========================================================
-       ROZDZIAŁ 2 — ZINTEGROWANY PUNKT WYJŚCIA + CYKL 12 TYGODNI
+       AKT II — OBSIDIAN BENTO SYSTEM (12 KOLUMN, RADIUS 22PX)
        ========================================================= */
-    .scenario-layout {
+    .bento-grid {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 28px;
-      align-items: start;
-      margin-bottom: 56px;
+      gap: 16px;
     }
-    @media (min-width: 900px) {
-      .scenario-layout {
-        grid-template-columns: 5fr 7fr;
-        gap: 56px;
-        margin-bottom: 72px;
+    @media (min-width: 960px) {
+      .bento-grid {
+        grid-template-columns: repeat(12, 1fr);
+        gap: 20px;
       }
-      .scenario-sticky {
-        position: sticky;
-        top: 100px;
-      }
+      .span-7 { grid-column: span 7; }
+      .span-5 { grid-column: span 5; }
+      .span-4 { grid-column: span 4; }
     }
 
-    /* Na mobile: poziomy scroll-snap rail; na desktopie: pionowa lista */
-    .scenario-rail {
-      display: flex;
-      gap: 10px;
-      overflow-x: auto;
-      scroll-snap-type: x mandatory;
-      padding-bottom: 8px;
-      -webkit-overflow-scrolling: touch;
-      scrollbar-width: none;
-    }
-    .scenario-rail::-webkit-scrollbar { display: none; }
-
-    .scenario-tab {
-      flex: 0 0 78%;
-      scroll-snap-align: start;
-      min-height: 56px;
-      padding: 14px 16px;
-      text-align: left;
-      background-color: var(--paper);
-      border: 1px solid var(--hairline);
-      border-radius: var(--radius-sm);
-      color: var(--muted);
-      cursor: pointer;
-      display: flex;
-      align-items: baseline;
-      gap: 12px;
-      transition: background-color 0.2s ease, border-color 0.2s ease, color 0.2s ease;
-    }
-    .scenario-tab:hover {
-      color: var(--ink);
-      border-color: var(--border-ui);
-    }
-    .scenario-tab[aria-selected="true"] {
-      background-color: var(--forest);
-      border-color: var(--forest);
-      color: var(--card);
-    }
-    .scenario-tab-num {
-      font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--cedar);
-      flex-shrink: 0;
-    }
-    .scenario-tab[aria-selected="true"] .scenario-tab-num {
-      color: var(--cedar-light);
-    }
-    .scenario-tab-label {
-      font-family: var(--font-serif);
-      font-size: 18px;
-      line-height: 1.28;
-    }
-
-    @media (min-width: 900px) {
-      .scenario-rail {
-        flex-direction: column;
-        overflow-x: visible;
-        gap: 0;
-        padding-bottom: 0;
-        border-top: 1px solid var(--hairline);
-      }
-      .scenario-tab {
-        flex: none;
-        width: 100%;
-        background: transparent;
-        border: none;
-        border-bottom: 1px solid var(--hairline);
-        border-radius: 0;
-        padding: 18px 0;
-      }
-      .scenario-tab:hover {
-        background: transparent;
-        border-bottom-color: var(--border-ui);
-      }
-      .scenario-tab[aria-selected="true"] {
-        background: transparent;
-        color: var(--forest);
-        border-bottom-color: var(--forest);
-        padding-left: 10px;
-      }
-      .scenario-tab[aria-selected="true"] .scenario-tab-num {
-        color: var(--cedar);
-      }
-    }
-
-    /* Ciemnozielona karta scenariusza z @container i View Transitions */
-    .scenario-stage {
-      container-type: inline-size;
-      view-transition-name: scenario-card;
-      background-color: var(--forest);
-      color: var(--card);
-      border-radius: var(--radius-sm);
+    .bento-card {
+      position: relative;
+      border-radius: var(--radius-bento);
+      background: linear-gradient(160deg, var(--obsidian-card) 0%, var(--obsidian-card-hi) 100%);
+      border: 1px solid var(--obsidian-border);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
       padding: 28px 24px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     @media (min-width: 640px) {
-      .scenario-stage { padding: 40px 36px; }
+      .bento-card { padding: 34px 32px; }
     }
 
-    .scenario-card-title {
-      font-size: clamp(1.5rem, 2.8cqi + 1rem, 2.05rem);
-      color: var(--card);
-      margin-bottom: 20px;
-    }
-
-    .scenario-grid {
-      display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      padding: 20px 0;
-      border-top: 1px solid var(--hairline-dark);
-      border-bottom: 1px solid var(--hairline-dark);
-    }
-    @container (min-width: 500px) {
-      .scenario-grid {
-        grid-template-columns: 1fr 1fr;
-        gap: 28px;
+    /* Subtelna poświata reagująca na kursor (tylko hover: hover i bez reduced-motion) */
+    @media (hover: hover) and (prefers-reduced-motion: no-preference) {
+      .bento-card::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        background: radial-gradient(
+          460px circle at var(--mx, 50%) var(--my, 50%),
+          rgba(167, 196, 177, 0.11),
+          transparent 55%
+        );
+      }
+      .bento-card:hover::before {
+        opacity: 1;
       }
     }
 
-    .scenario-block p:last-child {
-      margin: 0;
-      font-size: 15px;
-      color: var(--light-on-dark);
-      line-height: 1.6;
+    .bento-card > * {
+      position: relative;
+      z-index: 1;
     }
 
-    .scenario-goal-dark {
-      margin: 20px 0 0;
-      font-size: 15px;
-      color: var(--card);
+    /* Karta 1: Interaktywny Punkt Wyjścia */
+    .pill-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin: 18px 0 22px;
+    }
+    .pill-tab {
+      min-height: 44px;
+      padding: 8px 16px;
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(244, 246, 244, 0.14);
+      background-color: rgba(244, 246, 244, 0.03);
+      color: var(--muted-dark);
+      font-size: 13.5px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
+    }
+    .pill-tab:hover {
+      color: var(--ink-dark);
+      border-color: rgba(244, 246, 244, 0.3);
+    }
+    .pill-tab[aria-selected="true"] {
+      background-color: var(--sage-glow);
+      border-color: var(--sage-glow);
+      color: var(--obsidian);
+    }
+
+    .bento-scenario-stage {
+      view-transition-name: bento-scenario;
+      padding-top: 18px;
+      border-top: 1px solid var(--obsidian-hairline);
+    }
+    .scenario-cols {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 16px;
+      margin-top: 14px;
+    }
+    @media (min-width: 640px) {
+      .scenario-cols { grid-template-columns: 1fr 1fr; gap: 24px; }
+    }
+    .mini-label {
+      font-family: var(--font-mono);
+      font-size: 11.5px;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--sage-glow);
+      margin: 0 0 6px;
+    }
+
+    /* Karta 2: Wizualny Manifest ze zdjęciem las-detal.webp w tle */
+    .bento-manifest {
+      min-height: 320px;
+      background: var(--obsidian-card);
+    }
+    .bento-manifest-bg {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+    .bento-manifest-bg img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      opacity: 0;
+      transition: opacity 0.5s ease;
+    }
+    .bento-manifest-bg img.is-loaded { opacity: 0.42; }
+    .bento-manifest-bg img.is-hidden { display: none; }
+    .bento-manifest-scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      background: linear-gradient(180deg, rgba(8, 12, 10, 0.65) 0%, rgba(8, 12, 10, 0.88) 100%);
+    }
+    .manifesto-quote {
+      font-size: clamp(1.35rem, 2.2vw, 1.75rem);
+      line-height: 1.3;
+      letter-spacing: -0.03em;
+      color: var(--ink-dark);
+      margin: 0 0 14px;
+    }
+    .manifesto-quote em {
+      color: var(--sage-glow);
+    }
+
+    /* Karta 3: Oś Cyklu 12 tygodni */
+    .axis-list {
+      display: grid;
+      gap: 14px;
+      margin-top: 14px;
+    }
+    .axis-item {
+      display: grid;
+      grid-template-columns: 44px 1fr;
+      gap: 12px;
+      padding-top: 14px;
+      border-top: 1px solid var(--obsidian-hairline);
+    }
+    .axis-code {
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--sage-glow);
       font-weight: 500;
     }
 
-    .scenario-disclaimer {
-      margin: 14px 0 0;
-      font-size: 13px;
-      color: var(--light-on-dark);
-      opacity: 0.85;
-    }
-
-    /* Oś 12 tygodni na CSS Subgrid */
-    .subgrid-axis-wrap {
-      border-top: 1px solid var(--hairline);
-      padding-top: 40px;
-    }
-
-    .timeline-grid {
+    /* Karta 4: Cennik brutto */
+    .price-rows {
       display: grid;
-      grid-template-columns: 1fr;
-      gap: 20px;
-      margin-top: 24px;
+      gap: 14px;
+      margin-top: 14px;
     }
-    .timeline-card {
-      display: grid;
-      grid-template-rows: auto auto 1fr;
-      gap: 8px;
-      padding: 20px 0;
-      border-top: 1px solid var(--hairline);
-    }
-    .timeline-card:last-child {
-      border-bottom: 1px solid var(--hairline);
-    }
-    .timeline-head {
+    .price-row {
       display: flex;
-      align-items: baseline;
       justify-content: space-between;
+      align-items: baseline;
       gap: 12px;
+      padding-top: 14px;
+      border-top: 1px solid var(--obsidian-hairline);
     }
-    .timeline-index {
-      font-family: var(--font-serif);
-      font-size: 28px;
-      line-height: 1;
-      color: var(--cedar);
-    }
-
-    @media (min-width: 820px) {
-      .timeline-grid {
-        grid-template-columns: repeat(3, 1fr);
-        grid-template-rows: auto auto 1fr;
-        gap: 0 32px;
-        border-top: 1px solid var(--hairline);
-        border-bottom: 1px solid var(--hairline);
-      }
-      .timeline-card {
-        grid-row: 1 / 4;
-        grid-template-rows: subgrid;
-        padding: 32px 0;
-        border-top: none;
-        border-bottom: none;
-      }
-      .timeline-card + .timeline-card {
-        border-left: 1px solid var(--hairline);
-        padding-left: 32px;
-      }
+    .price-num {
+      font-size: 1.25rem;
+      font-weight: 500;
+      letter-spacing: -0.03em;
+      color: var(--ink-dark);
+      white-space: nowrap;
     }
 
     /* =========================================================
-       ROZDZIAŁ 3 — PLANER RYTMU (1x vs 2x) + OŚ PIERWSZEGO SPOTKANIA
+       AKT III — ALABASTER PRECISION STUDIO (#F6F7F5)
        ========================================================= */
-    .planner-box {
-      border-top: 1px solid var(--hairline);
-      border-bottom: 1px solid var(--hairline);
-      padding: 32px 0;
-      margin-bottom: 48px;
+    .alabaster-card {
+      background-color: var(--alabaster-card);
+      border: 1px solid var(--alabaster-border);
+      border-radius: var(--radius-bento);
+      padding: 28px 24px;
+    }
+    @media (min-width: 768px) {
+      .alabaster-card { padding: 40px; }
     }
 
-    .planner-top {
+    .planner-header {
       display: flex;
       flex-direction: column;
       gap: 18px;
+      padding-bottom: 24px;
+      border-bottom: 1px solid var(--alabaster-border);
       margin-bottom: 28px;
     }
     @media (min-width: 768px) {
-      .planner-top {
+      .planner-header {
         flex-direction: row;
         align-items: flex-end;
         justify-content: space-between;
@@ -943,290 +890,245 @@
     .rhythm-switch {
       display: inline-flex;
       padding: 4px;
-      background-color: var(--paper);
-      border: 1px solid var(--border-ui);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-pill);
+      background-color: var(--alabaster);
+      border: 1px solid var(--alabaster-border);
       gap: 4px;
       align-self: flex-start;
     }
     .rhythm-btn {
       min-height: 44px;
-      padding: 8px 18px;
+      padding: 8px 20px;
       border: none;
-      border-radius: 3px;
+      border-radius: var(--radius-pill);
       background: transparent;
-      color: var(--muted);
+      color: var(--muted-light);
       font-size: 14px;
       font-weight: 500;
       cursor: pointer;
       transition: background-color 0.2s ease, color 0.2s ease;
     }
     .rhythm-btn[aria-pressed="true"] {
-      background-color: var(--forest);
-      color: var(--card);
+      background-color: var(--ink-light);
+      color: var(--alabaster);
     }
 
-    .planner-panel {
-      view-transition-name: rhythm-planner;
+    .planner-grid {
+      view-transition-name: alabaster-planner;
       display: grid;
       grid-template-columns: 1fr;
       gap: 28px;
       align-items: start;
     }
-    @media (min-width: 860px) {
-      .planner-panel {
-        grid-template-columns: 6fr 6fr;
+    @media (min-width: 900px) {
+      .planner-grid {
+        grid-template-columns: 5fr 7fr;
         gap: 48px;
       }
     }
 
-    .planner-stats {
+    .planner-metrics {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 20px;
-      padding-bottom: 20px;
-      border-bottom: 1px solid var(--hairline);
+      gap: 16px;
       margin-bottom: 16px;
     }
-    .planner-val {
-      font-family: var(--font-serif);
-      font-size: clamp(1.7rem, 3vw, 2.3rem);
-      line-height: 1.1;
-      color: var(--forest);
-      margin: 4px 0;
+    .planner-big {
+      font-size: clamp(1.85rem, 3vw, 2.5rem);
+      font-weight: 500;
+      letter-spacing: -0.04em;
+      color: var(--ink-light);
+      line-height: 1.05;
     }
 
-    /* 7-dniowa siatka tygodnia */
     .week-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
       gap: 6px;
-      margin-top: 12px;
+      margin-top: 10px;
     }
     .day-cell {
-      border: 1px solid var(--hairline);
-      border-radius: var(--radius-sm);
-      padding: 10px 4px;
+      border: 1px solid var(--alabaster-border);
+      border-radius: 12px;
+      padding: 12px 4px;
       text-align: center;
-      background-color: var(--paper);
-      min-height: 76px;
+      background-color: var(--alabaster);
+      min-height: 82px;
       display: flex;
       flex-direction: column;
       justify-content: space-between;
       align-items: center;
     }
     .day-cell.is-studio {
-      background-color: var(--forest);
-      border-color: var(--forest);
-      color: var(--card);
+      background-color: var(--ink-light);
+      border-color: var(--ink-light);
+      color: var(--alabaster);
     }
     .day-cell.is-home {
-      border-color: var(--cedar);
-      background-color: var(--card);
+      background-color: var(--alabaster-card);
+      border-color: #B9C8BE;
     }
     .day-name {
       font-family: var(--font-mono);
-      font-size: 12px;
+      font-size: 11.5px;
       text-transform: uppercase;
       letter-spacing: 0.06em;
     }
     .day-tag {
       font-size: 11px;
-      line-height: 1.25;
-      color: var(--muted);
+      color: var(--muted-light);
     }
     .day-cell.is-studio .day-tag {
-      color: var(--cedar-light);
+      color: var(--sage-glow);
       font-weight: 500;
     }
     .day-cell.is-home .day-tag {
-      color: var(--cedar);
+      color: var(--ink-light);
     }
 
-    /* 3-kolumnowe podsumowanie cennika brutto */
-    .price-strip {
-      display: grid;
-      grid-template-columns: 1fr;
-      border-top: 1px solid var(--hairline);
-      border-bottom: 1px solid var(--hairline);
-      margin-bottom: 48px;
+    /* Stepper Pierwszego Spotkania */
+    .stepper-box {
+      margin-top: 32px;
     }
-    .price-item { padding: 20px 0; }
-    .price-item + .price-item { border-top: 1px solid var(--hairline); }
-    @media (min-width: 820px) {
-      .price-strip { grid-template-columns: repeat(3, 1fr); }
-      .price-item { padding: 26px 24px 26px 0; }
-      .price-item + .price-item {
-        border-top: none;
-        border-left: 1px solid var(--hairline);
-        padding-left: 24px;
-      }
-    }
-    .price-figure {
-      font-family: var(--font-serif);
-      font-size: clamp(1.75rem, 2.8vw, 2.25rem);
-      line-height: 1.1;
-      color: var(--forest);
-      margin: 6px 0 8px;
-    }
-    .price-unit {
-      font-family: var(--font-sans);
-      font-size: 14px;
-      color: var(--muted);
-    }
-
-    /* Interaktywna Oś Pierwszego Spotkania (Stepper) */
-    .stepper-wrap {
-      margin-bottom: 36px;
-    }
-    .stepper-nav {
+    .stepper-tabs {
       display: grid;
       grid-template-columns: 1fr;
       gap: 10px;
       margin: 20px 0;
     }
     @media (min-width: 768px) {
-      .stepper-nav {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 14px;
-      }
+      .stepper-tabs { grid-template-columns: repeat(3, 1fr); gap: 14px; }
     }
     .step-btn {
       text-align: left;
-      padding: 16px 18px;
-      min-height: 64px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--hairline);
-      background-color: var(--paper);
+      padding: 18px 20px;
+      border-radius: 16px;
+      border: 1px solid var(--alabaster-border);
+      background-color: var(--alabaster-card);
       cursor: pointer;
       display: flex;
       flex-direction: column;
       gap: 4px;
       transition: border-color 0.2s ease, background-color 0.2s ease;
     }
-    .step-btn:hover { border-color: var(--border-ui); }
+    .step-btn:hover { border-color: #B4BDB7; }
     .step-btn[aria-selected="true"] {
-      background-color: var(--card);
-      border-color: var(--forest);
-      box-shadow: inset 0 2px 0 var(--forest);
+      background-color: var(--ink-light);
+      border-color: var(--ink-light);
+      color: var(--alabaster);
     }
-    .stepper-num {
+    .step-time {
       font-family: var(--font-mono);
-      font-size: 13px;
-      color: var(--cedar);
+      font-size: 12px;
+      color: var(--muted-light);
     }
-    .stepper-title {
-      font-family: var(--font-serif);
-      font-size: 18px;
-      color: var(--ink);
-      line-height: 1.3;
+    .step-btn[aria-selected="true"] .step-time {
+      color: var(--sage-glow);
+    }
+    .step-label {
+      font-size: 16px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
     }
 
     .step-stage {
-      view-transition-name: meeting-stepper;
-      padding: 24px;
-      background-color: var(--paper);
-      border: 1px solid var(--hairline);
-      border-radius: var(--radius-sm);
+      view-transition-name: meeting-phase;
+      padding: 24px 26px;
+      border-radius: 18px;
+      background-color: var(--alabaster-card);
+      border: 1px solid var(--alabaster-border);
     }
 
-    .takeaway-banner {
-      background-color: var(--forest);
-      color: var(--card);
-      border-radius: var(--radius-sm);
-      padding: 24px;
-      margin-bottom: 40px;
+    .takeaway-dark {
+      margin-top: 24px;
+      border-radius: var(--radius-bento);
+      background: linear-gradient(160deg, var(--obsidian-card) 0%, var(--obsidian-card-hi) 100%);
+      color: var(--ink-dark);
+      padding: 28px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
     }
-    @media (min-width: 768px) {
-      .takeaway-banner {
-        padding: 28px 32px;
-        display: flex;
+    @media (min-width: 820px) {
+      .takeaway-dark {
+        padding: 32px 36px;
+        flex-direction: row;
         align-items: center;
         justify-content: space-between;
-        gap: 32px;
       }
     }
 
-    /* Zwarta nota dopasowania */
-    .split-2 {
+    .fit-grid {
       display: grid;
       grid-template-columns: 1fr;
-      border-top: 1px solid var(--hairline);
-      border-bottom: 1px solid var(--hairline);
+      gap: 16px;
+      margin-top: 24px;
     }
-    .split-col { padding: 28px 0; }
-    .split-col + .split-col { border-top: 1px solid var(--hairline); }
     @media (min-width: 820px) {
-      .split-2 { grid-template-columns: 1fr 1fr; }
-      .split-col { padding: 36px 36px 36px 0; }
-      .split-col + .split-col {
-        border-top: none;
-        border-left: 1px solid var(--hairline);
-        padding: 36px 0 36px 36px;
-      }
+      .fit-grid { grid-template-columns: 1fr 1fr; gap: 20px; }
     }
-
-    .editorial-list {
+    .fit-list {
       list-style: none;
-      margin: 16px 0 0;
+      margin: 14px 0 0;
       padding: 0;
       display: grid;
-      gap: 12px;
+      gap: 10px;
     }
-    .editorial-list li {
+    .fit-list li {
       position: relative;
-      padding-left: 18px;
-      font-size: 15px;
-      color: var(--ink);
+      padding-left: 16px;
+      font-size: 14.5px;
+      color: var(--muted-light);
     }
-    .editorial-list li::before {
+    .fit-list li::before {
       content: "";
       position: absolute;
       left: 0;
-      top: 11px;
-      width: 8px;
+      top: 10px;
+      width: 6px;
       height: 1px;
-      background-color: var(--forest);
+      background-color: var(--ink-light);
     }
-    .editorial-list.is-cedar li::before { background-color: var(--cedar); }
 
     /* =========================================================
-       ROZDZIAŁ 4 — GALERIA SCROLL-SNAP 01 / 03 + BIO + DOJAZD
+       AKT IV — FULL-BLEED GALERIA PRZESTRZENI (#080C0A)
        ========================================================= */
+    .gallery-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
     .gallery-controls {
       display: flex;
       align-items: center;
-      justify-content: space-between;
-      gap: 16px;
-      margin-bottom: 16px;
+      gap: 14px;
     }
     .gallery-counter {
       font-family: var(--font-mono);
       font-size: 13px;
       letter-spacing: 0.1em;
-      color: var(--sage);
-    }
-    .gallery-btns {
-      display: flex;
-      gap: 8px;
+      color: var(--sage-glow);
     }
     .gallery-btn {
       min-width: 44px;
       min-height: 44px;
-      border-radius: var(--radius-sm);
-      border: 1px solid var(--border-ui);
-      background-color: var(--card);
-      color: var(--forest);
+      border-radius: var(--radius-pill);
+      border: 1px solid rgba(244, 246, 244, 0.2);
+      background-color: rgba(244, 246, 244, 0.04);
+      color: var(--ink-dark);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      font-size: 18px;
+      font-size: 17px;
       transition: border-color 0.2s ease, background-color 0.2s ease;
     }
     .gallery-btn:hover {
-      border-color: var(--forest);
-      background-color: var(--paper);
+      border-color: var(--sage-glow);
+      background-color: rgba(167, 196, 177, 0.12);
     }
 
     .gallery-track {
@@ -1235,170 +1137,193 @@
       overflow-x: auto;
       scroll-snap-type: x mandatory;
       scroll-behavior: smooth;
+      padding: 0 20px;
       -webkit-overflow-scrolling: touch;
       scrollbar-width: none;
     }
     .gallery-track::-webkit-scrollbar { display: none; }
+    @media (min-width: 768px) {
+      .gallery-track { padding: 0 40px; }
+    }
 
     .gallery-slide {
       flex: 0 0 88%;
-      scroll-snap-align: start;
+      scroll-snap-align: center;
       margin: 0;
     }
-    @media (min-width: 768px) {
-      .gallery-slide { flex: 0 0 68%; }
+    @media (min-width: 900px) {
+      .gallery-slide { flex: 0 0 84%; }
     }
 
     .photo-frame {
       position: relative;
       width: 100%;
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 16 / 9;
       overflow: hidden;
-      background-color: var(--card);
-      border: 1px solid var(--hairline);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-bento);
+      background-color: var(--obsidian-card);
+      border: 1px solid var(--obsidian-border);
     }
     .photo-frame img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      filter: saturate(0.88) contrast(1.03);
       opacity: 0;
       transition: opacity 0.45s ease;
     }
     .photo-frame img.is-loaded { opacity: 1; }
     .photo-frame img.is-hidden { display: none; }
 
-    .photo-badge {
+    @keyframes viewZoom {
+      from { transform: scale(1.06); }
+      to { transform: scale(1); }
+    }
+    @supports (animation-timeline: view()) {
+      @media (prefers-reduced-motion: no-preference) {
+        .photo-frame img {
+          animation: viewZoom linear both;
+          animation-timeline: view();
+          animation-range: entry 0% cover 45%;
+        }
+      }
+    }
+
+    .glass-badge {
       position: absolute;
-      top: 12px;
-      left: 12px;
+      top: 16px;
+      left: 16px;
       z-index: 2;
-      padding: 5px 10px;
-      background-color: rgba(15, 28, 23, 0.84);
-      color: var(--card);
+      padding: 6px 14px;
+      border-radius: var(--radius-pill);
+      background: rgba(8, 12, 10, 0.72);
+      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(12px);
+      border: 1px solid rgba(244, 246, 244, 0.16);
+      color: var(--ink-dark);
       font-family: var(--font-mono);
       font-size: 11.5px;
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      border-radius: 3px;
     }
 
     .photo-fallback {
       display: none;
       position: absolute;
       inset: 0;
-      background: linear-gradient(145deg, #EAE4D8 0%, #DFD8CA 55%, #D3DBD4 100%);
+      background: linear-gradient(145deg, #111814 0%, #19251E 100%);
       padding: 24px;
       flex-direction: column;
       justify-content: flex-end;
     }
     .photo-fallback.is-visible { display: flex; }
-    .photo-fallback-label {
-      border-left: 2px solid var(--cedar);
-      padding-left: 14px;
-    }
-    .photo-fallback-label strong {
-      display: block;
-      font-family: var(--font-serif);
-      font-size: 20px;
-      font-weight: 400;
-      color: var(--ink);
-    }
-    .photo-fallback-label span {
-      font-size: 13px;
-      color: var(--muted);
-    }
 
     figcaption {
-      margin-top: 10px;
+      margin-top: 12px;
       font-size: 13.5px;
-      color: var(--muted);
+      color: var(--muted-dark);
     }
 
     .gallery-progress {
+      max-width: var(--max-w);
+      margin: 24px auto 0;
+      padding: 0 20px;
+    }
+    @media (min-width: 768px) {
+      .gallery-progress { padding: 0 40px; }
+    }
+    .gallery-track-bar {
       width: 100%;
-      height: 2px;
-      background-color: var(--hairline);
-      margin-top: 18px;
-      margin-bottom: 48px;
+      height: 1px;
+      background-color: rgba(244, 246, 244, 0.14);
       overflow: hidden;
     }
     .gallery-progress-fill {
       height: 100%;
       width: 33.333%;
-      background-color: var(--forest);
-      transition: transform 0.25s ease;
+      background-color: var(--sage-glow);
       transform-origin: left center;
+      transition: transform 0.25s ease;
     }
 
-    .bio-dojazd-grid {
+    /* =========================================================
+       AKT V — PROWADZĄCY, MONOLIT LOKALIZACJI I FAQ (#F6F7F5)
+       ========================================================= */
+    .split-50 {
       display: grid;
       grid-template-columns: 1fr;
-      gap: 40px;
-      padding-top: 40px;
-      border-top: 1px solid var(--hairline);
+      gap: 24px;
+      margin-bottom: 56px;
     }
     @media (min-width: 900px) {
-      .bio-dojazd-grid {
-        grid-template-columns: 7fr 5fr;
-        gap: 64px;
+      .split-50 {
+        grid-template-columns: 1fr 1fr;
+        gap: 32px;
+        margin-bottom: 72px;
       }
     }
 
     .boundary-note {
       margin-top: 20px;
-      padding: 16px 0 16px 20px;
-      border-left: 2px solid var(--cedar);
-      font-size: 14.5px;
-      color: var(--muted);
+      padding: 16px 18px;
+      border-radius: 14px;
+      background-color: var(--alabaster);
+      border: 1px solid var(--alabaster-border);
+      font-size: 14px;
+      color: var(--muted-light);
     }
-    .boundary-note strong { color: var(--ink); font-weight: 500; }
+    .boundary-note strong { color: var(--ink-light); font-weight: 500; }
 
-    .dojazd-card {
-      background-color: var(--card);
-      border: 1px solid var(--hairline);
-      border-radius: var(--radius-sm);
-      padding: 28px 24px;
+    .monolith-card {
+      border-radius: var(--radius-bento);
+      background: linear-gradient(160deg, var(--obsidian) 0%, #131E18 100%);
+      color: var(--ink-dark);
+      padding: 32px 28px;
+      border: 1px solid var(--obsidian-border);
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
     }
     .info-dl {
-      margin: 16px 0 24px;
+      margin: 18px 0 28px;
       display: grid;
       gap: 16px;
     }
     .info-dl div + div {
       padding-top: 16px;
-      border-top: 1px solid var(--hairline);
+      border-top: 1px solid var(--obsidian-hairline);
     }
     .info-dl dt {
       font-family: var(--font-mono);
-      font-size: 12.5px;
+      font-size: 11.5px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--sage);
+      color: var(--sage-glow);
       margin-bottom: 4px;
     }
     .info-dl dd {
       margin: 0;
       font-size: 14.5px;
-      color: var(--muted);
+      color: var(--muted-dark);
     }
-    .info-dl dd strong { color: var(--ink); font-weight: 500; }
+    .info-dl dd strong { color: var(--ink-dark); font-weight: 500; }
 
-    /* =========================================================
-       ROZDZIAŁ 5 — PYTANIA PRZED STARTEM (NATYWNY <details name="faq">)
-       ========================================================= */
+    /* Minimalistyczne FAQ <details name="faq"> */
+    .faq-wrap {
+      max-width: 860px;
+    }
     .faq-list {
-      border-top: 1px solid var(--hairline);
-      border-bottom: 1px solid var(--hairline);
+      border-top: 1px solid var(--alabaster-border);
+      border-bottom: 1px solid var(--alabaster-border);
+      margin-top: 24px;
     }
     .faq-details + .faq-details {
-      border-top: 1px solid var(--hairline);
+      border-top: 1px solid var(--alabaster-border);
     }
     .faq-summary {
       list-style: none;
       min-height: 64px;
-      padding: 20px 0;
+      padding: 18px 0;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -1407,79 +1332,85 @@
     }
     .faq-summary::-webkit-details-marker { display: none; }
     .faq-q {
-      font-family: var(--font-serif);
-      font-size: clamp(1.15rem, 2vw, 1.4rem);
-      line-height: 1.3;
-      color: var(--ink);
+      font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--ink-light);
     }
-    .faq-summary:hover .faq-q { color: var(--forest); }
     .faq-plus {
       width: 34px;
       height: 34px;
-      border: 1px solid var(--border-ui);
+      border: 1px solid var(--alabaster-border);
       border-radius: 50%;
-      color: var(--forest);
+      color: var(--ink-light);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      transition: transform 0.25s ease;
+      transition: transform 0.25s ease, background-color 0.2s ease;
     }
-    .faq-details[open] .faq-plus { transform: rotate(45deg); }
+    .faq-details[open] .faq-plus {
+      transform: rotate(45deg);
+      background-color: var(--ink-light);
+      color: var(--alabaster);
+      border-color: var(--ink-light);
+    }
     .faq-answer {
-      margin: 0 0 22px;
+      margin: 0 0 20px;
       padding-right: 36px;
-      color: var(--muted);
+      color: var(--muted-light);
       font-size: 15px;
-      line-height: 1.65;
     }
 
     /* =========================================================
-       ROZDZIAŁ 6 — KONTAKT (JEDEN SPOKOJNY FINAŁ BEZ DUBLI)
+       AKT VI — OBSYDIANOWY FINAŁ KONTAKTU (#080C0A)
        ========================================================= */
     .contact-finale {
-      max-width: 760px;
+      max-width: 820px;
       margin: 0 auto;
     }
-    .contact-cta-box {
-      background-color: var(--card);
-      color: var(--ink);
-      border-radius: var(--radius-sm);
-      padding: 32px 24px;
-      margin: 28px 0;
-    }
-    @media (min-width: 640px) {
-      .contact-cta-box { padding: 36px 40px; }
-    }
-    .direct-bar {
-      padding-top: 24px;
-      border-top: 1px solid var(--hairline-dark);
-      display: flex;
-      flex-direction: column;
+    .contact-direct {
+      margin-top: 40px;
+      padding-top: 28px;
+      border-top: 1px solid var(--obsidian-hairline);
+      display: grid;
+      grid-template-columns: 1fr;
       gap: 16px;
     }
-    .btn-row {
+    @media (min-width: 768px) {
+      .contact-direct { grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    }
+    .direct-action {
+      padding: 18px 20px;
+      border-radius: 16px;
+      background-color: var(--obsidian-card);
+      border: 1px solid var(--obsidian-border);
       display: flex;
-      flex-wrap: wrap;
+      flex-direction: column;
+      justify-content: space-between;
       gap: 10px;
     }
-    .legal-note {
-      margin-top: 20px;
-      padding-top: 16px;
-      border-top: 1px solid var(--hairline);
-      font-size: 13px;
-      color: var(--muted);
+    .direct-val {
+      font-size: 15px;
+      font-weight: 500;
+      color: var(--ink-dark);
+      word-break: break-word;
+    }
+    .direct-links {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
     }
 
     /* =========================================================
        STOPKA
        ========================================================= */
     .site-footer {
-      background-color: var(--paper);
-      border-top: 1px solid var(--hairline);
-      padding: 36px 0 84px;
-      font-size: 14px;
-      color: var(--muted);
+      background-color: var(--obsidian);
+      border-top: 1px solid var(--obsidian-hairline);
+      padding: 36px 0 88px;
+      font-size: 13.5px;
+      color: var(--muted-dark);
     }
     @media (min-width: 900px) {
       .site-footer { padding: 36px 0; }
@@ -1500,7 +1431,7 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 8px 22px;
+      gap: 8px 20px;
     }
     .footer-links a,
     .footer-links button {
@@ -1508,19 +1439,19 @@
       padding: 8px 2px;
       display: inline-flex;
       align-items: center;
-      color: var(--muted);
+      color: var(--muted-dark);
       background: none;
       border: none;
       text-decoration: underline;
       text-underline-offset: 4px;
       cursor: pointer;
-      font-size: 14px;
+      font-size: 13.5px;
     }
     .footer-links a:hover,
-    .footer-links button:hover { color: var(--forest); }
+    .footer-links button:hover { color: var(--ink-dark); }
 
     /* =========================================================
-       DYSKRETNY MOBILNY PASEK AKCJI (INERT GDY UKRYTY)
+       MOBILNY PASEK AKCJI (INERT GDY UKRYTY)
        ========================================================= */
     .mobile-cta-bar {
       position: fixed;
@@ -1529,13 +1460,13 @@
       bottom: 12px;
       height: 56px;
       z-index: 45;
-      background-color: rgba(22, 38, 32, 0.92);
+      background-color: rgba(14, 21, 17, 0.88);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(250, 248, 244, 0.18);
-      border-radius: var(--radius-sm);
-      color: var(--card);
-      padding: 0 8px 0 16px;
+      border: 1px solid rgba(244, 246, 244, 0.14);
+      border-radius: var(--radius-pill);
+      color: var(--ink-dark);
+      padding: 0 8px 0 20px;
       display: flex;
       align-items: center;
       justify-content: space-between;
@@ -1552,34 +1483,34 @@
     }
     .mobile-cta-bar .bar-label {
       font-size: 13.5px;
-      color: var(--light-on-dark);
+      color: var(--ink-dark);
       white-space: nowrap;
     }
     .mobile-cta-bar .bar-btn {
       min-height: 40px;
-      padding: 8px 18px;
-      background-color: var(--card);
-      color: var(--forest);
-      border-radius: 3px;
-      font-size: 14px;
+      padding: 8px 20px;
+      background-color: var(--sage-glow);
+      color: var(--obsidian);
+      border-radius: var(--radius-pill);
+      font-size: 13.5px;
       font-weight: 500;
       text-decoration: none;
       white-space: nowrap;
     }
-    @media (min-width: 900px) {
+    @media (min-width: 940px) {
       .mobile-cta-bar { display: none !important; }
     }
 
     /* =========================================================
-       NATYWNE MODALE <dialog> Z @starting-style + TOAST
+       NATYWNE MODALE <dialog> + TOAST
        ========================================================= */
     dialog.legal-dialog {
       margin: auto;
       padding: 0;
-      border: 1px solid var(--border-ui);
-      border-radius: var(--radius-sm);
-      background-color: var(--card);
-      color: var(--ink);
+      border: 1px solid var(--alabaster-border);
+      border-radius: var(--radius-bento);
+      background-color: var(--alabaster-card);
+      color: var(--ink-light);
       max-width: 680px;
       width: calc(100% - 32px);
       max-height: 86vh;
@@ -1589,27 +1520,18 @@
       transition: opacity 0.22s ease, transform 0.22s ease, display 0.22s allow-discrete, overlay 0.22s allow-discrete;
     }
     dialog.legal-dialog::backdrop {
-      background-color: rgba(15, 28, 23, 0.64);
-      -webkit-backdrop-filter: blur(4px);
-      backdrop-filter: blur(4px);
+      background-color: rgba(8, 12, 10, 0.72);
+      -webkit-backdrop-filter: blur(6px);
+      backdrop-filter: blur(6px);
       transition: opacity 0.22s ease, display 0.22s allow-discrete, overlay 0.22s allow-discrete;
     }
     @starting-style {
-      dialog.legal-dialog[open] {
-        opacity: 0;
-        transform: translateY(10px);
-      }
-      dialog.legal-dialog[open]::backdrop {
-        opacity: 0;
-      }
+      dialog.legal-dialog[open] { opacity: 0; transform: translateY(10px); }
+      dialog.legal-dialog[open]::backdrop { opacity: 0; }
     }
 
-    .dialog-inner {
-      padding: 28px 24px;
-    }
-    @media (min-width: 640px) {
-      .dialog-inner { padding: 36px 40px; }
-    }
+    .dialog-inner { padding: 28px 24px; }
+    @media (min-width: 640px) { .dialog-inner { padding: 36px 40px; } }
     .modal-head {
       display: flex;
       align-items: flex-start;
@@ -1617,34 +1539,29 @@
       gap: 16px;
       padding-bottom: 16px;
       margin-bottom: 20px;
-      border-bottom: 1px solid var(--hairline);
+      border-bottom: 1px solid var(--alabaster-border);
     }
     .modal-close {
       min-width: 44px;
       min-height: 44px;
-      border-radius: var(--radius-sm);
-      border: 1.5px solid var(--border-ui);
-      background-color: var(--paper);
-      color: var(--ink);
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--alabaster-border);
+      background-color: var(--alabaster);
+      color: var(--ink-light);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
       flex-shrink: 0;
-      font-size: 22px;
+      font-size: 20px;
       line-height: 1;
     }
-    .modal-close:hover { border-color: var(--forest); }
-    .modal-body p {
-      margin: 0 0 14px;
-      font-size: 14.5px;
-      color: var(--muted);
-    }
-    .modal-body strong { color: var(--ink); font-weight: 500; }
+    .modal-body p { margin: 0 0 14px; font-size: 14.5px; color: var(--muted-light); }
+    .modal-body strong { color: var(--ink-light); font-weight: 500; }
     .modal-foot {
       margin-top: 22px;
       padding-top: 16px;
-      border-top: 1px solid var(--hairline);
+      border-top: 1px solid var(--alabaster-border);
       display: flex;
       justify-content: flex-end;
     }
@@ -1654,39 +1571,25 @@
       right: 20px;
       bottom: 80px;
       z-index: 100;
-      background-color: var(--ink);
-      color: var(--card);
+      background-color: var(--sage-glow);
+      color: var(--obsidian);
       font-family: var(--font-mono);
       font-size: 12.5px;
+      font-weight: 500;
       padding: 12px 18px;
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-pill);
       opacity: 0;
       transform: translateY(10px);
       pointer-events: none;
       transition: opacity 0.22s ease, transform 0.22s ease;
     }
-    @media (min-width: 900px) {
-      #toast { bottom: 20px; }
-    }
+    @media (min-width: 940px) { #toast { bottom: 24px; } }
     #toast.is-visible { opacity: 1; transform: translateY(0); }
-
-    /* Subtelny scroll-reveal odporny na brak JS */
-    .reveal { opacity: 1; transform: none; }
-    .js-anim .reveal {
-      opacity: 0;
-      transform: translateY(14px);
-      transition: opacity 0.65s ease, transform 0.65s ease;
-    }
-    .js-anim .reveal.is-visible {
-      opacity: 1;
-      transform: translateY(0);
-    }
 
     @media (prefers-reduced-motion: reduce) {
       html { scroll-behavior: auto; }
-      .reveal, .js-anim .reveal { opacity: 1; transform: none; transition: none; }
-      .faq-plus, #toast, .site-header, .hero-bg img, .photo-frame img, .mobile-cta-bar, dialog.legal-dialog, dialog.legal-dialog::backdrop { transition: none; }
-      #scroll-progress { animation: none !important; }
+      #scroll-progress, .photo-frame img { animation: none !important; }
+      .btn, .faq-plus, #toast, .mobile-cta-bar, dialog.legal-dialog, dialog.legal-dialog::backdrop { transition: none; }
     }
   </style>
 
@@ -1697,9 +1600,9 @@
         window.slPhotoError(img);
         return;
       }
-      var frame = img.closest('.photo-frame');
       img.classList.remove('is-hidden');
       img.classList.add('is-loaded');
+      var frame = img.closest('.photo-frame');
       if (frame) {
         var fallback = frame.querySelector('.photo-fallback');
         if (fallback) fallback.classList.remove('is-visible');
@@ -1723,20 +1626,21 @@
   <div id="scroll-progress" aria-hidden="true"></div>
 
   <!-- =========================================================
-       NAWIGACJA (4 POZYCJE + ROZMOWA WSTĘPNA)
+       NAWIGACJA HUD
        ========================================================= -->
-  <header id="site-header" class="site-header">
-    <div class="container header-inner">
+  <header class="hud-wrap">
+    <div class="hud-bar">
       <a href="#" class="brand">
-        <span class="brand-name">Studio Las</span>
+        <span class="brand-dot" aria-hidden="true"></span>
+        <span>Studio Las</span>
       </a>
 
       <nav aria-label="Główna nawigacja" class="nav-desktop">
-        <a href="#proces">Proces</a>
-        <a href="#rytm-i-ceny">Rytm i ceny</a>
+        <a href="#bento">Metoda 12 tyg.</a>
+        <a href="#rytm-i-cennik">Rytm i cennik</a>
         <a href="#przestrzen">Przestrzeń</a>
         <a href="#kontakt">Kontakt</a>
-        <a href="#kontakt" class="btn btn-sm nav-cta">Rozmowa wstępna</a>
+        <a href="#kontakt" class="btn btn-sage btn-sm tabular">Rozmowa wstępna &middot; 0 zł</a>
       </nav>
 
       <button
@@ -1747,28 +1651,28 @@
         aria-expanded="false"
         aria-controls="mobile-menu"
       >
-        <svg id="menu-icon-open" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
+        <svg id="menu-icon-open" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true">
           <path stroke-linecap="round" stroke-linejoin="round" d="M4 7h16M4 12h16M4 17h16" />
         </svg>
-        <svg id="menu-icon-close" width="22" height="22" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true" style="display:none;">
+        <svg id="menu-icon-close" width="20" height="20" fill="none" stroke="currentColor" stroke-width="1.6" viewBox="0 0 24 24" aria-hidden="true" style="display:none;">
           <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
         </svg>
       </button>
     </div>
 
     <nav id="mobile-menu" aria-label="Nawigacja mobilna" class="nav-mobile">
-      <a href="#proces" class="mobile-link">Proces</a>
-      <a href="#rytm-i-ceny" class="mobile-link">Rytm i ceny</a>
+      <a href="#bento" class="mobile-link">Metoda 12 tyg.</a>
+      <a href="#rytm-i-cennik" class="mobile-link">Rytm i cennik</a>
       <a href="#przestrzen" class="mobile-link">Przestrzeń</a>
       <a href="#kontakt" class="mobile-link">Kontakt</a>
-      <a href="#kontakt" class="btn btn-primary mobile-link">Rozmowa wstępna</a>
+      <a href="#kontakt" class="btn btn-sage mobile-link tabular">Rozmowa wstępna &middot; 0 zł</a>
     </nav>
   </header>
 
   <main id="tresc">
 
     <!-- =========================================================
-         ROZDZIAŁ 1 — HERO + METRYKI + MANIFEST
+         AKT I — KINOWY HERO FULL-BLEED (100SVH, #080C0A)
          ========================================================= -->
     <section id="hero" class="hero">
       <div class="hero-bg" aria-hidden="true">
@@ -1789,187 +1693,217 @@
       </div>
       <div class="hero-overlay" aria-hidden="true"></div>
 
-      <div class="container hero-content">
-        <p class="eyebrow eyebrow-light">
-          <span class="eyebrow-rule" aria-hidden="true"></span>
-          Prace Duże &middot; gm. Tarczyn &middot; 5 min od S7 &middot; prywatne studio 1:1
-        </p>
-        <h1>Sprawność na lata,<br><em>nie na sezon.</em></h1>
-        <p class="hero-lead">
-          Prywatny trening siłowy i ruchowy 1:1 dla dorosłych 35–60+. W czasie Twojej sesji cała sala przy lesie jest wyłącznie dla Ciebie — pracujemy spokojnie, 1–2 razy w tygodniu, w cyklu 12-tygodniowym.
-        </p>
-        <div class="hero-actions">
-          <a href="#kontakt" class="btn btn-on-dark">Umów rozmowę wstępną</a>
-          <a href="#rytm-i-ceny" class="btn btn-ghost-dark">Rytm i ceny</a>
-        </div>
-        <p class="hero-microcopy">
-          Bezpłatna, 15-minutowa rozmowa telefoniczna przed pierwszą wizytą — bez zobowiązań.
-        </p>
-      </div>
-
-      <div class="hero-metrics-bar">
-        <div class="container hero-metrics">
-          <div class="hero-metric">
-            <span class="metric-val tabular">1:1</span>
-            <span class="metric-desc">Wyłącznie indywidualna praca przy lesie</span>
+      <div class="container hero-grid">
+        <div>
+          <p class="eyebrow">
+            <span class="eyebrow-dot" aria-hidden="true"></span>
+            Prace Duże &middot; gm. Tarczyn &middot; 5 min od S7
+          </p>
+          <h1>Sprawność na lata,<br><em>nie na sezon.</em></h1>
+          <p class="hero-lead">
+            Prywatny trening siłowy i ruchowy 1:1 dla dorosłych 35–60+. W czasie Twojej sesji cała sala przy lesie jest wyłącznie dla Ciebie — pracujemy spokojnie, 1–2 razy w tygodniu, w cyklu 12-tygodniowym.
+          </p>
+          <div class="hero-actions">
+            <a href="#kontakt" class="btn btn-sage">Umów rozmowę wstępną</a>
+            <a href="#rytm-i-cennik" class="btn btn-ghost-dark">Rytm i cennik</a>
           </div>
-          <div class="hero-metric">
-            <span class="metric-val tabular">12 tyg.</span>
-            <span class="metric-desc">Spokojny rytm przeglądów i jasne decyzje</span>
-          </div>
-          <div class="hero-metric">
-            <span class="metric-val tabular">~15 lat</span>
-            <span class="metric-desc">Edukacji zawodowej i praktyki trenerskiej</span>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <section class="manifesto" aria-label="Filozofia pracy">
-      <div class="container-narrow reveal">
-        <p class="eyebrow eyebrow-cedar" style="justify-content:center;">Filozofia pracy</p>
-        <p class="manifesto-quote">
-          Po czterdziestce ciało nie potrzebuje przypadkowego wycisku. Potrzebuje <em>mądrej siły, ciszy i konsekwentnego rytmu</em>, który mieści się w realnym tygodniu pracy.
-        </p>
-        <p class="manifesto-sub">
-          Spokojna alternatywa dla głośnych siłowni — dla osób, które chcą zadbać o plecy, stawy i samodzielność na kolejne dekady.
-        </p>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         ROZDZIAŁ 2 — PUNKT WYJŚCIA + CYKL 12 TYGODNI (ZINTEGROWANY)
-         ========================================================= -->
-    <section id="proces" class="bg-card">
-      <div class="container reveal">
-        <div class="scenario-layout">
-          <div class="scenario-sticky">
-            <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>01 / Punkt wyjścia i proces</p>
-            <h2>Od czego zaczynamy i jak układam rytm</h2>
-            <p class="lead">
-              Wybierz sytuację najbliższą Twojej codzienności, aby zobaczyć modelowy sposób startu oraz dobór obciążeń.
-            </p>
-
-            <div class="scenario-rail" role="tablist" aria-label="Najczęstsze punkty wyjścia">
-              <button type="button" role="tab" id="tab-przerwa" aria-selected="true" aria-controls="scenario-stage" tabindex="0" class="scenario-tab" data-scenario="przerwa">
-                <span class="scenario-tab-num tabular">01</span>
-                <span class="scenario-tab-label">Powrót po przerwie</span>
-              </button>
-              <button type="button" role="tab" id="tab-praca" aria-selected="false" aria-controls="scenario-stage" tabindex="-1" class="scenario-tab" data-scenario="praca">
-                <span class="scenario-tab-num tabular">02</span>
-                <span class="scenario-tab-label">Praca siedząca i auto</span>
-              </button>
-              <button type="button" role="tab" id="tab-rehab" aria-selected="false" aria-controls="scenario-stage" tabindex="-1" class="scenario-tab" data-scenario="rehab">
-                <span class="scenario-tab-num tabular">03</span>
-                <span class="scenario-tab-label">Po zakończonej rehabilitacji</span>
-              </button>
-              <button type="button" role="tab" id="tab-sila" aria-selected="false" aria-controls="scenario-stage" tabindex="-1" class="scenario-tab" data-scenario="sila">
-                <span class="scenario-tab-num tabular">04</span>
-                <span class="scenario-tab-label">Siła po 40. i 50. r.ż.</span>
-              </button>
-            </div>
-          </div>
-
-          <div id="scenario-stage" class="scenario-stage" role="tabpanel" aria-labelledby="tab-przerwa">
-            <p class="kicker is-light" id="sc-kicker">Modelowy scenariusz 01</p>
-            <h3 class="scenario-card-title" id="sc-title">Powrót do ruchu po dłuższej przerwie</h3>
-
-            <div class="scenario-grid">
-              <div class="scenario-block">
-                <p class="kicker is-light">Typowy start i pierwsze kroki</p>
-                <p id="sc-start">Od spokojnej rozmowy i prostych prób ruchowych bez presji. Zamiast wyczerpania na pierwszych spotkaniach budujemy pewność stawów i podstawową siłę, dzięki której wychodzisz ze studia z energią.</p>
-              </div>
-              <div class="scenario-block">
-                <p class="kicker is-light">Rytm w tygodniu</p>
-                <p id="sc-rhythm">1–2 spotkania 1:1 w tygodniu plus prosty, 10-minutowy zestaw domowy między wizytami.</p>
-              </div>
-            </div>
-
-            <p class="scenario-goal-dark" id="sc-goal">Kierunek celu: powrót do swobodnego ruchu bez wielodniowego przemęczenia.</p>
-            <p class="scenario-disclaimer">Przykładowe modele organizacji współpracy — nie są historiami konkretnych osób ani gwarancją wyniku.</p>
-          </div>
-        </div>
-
-        <div class="subgrid-axis-wrap">
-          <p class="eyebrow eyebrow-cedar">Oś 12 tygodni · Przewidywalny rytm</p>
-          <h3>Stałe punkty odniesienia zamiast przypadkowych godzin</h3>
-
-          <div class="timeline-grid">
-            <article class="timeline-card">
-              <div class="timeline-head">
-                <p class="eyebrow eyebrow-cedar" style="margin:0;">Tydzień 1</p>
-                <span class="timeline-index tabular" aria-hidden="true">01</span>
-              </div>
-              <h4 style="font-size:1.3rem;">Rozmowa i punkt wyjścia</h4>
-              <p style="margin:0;font-size:15px;color:var(--muted);">
-                Poznaję Twoją historię ruchu, tryb pracy i ograniczenia. Sprawdzamy podstawowe wzorce bez testów do odmowy i ustalamy realistyczny plan.
-              </p>
-            </article>
-
-            <article class="timeline-card">
-              <div class="timeline-head">
-                <p class="eyebrow eyebrow-cedar" style="margin:0;">Tydzień 6</p>
-                <span class="timeline-index tabular" aria-hidden="true">02</span>
-              </div>
-              <h4 style="font-size:1.3rem;">Półmetek i korekta</h4>
-              <p style="margin:0;font-size:15px;color:var(--muted);">
-                Sprawdzamy reakcję organizmu przy realnym grafiku zawodowym. Upraszczamy to, co stawia opór, i dostrajamy obciążenia do wyjazdów.
-              </p>
-            </article>
-
-            <article class="timeline-card">
-              <div class="timeline-head">
-                <p class="eyebrow eyebrow-cedar" style="margin:0;">Tydzień 12</p>
-                <span class="timeline-index tabular" aria-hidden="true">03</span>
-              </div>
-              <h4 style="font-size:1.3rem;">Przegląd kwartalny</h4>
-              <p style="margin:0;font-size:15px;color:var(--muted);">
-                Zestawiamy punkt startowy ze zmianami w sile, komforcie pleców i energii. Na tej podstawie spokojnie decydujesz o kolejnym kwartale.
-              </p>
-            </article>
-          </div>
-        </div>
-      </div>
-    </section>
-
-    <!-- =========================================================
-         ROZDZIAŁ 3 — PLANER RYTMU (1x vs 2x) + OŚ PIERWSZEGO SPOTKANIA
-         ========================================================= -->
-    <section id="rytm-i-ceny" class="bg-paper">
-      <div class="container reveal">
-        <div class="section-head">
-          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>02 / Rytm, ceny i pierwsza wizyta</p>
-          <h2>Przejrzyste warunki i rytm tygodnia</h2>
-          <p class="lead">
-            Nie kupujesz długiego pakietu w ciemno. Zaczynamy od bezpłatnej rozmowy i pojedynczego spotkania wprowadzającego.
+          <p class="hero-micro">
+            Bezpłatna, 15-minutowa rozmowa telefoniczna przed pierwszą wizytą — bez zobowiązań.
           </p>
         </div>
 
-        <!-- 3-stopniowy cennik brutto -->
-        <div class="price-strip">
-          <div class="price-item">
-            <p class="kicker">Krok 1 &middot; Bez zobowiązań</p>
-            <p class="price-figure tabular">0 zł <span class="price-unit">/ ok. 15 min</span></p>
-            <p style="margin:0;font-size:14.5px;color:var(--muted);">Bezpłatna rozmowa telefoniczna o Twojej sytuacji i terminach.</p>
+        <aside class="hero-glass-card" aria-label="Parametry współpracy">
+          <p class="eyebrow" style="margin-bottom:10px;">Parametry startowe</p>
+          <div class="glass-row"><span>Lokalizacja</span><strong>ul. Pracka 1J, Prace Duże</strong></div>
+          <div class="glass-row"><span>Format pracy</span><strong>Wyłącznie 1:1 · prywatna sala</strong></div>
+          <div class="glass-row"><span>Rozmowa wstępna</span><strong class="tabular">0 zł / 15 min</strong></div>
+          <div class="glass-row"><span>Spotkanie startowe</span><strong class="tabular">220 zł / 60–75 min</strong></div>
+        </aside>
+      </div>
+
+      <div class="telemetry-bar">
+        <div class="container telemetry-grid">
+          <div class="telemetry-item">
+            <span class="telemetry-val tabular">1:1</span>
+            <span class="telemetry-label">Wyłączność sali przy lesie</span>
           </div>
-          <div class="price-item">
-            <p class="kicker is-cedar">Krok 2 &middot; Pierwsza wizyta</p>
-            <p class="price-figure tabular">220 zł <span class="price-unit">/ 60–75 min</span></p>
-            <p style="margin:0;font-size:14.5px;color:var(--muted);">Jednorazowe spotkanie wprowadzające z planem na start.</p>
+          <div class="telemetry-item">
+            <span class="telemetry-val tabular">12 tyg.</span>
+            <span class="telemetry-label">Przewidywalny cykl przeglądów</span>
           </div>
-          <div class="price-item">
-            <p class="kicker">Krok 3 &middot; Prowadzenie 1:1</p>
-            <p class="price-figure tabular">250 zł <span class="price-unit">/ sesja 60 min</span></p>
-            <p style="margin:0;font-size:14.5px;color:var(--muted);">Cykl 12 tygodni w rytmie 1&times; lub 2&times; w tygodniu.</p>
+          <div class="telemetry-item">
+            <span class="telemetry-val tabular">~15 lat</span>
+            <span class="telemetry-label">Edukacji i praktyki trenerskiej</span>
+          </div>
+          <div class="telemetry-item">
+            <span class="telemetry-val tabular">5 min</span>
+            <span class="telemetry-label">Od trasy S7 (parking pod drzwiami)</span>
           </div>
         </div>
+      </div>
+    </section>
 
-        <!-- MODUŁ 2: Interaktywny Planer Rytmu Tygodnia i Kosztu -->
-        <div class="planner-box">
-          <div class="planner-top">
+    <!-- =========================================================
+         AKT II — OBSIDIAN BENTO SYSTEM (#080C0A, 12 KOLUMN)
+         ========================================================= -->
+    <section id="bento" class="act-dark">
+      <div class="container">
+        <div style="max-width:680px;margin-bottom:36px;">
+          <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>01 / Metoda i standard</p>
+          <h2>Spokojny system pracy zamiast przypadkowych treningów</h2>
+        </div>
+
+        <div class="bento-grid">
+          <!-- Karta 1 (7 kolumn): Interaktywny Punkt Wyjścia -->
+          <article class="bento-card span-7">
             <div>
-              <p class="eyebrow eyebrow-cedar" style="margin-bottom:6px;">Planer rytmu i kosztu</p>
-              <h3 style="margin:0;">Porównaj wariant 1&times; oraz 2&times; w tygodniu</h3>
+              <p class="eyebrow" style="margin-bottom:8px;">Punkt wyjścia</p>
+              <h3>Od czego zaczynamy i jak układam rytm</h3>
+
+              <div class="pill-tabs" role="tablist" aria-label="Wybierz sytuację startową">
+                <button type="button" role="tab" id="tab-przerwa" aria-selected="true" aria-controls="bento-scenario-stage" tabindex="0" class="pill-tab" data-scenario="przerwa">01 Powrót po przerwie</button>
+                <button type="button" role="tab" id="tab-praca" aria-selected="false" aria-controls="bento-scenario-stage" tabindex="-1" class="pill-tab" data-scenario="praca">02 Praca siedząca</button>
+                <button type="button" role="tab" id="tab-rehab" aria-selected="false" aria-controls="bento-scenario-stage" tabindex="-1" class="pill-tab" data-scenario="rehab">03 Po rehabilitacji</button>
+                <button type="button" role="tab" id="tab-sila" aria-selected="false" aria-controls="bento-scenario-stage" tabindex="-1" class="pill-tab" data-scenario="sila">04 Siła po 40+</button>
+              </div>
+            </div>
+
+            <div id="bento-scenario-stage" class="bento-scenario-stage" role="tabpanel" aria-labelledby="tab-przerwa">
+              <h4 id="sc-title" style="font-size:1.35rem;color:var(--ink-dark);">Powrót do ruchu po dłuższej przerwie</h4>
+              <div class="scenario-cols">
+                <div>
+                  <p class="mini-label">Typowy start</p>
+                  <p id="sc-start" style="margin:0;font-size:14.5px;color:var(--muted-dark);">Od spokojnej rozmowy i prostych prób ruchowych bez presji. Zamiast wyczerpania budujemy pewność stawów i podstawową siłę, dzięki której wychodzisz z energią.</p>
+                </div>
+                <div>
+                  <p class="mini-label">Rytm w tygodniu</p>
+                  <p id="sc-rhythm" style="margin:0;font-size:14.5px;color:var(--muted-dark);">1–2 spotkania 1:1 w tygodniu plus prosty, 10-minutowy zestaw domowy między wizytami.</p>
+                </div>
+              </div>
+              <p id="sc-goal" style="margin:16px 0 0;font-size:14px;color:var(--sage-glow);font-weight:500;">Kierunek celu: powrót do swobodnego ruchu bez wielodniowego przemęczenia.</p>
+            </div>
+          </article>
+
+          <!-- Karta 2 (5 kolumn): Wizualny Manifest z las-detal.webp -->
+          <article class="bento-card bento-manifest span-5">
+            <div class="bento-manifest-bg" aria-hidden="true">
+              <img
+                src="./images/las-detal.webp"
+                srcset="./images/las-detal.webp 960w, ./images/las-detal-600.webp 600w"
+                sizes="(min-width: 960px) 40vw, 100vw"
+                alt="Paprocie i leśne runo tuż przy Studio Las"
+                loading="lazy"
+                decoding="async"
+                onload="window.slPhotoLoad(this)"
+                onerror="window.slPhotoError(this)"
+              >
+            </div>
+            <div class="bento-manifest-scrim" aria-hidden="true"></div>
+            <p class="eyebrow">Filozofia pracy</p>
+            <div>
+              <p class="manifesto-quote">
+                Po czterdziestce ciało nie potrzebuje <em>przypadkowego wycisku</em>. Potrzebuje mądrej siły, ciszy i konsekwentnego rytmu.
+              </p>
+              <p style="margin:0;font-size:14px;color:var(--muted-dark);">
+                Przykładowe modele organizacji współpracy — nie są gwarancją wyniku ani historiami konkretnych osób.
+              </p>
+            </div>
+          </article>
+
+          <!-- Karta 3 (4 kolumny): Oś Cyklu 12 tygodni -->
+          <article class="bento-card span-4">
+            <div>
+              <p class="eyebrow">Oś cyklu 12 tygodni</p>
+              <h3>Stałe punkty odniesienia</h3>
+            </div>
+            <div class="axis-list">
+              <div class="axis-item">
+                <span class="axis-code tabular">T01</span>
+                <div>
+                  <strong style="display:block;font-size:14.5px;font-weight:500;">Rozmowa i punkt wyjścia</strong>
+                  <span style="font-size:13.5px;color:var(--muted-dark);">Spokojne sprawdzenie wzorców i realistyczny plan startowy.</span>
+                </div>
+              </div>
+              <div class="axis-item">
+                <span class="axis-code tabular">T06</span>
+                <div>
+                  <strong style="display:block;font-size:14.5px;font-weight:500;">Półmetek i korekta</strong>
+                  <span style="font-size:13.5px;color:var(--muted-dark);">Dostrajamy obciążenia do realnego grafiku i wyjazdów.</span>
+                </div>
+              </div>
+              <div class="axis-item">
+                <span class="axis-code tabular">T12</span>
+                <div>
+                  <strong style="display:block;font-size:14.5px;font-weight:500;">Przegląd kwartalny</strong>
+                  <span style="font-size:13.5px;color:var(--muted-dark);">Zestawienie zmian w sile i spokojna decyzja o kolejnym kwartale.</span>
+                </div>
+              </div>
+            </div>
+          </article>
+
+          <!-- Karta 4 (4 kolumny): Jednoznaczny cennik brutto -->
+          <article class="bento-card span-4">
+            <div>
+              <p class="eyebrow">Cennik brutto</p>
+              <h3>Przejrzyste warunki</h3>
+            </div>
+            <div>
+              <div class="price-rows">
+                <div class="price-row">
+                  <span style="font-size:14px;color:var(--muted-dark);">Rozmowa wstępna (15 min)</span>
+                  <span class="price-num tabular">0 zł</span>
+                </div>
+                <div class="price-row">
+                  <span style="font-size:14px;color:var(--muted-dark);">Spotkanie startowe (60–75 min)</span>
+                  <span class="price-num tabular">220 zł</span>
+                </div>
+                <div class="price-row">
+                  <span style="font-size:14px;color:var(--muted-dark);">Prowadzenie 1:1 (sesja 60 min)</span>
+                  <span class="price-num tabular">250 zł</span>
+                </div>
+              </div>
+              <p style="margin:14px 0 0;font-size:13px;color:var(--muted-dark);">
+                12 tygodni to okres planowania i przeglądu postępów — zasady rozliczeń otrzymasz przed startem.
+              </p>
+            </div>
+          </article>
+
+          <!-- Karta 5 (4 kolumny): Standard ~15 lat i granica kompetencji -->
+          <article class="bento-card span-4">
+            <div>
+              <p class="eyebrow">Standard i granice</p>
+              <h3 class="tabular">~15 lat edukacji i praktyki</h3>
+              <p style="margin:10px 0 0;font-size:14px;color:var(--muted-dark);">
+                Magister wychowania fizycznego (AWF Warszawa) oraz studia podyplomowe „Fizjoterapia w sporcie” jako uzupełnienie warsztatu trenerskiego.
+              </p>
+            </div>
+            <p style="margin:18px 0 0;padding-top:14px;border-top:1px solid var(--obsidian-hairline);font-size:13.5px;color:var(--muted-dark);">
+              <strong style="color:var(--ink-dark);font-weight:500;">Granica kompetencji:</strong> nie wykonuję zawodu fizjoterapeuty ani działalności leczniczej. W stanach ostrych kieruję najpierw do lekarza lub fizjoterapeuty.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- =========================================================
+         AKT III — ALABASTER PRECISION STUDIO (#F6F7F5)
+         ========================================================= -->
+    <section id="rytm-i-cennik" class="act-light">
+      <div class="container">
+        <div style="max-width:680px;margin-bottom:32px;">
+          <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>02 / Rytm i pierwsza wizyta</p>
+          <h2>Jak wpisujemy ruch w <em>realny tydzień</em></h2>
+          <p class="lead">
+            Porównaj warianty częstotliwości w cyklu 12-tygodniowym oraz zobacz przebieg jednorazowego spotkania wprowadzającego.
+          </p>
+        </div>
+
+        <!-- Szeroki Planer Rytmu 1x / 2x -->
+        <div class="alabaster-card">
+          <div class="planner-header">
+            <div>
+              <p class="eyebrow" style="margin-bottom:6px;">Planer rytmu i kosztu</p>
+              <h3 style="margin:0;">Wybierz rytm: 1&times; albo 2&times; w tygodniu</h3>
             </div>
             <div class="rhythm-switch" role="group" aria-label="Wybierz częstotliwość spotkań">
               <button type="button" class="rhythm-btn" data-freq="1" aria-pressed="true">1&times; w tygodniu</button>
@@ -1977,25 +1911,25 @@
             </div>
           </div>
 
-          <div class="planner-panel" id="planner-panel">
+          <div class="planner-grid" id="planner-panel">
             <div>
-              <div class="planner-stats">
+              <div class="planner-metrics">
                 <div>
-                  <p class="kicker" style="margin-bottom:2px;">Koszt / 4 tygodnie</p>
-                  <p class="planner-val tabular" id="pl-cost">1 000 zł</p>
+                  <span style="font-size:12.5px;color:var(--muted-light);text-transform:uppercase;letter-spacing:0.08em;font-family:var(--font-mono);">Koszt / 4 tyg.</span>
+                  <p class="planner-big tabular" id="pl-cost" style="margin:6px 0 0;">1 000 zł</p>
                 </div>
                 <div>
-                  <p class="kicker is-cedar" style="margin-bottom:2px;">Skala w cyklu 12 tyg.</p>
-                  <p class="planner-val tabular" id="pl-sessions">12 sesji</p>
+                  <span style="font-size:12.5px;color:var(--muted-light);text-transform:uppercase;letter-spacing:0.08em;font-family:var(--font-mono);">Cykl 12 tyg.</span>
+                  <p class="planner-big tabular" id="pl-sessions" style="margin:6px 0 0;">12 sesji</p>
                 </div>
               </div>
-              <p style="margin:0;font-size:15px;color:var(--muted);" id="pl-desc">
+              <p id="pl-desc" style="margin:0;font-size:15px;color:var(--muted-light);">
                 Jedna sesja 1:1 w studiu w tygodniu wsparta krótkim, 10–15-minutowym zestawem domowym. Wygodne rozwiązanie przy napiętym grafiku lub dojazdach z okolic Piaseczna i Warszawy.
               </p>
             </div>
 
             <div>
-              <p class="kicker" style="margin-bottom:4px;">Przykładowy rozkład tygodnia</p>
+              <span style="font-size:12.5px;color:var(--muted-light);text-transform:uppercase;letter-spacing:0.08em;font-family:var(--font-mono);">Przykładowy rozkład tygodnia</span>
               <div class="week-grid" id="week-grid" aria-live="polite">
                 <div class="day-cell"><span class="day-name">Pon</span><span class="day-tag">Praca</span></div>
                 <div class="day-cell is-studio"><span class="day-name">Wt</span><span class="day-tag">Studio 1:1</span></div>
@@ -2007,69 +1941,65 @@
               </div>
             </div>
           </div>
-
-          <p style="margin:20px 0 0;font-size:13.5px;color:var(--muted);">
-            12 tygodni to okres planowania i przeglądu postępów — szczegółowe zasady rozliczeń i odwoływania wizyt otrzymasz przed rozpoczęciem współpracy. Prowadzę ograniczoną liczbę osób jednocześnie.
-          </p>
         </div>
 
-        <!-- MODUŁ 3: Interaktywna Oś Pierwszego Spotkania (220 zł) -->
-        <div class="stepper-wrap">
-          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>Przebieg pierwszej wizyty &middot; 220 zł / 60–75 min</p>
-          <h3>Co dokładnie dzieje się podczas spotkania wprowadzającego</h3>
+        <!-- Interaktywna Oś Pierwszego Spotkania (220 zł · 60-75 min) -->
+        <div class="stepper-box">
+          <p class="eyebrow" style="margin-bottom:6px;">Spotkanie wprowadzające &middot; 220 zł &middot; 60–75 min</p>
+          <h3>Trzy spokojne fazy pierwszej wizyty</h3>
 
-          <div class="stepper-nav" role="tablist" aria-label="Etapy spotkania wprowadzającego">
+          <div class="stepper-tabs" role="tablist" aria-label="Fazy spotkania wprowadzającego">
             <button type="button" role="tab" class="step-btn" data-step="1" aria-selected="true" aria-controls="step-stage" tabindex="0">
-              <span class="stepper-num tabular">01 &middot; 15–20 min</span>
-              <span class="stepper-title">Rozmowa przy stole</span>
+              <span class="step-time tabular">01 &middot; 15–20 min</span>
+              <span class="step-label">Rozmowa przy stole</span>
             </button>
             <button type="button" role="tab" class="step-btn" data-step="2" aria-selected="false" aria-controls="step-stage" tabindex="-1">
-              <span class="stepper-num tabular">02 &middot; 30 min</span>
-              <span class="stepper-title">Sprawdzenie ruchu na pustej sali</span>
+              <span class="step-time tabular">02 &middot; 30 min</span>
+              <span class="step-label">Sprawdzenie ruchu na sali</span>
             </button>
             <button type="button" role="tab" class="step-btn" data-step="3" aria-selected="false" aria-controls="step-stage" tabindex="-1">
-              <span class="stepper-num tabular">03 &middot; 15 min</span>
-              <span class="stepper-title">Plan i zestaw domowy</span>
+              <span class="step-time tabular">03 &middot; 15 min</span>
+              <span class="step-label">Plan i zestaw domowy</span>
             </button>
           </div>
 
           <div class="step-stage" id="step-stage" role="tabpanel" aria-live="polite">
-            <p class="kicker is-cedar" id="st-kicker">Faza 01 &middot; 15–20 minut</p>
-            <h4 style="font-size:1.35rem;margin-bottom:8px;" id="st-title">Rozmowa przy stole — tryb tygodnia i historia ruchu</h4>
-            <p style="margin:0;font-size:15px;color:var(--muted);" id="st-body">
+            <p class="eyebrow" id="st-kicker" style="margin-bottom:6px;">Faza 01 &middot; 15–20 minut</p>
+            <h4 id="st-title" style="font-size:1.25rem;margin-bottom:8px;">Rozmowa przy stole — tryb tygodnia i historia ruchu</h4>
+            <p id="st-body" style="margin:0;font-size:15px;color:var(--muted-light);">
               Spokojnie omawiamy Twój grafik pracy, wcześniejsze doświadczenia z ruchem oraz ewentualne zalecenia po zakończonej rehabilitacji. Bez pośpiechu i bez oceniania.
             </p>
           </div>
         </div>
 
-        <!-- Ciemnozielony pas: Co zabierasz ze sobą -->
-        <div class="takeaway-banner">
-          <div>
-            <p class="kicker is-light" style="margin-bottom:6px;">Niezależnie od decyzji o dalszej współpracy</p>
-            <h3 style="color:var(--card);margin-bottom:6px;">Co zabierasz ze sobą po spotkaniu za 220 zł</h3>
-            <p style="margin:0;font-size:14.5px;color:var(--light-on-dark);">
-              Pisemne podsumowanie startowe, pierwszy prosty zestaw domowy (10–15 min) oraz jasną rekomendację rytmu 1&times; lub 2&times; w tygodniu. Decyzję podejmujesz spokojnie po powrocie do domu.
+        <!-- Ciemny pas: Co zabierasz ze sobą -->
+        <div class="takeaway-dark">
+          <div style="max-width:680px;">
+            <p class="eyebrow" style="margin-bottom:6px;">Niezależnie od dalszej decyzji</p>
+            <h3 style="color:var(--ink-dark);margin-bottom:6px;">Co zabierasz ze sobą po spotkaniu za 220 zł</h3>
+            <p style="margin:0;font-size:14.5px;color:var(--muted-dark);">
+              Pisemne podsumowanie startowe, pierwszy prosty zestaw domowy (10–15 min) oraz rekomendację rytmu 1&times; lub 2&times;. Decyzję o starcie cyklu podejmujesz spokojnie w domu.
             </p>
           </div>
-          <a href="#kontakt" class="btn btn-on-dark" style="flex-shrink:0;">Umów rozmowę (0 zł)</a>
+          <a href="#kontakt" class="btn btn-sage" style="flex-shrink:0;">Umów rozmowę (0 zł)</a>
         </div>
 
         <!-- Zwarta nota dopasowania -->
-        <div class="split-2">
-          <div class="split-col">
-            <h3>Dobrze się tu odnajdziesz, jeśli</h3>
-            <ul class="editorial-list">
-              <li>Masz 35–60+ lat i szukasz trwałej siły oraz sprawnych pleców na lata.</li>
-              <li>Wolisz ciszę prywatnej sali 1:1 przy lesie od zatłoczonej siłowni.</li>
-              <li>Wracasz do ruchu po przerwie lub po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty.</li>
+        <div class="fit-grid">
+          <div class="alabaster-card" style="padding:26px 28px;">
+            <h3>Dla kogo jest Studio Las</h3>
+            <ul class="fit-list">
+              <li>Dla dorosłych 35–60+, którzy szukają trwałej siły i sprawnych pleców na lata.</li>
+              <li>Dla osób ceniących ciszę prywatnej sali 1:1 przy lesie zamiast zatłoczonej siłowni.</li>
+              <li>Dla wracających po przerwie lub po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty.</li>
             </ul>
           </div>
-          <div class="split-col">
-            <h3>Kiedy najpierw gabinet</h3>
-            <ul class="editorial-list is-cedar">
-              <li>W ostrym stanie bólowym lub po świeżym urazie pierwszym adresem jest lekarz lub fizjoterapeuta.</li>
-              <li>Studio Las zajmuje się treningiem siłowym i sprawnościowym — nie zastępuje diagnozy medycznej.</li>
-              <li>Nie prowadzimy szybkich metamorfoz w 30 dni ani przygotowań pod wyczynową rywalizację.</li>
+          <div class="alabaster-card" style="padding:26px 28px;">
+            <h3>Kiedy najpierw lekarz lub fizjoterapeuta</h3>
+            <ul class="fit-list">
+              <li>W ostrym stanie bólowym lub po świeżym urazie pierwszym adresem jest gabinet medyczny.</li>
+              <li>Studio Las prowadzi trening siłowy i sprawnościowy — nie zastępuje diagnozy ani leczenia.</li>
+              <li>Nie prowadzimy szybkich metamorfoz w 30 dni ani przygotowań pod sport wyczynowy.</li>
             </ul>
           </div>
         </div>
@@ -2077,112 +2007,112 @@
     </section>
 
     <!-- =========================================================
-         ROZDZIAŁ 4 — PRZESTRZEŃ (GALERIA 01 / 03) + PROWADZĄCY + DOJAZD
+         AKT IV — FULL-BLEED GALERIA PRZESTRZENI (#080C0A)
          ========================================================= -->
-    <section id="przestrzen" class="bg-card">
-      <div class="container reveal">
-        <div class="section-head" style="margin-bottom:28px;">
-          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>03 / Przestrzeń, prowadzący i dojazd</p>
-          <h2>Prywatna sala przy lesie w Pracach Dużych</h2>
-        </div>
-
-        <!-- MODUŁ 4: Galeria Scroll-Snap 01 / 03 -->
-        <div class="gallery-controls">
-          <span class="gallery-counter tabular" id="gallery-counter">01 / 03</span>
-          <div class="gallery-btns">
+    <section id="przestrzen" class="act-dark">
+      <div class="container">
+        <div class="gallery-top">
+          <div>
+            <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>03 / Przestrzeń i otoczenie</p>
+            <h2 style="margin-bottom:0;">Prywatna sala <em>tuż przy lesie</em></h2>
+          </div>
+          <div class="gallery-controls">
+            <span class="gallery-counter tabular" id="gallery-counter">01 / 03</span>
             <button type="button" class="gallery-btn" id="gal-prev" aria-label="Poprzednie zdjęcie">&larr;</button>
             <button type="button" class="gallery-btn" id="gal-next" aria-label="Następne zdjęcie">&rarr;</button>
           </div>
         </div>
+      </div>
 
-        <div class="gallery-track" id="gallery-track" role="region" aria-label="Galeria Studio Las">
-          <figure class="gallery-slide">
-            <div class="photo-frame">
-              <img
-                src="./images/las-detal.webp"
-                srcset="./images/las-detal.webp 960w, ./images/las-detal-600.webp 600w"
-                sizes="(min-width: 768px) 68vw, 88vw"
-                alt="Paprocie i leśne runo tuż przy Studio Las w Pracach Dużych"
-                loading="lazy"
-                decoding="async"
-                width="960"
-                height="1280"
-                onload="window.slPhotoLoad(this)"
-                onerror="window.slPhotoError(this)"
-              >
-              <div class="photo-fallback" aria-hidden="true">
-                <div class="photo-fallback-label">
-                  <strong>Cisza za oknem</strong>
-                  <span>Las bezpośrednio przy ul. Prackiej 1J</span>
-                </div>
-              </div>
+      <div class="gallery-track" id="gallery-track" role="region" aria-label="Galeria Studio Las">
+        <figure class="gallery-slide">
+          <div class="photo-frame">
+            <img
+              src="./images/las-detal.webp"
+              srcset="./images/las-detal.webp 960w, ./images/las-detal-600.webp 600w"
+              sizes="(min-width: 900px) 84vw, 88vw"
+              alt="Paprocie i leśne runo tuż przy Studio Las w Pracach Dużych"
+              loading="lazy"
+              decoding="async"
+              width="960"
+              height="1280"
+              onload="window.slPhotoLoad(this)"
+              onerror="window.slPhotoError(this)"
+            >
+            <div class="photo-fallback" aria-hidden="true">
+              <strong style="font-size:18px;">Cisza za oknem</strong>
+              <span style="font-size:13px;color:var(--muted-dark);">ul. Pracka 1J, Prace Duże</span>
             </div>
-            <figcaption>Cisza za oknem &middot; ul. Pracka 1J, Prace Duże &middot; gmina Tarczyn</figcaption>
-          </figure>
+          </div>
+          <figcaption>Cisza za oknem &middot; ul. Pracka 1J, Prace Duże &middot; gmina Tarczyn</figcaption>
+        </figure>
 
-          <figure class="gallery-slide">
-            <div class="photo-frame">
-              <span class="photo-badge">Wizualizacja kierunku wnętrza</span>
-              <img
-                src="./images/studio-drewno.webp"
-                srcset="./images/studio-drewno.webp 1200w, ./images/studio-drewno-640.webp 640w"
-                sizes="(min-width: 768px) 68vw, 88vw"
-                alt="Wizualizacja kierunku wnętrza — docelowe zdjęcia sali w Pracach Dużych opublikuję po zakończeniu aranżacji."
-                loading="lazy"
-                decoding="async"
-                width="1200"
-                height="800"
-                onload="window.slPhotoLoad(this)"
-                onerror="window.slPhotoError(this)"
-              >
-              <div class="photo-fallback" aria-hidden="true">
-                <div class="photo-fallback-label">
-                  <strong>Wnętrze Studio Las</strong>
-                  <span>Wizualizacja kierunku wnętrza</span>
-                </div>
-              </div>
+        <figure class="gallery-slide">
+          <div class="photo-frame">
+            <span class="glass-badge">Wizualizacja kierunku wnętrza</span>
+            <img
+              src="./images/studio-drewno.webp"
+              srcset="./images/studio-drewno.webp 1200w, ./images/studio-drewno-640.webp 640w"
+              sizes="(min-width: 900px) 84vw, 88vw"
+              alt="Wizualizacja kierunku wnętrza — docelowe zdjęcia sali w Pracach Dużych opublikuję po zakończeniu aranżacji."
+              loading="lazy"
+              decoding="async"
+              width="1200"
+              height="800"
+              onload="window.slPhotoLoad(this)"
+              onerror="window.slPhotoError(this)"
+            >
+            <div class="photo-fallback" aria-hidden="true">
+              <strong style="font-size:18px;">Wnętrze Studio Las</strong>
+              <span style="font-size:13px;color:var(--muted-dark);">Wizualizacja kierunku wnętrza</span>
             </div>
-            <figcaption>Wizualizacja kierunku wnętrza — docelowe zdjęcia sali w Pracach Dużych opublikuję po zakończeniu aranżacji.</figcaption>
-          </figure>
+          </div>
+          <figcaption>Wizualizacja kierunku wnętrza — docelowe zdjęcia sali w Pracach Dużych opublikuję po zakończeniu aranżacji.</figcaption>
+        </figure>
 
-          <figure class="gallery-slide">
-            <div class="photo-frame">
-              <img
-                src="./images/las-sciezka.webp"
-                srcset="./images/las-sciezka.webp 880w, ./images/las-sciezka-640.webp 640w"
-                sizes="(min-width: 768px) 68vw, 88vw"
-                alt="Ścieżka wśród drzew tuż przy Studio Las w Pracach Dużych"
-                loading="lazy"
-                decoding="async"
-                width="880"
-                height="660"
-                onload="window.slPhotoLoad(this)"
-                onerror="window.slPhotoError(this)"
-              >
-              <div class="photo-fallback" aria-hidden="true">
-                <div class="photo-fallback-label">
-                  <strong>Otoczenie lasu</strong>
-                  <span>Bezpośrednie sąsiedztwo lasu w Pracach Dużych</span>
-                </div>
-              </div>
+        <figure class="gallery-slide">
+          <div class="photo-frame">
+            <img
+              src="./images/las-sciezka.webp"
+              srcset="./images/las-sciezka.webp 880w, ./images/las-sciezka-640.webp 640w"
+              sizes="(min-width: 900px) 84vw, 88vw"
+              alt="Ścieżka wśród drzew tuż przy Studio Las w Pracach Dużych"
+              loading="lazy"
+              decoding="async"
+              width="880"
+              height="660"
+              onload="window.slPhotoLoad(this)"
+              onerror="window.slPhotoError(this)"
+            >
+            <div class="photo-fallback" aria-hidden="true">
+              <strong style="font-size:18px;">Otoczenie lasu</strong>
+              <span style="font-size:13px;color:var(--muted-dark);">Bezpośrednie sąsiedztwo lasu w Pracach Dużych</span>
             </div>
-            <figcaption>Otoczenie lasu w Pracach Dużych — chwila wyciszenia przed i po spotkaniu</figcaption>
-          </figure>
-        </div>
+          </div>
+          <figcaption>Otoczenie lasu w Pracach Dużych — chwila wyciszenia przed i po spotkaniu</figcaption>
+        </figure>
+      </div>
 
-        <div class="gallery-progress" aria-hidden="true">
+      <div class="gallery-progress" aria-hidden="true">
+        <div class="gallery-track-bar">
           <div class="gallery-progress-fill" id="gallery-progress-fill"></div>
         </div>
+      </div>
+    </section>
 
-        <!-- Prowadzący + Kompaktowy Dojazd -->
-        <div class="bio-dojazd-grid">
-          <div>
-            <p class="eyebrow eyebrow-cedar" style="margin-bottom:8px;">Założyciel i trener prowadzący</p>
-            <h3 style="font-size:clamp(1.85rem, 3vw, 2.4rem);margin-bottom:14px;">Damian Krawiec</h3>
-            <p style="margin:0 0 18px;font-size:15.5px;line-height:1.7;color:var(--muted);">
-              Stworzyłem Studio Las, ponieważ przez lata pracy w dużych klubach widziałem, jak pośpiech i hałas utrudniają spokojną, mądrą pracę z ciałem. Prowadzę dorosłych 1:1 w przewidywalnym rytmie, pomagając budować siłę i sprawność na kolejne dekady.
+    <!-- =========================================================
+         AKT V — PROWADZĄCY, MONOLIT LOKALIZACJI I FAQ (#F6F7F5)
+         ========================================================= -->
+    <section class="act-light">
+      <div class="container">
+        <div class="split-50">
+          <div class="alabaster-card">
+            <p class="eyebrow">Założyciel i trener prowadzący</p>
+            <h2 style="font-size:clamp(1.85rem, 3vw, 2.5rem);">Damian Krawiec</h2>
+            <p style="margin:0 0 16px;font-size:15.5px;color:var(--muted-light);">
+              Stworzyłem Studio Las, ponieważ przez lata pracy w dużych klubach widziałem, jak pośpiech i hałas utrudniają spokojną, mądrą pracę z ciałem. Prowadzę dorosłych 1:1 w przewidywalnym rytmie, budując siłę i sprawność na kolejne dekady.
             </p>
-            <ul class="editorial-list">
+            <ul class="fit-list">
               <li>Około 15 lat regularnej edukacji zawodowej, szkoleń i praktyki 1:1.</li>
               <li>Magister wychowania fizycznego (AWF Warszawa).</li>
               <li>Studia podyplomowe „Fizjoterapia w sporcie” (uzupełnienie warsztatu trenerskiego — nie wykonuję zawodu fizjoterapeuty ani działalności leczniczej).</li>
@@ -2192,130 +2122,144 @@
             </div>
           </div>
 
-          <div class="dojazd-card">
-            <p class="kicker">Lokalizacja i dojazd</p>
-            <h3 style="margin-bottom:6px;">Prace Duże (gm. Tarczyn)</h3>
-            <dl class="info-dl">
-              <div>
-                <dt>Adres</dt>
-                <dd><strong>ul. Pracka 1J, 05-504 Prace Duże</strong></dd>
-              </div>
-              <div>
-                <dt>Dojazd i parking</dt>
-                <dd>5 min od trasy S7 (blisko Piaseczna, Magdalenki, Zalesia Górnego i południowej Warszawy). Prywatny parking bezpośrednio pod drzwiami i wyłączność sali.</dd>
-              </div>
-              <div>
-                <dt>Godziny spotkań</dt>
-                <dd>Po wcześniejszym umówieniu: pn–pt 16:00–22:00 oraz wybrane okna weekendowe i poranne.</dd>
-              </div>
-            </dl>
+          <div class="monolith-card">
+            <div>
+              <p class="eyebrow">Lokalizacja i dojazd</p>
+              <h3 style="color:var(--ink-dark);font-size:clamp(1.6rem, 2.5vw, 2.1rem);">Prace Duże (gm. Tarczyn)</h3>
+              <dl class="info-dl">
+                <div>
+                  <dt>Adres</dt>
+                  <dd><strong>ul. Pracka 1J, 05-504 Prace Duże</strong></dd>
+                </div>
+                <div>
+                  <dt>Dojazd i parking</dt>
+                  <dd>5 min od trasy S7 (blisko Piaseczna, Magdalenki, Zalesia Górnego i południowej Warszawy). Prywatny parking bezpośrednio pod drzwiami i wyłączność sali.</dd>
+                </div>
+                <div>
+                  <dt>Godziny spotkań</dt>
+                  <dd>Po wcześniejszym umówieniu: pn–pt 16:00–22:00 oraz wybrane okna weekendowe i poranne.</dd>
+                </div>
+              </dl>
+            </div>
             <a
               href="https://www.google.com/maps/search/?api=1&query=ul.+Pracka+1J,+05-504+Prace+Du%C5%BCe"
               target="_blank"
               rel="noopener noreferrer"
-              class="btn btn-primary"
+              class="btn btn-sage"
               style="width:100%;"
             >
               Otwórz trasę w Google Maps &rarr;
             </a>
           </div>
         </div>
-      </div>
-    </section>
 
-    <!-- =========================================================
-         ROZDZIAŁ 5 — PYTANIA PRZED STARTEM (NATYWNY <details name="faq">)
-         ========================================================= -->
-    <section id="pytania" class="bg-paper">
-      <div class="container-narrow reveal">
-        <div class="section-head">
-          <p class="eyebrow"><span class="eyebrow-rule" aria-hidden="true"></span>04 / Najczęstsze pytania</p>
+        <div class="faq-wrap" id="pytania">
+          <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>04 / Najczęstsze pytania</p>
           <h2>Pytania przed startem</h2>
-        </div>
 
-        <div class="faq-list">
-          <details class="faq-details" name="faq">
-            <summary class="faq-summary">
-              <span class="faq-q">Czy muszę być w dobrej kondycji, żeby zacząć?</span>
-              <span class="faq-plus" aria-hidden="true">+</span>
-            </summary>
-            <p class="faq-answer">Nie. Większość osób zaczyna po kilkuletniej przerwie lub pracy siedzącej. Obciążenie i tempo zawsze dobieram do aktualnych możliwości, żeby ciało miało czas na spokojną adaptację.</p>
-          </details>
+          <div class="faq-list">
+            <details class="faq-details" name="faq">
+              <summary class="faq-summary">
+                <span class="faq-q">Czy muszę być w dobrej kondycji, żeby zacząć?</span>
+                <span class="faq-plus" aria-hidden="true">+</span>
+              </summary>
+              <p class="faq-answer">Nie. Większość osób zaczyna po kilkuletniej przerwie lub pracy siedzącej. Obciążenie i tempo zawsze dobieram do aktualnych możliwości, żeby ciało miało czas na spokojną adaptację.</p>
+            </details>
 
-          <details class="faq-details" name="faq">
-            <summary class="faq-summary">
-              <span class="faq-q">Ile czasu w tygodniu wymaga taka współpraca?</span>
-              <span class="faq-plus" aria-hidden="true">+</span>
-            </summary>
-            <p class="faq-answer">Dla większości zapracowanych dorosłych optymalne jest 1 lub 2 dobrze ułożone spotkania w tygodniu w studiu, wsparte prostym zestawem krótkich ćwiczeń w domu.</p>
-          </details>
+            <details class="faq-details" name="faq">
+              <summary class="faq-summary">
+                <span class="faq-q">Ile czasu w tygodniu wymaga taka współpraca?</span>
+                <span class="faq-plus" aria-hidden="true">+</span>
+              </summary>
+              <p class="faq-answer">Dla większości zapracowanych dorosłych optymalne jest 1 lub 2 dobrze ułożone spotkania w tygodniu w studiu, wsparte prostym zestawem krótkich ćwiczeń w domu.</p>
+            </details>
 
-          <details class="faq-details" name="faq">
-            <summary class="faq-summary">
-              <span class="faq-q">Czy pierwsza rozmowa do czegoś zobowiązuje?</span>
-              <span class="faq-plus" aria-hidden="true">+</span>
-            </summary>
-            <p class="faq-answer">Nie. 15-minutowa rozmowa telefoniczna jest bezpłatna i służy wyłącznie wzajemnemu poznaniu, sprawdzeniu dostępności terminów oraz omówieniu zasad współpracy.</p>
-          </details>
+            <details class="faq-details" name="faq">
+              <summary class="faq-summary">
+                <span class="faq-q">Czy pierwsza rozmowa do czegoś zobowiązuje?</span>
+                <span class="faq-plus" aria-hidden="true">+</span>
+              </summary>
+              <p class="faq-answer">Nie. 15-minutowa rozmowa telefoniczna jest bezpłatna i służy wyłącznie wzajemnemu poznaniu, sprawdzeniu dostępności terminów oraz omówieniu zasad współpracy.</p>
+            </details>
 
-          <details class="faq-details" name="faq">
-            <summary class="faq-summary">
-              <span class="faq-q">Co jeśli w trakcie cyklu mam wyjazd służbowy albo słabszy tydzień?</span>
-              <span class="faq-plus" aria-hidden="true">+</span>
-            </summary>
-            <p class="faq-answer">Plan dopasowuję do realnego życia — przed wyjazdem lub w bardziej intensywnym tygodniu zmniejszam obciążenia albo przygotowuję krótki wariant wyjazdowy, bez presji i poczucia winy.</p>
-          </details>
+            <details class="faq-details" name="faq">
+              <summary class="faq-summary">
+                <span class="faq-q">Co jeśli w trakcie cyklu mam wyjazd służbowy albo słabszy tydzień?</span>
+                <span class="faq-plus" aria-hidden="true">+</span>
+              </summary>
+              <p class="faq-answer">Plan dopasowuję do realnego życia — przed wyjazdem lub w bardziej intensywnym tygodniu zmniejszam obciążenia albo przygotowuję krótki wariant wyjazdowy, bez presji i poczucia winy.</p>
+            </details>
 
-          <details class="faq-details" name="faq">
-            <summary class="faq-summary">
-              <span class="faq-q">Co trzeba zabrać na pierwsze spotkanie?</span>
-              <span class="faq-plus" aria-hidden="true">+</span>
-            </summary>
-            <p class="faq-answer">Wygodny strój sportowy, czyste obuwie zmienne oraz — jeśli posiadasz — opisy badań lub zalecenia po zakończonej rehabilitacji.</p>
-          </details>
+            <details class="faq-details" name="faq">
+              <summary class="faq-summary">
+                <span class="faq-q">Co trzeba zabrać na pierwsze spotkanie?</span>
+                <span class="faq-plus" aria-hidden="true">+</span>
+              </summary>
+              <p class="faq-answer">Wygodny strój sportowy, czyste obuwie zmienne oraz — jeśli posiadasz — opisy badań lub zalecenia po zakończonej rehabilitacji.</p>
+            </details>
+          </div>
         </div>
       </div>
     </section>
 
     <!-- =========================================================
-         ROZDZIAŁ 6 — KONTAKT (JEDEN SPOKOJNY FINAŁ BEZ DUBLI)
+         AKT VI — OBSYDIANOWY FINAŁ KONTAKTU (#080C0A)
          ========================================================= -->
-    <section id="kontakt" class="bg-forest">
+    <section id="kontakt" class="act-dark">
       <div class="container">
         <div class="contact-finale">
-          <p class="eyebrow eyebrow-light"><span class="eyebrow-rule" aria-hidden="true"></span>05 / Kontakt</p>
-          <h2>Umów rozmowę wstępną</h2>
-          <p class="lead" style="margin-bottom:0;">
-            Wybierz krótki formularz pierwszego kontaktu albo odezwij się bezpośrednio. Jeśli nie odbieram, prowadzę sesję — oddzwaniam zazwyczaj tego samego lub kolejnego dnia roboczego.
+          <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>05 / Kontakt</p>
+          <h2>Umów rozmowę <em>wstępną</em></h2>
+          <p class="lead">
+            Zostaw kontakt w 1-minutowym formularzu lub odezwij się bezpośrednio. Jeśli nie odbieram, prowadzę sesję — oddzwaniam zazwyczaj tego samego lub kolejnego dnia roboczego.
           </p>
 
-          <div class="contact-cta-box">
-            <p class="eyebrow eyebrow-cedar" style="margin-bottom:8px;">Formularz pierwszego kontaktu</p>
-            <h3 style="margin-bottom:10px;">Zostaw kontakt w 1 minutę</h3>
-            <p style="margin:0 0 22px;font-size:15px;color:var(--muted);">
-              Wybierzesz dogodną porę rozmowy (0 zł / ok. 15 min) i ogólny kierunek celu — bez konieczności wpisywania diagnoz ani wyników badań.
-            </p>
-            <a href="./ankieta-kontakt.html#ankieta" class="btn btn-primary" style="width:100%;">
+          <div style="display:flex;flex-wrap:wrap;align-items:center;gap:14px 20px;">
+            <a href="./ankieta-kontakt.html#ankieta" class="btn btn-sage">
               Przejdź do krótkiego formularza kontaktu &rarr;
             </a>
-
-            <div class="legal-note">
-              Zasady przetwarzania danych opisuje
-              <button type="button" class="text-link-btn open-modal-btn" data-modal="privacy-modal">Polityka prywatności (RODO)</button>.
-              Informacje o usługach drogą elektroniczną znajdziesz w
-              <button type="button" class="text-link-btn open-modal-btn" data-modal="terms-modal">Regulaminie (UŚUDE)</button>.
-            </div>
+            <span style="font-size:13.5px;color:var(--muted-dark);">Bez wpisywania diagnoz ani wyników badań.</span>
           </div>
 
-          <div class="direct-bar">
-            <p class="eyebrow eyebrow-light" style="margin:0;">Bezpośredni kontakt &middot; <span class="tabular">503 975 998</span> &middot; trenermedycznywarszawa@gmail.com</p>
-            <div class="btn-row">
-              <a href="tel:+48503975998" class="btn btn-on-dark btn-sm">Zadzwoń</a>
-              <a href="sms:+48503975998" class="btn btn-ghost-dark btn-sm">SMS</a>
-              <a href="https://wa.me/48503975998" target="_blank" rel="noopener noreferrer" class="btn btn-ghost-dark btn-sm">WhatsApp</a>
-              <a href="mailto:trenermedycznywarszawa@gmail.com?subject=Studio%20Las%20%E2%80%94%20rozmowa%20wst%C4%99pna" class="btn btn-ghost-dark btn-sm">E-mail</a>
-              <button type="button" class="btn btn-ghost-dark btn-sm copy-trigger" data-copy="503 975 998">Kopiuj tel.</button>
-              <button type="button" class="btn btn-ghost-dark btn-sm copy-trigger" data-copy="trenermedycznywarszawa@gmail.com">Kopiuj e-mail</button>
+          <div style="margin-top:16px;font-size:13.5px;color:var(--muted-dark);">
+            Zasady przetwarzania danych opisuje
+            <button type="button" class="text-link-btn open-modal-btn" data-modal="privacy-modal">Polityka prywatności (RODO)</button>,
+            a informacje o usługach elektronicznych znajdziesz w
+            <button type="button" class="text-link-btn open-modal-btn" data-modal="terms-modal">Regulaminie (UŚUDE)</button>.
+          </div>
+
+          <div class="contact-direct">
+            <div class="direct-action">
+              <div>
+                <p class="mini-label">Telefon</p>
+                <p class="direct-val tabular" style="margin:0;">503 975 998</p>
+              </div>
+              <div class="direct-links">
+                <a href="tel:+48503975998" class="btn btn-ghost-dark btn-sm">Zadzwoń</a>
+                <button type="button" class="btn btn-ghost-dark btn-sm copy-trigger" data-copy="503 975 998">Kopiuj</button>
+              </div>
+            </div>
+
+            <div class="direct-action">
+              <div>
+                <p class="mini-label">Wiadomość</p>
+                <p class="direct-val" style="margin:0;">SMS lub WhatsApp</p>
+              </div>
+              <div class="direct-links">
+                <a href="sms:+48503975998" class="btn btn-ghost-dark btn-sm">SMS</a>
+                <a href="https://wa.me/48503975998" target="_blank" rel="noopener noreferrer" class="btn btn-ghost-dark btn-sm">WhatsApp</a>
+              </div>
+            </div>
+
+            <div class="direct-action">
+              <div>
+                <p class="mini-label">E-mail</p>
+                <p class="direct-val" style="margin:0;font-size:13.5px;">trenermedycznywarszawa@gmail.com</p>
+              </div>
+              <div class="direct-links">
+                <a href="mailto:trenermedycznywarszawa@gmail.com?subject=Studio%20Las%20%E2%80%94%20rozmowa%20wst%C4%99pna" class="btn btn-ghost-dark btn-sm">Napisz</a>
+                <button type="button" class="btn btn-ghost-dark btn-sm copy-trigger" data-copy="trenermedycznywarszawa@gmail.com">Kopiuj</button>
+              </div>
             </div>
           </div>
         </div>
@@ -2331,10 +2275,10 @@
     <div class="container footer-inner">
       <div>
         <!-- TODO: NIP/CEIDG przed uruchomieniem -->
-        <p style="margin:0;color:var(--ink);font-weight:500;">
+        <p style="margin:0;color:var(--ink-dark);font-weight:500;">
           Damian Krawiec — Studio Las
         </p>
-        <p style="margin:4px 0 0;font-size:13.5px;">
+        <p style="margin:4px 0 0;">
           ul. Pracka 1J, 05-504 Prace Duże, gm. Tarczyn
         </p>
       </div>
@@ -2348,7 +2292,7 @@
   </footer>
 
   <!-- =========================================================
-       DYSKRETNY MOBILNY PASEK AKCJI (INERT GDY UKRYTY)
+       MOBILNY PASEK AKCJI (INERT GDY UKRYTY)
        ========================================================= -->
   <aside id="mobile-cta-bar" class="mobile-cta-bar" aria-label="Szybki kontakt" inert>
     <span class="bar-label tabular">Rozmowa wstępna &middot; 0 zł</span>
@@ -2363,7 +2307,7 @@
       <div class="modal-head">
         <div>
           <p class="eyebrow" style="margin-bottom:4px;">Informacja RODO</p>
-          <h2 id="privacy-title" style="font-size:28px;margin:0;">Polityka prywatności</h2>
+          <h2 id="privacy-title" style="font-size:26px;margin:0;">Polityka prywatności</h2>
         </div>
         <button type="button" class="modal-close" aria-label="Zamknij okno polityki prywatności">&times;</button>
       </div>
@@ -2371,9 +2315,9 @@
         <!-- TODO: NIP/CEIDG przed uruchomieniem -->
         <p><strong>1. Administrator danych:</strong> Damian Krawiec — Studio Las, ul. Pracka 1J, 05-504 Prace Duże, e-mail: trenermedycznywarszawa@gmail.com, tel.: 503 975 998.</p>
         <p><strong>2. Cele i podstawy prawne przetwarzania danych:</strong> Dane przekazane w toku kontaktu (imię, numer telefonu, adres e-mail, preferowana pora kontaktu, ogólny kierunek celu) przetwarzane są w celach:</p>
-        <ul style="margin:6px 0 14px 20px;padding:0;color:var(--muted);font-size:14.5px;">
-          <li><strong style="color:var(--ink);font-weight:500;">art. 6 ust. 1 lit. b RODO:</strong> podjęcie działań na żądanie osoby, której dane dotyczą, przed zawarciem umowy (udzielenie odpowiedzi na zapytanie, ustalenie terminu bezpłatnej rozmowy telefonicznej lub spotkania wprowadzającego);</li>
-          <li><strong style="color:var(--ink);font-weight:500;">art. 6 ust. 1 lit. f RODO:</strong> prawnie uzasadniony interes Administratora polegający na sprawnej bieżącej komunikacji, budowaniu relacji z klientami oraz ewentualnym ustaleniu, dochodzeniu lub obronie przed roszczeniami.</li>
+        <ul style="margin:6px 0 14px 20px;padding:0;color:var(--muted-light);font-size:14.5px;">
+          <li><strong style="color:var(--ink-light);font-weight:500;">art. 6 ust. 1 lit. b RODO:</strong> podjęcie działań na żądanie osoby, której dane dotyczą, przed zawarciem umowy (udzielenie odpowiedzi na zapytanie, ustalenie terminu bezpłatnej rozmowy telefonicznej lub spotkania wprowadzającego);</li>
+          <li><strong style="color:var(--ink-light);font-weight:500;">art. 6 ust. 1 lit. f RODO:</strong> prawnie uzasadniony interes Administratora polegający na sprawnej bieżącej komunikacji, budowaniu relacji z klientami oraz ewentualnym ustaleniu, dochodzeniu lub obronie przed roszczeniami.</li>
         </ul>
         <p><strong>3. Okres przechowywania danych:</strong> Dane z korespondencji i zapytań przechowywane są przez czas niezbędny do zakończenia kontaktu lub do momentu wycofania prośby o kontakt. W przypadku nawiązania współpracy treningowej dane przechowywane są przez okres realizacji cyklu współpracy oraz późniejszy okres przedawnienia ewentualnych roszczeń lub okres wynikający z przepisów podatkowo-księgowych (5 lat licząc od końca roku kalendarowego).</p>
         <p><strong>4. Odbiorcy danych:</strong> Dane nie są sprzedawane ani udostępniane podmiotom marketingowym. Odbiorcami danych mogą być wyłącznie zaufane podmioty świadczące usługi techniczne i hostingowe na podstawie umów powierzenia przetwarzania danych: dostawca hostingu strony (GitHub Inc. — usługa GitHub Pages), dostawca poczty elektronicznej (Google Ireland Limited) oraz w przypadku skorzystania z formularza pierwszego kontaktu — dostawca bezpiecznej infrastruktury bazy danych (Supabase Inc. z serwerami w regionie Unii Europejskiej).</p>
@@ -2381,7 +2325,7 @@
         <p><strong>6. Brak zewnętrznych trackerów i profilowania:</strong> Niniejsza strona nie stosuje zewnętrznych skryptów śledzących, pikseli reklamowych ani zdalnych fontów przesyłających dane do podmiotów trzecich. Wszystkie fonty i grafiki są serwowane w 100% lokalnie.</p>
       </div>
       <div class="modal-foot">
-        <button type="button" class="btn btn-primary btn-sm modal-close-btn">Zamknij</button>
+        <button type="button" class="btn btn-obsidian btn-sm modal-close-btn">Zamknij</button>
       </div>
     </div>
   </dialog>
@@ -2394,7 +2338,7 @@
       <div class="modal-head">
         <div>
           <p class="eyebrow" style="margin-bottom:4px;">Art. 8 UŚUDE</p>
-          <h2 id="terms-title" style="font-size:28px;margin:0;">Regulamin świadczenia usług drogą elektroniczną</h2>
+          <h2 id="terms-title" style="font-size:26px;margin:0;">Regulamin świadczenia usług drogą elektroniczną</h2>
         </div>
         <button type="button" class="modal-close" aria-label="Zamknij okno regulaminu">&times;</button>
       </div>
@@ -2407,17 +2351,15 @@
         <p><strong>5. Tryb postępowania reklamacyjnego:</strong> Wszelkie uwagi i reklamacje dotyczące funkcjonowania strony można zgłaszać na adres e-mail: trenermedycznywarszawa@gmail.com. Usługodawca rozpatruje reklamacje w terminie 14 dni od ich wpływu.</p>
       </div>
       <div class="modal-foot">
-        <button type="button" class="btn btn-primary btn-sm modal-close-btn">Zamknij</button>
+        <button type="button" class="btn btn-obsidian btn-sm modal-close-btn">Zamknij</button>
       </div>
     </div>
   </dialog>
 
-  <!-- Toast powiadomień -->
   <div id="toast" role="status" aria-live="polite">Skopiowano do schowka</div>
 
   <script>
     (function () {
-      document.documentElement.classList.add('js-anim');
       var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
       function withTransition(fn) {
@@ -2428,40 +2370,21 @@
         }
       }
 
-      /* 1. STICKY HEADER + FALLBACK PASKA POSTĘPU GDY BRAK CSS SCROLL TIMELINE */
-      var header = document.getElementById('site-header');
+      /* 1. FALLBACK PASKA POSTĘPU GDY BRAK CSS SCROLL TIMELINE */
       var progressBar = document.getElementById('scroll-progress');
       var supportsScrollTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll()');
-
-      function onScroll() {
-        var top = window.scrollY || document.documentElement.scrollTop;
-        if (header) header.classList.toggle('is-scrolled', top > 48);
-        if (progressBar && !supportsScrollTimeline) {
+      if (progressBar && !supportsScrollTimeline) {
+        var onScrollProgress = function () {
+          var top = window.scrollY || document.documentElement.scrollTop;
           var height = document.documentElement.scrollHeight - window.innerHeight;
           var ratio = height > 0 ? Math.min(1, top / height) : 0;
           progressBar.style.transform = 'scaleX(' + ratio.toFixed(4) + ')';
-        }
-      }
-      window.addEventListener('scroll', onScroll, { passive: true });
-      onScroll();
-
-      /* 2. SUBTELNY SCROLL-REVEAL */
-      var reveals = document.querySelectorAll('.reveal');
-      if ('IntersectionObserver' in window && !prefersReduced) {
-        var revealIo = new IntersectionObserver(function (entries) {
-          entries.forEach(function (entry) {
-            if (entry.isIntersecting) {
-              entry.target.classList.add('is-visible');
-              revealIo.unobserve(entry.target);
-            }
-          });
-        }, { threshold: 0.06 });
-        reveals.forEach(function (el) { revealIo.observe(el); });
-      } else {
-        reveals.forEach(function (el) { el.classList.add('is-visible'); });
+        };
+        window.addEventListener('scroll', onScrollProgress, { passive: true });
+        onScrollProgress();
       }
 
-      /* 3. MENU MOBILNE */
+      /* 2. MENU MOBILNE */
       var menuBtn = document.getElementById('mobile-menu-btn');
       var mobileMenu = document.getElementById('mobile-menu');
       var iconOpen = document.getElementById('menu-icon-open');
@@ -2485,7 +2408,7 @@
         link.addEventListener('click', function () { setMenu(false); });
       });
 
-      /* 4. WERYFIKACJA ZDJĘĆ PO ZAŁADOWANIU SKRYPTU */
+      /* 3. WERYFIKACJA ZDJĘĆ PO ZAŁADOWANIU SKRYPTU */
       document.querySelectorAll('img').forEach(function (img) {
         if (img.complete) {
           if (img.naturalWidth > 0) window.slPhotoLoad(img);
@@ -2493,31 +2416,38 @@
         }
       });
 
-      /* 5. MODUŁ 1: ZINTEGROWANY PUNKT WYJŚCIA (VIEW TRANSITIONS + WAI-ARIA TABS) */
+      /* 4. POŚWIATA KART BENTO POD KURSOREM (TYLKO HOVER: HOVER I BEZ REDUCED MOTION) */
+      if (!prefersReduced && window.matchMedia('(hover: hover)').matches) {
+        document.querySelectorAll('.bento-card').forEach(function (card) {
+          card.addEventListener('pointermove', function (e) {
+            var rect = card.getBoundingClientRect();
+            card.style.setProperty('--mx', (e.clientX - rect.left) + 'px');
+            card.style.setProperty('--my', (e.clientY - rect.top) + 'px');
+          });
+        });
+      }
+
+      /* 5. BENTO PUNKT WYJŚCIA (VIEW TRANSITIONS + WAI-ARIA TABS) */
       var scenarios = {
         przerwa: {
-          kicker: 'Modelowy scenariusz 01',
           title: 'Powrót do ruchu po dłuższej przerwie',
-          start: 'Od spokojnej rozmowy i prostych prób ruchowych bez presji. Zamiast wyczerpania na pierwszych spotkaniach budujemy pewność stawów i podstawową siłę, dzięki której wychodzisz ze studia z energią.',
+          start: 'Od spokojnej rozmowy i prostych prób ruchowych bez presji. Zamiast wyczerpania budujemy pewność stawów i podstawową siłę, dzięki której wychodzisz z energią.',
           rhythm: '1–2 spotkania 1:1 w tygodniu plus prosty, 10-minutowy zestaw domowy między wizytami.',
           goal: 'Kierunek celu: powrót do swobodnego ruchu bez wielodniowego przemęczenia.'
         },
         praca: {
-          kicker: 'Modelowy scenariusz 02',
           title: 'Praca siedząca, auto i sztywność pleców',
           start: 'Uruchamiamy biodra oraz obręcz barkową i stopniowo wzmacniamy mięśnie podtrzymujące kręgosłup, żeby wielogodzinne siedzenie przestało kończyć się wieczornym sztywnieniem.',
           rhythm: '1–2 precyzyjne sesje siłowe w tygodniu plus krótki poranny rozruch bioder.',
           goal: 'Kierunek celu: większa swoboda w ciągu dnia roboczego i bezpieczny powrót do rekreacji.'
         },
         rehab: {
-          kicker: 'Modelowy scenariusz 03',
           title: 'Trening po zakończonej rehabilitacji',
           start: 'Kiedy kończysz etap gabinetowy u fizjoterapeuty, ale obawiasz się zatłoczonej siłowni, rozpoczynamy spokojny trening siłowy po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty.',
           rhythm: '1 sesja w studiu tygodniowo plus prosty zestaw domowy z uważną obserwacją reakcji.',
           goal: 'Kierunek celu: odbudowa siły i pewności ruchu w codziennych obowiązkach.'
         },
         sila: {
-          kicker: 'Modelowy scenariusz 04',
           title: 'Siła, energia i samodzielność po 40. i 50. r.ż.',
           start: 'Budujemy solidny zapas siły mięśniowej, równowagi i kondycji pod codzienne życie, podróże czy aktywność z rodziną — bez 4–5 wyczerpujących treningów w tygodniu.',
           rhythm: '2 konkretne sesje siłowe tygodniowo, adaptowane pod wyjazdy służbowe.',
@@ -2525,19 +2455,16 @@
         }
       };
 
-      var scTabs = Array.prototype.slice.call(document.querySelectorAll('.scenario-tab'));
-      var scStage = document.getElementById('scenario-stage');
-      var scKicker = document.getElementById('sc-kicker');
+      var scTabs = Array.prototype.slice.call(document.querySelectorAll('.pill-tab'));
+      var scStage = document.getElementById('bento-scenario-stage');
       var scTitle = document.getElementById('sc-title');
       var scStart = document.getElementById('sc-start');
       var scRhythm = document.getElementById('sc-rhythm');
       var scGoal = document.getElementById('sc-goal');
 
       function activateScenario(tabBtn, focusIt) {
-        var key = tabBtn.getAttribute('data-scenario');
-        var data = scenarios[key];
+        var data = scenarios[tabBtn.getAttribute('data-scenario')];
         if (!data) return;
-
         withTransition(function () {
           scTabs.forEach(function (t) {
             var active = t === tabBtn;
@@ -2545,13 +2472,11 @@
             t.setAttribute('tabindex', active ? '0' : '-1');
           });
           if (scStage) scStage.setAttribute('aria-labelledby', tabBtn.id);
-          if (scKicker) scKicker.textContent = data.kicker;
           if (scTitle) scTitle.textContent = data.title;
           if (scStart) scStart.textContent = data.start;
           if (scRhythm) scRhythm.textContent = data.rhythm;
           if (scGoal) scGoal.textContent = data.goal;
         });
-
         if (focusIt) tabBtn.focus();
       }
 
@@ -2559,10 +2484,8 @@
         tab.addEventListener('click', function () { activateScenario(tab, false); });
         tab.addEventListener('keydown', function (e) {
           var nextIdx = null;
-          if (e.key === 'ArrowDown' || e.key === 'ArrowRight') nextIdx = (index + 1) % scTabs.length;
-          else if (e.key === 'ArrowUp' || e.key === 'ArrowLeft') nextIdx = (index - 1 + scTabs.length) % scTabs.length;
-          else if (e.key === 'Home') nextIdx = 0;
-          else if (e.key === 'End') nextIdx = scTabs.length - 1;
+          if (e.key === 'ArrowRight' || e.key === 'ArrowDown') nextIdx = (index + 1) % scTabs.length;
+          else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') nextIdx = (index - 1 + scTabs.length) % scTabs.length;
           if (nextIdx !== null) {
             e.preventDefault();
             activateScenario(scTabs[nextIdx], true);
@@ -2570,7 +2493,7 @@
         });
       });
 
-      /* 6. MODUŁ 2: PLANER RYTMU TYGODNIA (1x vs 2x) */
+      /* 6. PLANER RYTMU (1x vs 2x) */
       var rhythmData = {
         '1': {
           cost: '1 000 zł',
@@ -2627,12 +2550,10 @@
       }
 
       rhythmBtns.forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          renderRhythm(btn.getAttribute('data-freq'));
-        });
+        btn.addEventListener('click', function () { renderRhythm(btn.getAttribute('data-freq')); });
       });
 
-      /* 7. MODUŁ 3: INTERAKTYWNA OŚ PIERWSZEGO SPOTKANIA (STEPPER) */
+      /* 7. STEPPER PIERWSZEGO SPOTKANIA (220 ZŁ) */
       var stepsData = {
         '1': {
           kicker: 'Faza 01 · 15–20 minut',
@@ -2657,8 +2578,7 @@
       var stBody = document.getElementById('st-body');
 
       function activateStep(btn, focusIt) {
-        var key = btn.getAttribute('data-step');
-        var data = stepsData[key];
+        var data = stepsData[btn.getAttribute('data-step')];
         if (!data) return;
         withTransition(function () {
           stepBtns.forEach(function (b) {
@@ -2686,7 +2606,7 @@
         });
       });
 
-      /* 8. MODUŁ 4: GALERIA SCROLL-SNAP 01 / 03 */
+      /* 8. GALERIA SCROLL-SNAP 01 / 03 */
       var track = document.getElementById('gallery-track');
       var slides = track ? Array.prototype.slice.call(track.querySelectorAll('.gallery-slide')) : [];
       var counterEl = document.getElementById('gallery-counter');
@@ -2697,11 +2617,12 @@
 
       function updateGalleryUI() {
         if (!track || !slides.length) return;
-        var scrollLeft = track.scrollLeft;
+        var center = track.scrollLeft + track.clientWidth / 2;
         var bestIdx = 0;
         var bestDist = Infinity;
         slides.forEach(function (s, i) {
-          var dist = Math.abs(s.offsetLeft - track.offsetLeft - scrollLeft);
+          var sCenter = s.offsetLeft + s.offsetWidth / 2;
+          var dist = Math.abs(sCenter - center);
           if (dist < bestDist) {
             bestDist = dist;
             bestIdx = i;
@@ -2715,8 +2636,8 @@
       function goToSlide(idx) {
         if (!track || !slides.length) return;
         var clamped = Math.max(0, Math.min(slides.length - 1, idx));
-        var targetLeft = slides[clamped].offsetLeft - track.offsetLeft;
-        track.scrollTo({ left: targetLeft, behavior: prefersReduced ? 'auto' : 'smooth' });
+        var targetLeft = slides[clamped].offsetLeft - (track.clientWidth - slides[clamped].offsetWidth) / 2;
+        track.scrollTo({ left: Math.max(0, targetLeft), behavior: prefersReduced ? 'auto' : 'smooth' });
       }
 
       if (track) {
@@ -2725,7 +2646,7 @@
         if (nextBtn) nextBtn.addEventListener('click', function () { goToSlide(currentSlide + 1); });
       }
 
-      /* 9. DYSKRETNY MOBILNY PASEK AKCJI (INTERSECTION OBSERVER + INERT) */
+      /* 9. MOBILNY PASEK AKCJI (INTERSECTION OBSERVER + INERT) */
       var mobileBar = document.getElementById('mobile-cta-bar');
       var heroEl = document.getElementById('hero');
       var contactEl = document.getElementById('kontakt');
@@ -2762,9 +2683,7 @@
         toast.textContent = msg || 'Skopiowano do schowka';
         toast.classList.add('is-visible');
         clearTimeout(toastTimer);
-        toastTimer = setTimeout(function () {
-          toast.classList.remove('is-visible');
-        }, 2200);
+        toastTimer = setTimeout(function () { toast.classList.remove('is-visible'); }, 2200);
       }
 
       function fallbackCopy(text, successMsg) {
@@ -2788,9 +2707,7 @@
         if (navigator.clipboard && window.isSecureContext) {
           navigator.clipboard.writeText(text).then(function () {
             showToast(successMsg || 'Skopiowano do schowka');
-          }).catch(function () {
-            fallbackCopy(text, successMsg);
-          });
+          }).catch(function () { fallbackCopy(text, successMsg); });
         } else {
           fallbackCopy(text, successMsg);
         }
@@ -2803,13 +2720,11 @@
         });
       });
 
-      /* 11. NATYWNE MODALE <dialog> (SHOWMODAL, BACKDROP CLICK, ESC NATYWNE) */
+      /* 11. NATYWNE MODALE <dialog> */
       document.querySelectorAll('.open-modal-btn').forEach(function (btn) {
         btn.addEventListener('click', function () {
           var modal = document.getElementById(btn.getAttribute('data-modal'));
-          if (modal && typeof modal.showModal === 'function') {
-            modal.showModal();
-          }
+          if (modal && typeof modal.showModal === 'function') modal.showModal();
         });
       });
 
