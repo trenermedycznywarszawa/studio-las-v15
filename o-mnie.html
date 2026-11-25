@@ -1,0 +1,1993 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>O mnie — Damian Krawiec | Studio Las · Prace Duże</title>
+  <meta name="description" content="Damian Krawiec — mgr wychowania fizycznego (AWF Warszawa), studia podyplomowe Fizjoterapia w sporcie, ~15 lat praktyki 1:1. Filozofia prowadzenia, wartość sesji 250 zł i filary edukacji w Studio Las.">
+  <meta name="theme-color" content="#F6F7F5">
+  <meta name="color-scheme" content="light">
+
+  <link rel="preload" href="./fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
+
+  <style>
+    /* ==========================================================================
+       1. VIEW TRANSITIONS, INTERPOLATION & LOCAL TYPOGRAPHY
+       ========================================================================== */
+    @view-transition {
+      navigation: auto;
+    }
+
+    @font-face {
+      font-family: "Inter";
+      src: url("./fonts/inter-regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Inter";
+      src: url("./fonts/inter-medium.woff2") format("woff2");
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Newsreader";
+      src: url("./fonts/newsreader-italic.woff2") format("woff2");
+      font-weight: 400;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    /* ==========================================================================
+       2. DESIGN TOKENS — LIGHT-FIRST ARCHITECTURAL LUXURY 2026
+       ========================================================================== */
+    :root {
+      interpolate-size: allow-keywords;
+
+      --bg-alabaster: #F6F7F5;
+      --bg-white: #FFFFFF;
+      --bg-linen: #EFF2EF;
+      --bg-forest: #14231B;
+      --bg-forest-deep: #0E1913;
+      --bg-forest-elevated: #1B2E24;
+
+      --border-hairline: #E2E6E3;
+      --border-strong: #C6CFC9;
+      --border-dark: rgba(167, 196, 177, 0.2);
+      --border-dark-strong: rgba(167, 196, 177, 0.42);
+
+      --text-primary: #0F1612;
+      --text-secondary: #525E57;
+      --text-on-dark: #F6F7F5;
+      --text-on-dark-muted: #B6C7BD;
+      --accent-sage: #A7C4B1;
+
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+
+      --container-max: 86rem; /* 1376px */
+      --gutter: clamp(1.25rem, 4.2vw, 3.25rem);
+      --section-pad: clamp(5rem, 9.5vw, 9rem);
+
+      --radius-card: 22px;
+      --radius-inner: 14px;
+      --radius-pill: 999px;
+
+      --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+      --ease-architectural: cubic-bezier(0.22, 1, 0.36, 1);
+      --ease-tactile: cubic-bezier(0.32, 0.72, 0, 1);
+
+      --elev-card:
+        0 0 0 1px rgba(15, 22, 18, 0.055),
+        0 1px 2px rgba(15, 22, 18, 0.035),
+        0 18px 40px -26px rgba(15, 22, 18, 0.12);
+      --elev-instrument:
+        0 0 0 1px rgba(15, 22, 18, 0.07),
+        0 2px 4px rgba(15, 22, 18, 0.04),
+        0 28px 60px -32px rgba(15, 22, 18, 0.16);
+      --elev-hud:
+        0 0 0 1px rgba(226, 230, 227, 0.9),
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 16px 40px -16px rgba(15, 22, 18, 0.16);
+
+      --grain-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+    }
+
+    /* ==========================================================================
+       3. RESET, BASE & ACCESSIBILITY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      background-color: var(--bg-alabaster);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-synthesis-weight: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-alabaster);
+      color: var(--text-primary);
+      font-size: clamp(0.96875rem, 0.94rem + 0.14vw, 1.03125rem);
+      line-height: 1.62;
+      overflow-x: clip;
+    }
+
+    img, picture, svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    h1, h2, h3, h4, p, ul, ol, dl, dd, figure {
+      margin: 0;
+    }
+
+    ul, ol {
+      padding: 0;
+      list-style: none;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--bg-forest);
+      outline-offset: 3px;
+    }
+
+    .surface-dark :focus-visible {
+      outline-color: var(--accent-sage);
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1000;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transform: translateY(-240%);
+      transition: transform 0.28s var(--ease-architectural);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .tabular {
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .has-grain {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .has-grain::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: var(--grain-svg);
+      background-size: 180px 180px;
+      opacity: 0.028;
+      mix-blend-mode: overlay;
+      border-radius: inherit;
+    }
+
+    .has-grain > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    /* ==========================================================================
+       4. TOP 2PX SCROLL PROGRESS BAR
+       ========================================================================== */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      z-index: 95;
+      pointer-events: none;
+    }
+
+    .scroll-progress__bar {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--bg-forest) 0%, #4E7861 100%);
+      transform-origin: 0 50%;
+      transform: scaleX(0);
+      will-change: transform;
+    }
+
+    @supports (animation-timeline: scroll()) {
+      .scroll-progress__bar {
+        animation: scroll-progress-grow linear both;
+        animation-timeline: scroll(root);
+      }
+      @keyframes scroll-progress-grow {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+      }
+    }
+
+    /* ==========================================================================
+       5. EDITORIAL LAYOUT & TYPOGRAPHY PRIMITIVES
+       ========================================================================== */
+    .container {
+      width: min(100% - (var(--gutter) * 2), var(--container-max));
+      margin-inline: auto;
+    }
+
+    .section {
+      padding-block: var(--section-pad);
+      scroll-margin-top: 5.5rem;
+    }
+
+    .section--white {
+      background-color: var(--bg-white);
+      border-block: 1px solid var(--border-hairline);
+    }
+
+    .section--alabaster {
+      background-color: var(--bg-alabaster);
+    }
+
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.74rem;
+      font-weight: 500;
+      letter-spacing: 0.11em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 1.4rem;
+    }
+
+    .section-eyebrow::before {
+      content: "";
+      width: 24px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.45;
+    }
+
+    .surface-dark .section-eyebrow {
+      color: var(--accent-sage);
+    }
+
+    .display-h1 {
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: clamp(2.75rem, 5.8vw, 5.25rem);
+      line-height: 0.98;
+      letter-spacing: -0.044em;
+      text-wrap: balance;
+      color: var(--text-primary);
+    }
+
+    .display-h2 {
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: clamp(2.1rem, 4vw, 3.6rem);
+      line-height: 1.03;
+      letter-spacing: -0.04em;
+      text-wrap: balance;
+      color: var(--text-primary);
+    }
+
+    .surface-dark .display-h2 {
+      color: var(--text-on-dark);
+    }
+
+    .editorial-italic {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.012em;
+      padding-right: 0.04em;
+    }
+
+    .section-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.85fr);
+      gap: clamp(1.5rem, 4vw, 4rem);
+      align-items: end;
+      margin-bottom: clamp(2.75rem, 5.5vw, 4.5rem);
+    }
+
+    .section-lead {
+      color: var(--text-secondary);
+      font-size: clamp(0.98rem, 1.1vw, 1.09rem);
+      line-height: 1.66;
+      max-width: 48ch;
+      justify-self: end;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.65rem;
+      min-height: 48px;
+      padding: 0.8rem 1.55rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      letter-spacing: -0.012em;
+      line-height: 1.2;
+      cursor: pointer;
+      white-space: nowrap;
+      transition:
+        background-color 0.28s var(--ease-architectural),
+        color 0.28s var(--ease-architectural),
+        border-color 0.28s var(--ease-architectural),
+        box-shadow 0.28s var(--ease-architectural),
+        transform 0.2s var(--ease-tactile);
+    }
+
+    .btn:active {
+      transform: scale(0.985);
+    }
+
+    .btn .icon-arrow,
+    .btn .icon-arrow-diag {
+      transition: transform 0.3s var(--ease-out-expo);
+    }
+
+    .btn:hover .icon-arrow {
+      transform: translateX(4px);
+    }
+
+    .btn:hover .icon-arrow-diag {
+      transform: translate(3px, -3px);
+    }
+
+    .btn--forest {
+      background-color: var(--bg-forest);
+      color: var(--text-on-dark);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 10px 24px -12px rgba(20, 35, 27, 0.55);
+    }
+
+    .btn--forest:hover {
+      background-color: #1C3327;
+    }
+
+    .btn--light {
+      background-color: var(--bg-white);
+      color: var(--text-primary);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 12px 26px -14px rgba(15, 22, 18, 0.35);
+    }
+
+    .btn--light:hover {
+      background-color: #EBF0EC;
+    }
+
+    .btn--outline-dark {
+      background-color: transparent;
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+
+    .btn--outline-dark:hover {
+      background-color: var(--bg-white);
+      border-color: var(--text-primary);
+    }
+
+    .btn--sm {
+      min-height: 44px;
+      padding: 0.55rem 1.15rem;
+      font-size: 0.86rem;
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      flex: none;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.55;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon--sm {
+      width: 15px;
+      height: 15px;
+    }
+
+    @media (prefers-reduced-motion: no-preference) {
+      @supports (animation-timeline: view()) {
+        .reveal {
+          animation: arch-reveal linear both;
+          animation-timeline: view();
+          animation-range: entry 0% cover 20%;
+        }
+
+        @keyframes arch-reveal {
+          from {
+            opacity: 0;
+            transform: translateY(22px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      }
+    }
+
+    /* ==========================================================================
+       6. FLOATING HUD NAVIGATION (LIGHT VARIANT BY DEFAULT ON ALABASTER)
+       ========================================================================== */
+    .hud-header {
+      position: fixed;
+      top: clamp(0.75rem, 2vw, 1.25rem);
+      left: 0;
+      right: 0;
+      z-index: 85;
+      pointer-events: none;
+    }
+
+    .hud-bar {
+      pointer-events: auto;
+      width: min(100% - (var(--gutter) * 1.3), 76rem);
+      margin-inline: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.42rem 0.48rem 0.42rem 1.35rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(226, 230, 227, 0.92);
+      color: var(--text-primary);
+      box-shadow: var(--elev-hud);
+      backdrop-filter: blur(22px) saturate(145%);
+      -webkit-backdrop-filter: blur(22px) saturate(145%);
+    }
+
+    .hud-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      font-weight: 500;
+      font-size: 0.96rem;
+      letter-spacing: -0.022em;
+      white-space: nowrap;
+      min-height: 44px;
+    }
+
+    .hud-brand__mark {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--bg-forest);
+      box-shadow: 0 0 0 3px rgba(20, 35, 27, 0.1);
+    }
+
+    .hud-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.2rem;
+    }
+
+    .hud-nav a {
+      padding: 0.52rem 0.95rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--text-secondary);
+      transition: background-color 0.24s ease, color 0.24s ease;
+    }
+
+    .hud-nav a:hover {
+      background: var(--bg-linen);
+      color: var(--text-primary);
+    }
+
+    .hud-nav a[aria-current="page"] {
+      background: var(--bg-linen);
+      color: var(--bg-forest);
+      font-weight: 500;
+    }
+
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .hud-cta {
+      min-height: 44px;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.855rem;
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+      box-shadow: none;
+    }
+
+    .hud-cta:hover {
+      background: #1D3528;
+    }
+
+    .hud-menu-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-hairline);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .hud-mobile-drawer {
+      pointer-events: auto;
+      width: min(100% - (var(--gutter) * 1.3), 76rem);
+      margin: 0.55rem auto 0;
+      padding: 0.85rem;
+      border-radius: var(--radius-card);
+      background: rgba(255, 255, 255, 0.96);
+      box-shadow: var(--elev-hud);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
+      color: var(--text-primary);
+    }
+
+    .hud-mobile-drawer[hidden] {
+      display: none;
+    }
+
+    .hud-mobile-drawer nav {
+      display: grid;
+      gap: 0.25rem;
+    }
+
+    .hud-mobile-drawer a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 48px;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-inner);
+      font-weight: 500;
+      font-size: 0.98rem;
+      transition: background-color 0.2s ease;
+    }
+
+    .hud-mobile-drawer a:hover,
+    .hud-mobile-drawer a[aria-current="page"] {
+      background: var(--bg-alabaster);
+      color: var(--bg-forest);
+    }
+
+    /* ==========================================================================
+       7. SECTION 1 — EDITORIAL OPENING (ALABASTER + FACT PANEL)
+       ========================================================================== */
+    .about-hero {
+      padding-top: clamp(7.5rem, 13vw, 11rem);
+      padding-bottom: clamp(4.5rem, 8vw, 7.5rem);
+      background: var(--bg-alabaster);
+    }
+
+    .about-hero__grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
+      gap: clamp(2rem, 5vw, 4.75rem);
+      align-items: end;
+    }
+
+    .about-hero__lead {
+      margin-top: 2rem;
+      font-size: clamp(1.04rem, 1.3vw, 1.22rem);
+      line-height: 1.64;
+      color: var(--text-secondary);
+      max-width: 54ch;
+    }
+
+    .about-facts-panel {
+      background: var(--bg-white);
+      border-radius: var(--radius-card);
+      padding: clamp(1.6rem, 3vw, 2.35rem);
+      box-shadow: var(--elev-instrument);
+      display: grid;
+      gap: 1.25rem;
+    }
+
+    .about-facts-panel__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 1rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .about-facts-panel__name {
+      font-size: 1.35rem;
+      font-weight: 500;
+      letter-spacing: -0.025em;
+    }
+
+    .about-facts-panel__badge {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--bg-forest);
+      padding: 0.35rem 0.75rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-alabaster);
+    }
+
+    .about-facts-list {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .about-facts-list div {
+      display: grid;
+      gap: 0.15rem;
+      padding-bottom: 0.85rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .about-facts-list div:last-child {
+      padding-bottom: 0;
+      border-bottom: 0;
+    }
+
+    .about-facts-list dt {
+      font-size: 0.73rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .about-facts-list dd {
+      font-size: 0.95rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    /* ==========================================================================
+       8. SECTION 2 — PHILOSOPHY "NIE KOLEKCJA METOD. FILTR."
+       ========================================================================== */
+    .filter-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: clamp(1.1rem, 2vw, 1.65rem);
+    }
+
+    .filter-card {
+      background: var(--bg-alabaster);
+      border-radius: var(--radius-card);
+      padding: clamp(1.65rem, 3vw, 2.4rem);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.055) inset;
+      display: grid;
+      gap: 1rem;
+      align-content: start;
+    }
+
+    .filter-card__top {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 1rem;
+      padding-bottom: 0.9rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .filter-card__num {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--bg-forest);
+    }
+
+    .filter-card__title {
+      font-size: clamp(1.22rem, 1.8vw, 1.48rem);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      line-height: 1.2;
+      color: var(--text-primary);
+    }
+
+    .filter-card__desc {
+      font-size: 0.95rem;
+      line-height: 1.64;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       9. SECTION 3 — VALUE CONTRAST TABLE (HOOKE LONDON STYLE)
+       ========================================================================== */
+    .contrast-table-wrap {
+      background: var(--bg-white);
+      border-radius: var(--radius-card);
+      box-shadow: var(--elev-instrument);
+      overflow: hidden;
+    }
+
+    .contrast-head {
+      display: grid;
+      grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 1.5rem;
+      padding: 1.35rem clamp(1.4rem, 3vw, 2.35rem);
+      background: var(--bg-alabaster);
+      border-bottom: 1px solid var(--border-hairline);
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .contrast-head__las {
+      color: var(--bg-forest);
+    }
+
+    .contrast-row {
+      display: grid;
+      grid-template-columns: minmax(0, 0.62fr) minmax(0, 1fr) minmax(0, 1.15fr);
+      gap: 1.5rem;
+      padding: clamp(1.35rem, 2.5vw, 1.9rem) clamp(1.4rem, 3vw, 2.35rem);
+      border-bottom: 1px solid var(--border-hairline);
+      align-items: start;
+    }
+
+    .contrast-row:last-child {
+      border-bottom: 0;
+    }
+
+    .contrast-row__dim {
+      font-size: 0.95rem;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+    }
+
+    .contrast-row__gym {
+      font-size: 0.92rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .contrast-row__las {
+      font-size: 0.94rem;
+      line-height: 1.62;
+      color: var(--text-primary);
+      padding-left: 1.15rem;
+      border-left: 2px solid var(--bg-forest);
+    }
+
+    .contrast-row__las strong {
+      font-weight: 500;
+      color: var(--bg-forest);
+    }
+
+    /* ==========================================================================
+       10. SECTION 4 — EDUCATION PILLARS + ARCHIVE CARD + BOUNDARY
+       ========================================================================== */
+    .pillars-list {
+      display: grid;
+      margin-bottom: clamp(2.5rem, 5vw, 3.75rem);
+    }
+
+    .pillar-row {
+      display: grid;
+      grid-template-columns: 4.5rem minmax(0, 0.95fr) minmax(0, 1.15fr);
+      gap: 1rem 2rem;
+      padding-block: clamp(1.5rem, 3vw, 2.15rem);
+      border-top: 1px solid var(--border-hairline);
+      align-items: baseline;
+    }
+
+    .pillar-row:last-child {
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .pillar-row__num {
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      color: var(--bg-forest);
+    }
+
+    .pillar-row__title {
+      font-size: clamp(1.08rem, 1.5vw, 1.24rem);
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      line-height: 1.28;
+      color: var(--text-primary);
+    }
+
+    .pillar-row__desc {
+      font-size: 0.94rem;
+      line-height: 1.64;
+      color: var(--text-secondary);
+    }
+
+    .pillars-footer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: clamp(1.25rem, 2.5vw, 1.85rem);
+      align-items: stretch;
+    }
+
+    .archive-card {
+      background: var(--bg-alabaster);
+      border-radius: var(--radius-card);
+      padding: clamp(1.5rem, 2.8vw, 2.15rem);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.06) inset;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.35rem;
+    }
+
+    .archive-card__text {
+      font-size: 0.93rem;
+      line-height: 1.6;
+      color: var(--text-secondary);
+    }
+
+    .boundary-box {
+      padding: clamp(1.5rem, 2.8vw, 2.15rem);
+      border-radius: var(--radius-card);
+      background: var(--bg-alabaster);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.06) inset;
+      border-left: 3px solid var(--bg-forest);
+      display: grid;
+      gap: 0.6rem;
+      align-content: center;
+    }
+
+    .boundary-box__label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--bg-forest);
+    }
+
+    .boundary-box p {
+      font-size: 0.9rem;
+      line-height: 1.62;
+      color: var(--text-secondary);
+    }
+
+    .boundary-box strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* ==========================================================================
+       11. SECTION 5 — CALM CONTACT FINALE (#14231B + GRAIN) & FOOTER
+       ========================================================================== */
+    .contact-finale {
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+      padding-top: clamp(5rem, 10vw, 8.5rem);
+      padding-bottom: clamp(2.5rem, 5vw, 3.5rem);
+      scroll-margin-top: 3rem;
+      overflow: hidden;
+    }
+
+    .contact-hero-box {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: clamp(2rem, 5vw, 4.5rem);
+      align-items: end;
+      padding-bottom: clamp(3rem, 5.5vw, 4.5rem);
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    .contact-lead {
+      margin-top: 1.35rem;
+      color: var(--text-on-dark-muted);
+      font-size: 1.04rem;
+      max-width: 48ch;
+      line-height: 1.64;
+    }
+
+    .contact-primary-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.9rem;
+      justify-self: end;
+      width: 100%;
+      max-width: 29rem;
+    }
+
+    .contact-primary-cta {
+      width: 100%;
+      min-height: 60px;
+      padding: 1rem 1.75rem;
+      font-size: 0.98rem;
+      justify-content: space-between;
+    }
+
+    .contact-primary-note {
+      font-size: 0.84rem;
+      color: var(--text-on-dark-muted);
+    }
+
+    .direct-channels {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+      padding-block: clamp(2.25rem, 4.5vw, 3.25rem);
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    .channel-card {
+      padding: clamp(1.35rem, 2.5vw, 1.75rem);
+      border-radius: var(--radius-card);
+      background: var(--bg-forest-elevated);
+      border: 1px solid var(--border-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.25rem;
+    }
+
+    .channel-label {
+      font-size: 0.73rem;
+      font-weight: 500;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      color: var(--accent-sage);
+    }
+
+    .channel-value {
+      font-size: clamp(1.22rem, 2.2vw, 1.68rem);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      color: var(--text-on-dark);
+      word-break: break-word;
+      margin-top: 0.35rem;
+    }
+
+    .channel-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .channel-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 44px;
+      padding: 0.45rem 1rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-dark-strong);
+      background: rgba(246, 247, 245, 0.05);
+      color: var(--text-on-dark);
+      font-size: 0.85rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition:
+        background-color 0.24s var(--ease-architectural),
+        border-color 0.24s ease,
+        transform 0.18s var(--ease-tactile);
+    }
+
+    .channel-pill:hover {
+      background: rgba(246, 247, 245, 0.14);
+      border-color: var(--accent-sage);
+    }
+
+    .channel-pill:active {
+      transform: scale(0.985);
+    }
+
+    .site-footer {
+      padding-top: 2.25rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem 2rem;
+      font-size: 0.84rem;
+      color: var(--text-on-dark-muted);
+    }
+
+    .footer-legal-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 1.35rem;
+    }
+
+    .footer-link-btn {
+      background: transparent;
+      border: 0;
+      min-height: 44px;
+      padding: 0.25rem 0;
+      color: var(--text-on-dark-muted);
+      font-size: 0.84rem;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-color: rgba(167, 196, 177, 0.35);
+      transition: color 0.2s ease, text-decoration-color 0.2s ease;
+    }
+
+    .footer-link-btn:hover {
+      color: var(--text-on-dark);
+      text-decoration-color: var(--accent-sage);
+    }
+
+    /* ==========================================================================
+       12. FLOATING MOBILE BOTTOM BAR (56PX, BLUR 12PX, INTERSECTION + INERT)
+       ========================================================================== */
+    .mobile-dock {
+      display: none;
+      position: fixed;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: max(0.75rem, env(safe-area-inset-bottom));
+      z-index: 80;
+      height: 56px;
+      padding: 0.32rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 0 0 1px rgba(226, 230, 227, 0.95), 0 12px 30px -10px rgba(15, 22, 18, 0.24);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      grid-template-columns: 1fr auto;
+      gap: 0.38rem;
+      align-items: center;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.3s var(--ease-architectural), transform 0.3s var(--ease-architectural);
+    }
+
+    .mobile-dock.is-hidden {
+      opacity: 0;
+      transform: translateY(140%);
+      pointer-events: none;
+    }
+
+    .mobile-dock__primary {
+      height: 100%;
+      min-height: 0;
+      padding: 0 1rem;
+      font-size: 0.85rem;
+    }
+
+    .mobile-dock__call {
+      height: 100%;
+      min-height: 0;
+      padding: 0 1.05rem;
+      font-size: 0.85rem;
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-primary);
+      box-shadow: none;
+    }
+
+    /* ==========================================================================
+       13. NATIVE <DIALOG> MODALS (RODO & UŚUDE) + TOAST
+       ========================================================================== */
+    dialog.legal-dialog {
+      width: min(100% - 2rem, 44rem);
+      max-height: min(86svh, 46rem);
+      padding: 0;
+      border: 0;
+      border-radius: var(--radius-card);
+      background: var(--bg-white);
+      color: var(--text-primary);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.08), 0 32px 80px -24px rgba(15, 22, 18, 0.42);
+      overflow: hidden;
+    }
+
+    dialog.legal-dialog::backdrop {
+      background: rgba(14, 25, 19, 0.56);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .dialog-shell {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      max-height: min(86svh, 46rem);
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.35rem 1.65rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .dialog-head h2 {
+      font-size: 1.18rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .dialog-close {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-alabaster);
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .dialog-close:hover {
+      background: var(--bg-forest);
+      border-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .dialog-body {
+      padding: 1.5rem 1.65rem;
+      overflow-y: auto;
+      display: grid;
+      gap: 1rem;
+      font-size: 0.93rem;
+      line-height: 1.65;
+      color: var(--text-secondary);
+    }
+
+    .dialog-body h3 {
+      font-size: 0.97rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-top: 0.35rem;
+    }
+
+    .dialog-body strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .dialog-foot {
+      padding: 1rem 1.65rem;
+      border-top: 1px solid var(--border-hairline);
+      background: var(--bg-alabaster);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 5.25rem;
+      z-index: 95;
+      transform: translate(-50%, 16px);
+      padding: 0.7rem 1.3rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+      border: 1px solid var(--border-dark-strong);
+      box-shadow: 0 14px 32px -12px rgba(14, 25, 19, 0.5);
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s var(--ease-out-expo);
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* ==========================================================================
+       14. RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1080px) {
+      .about-hero__grid,
+      .section-header,
+      .pillars-footer-grid,
+      .contact-hero-box {
+        grid-template-columns: 1fr;
+      }
+
+      .section-lead,
+      .contact-primary-wrap {
+        justify-self: start;
+      }
+
+      .pillar-row {
+        grid-template-columns: 3.5rem minmax(0, 1fr);
+      }
+
+      .pillar-row__desc {
+        grid-column: 2;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .hud-nav {
+        display: none;
+      }
+
+      .hud-menu-toggle {
+        display: inline-flex;
+      }
+
+      .filter-grid,
+      .direct-channels {
+        grid-template-columns: 1fr;
+      }
+
+      .contrast-head {
+        display: none;
+      }
+
+      .contrast-row {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+      }
+
+      .contrast-row__gym::before {
+        content: "Typowa siłownia: ";
+        font-weight: 500;
+        color: var(--text-primary);
+      }
+
+      .contrast-row__las::before {
+        content: "Studio Las 1:1: ";
+        display: block;
+        font-size: 0.74rem;
+        letter-spacing: 0.08em;
+        text-transform: uppercase;
+        font-weight: 500;
+        color: var(--bg-forest);
+        margin-bottom: 0.2rem;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .hud-bar {
+        padding-left: 1rem;
+      }
+
+      .hud-cta {
+        padding-inline: 0.95rem;
+        font-size: 0.82rem;
+      }
+
+      .pillar-row {
+        grid-template-columns: 1fr;
+        gap: 0.55rem;
+      }
+
+      .pillar-row__desc {
+        grid-column: auto;
+      }
+
+      .mobile-dock {
+        display: grid;
+      }
+
+      .contact-finale {
+        padding-bottom: 5.75rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#tresc-glowna">Przejdź do treści głównej</a>
+
+  <!-- Scroll Progress Bar -->
+  <div class="scroll-progress" aria-hidden="true">
+    <div class="scroll-progress__bar"></div>
+  </div>
+
+  <!-- ======================================================================
+       FLOATING HUD NAVIGATION (LIGHT VARIANT)
+       ====================================================================== -->
+  <header class="hud-header is-scrolled" id="hudHeader">
+    <div class="hud-bar">
+      <a href="./v2.html" class="hud-brand" aria-label="Studio Las — strona główna">
+        <span class="hud-brand__mark" aria-hidden="true"></span>
+        <span>Studio Las</span>
+      </a>
+
+      <nav class="hud-nav" aria-label="Nawigacja główna">
+        <a href="./v2.html">Strona główna</a>
+        <a href="./v2.html#metoda">Metoda</a>
+        <a href="./v2.html#plan-i-cennik">Plan i cennik</a>
+        <a href="./o-mnie.html" aria-current="page">O mnie</a>
+      </nav>
+
+      <div class="hud-actions">
+        <a href="#kontakt" class="btn hud-cta tabular">Rozmowa wstępna · 0 zł</a>
+        <button
+          type="button"
+          class="hud-menu-toggle"
+          id="mobileMenuToggle"
+          aria-expanded="false"
+          aria-controls="mobileMenuDrawer"
+          aria-label="Otwórz menu nawigacji"
+        >
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="4" y1="8" x2="20" y2="8"></line>
+            <line x1="4" y1="16" x2="20" y2="16"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="hud-mobile-drawer" id="mobileMenuDrawer" hidden>
+      <nav aria-label="Nawigacja mobilna">
+        <a href="./v2.html">Strona główna</a>
+        <a href="./v2.html#metoda">Metoda i punkty wyjścia</a>
+        <a href="./v2.html#plan-i-cennik">Plan 12 tygodni i cennik</a>
+        <a href="./o-mnie.html" aria-current="page">O mnie · Podejście i wykształcenie</a>
+        <a href="#kontakt">Kontakt · Rozmowa 0 zł</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="tresc-glowna">
+    <!-- ====================================================================
+         SECTION 1 — EDITORIAL OPENING (ALABASTER #F6F7F5)
+         ==================================================================== -->
+    <section class="about-hero" id="start-o-mnie" aria-labelledby="about-title">
+      <div class="container">
+        <div class="about-hero__grid">
+          <div>
+            <p class="section-eyebrow">Prowadzący i standard pracy · Studio Las</p>
+            <h1 class="display-h1" id="about-title">
+              <span class="tabular">15</span> lat nauki. Coraz <span class="editorial-italic">prostszy</span> sposób prowadzenia.
+            </h1>
+            <p class="about-hero__lead">
+              Od około 15 lat rozwijam warsztat w obszarze treningu siłowego, przygotowania motorycznego i pracy z ruchem. Najważniejszym efektem tej drogi nie jest liczba certyfikatów, lecz umiejętność podejmowania trafnych, spokojnych decyzji dla konkretnego człowieka.
+            </p>
+          </div>
+
+          <aside class="about-facts-panel" aria-label="Kluczowe fakty o prowadzącym">
+            <div class="about-facts-panel__head">
+              <span class="about-facts-panel__name">Damian Krawiec</span>
+              <span class="about-facts-panel__badge">1:1 · Studio Las</span>
+            </div>
+
+            <dl class="about-facts-list">
+              <div>
+                <dt>Wykształcenie bazowe</dt>
+                <dd>mgr wychowania fizycznego AWF Warszawa</dd>
+              </div>
+              <div>
+                <dt>Uzupełnienie warsztatu</dt>
+                <dd>studia podyplomowe „Fizjoterapia w sporcie”</dd>
+              </div>
+              <div>
+                <dt>Doświadczenie</dt>
+                <dd class="tabular">~15 lat praktyki 1:1</dd>
+              </div>
+              <div>
+                <dt>Miejsce prowadzenia</dt>
+                <dd class="tabular">Prace Duże · ul. Pracka 1J</dd>
+              </div>
+            </dl>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 2 — PHILOSOPHY "NIE KOLEKCJA METOD. FILTR."
+         ==================================================================== -->
+    <section class="section section--white" id="filozofia" aria-labelledby="filozofia-title">
+      <div class="container">
+        <div class="section-header reveal">
+          <div>
+            <p class="section-eyebrow">01 · Filozofia prowadzenia</p>
+            <h2 class="display-h2" id="filozofia-title">
+              Nie kolekcja metod. <span class="editorial-italic">Filtr.</span>
+            </h2>
+          </div>
+          <p class="section-lead">
+            Wiedza ma upraszczać proces, nie go komplikować. Przez lata poznawałem różne szkoły i narzędzia treningowe — część z nich została ze mną, z części świadomie zrezygnowałem. Nie chodzi o to, ile metod znam, lecz o to, czy potrafię dobrać właściwy bodziec dla właściwej osoby we właściwym momencie.
+          </p>
+        </div>
+
+        <div class="filter-grid">
+          <article class="filter-card reveal">
+            <div class="filter-card__top">
+              <h3 class="filter-card__title">Gdzie jesteś dzisiaj?</h3>
+              <span class="filter-card__num tabular">01</span>
+            </div>
+            <p class="filter-card__desc">
+              Najpierw punkt wyjścia: historia ruchu, praca siedząca, codzienne obciążenia i ewentualne zalecenia po zakończonej rehabilitacji.
+            </p>
+          </article>
+
+          <article class="filter-card reveal">
+            <div class="filter-card__top">
+              <h3 class="filter-card__title">Jaka dawka ma sens?</h3>
+              <span class="filter-card__num tabular">02</span>
+            </div>
+            <p class="filter-card__desc">
+              Nie maksimum i nie „wycisk”. Tyle pracy, ile daje realny bodziec bez wielodniowego przemęczenia.
+            </p>
+          </article>
+
+          <article class="filter-card reveal">
+            <div class="filter-card__top">
+              <h3 class="filter-card__title">Jak reaguje organizm?</h3>
+              <span class="filter-card__num tabular">03</span>
+            </div>
+            <p class="filter-card__desc">
+              Trening dostarcza sygnału, a rolą trenera jest obserwacja i spokojna korekta obciążenia z tygodnia na tydzień.
+            </p>
+          </article>
+
+          <article class="filter-card reveal">
+            <div class="filter-card__top">
+              <h3 class="filter-card__title">Co dalej?</h3>
+              <span class="filter-card__num tabular">04</span>
+            </div>
+            <p class="filter-card__desc">
+              Regularne przeglądy w cyklu <span class="tabular">12</span> tygodni (<span class="tabular">T01 → T06 → T12</span>) i świadoma decyzja o kolejnym kroku.
+            </p>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 3 — VALUE CONTRAST (HOOKE LONDON STYLE)
+         ==================================================================== -->
+    <section class="section section--alabaster" id="kontrast-wartosci" aria-labelledby="kontrast-title">
+      <div class="container">
+        <div class="section-header reveal">
+          <div>
+            <p class="section-eyebrow">02 · Kontrast wartości</p>
+            <h2 class="display-h2" id="kontrast-title">
+              Za co płacisz <span class="tabular">250 zł</span> za <span class="editorial-italic">sesję?</span>
+            </h2>
+          </div>
+          <p class="section-lead">
+            Różnica między masowym klubem a prywatną salą 1:1 przy lesie nie polega na większej liczbie maszyn, lecz na spokoju, precyzji i braku ukrytych zobowiązań.
+          </p>
+        </div>
+
+        <div class="contrast-table-wrap reveal" role="region" aria-label="Porównanie typowego treningu na siłowni i Studio Las 1:1">
+          <div class="contrast-head" aria-hidden="true">
+            <span>Obszar</span>
+            <span>Typowy trening na siłowni</span>
+            <span class="contrast-head__las">Studio Las 1:1 przy lesie</span>
+          </div>
+
+          <div class="contrast-row">
+            <div class="contrast-row__dim">Przestrzeń i prywatność</div>
+            <div class="contrast-row__gym">Wspólna sala, hałas, kolejki do sprzętu</div>
+            <div class="contrast-row__las">
+              <strong>Cała sala przy lesie na wyłączność</strong> z buforem czasowym między wizytami oraz prywatny parking pod drzwiami.
+            </div>
+          </div>
+
+          <div class="contrast-row">
+            <div class="contrast-row__dim">Pierwszy krok</div>
+            <div class="contrast-row__gym">Brak wywiadu lub wyczerpujący test na pierwszym treningu</div>
+            <div class="contrast-row__las">
+              <strong>Bezpłatna rozmowa wstępna (<span class="tabular">0 zł</span> / ok. <span class="tabular">15 min</span>)</strong> oraz spokojne spotkanie wprowadzające (<span class="tabular">220 zł brutto</span> / <span class="tabular">60–75 min</span>) z pisemnym podsumowaniem i <span class="tabular">10-minutowym</span> zestawem domowym.
+            </div>
+          </div>
+
+          <div class="contrast-row">
+            <div class="contrast-row__dim">Dobór planu</div>
+            <div class="contrast-row__gym">Gotowy schemat z internetu lub przypadkowy obwód</div>
+            <div class="contrast-row__las">
+              <strong>Indywidualny plan oparty na <span class="tabular">~15</span> latach edukacji i praktyki 1:1</strong> — dopasowany do dorosłych <span class="tabular">35–60+</span>, pracy siedzącej lub treningu po zakończonej rehabilitacji zgodnie z zaleceniami specjalisty.
+            </div>
+          </div>
+
+          <div class="contrast-row">
+            <div class="contrast-row__dim">Zobowiązania i rozliczenia</div>
+            <div class="contrast-row__gym">Długoterminowe umowy abonamentowe lub pakiety z góry</div>
+            <div class="contrast-row__las">
+              <strong>Czytelny <span class="tabular">12-tygodniowy</span> okres planowania i przeglądu postępów</strong> (<span class="tabular">250 zł brutto</span> / sesja <span class="tabular">60 min</span>; rytm <span class="tabular">1× = 1 000 zł / 4 tyg.</span> lub <span class="tabular">2× = 2 000 zł / 4 tyg.</span>) — bez umów abonamentowych z góry.
+            </div>
+          </div>
+
+          <div class="contrast-row">
+            <div class="contrast-row__dim">Granica kompetencji</div>
+            <div class="contrast-row__gym">Obietnice bez pokrycia i brak jasnych przeciwwskazań</div>
+            <div class="contrast-row__las">
+              <strong>Uczciwa granica:</strong> Studio Las nie jest podmiotem leczniczym i nie wykonuje zawodu fizjoterapeuty; w ostrym bólu lub po świeżym urazie pierwszym adresem jest lekarz lub fizjoterapeuta.
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 4 — EDUCATION PILLARS + ARCHIVE CARD + BOUNDARY
+         ==================================================================== -->
+    <section class="section section--white" id="edukacja" aria-labelledby="edukacja-title">
+      <div class="container">
+        <div class="section-header reveal">
+          <div>
+            <p class="section-eyebrow">03 · Wykształcenie i kwalifikacje</p>
+            <h2 class="display-h2" id="edukacja-title">
+              Wyselekcjonowane <span class="editorial-italic">filary</span> edukacji.
+            </h2>
+          </div>
+          <p class="section-lead">
+            Zamiast ściany dyplomów — cztery konkretne obszary, które tworzą bazę do bezpiecznego prowadzenia treningu siłowego i ruchowego 1:1.
+          </p>
+        </div>
+
+        <div class="pillars-list">
+          <article class="pillar-row reveal">
+            <span class="pillar-row__num tabular">01</span>
+            <h3 class="pillar-row__title">
+              Magister wychowania fizycznego — Akademia Wychowania Fizycznego Józefa Piłsudskiego w Warszawie
+            </h3>
+            <p class="pillar-row__desc">
+              Fundament z fizjologii wysiłku, biomechaniki, metodyki treningu siłowego i uprawnień instruktorskich.
+            </p>
+          </article>
+
+          <article class="pillar-row reveal">
+            <span class="pillar-row__num tabular">02</span>
+            <h3 class="pillar-row__title">
+              Studia podyplomowe „Fizjoterapia w sporcie”
+            </h3>
+            <p class="pillar-row__desc">
+              Akademia Medyczna Nauk Stosowanych i Holistycznych — uzupełnienie warsztatu trenerskiego pomocne w bezpiecznym doborze obciążeń i pracy po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty.
+            </p>
+          </article>
+
+          <article class="pillar-row reveal">
+            <span class="pillar-row__num tabular">03</span>
+            <h3 class="pillar-row__title">
+              Cykl szkoleń specjalistycznych — Instytut Sportu – Państwowy Instytut Badawczy
+            </h3>
+            <p class="pillar-row__desc">
+              Biomechanika, programowanie siły i wytrzymałości, periodyzacja, psychologia sportu oraz żywienie i regeneracja.
+            </p>
+          </article>
+
+          <article class="pillar-row reveal">
+            <span class="pillar-row__num tabular">04</span>
+            <h3 class="pillar-row__title">
+              Rejestracja zawodowa i warsztat uzupełniający
+            </h3>
+            <p class="pillar-row__desc">
+              Wpis w rejestrze REPS Polska na poziomie EQF Level 5, szkolenia z pracy z oddechem PNEO oraz kwalifikacje pierwszej pomocy.
+            </p>
+          </article>
+        </div>
+
+        <div class="pillars-footer-grid">
+          <aside class="archive-card reveal" aria-label="Archiwum szkoleń i certyfikatów">
+            <div>
+              <p class="section-eyebrow" style="margin-bottom: 0.75rem;">Materiał referencyjny</p>
+              <p class="archive-card__text">
+                Archiwum szkoleń i certyfikatów — materiał referencyjny (nie główny argument sprzedażowy Studio Las). Otwiera się w nowej karcie.
+              </p>
+            </div>
+            <div>
+              <a
+                href="https://sites.google.com/view/trener-personalny-warszawa/referencje"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn--outline-dark btn--sm"
+              >
+                <span>Otwórz archiwum certyfikatów</span>
+                <svg class="icon icon--sm icon-arrow-diag" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 17 17 7"></path>
+                  <path d="M8 7h9v9"></path>
+                </svg>
+              </a>
+            </div>
+          </aside>
+
+          <div class="boundary-box reveal" role="note" aria-label="Granica kompetencji Studio Las">
+            <span class="boundary-box__label">Granica kompetencji i bezpieczeństwo</span>
+            <p>
+              <strong>Studio Las nie jest podmiotem leczniczym i nie wykonuje zawodu fizjoterapeuty; w ostrym bólu lub po świeżym urazie pierwszym adresem jest lekarz lub fizjoterapeuta.</strong>
+            </p>
+            <p>
+              Prowadzimy trening siłowy i ruchowy 1:1, w tym trening po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SECTION 5 — CALM CONTACT FINALE (#14231B + GRAIN) & FOOTER
+         ==================================================================== -->
+    <section class="contact-finale surface-dark has-grain" id="kontakt" aria-labelledby="kontakt-title">
+      <div class="container">
+        <div class="contact-hero-box">
+          <div>
+            <p class="section-eyebrow">Kontakt · Bez zobowiązań</p>
+            <h2 class="display-h2" id="kontakt-title">
+              Zacznijmy od <span class="editorial-italic">spokojnej</span> rozmowy.
+            </h2>
+            <p class="contact-lead">
+              Rozmowa wstępna trwa ok. 15 minut, odbywa się telefonicznie i kosztuje 0 zł. Ustalimy Twój punkt wyjścia, odpowiem na pytania i sprawdzimy, czy wybrany rytm pasuje do Twojego tygodnia.
+            </p>
+          </div>
+
+          <div class="contact-primary-wrap">
+            <a href="./ankieta-kontakt.html#ankieta" class="btn btn--light contact-primary-cta">
+              <span>Przejdź do 1-minutowego formularza kontaktu</span>
+              <svg class="icon icon-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14"></path>
+                <path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </a>
+            <p class="contact-primary-note">
+              Krótki formularz (ok. 60 s) pozwala mi dobrze przygotować się do rozmowy i oddzwonić o wybranej porze.
+            </p>
+          </div>
+        </div>
+
+        <div class="direct-channels" aria-label="Bezpośrednie kanały kontaktu">
+          <div class="channel-card">
+            <div>
+              <span class="channel-label">Telefon · Rozmowa wstępna 0 zł</span>
+              <p class="channel-value tabular">503 975 998</p>
+            </div>
+            <div class="channel-actions">
+              <a href="tel:+48503975998" class="channel-pill">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92Z"></path>
+                </svg>
+                <span>Zadzwoń</span>
+              </a>
+              <a href="sms:+48503975998" class="channel-pill">
+                <span>SMS</span>
+              </a>
+              <a href="https://wa.me/48503975998" target="_blank" rel="noopener noreferrer" class="channel-pill">
+                <span>WhatsApp</span>
+              </a>
+              <button type="button" class="channel-pill" data-copy="503 975 998" data-copy-label="Skopiowano numer telefonu">
+                <span>Kopiuj</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="channel-card">
+            <div>
+              <span class="channel-label">Wiadomość e-mail</span>
+              <p class="channel-value">trenermedycznywarszawa@gmail.com</p>
+            </div>
+            <div class="channel-actions">
+              <a href="mailto:trenermedycznywarszawa@gmail.com" class="channel-pill">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                  <path d="m3 7 9 6 9-6"></path>
+                </svg>
+                <span>Napisz</span>
+              </a>
+              <button type="button" class="channel-pill" data-copy="trenermedycznywarszawa@gmail.com" data-copy-label="Skopiowano adres e-mail">
+                <span>Kopiuj</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <footer class="site-footer">
+          <div>
+            <span>Damian Krawiec — Studio Las</span>
+            <!-- TODO: NIP/CEIDG przed uruchomieniem -->
+            <span> · ul. Pracka 1J, 05-504 Prace Duże (gm. Tarczyn)</span>
+          </div>
+
+          <div class="footer-legal-links">
+            <button type="button" class="footer-link-btn" data-open-dialog="dialog-rodo">
+              Polityka prywatności (RODO)
+            </button>
+            <button type="button" class="footer-link-btn" data-open-dialog="dialog-usude">
+              Informacje prawne (UŚUDE)
+            </button>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======================================================================
+       FLOATING MOBILE BOTTOM BAR (56px, BLUR 12px, INTERSECTION + INERT)
+       ====================================================================== -->
+  <aside class="mobile-dock is-hidden" id="mobileDock" aria-label="Szybki kontakt" inert>
+    <a href="./ankieta-kontakt.html#ankieta" class="btn btn--forest mobile-dock__primary">
+      <span>Formularz · 1 min</span>
+    </a>
+    <a href="tel:+48503975998" class="btn mobile-dock__call tabular" aria-label="Zadzwoń pod numer 503 975 998">
+      <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92Z"></path>
+      </svg>
+      <span>Zadzwoń</span>
+    </a>
+  </aside>
+
+  <div class="toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ======================================================================
+       NATIVE <DIALOG> MODALS — RODO & UŚUDE
+       ====================================================================== -->
+  <dialog class="legal-dialog" id="dialog-rodo" aria-labelledby="rodo-title">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <h2 id="rodo-title">Polityka prywatności i informacja RODO</h2>
+        <button type="button" class="dialog-close" data-close-dialog aria-label="Zamknij okno RODO">
+          <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <p>
+          <strong>Administrator danych osobowych:</strong> Damian Krawiec — Studio Las, ul. Pracka 1J, 05-504 Prace Duże (gm. Tarczyn).
+          <!-- TODO: NIP/CEIDG przed uruchomieniem -->
+          Kontakt w sprawach ochrony danych: <span class="tabular">503 975 998</span> oraz trenermedycznywarszawa@gmail.com.
+        </p>
+
+        <h3>1. Zakres i cel przetwarzania</h3>
+        <p>
+          Dane przekazywane dobrowolnie podczas kontaktu telefonicznego, mailowego, przez SMS/WhatsApp lub 1-minutowy formularz kontaktu przetwarzane są wyłącznie w celu udzielenia odpowiedzi, umówienia rozmowy wstępnej (0 zł) lub spotkania wprowadzającego oraz organizacji treningów 1:1 (art. 6 ust. 1 lit. b oraz lit. f RODO).
+        </p>
+
+        <h3>2. Czas przechowywania i odbiorcy</h3>
+        <p>
+          Dane kontaktowe przechowywane są przez okres niezbędny do obsługi zapytania lub prowadzenia współpracy, a następnie przez czas wynikający z obowiązków rachunkowych lub przedawnienia roszczeń. Strona nie korzysta z zewnętrznych narzędzi śledzących, reklamowych ani profilowania marketingowego.
+        </p>
+
+        <h3>3. Twoje prawa</h3>
+        <p>
+          Przysługuje Ci prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych, wniesienia sprzeciwu oraz wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (UODO).
+        </p>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn btn--forest btn--sm" data-close-dialog>Zamknij</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="legal-dialog" id="dialog-usude" aria-labelledby="usude-title">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <h2 id="usude-title">Informacje prawne (UŚUDE) i charakter usług</h2>
+        <button type="button" class="dialog-close" data-close-dialog aria-label="Zamknij okno informacji prawnych">
+          <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <p>
+          <strong>Usługodawca:</strong> Damian Krawiec — Studio Las, ul. Pracka 1J, 05-504 Prace Duże (gm. Tarczyn).
+          <!-- TODO: NIP/CEIDG przed uruchomieniem -->
+          Telefon: <span class="tabular">503 975 998</span>, e-mail: trenermedycznywarszawa@gmail.com.
+        </p>
+
+        <h3>1. Usługi świadczone drogą elektroniczną</h3>
+        <p>
+          Niniejsza strona internetowa ma charakter informacyjny — umożliwia zapoznanie się z podejściem prowadzącego, zasadami treningów 1:1, cennikiem brutto oraz przejście do formularza kontaktu. Korzystanie ze strony jest bezpłatne i wymaga standardowej, aktualnej przeglądarki internetowej.
+        </p>
+
+        <h3>2. Charakter działalności i granica kompetencji</h3>
+        <p>
+          Studio Las świadczy usługi treningu siłowego i ruchowego 1:1, w tym trening po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty. <strong>Studio Las nie jest podmiotem leczniczym i nie wykonuje zawodu fizjoterapeuty; w ostrym bólu lub po świeżym urazie pierwszym adresem jest lekarz lub fizjoterapeuta.</strong>
+        </p>
+
+        <h3>3. Warunki cennika i reklamacje</h3>
+        <p>
+          Wszystkie ceny podane na stronie są cenami brutto w złotych polskich (PLN). Cykl 12 tygodni stanowi ramę planowania i przeglądu postępów i nie wiąże się z umowami abonamentowymi opłacanymi z góry. Ewentualne uwagi lub reklamacje dotyczące funkcjonowania strony można zgłaszać na adres trenermedycznywarszawa@gmail.com (odpowiedź w terminie do 14 dni).
+        </p>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn btn--forest btn--sm" data-close-dialog>Zamknij</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+
+      /* ====================================================================
+         1. MOBILE MENU DRAWER
+         ==================================================================== */
+      const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+      const mobileMenuDrawer = document.getElementById("mobileMenuDrawer");
+
+      if (mobileMenuToggle && mobileMenuDrawer) {
+        const closeDrawer = () => {
+          mobileMenuToggle.setAttribute("aria-expanded", "false");
+          mobileMenuDrawer.hidden = true;
+        };
+
+        mobileMenuToggle.addEventListener("click", () => {
+          const isOpen = mobileMenuToggle.getAttribute("aria-expanded") === "true";
+          mobileMenuToggle.setAttribute("aria-expanded", String(!isOpen));
+          mobileMenuDrawer.hidden = isOpen;
+        });
+
+        mobileMenuDrawer.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", closeDrawer);
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !mobileMenuDrawer.hidden) {
+            closeDrawer();
+            mobileMenuToggle.focus();
+          }
+        });
+      }
+
+      /* ====================================================================
+         2. COPY TO CLIPBOARD + ACCESSIBLE TOAST
+         ==================================================================== */
+      const copyToast = document.getElementById("copyToast");
+      let toastTimer = null;
+
+      const showToast = (message) => {
+        if (!copyToast) return;
+        copyToast.textContent = message;
+        copyToast.classList.add("is-visible");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          copyToast.classList.remove("is-visible");
+        }, 2400);
+      };
+
+      const copyText = async (text) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+        const helper = document.createElement("textarea");
+        helper.value = text;
+        helper.setAttribute("readonly", "");
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(helper);
+        return ok;
+      };
+
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const value = button.dataset.copy || "";
+          const toastMsg = button.dataset.copyLabel || "Skopiowano";
+          try {
+            await copyText(value);
+            showToast(toastMsg);
+          } catch {
+            showToast("Nie udało się skopiować — zaznacz tekst ręcznie");
+          }
+        });
+      });
+
+      /* ====================================================================
+         3. FLOATING MOBILE BOTTOM BAR (INTERSECTIONOBSERVER + INERT)
+         ==================================================================== */
+      const mobileDock = document.getElementById("mobileDock");
+      const heroSection = document.getElementById("start-o-mnie");
+      const contactSection = document.getElementById("kontakt");
+
+      if (mobileDock && heroSection && contactSection && "IntersectionObserver" in window) {
+        let heroVisible = true;
+        let contactVisible = false;
+
+        const updateDockVisibility = () => {
+          const shouldHide = heroVisible || contactVisible;
+          mobileDock.classList.toggle("is-hidden", shouldHide);
+          mobileDock.inert = shouldHide;
+        };
+
+        const dockObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.target === heroSection) {
+                heroVisible = entry.isIntersecting;
+              } else if (entry.target === contactSection) {
+                contactVisible = entry.isIntersecting;
+              }
+            });
+            updateDockVisibility();
+          },
+          { threshold: 0.12 }
+        );
+
+        dockObserver.observe(heroSection);
+        dockObserver.observe(contactSection);
+      }
+
+      /* ====================================================================
+         4. NATIVE <DIALOG> MODALS (RODO & UŚUDE)
+         ==================================================================== */
+      document.querySelectorAll("[data-open-dialog]").forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          const dialogId = trigger.getAttribute("data-open-dialog");
+          const dialog = dialogId ? document.getElementById(dialogId) : null;
+          if (dialog && typeof dialog.showModal === "function") {
+            dialog.showModal();
+          }
+        });
+      });
+
+      document.querySelectorAll("dialog.legal-dialog").forEach((dialog) => {
+        dialog.querySelectorAll("[data-close-dialog]").forEach((closeBtn) => {
+          closeBtn.addEventListener("click", () => dialog.close());
+        });
+
+        dialog.addEventListener("click", (event) => {
+          const rect = dialog.getBoundingClientRect();
+          const inside =
+            event.clientX >= rect.left &&
+            event.clientX <= rect.right &&
+            event.clientY >= rect.top &&
+            event.clientY <= rect.bottom;
+          if (!inside) {
+            dialog.close();
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
