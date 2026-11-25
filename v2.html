@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Studio Las — Prywatny trening siłowy i ruchowy 1:1 przy lesie | Prace Duże</title>
-  <meta name="description" content="Studio Las — prywatne studio treningu siłowego i ruchowego 1:1 przy lesie dla dorosłych 35–60+. Spokojna sala na wyłączność w Pracach Dużych, 5 min od S7. Prowadzenie: Damian Krawiec.">
+  <meta name="description" content="Studio Las — prywatne studio treningu siłowego i ruchowego 1:1 przy lesie dla dorosłych 35–60+. Cała sala na wyłączność w Pracach Dużych, 5 min od S7. Prowadzenie: Damian Krawiec.">
   <meta name="theme-color" content="#F6F7F5">
   <meta name="color-scheme" content="light">
 
@@ -14,7 +14,7 @@
 
   <style>
     /* ==========================================================================
-       1. VIEW TRANSITIONS & LOCAL TYPOGRAPHY
+       1. VIEW TRANSITIONS, INTERPOLATION & LOCAL TYPOGRAPHY
        ========================================================================== */
     @view-transition {
       navigation: auto;
@@ -48,38 +48,57 @@
        2. DESIGN TOKENS — LIGHT-FIRST ARCHITECTURAL LUXURY 2026
        ========================================================================== */
     :root {
+      interpolate-size: allow-keywords;
+
       --bg-alabaster: #F6F7F5;
       --bg-white: #FFFFFF;
-      --bg-subtle: #EEF1EE;
+      --bg-linen: #EFF2EF;
       --bg-forest: #14231B;
-      --bg-forest-elevated: #1C2F25;
-      --bg-forest-soft: rgba(20, 35, 27, 0.055);
+      --bg-forest-deep: #0E1913;
+      --bg-forest-elevated: #1B2E24;
 
       --border-hairline: #E2E6E3;
-      --border-strong: #CBD3CD;
-      --border-dark: rgba(167, 196, 177, 0.22);
+      --border-strong: #C6CFC9;
+      --border-dark: rgba(167, 196, 177, 0.2);
       --border-dark-strong: rgba(167, 196, 177, 0.42);
 
       --text-primary: #0F1612;
       --text-secondary: #525E57;
       --text-on-dark: #F6F7F5;
-      --text-on-dark-muted: #B8C8BE;
+      --text-on-dark-muted: #B6C7BD;
       --accent-sage: #A7C4B1;
 
       --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
 
       --container-max: 86rem; /* 1376px */
-      --gutter: clamp(1.25rem, 4vw, 3rem);
-      --section-pad: clamp(4.5rem, 9vw, 8.5rem);
+      --gutter: clamp(1.25rem, 4.2vw, 3.25rem);
+      --section-pad: clamp(5.5rem, 11vw, 10.5rem);
 
       --radius-card: 22px;
       --radius-inner: 14px;
       --radius-pill: 999px;
 
+      --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
       --ease-architectural: cubic-bezier(0.22, 1, 0.36, 1);
-      --shadow-hud: 0 12px 36px -12px rgba(15, 22, 18, 0.14), 0 1px 0 rgba(255, 255, 255, 0.65) inset;
-      --shadow-card: 0 1px 2px rgba(15, 22, 18, 0.03), 0 12px 32px -20px rgba(15, 22, 18, 0.08);
+      --ease-tactile: cubic-bezier(0.32, 0.72, 0, 1);
+
+      /* Multi-layered architectural edge shadows instead of flat SaaS borders */
+      --elev-card:
+        0 0 0 1px rgba(15, 22, 18, 0.055),
+        0 1px 2px rgba(15, 22, 18, 0.035),
+        0 18px 40px -26px rgba(15, 22, 18, 0.12);
+      --elev-instrument:
+        0 0 0 1px rgba(15, 22, 18, 0.07),
+        0 2px 4px rgba(15, 22, 18, 0.04),
+        0 28px 60px -32px rgba(15, 22, 18, 0.16);
+      --elev-hud:
+        0 0 0 1px rgba(226, 230, 227, 0.9),
+        0 1px 0 rgba(255, 255, 255, 0.85) inset,
+        0 16px 40px -16px rgba(15, 22, 18, 0.16);
+
+      /* Subtle tactile SVG micro-grain for deep forest green surfaces */
+      --grain-svg: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
     }
 
     /* ==========================================================================
@@ -156,24 +175,12 @@
       color: var(--text-on-dark);
       font-size: 0.875rem;
       font-weight: 500;
-      transform: translateY(-220%);
-      transition: transform 0.25s var(--ease-architectural);
+      transform: translateY(-240%);
+      transition: transform 0.28s var(--ease-architectural);
     }
 
     .skip-link:focus {
       transform: translateY(0);
-    }
-
-    .sr-only {
-      position: absolute;
-      width: 1px;
-      height: 1px;
-      padding: 0;
-      margin: -1px;
-      overflow: hidden;
-      clip: rect(0, 0, 0, 0);
-      white-space: nowrap;
-      border: 0;
     }
 
     .tabular {
@@ -181,8 +188,32 @@
       font-variant-numeric: tabular-nums;
     }
 
+    /* Tactile micro-grain overlay exclusively on deep forest surfaces */
+    .has-grain {
+      position: relative;
+      isolation: isolate;
+    }
+
+    .has-grain::before {
+      content: "";
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      background-image: var(--grain-svg);
+      background-size: 180px 180px;
+      opacity: 0.028;
+      mix-blend-mode: overlay;
+      border-radius: inherit;
+    }
+
+    .has-grain > * {
+      position: relative;
+      z-index: 1;
+    }
+
     /* ==========================================================================
-       4. SCROLL PROGRESS BAR (CSS SCROLL-DRIVEN ANIMATION)
+       4. TOP 2PX SCROLL PROGRESS BAR (ANIMATION-TIMELINE: SCROLL)
        ========================================================================== */
     .scroll-progress {
       position: fixed;
@@ -190,17 +221,17 @@
       left: 0;
       width: 100%;
       height: 2px;
-      z-index: 90;
+      z-index: 95;
       pointer-events: none;
-      background: transparent;
     }
 
     .scroll-progress__bar {
       width: 100%;
       height: 100%;
-      background: linear-gradient(90deg, var(--bg-forest) 0%, #3F6651 100%);
+      background: linear-gradient(90deg, var(--bg-forest) 0%, #4E7861 100%);
       transform-origin: 0 50%;
       transform: scaleX(0);
+      will-change: transform;
     }
 
     @supports (animation-timeline: scroll()) {
@@ -215,7 +246,7 @@
     }
 
     /* ==========================================================================
-       5. LAYOUT & TYPOGRAPHY PRIMITIVES
+       5. EDITORIAL LAYOUT & TYPOGRAPHY PRIMITIVES
        ========================================================================== */
     .container {
       width: min(100% - (var(--gutter) * 2), var(--container-max));
@@ -239,21 +270,21 @@
     .section-eyebrow {
       display: inline-flex;
       align-items: center;
-      gap: 0.625rem;
-      font-size: 0.78rem;
+      gap: 0.75rem;
+      font-size: 0.74rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.11em;
       text-transform: uppercase;
       color: var(--text-secondary);
-      margin-bottom: 1.25rem;
+      margin-bottom: 1.4rem;
     }
 
     .section-eyebrow::before {
       content: "";
-      width: 18px;
+      width: 24px;
       height: 1px;
       background: currentColor;
-      opacity: 0.55;
+      opacity: 0.45;
     }
 
     .surface-dark .section-eyebrow {
@@ -263,18 +294,18 @@
     .display-h1 {
       font-family: var(--font-sans);
       font-weight: 400;
-      font-size: clamp(2.85rem, 6.2vw, 5.65rem);
-      line-height: 0.99;
-      letter-spacing: -0.042em;
+      font-size: clamp(3rem, 6.7vw, 6.25rem);
+      line-height: 0.96;
+      letter-spacing: -0.045em;
       text-wrap: balance;
     }
 
     .display-h2 {
       font-family: var(--font-sans);
       font-weight: 400;
-      font-size: clamp(2.1rem, 4.1vw, 3.65rem);
-      line-height: 1.03;
-      letter-spacing: -0.04em;
+      font-size: clamp(2.25rem, 4.4vw, 4.1rem);
+      line-height: 1.0;
+      letter-spacing: -0.042em;
       text-wrap: balance;
       color: var(--text-primary);
     }
@@ -287,39 +318,39 @@
       font-family: var(--font-serif);
       font-style: italic;
       font-weight: 400;
-      letter-spacing: -0.015em;
+      letter-spacing: -0.012em;
       padding-right: 0.04em;
     }
 
     .section-header {
       display: grid;
-      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
-      gap: clamp(1.25rem, 3vw, 3rem);
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.8fr);
+      gap: clamp(1.5rem, 4vw, 4rem);
       align-items: end;
-      margin-bottom: clamp(2.5rem, 5vw, 4rem);
+      margin-bottom: clamp(3rem, 6vw, 5rem);
     }
 
     .section-lead {
       color: var(--text-secondary);
-      font-size: clamp(0.98rem, 1.1vw, 1.08rem);
-      line-height: 1.65;
-      max-width: 46ch;
+      font-size: clamp(0.98rem, 1.1vw, 1.09rem);
+      line-height: 1.66;
+      max-width: 44ch;
       justify-self: end;
     }
 
-    /* Buttons */
+    /* Tactile Buttons with Mechanical Resistance & 4px Arrow Travel */
     .btn {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      gap: 0.6rem;
+      gap: 0.65rem;
       min-height: 48px;
-      padding: 0.78rem 1.5rem;
+      padding: 0.8rem 1.55rem;
       border-radius: var(--radius-pill);
       border: 1px solid transparent;
       font-size: 0.9375rem;
       font-weight: 500;
-      letter-spacing: -0.01em;
+      letter-spacing: -0.012em;
       line-height: 1.2;
       cursor: pointer;
       white-space: nowrap;
@@ -327,25 +358,42 @@
         background-color 0.28s var(--ease-architectural),
         color 0.28s var(--ease-architectural),
         border-color 0.28s var(--ease-architectural),
-        transform 0.28s var(--ease-architectural);
+        box-shadow 0.28s var(--ease-architectural),
+        transform 0.2s var(--ease-tactile);
     }
 
     .btn:active {
       transform: scale(0.985);
     }
 
+    .btn .icon-arrow,
+    .btn .icon-arrow-diag {
+      transition: transform 0.3s var(--ease-out-expo);
+    }
+
+    .btn:hover .icon-arrow {
+      transform: translateX(4px);
+    }
+
+    .btn:hover .icon-arrow-diag {
+      transform: translate(3px, -3px);
+    }
+
     .btn--forest {
       background-color: var(--bg-forest);
       color: var(--text-on-dark);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.1) inset, 0 10px 24px -12px rgba(20, 35, 27, 0.55);
     }
 
     .btn--forest:hover {
-      background-color: #1D3327;
+      background-color: #1C3327;
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.14) inset, 0 14px 28px -12px rgba(20, 35, 27, 0.65);
     }
 
     .btn--light {
       background-color: var(--bg-white);
       color: var(--text-primary);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.9) inset, 0 12px 26px -14px rgba(15, 22, 18, 0.35);
     }
 
     .btn--light:hover {
@@ -359,7 +407,7 @@
     }
 
     .btn--outline-dark:hover {
-      background-color: var(--bg-subtle);
+      background-color: var(--bg-white);
       border-color: var(--text-primary);
     }
 
@@ -367,19 +415,19 @@
       background-color: rgba(255, 255, 255, 0.08);
       color: var(--text-on-dark);
       border-color: rgba(255, 255, 255, 0.28);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
     }
 
     .btn--outline-light:hover {
-      background-color: rgba(255, 255, 255, 0.16);
-      border-color: rgba(255, 255, 255, 0.55);
+      background-color: rgba(255, 255, 255, 0.17);
+      border-color: rgba(255, 255, 255, 0.56);
     }
 
     .btn--sm {
-      min-height: 38px;
-      padding: 0.45rem 1rem;
-      font-size: 0.85rem;
+      min-height: 44px;
+      padding: 0.55rem 1.15rem;
+      font-size: 0.86rem;
     }
 
     .icon {
@@ -388,7 +436,7 @@
       flex: none;
       stroke: currentColor;
       fill: none;
-      stroke-width: 1.6;
+      stroke-width: 1.55;
       stroke-linecap: round;
       stroke-linejoin: round;
     }
@@ -399,105 +447,133 @@
     }
 
     /* ==========================================================================
-       6. VIEW-TIMELINE SCROLL REVEAL (PROGRESSIVE ENHANCEMENT)
+       6. GPU-COMPOSITED SCROLL CHOREOGRAPHY (ANIMATION-TIMELINE: VIEW)
        ========================================================================== */
     @media (prefers-reduced-motion: no-preference) {
       @supports (animation-timeline: view()) {
         .reveal {
-          animation: reveal-up linear both;
+          animation: arch-reveal linear both;
           animation-timeline: view();
-          animation-range: entry 0% cover 22%;
+          animation-range: entry 0% cover 20%;
         }
 
-        @keyframes reveal-up {
+        @keyframes arch-reveal {
           from {
             opacity: 0;
-            transform: translateY(24px);
+            transform: translateY(22px);
           }
           to {
             opacity: 1;
             transform: translateY(0);
           }
         }
+
+        .media-settle {
+          will-change: transform;
+          animation: media-zoom-settle linear both;
+          animation-timeline: view();
+          animation-range: entry 0% cover 55%;
+        }
+
+        @keyframes media-zoom-settle {
+          from { transform: scale(1.05); }
+          to { transform: scale(1.0); }
+        }
+
+        .hero__media img {
+          will-change: transform;
+          animation: hero-scroll-settle linear both;
+          animation-timeline: scroll(root);
+          animation-range: 0px 90svh;
+        }
+
+        @keyframes hero-scroll-settle {
+          from { transform: scale(1.05) translateY(0); }
+          to { transform: scale(1.0) translateY(4%); }
+        }
       }
     }
 
     /* ==========================================================================
-       7. FLOATING HUD NAVIGATION
+       7. FLOATING HUD NAVIGATION (GLASS OVER HERO -> FROSTED ALABASTER CAPSULE)
        ========================================================================== */
     .hud-header {
       position: fixed;
       top: clamp(0.75rem, 2vw, 1.25rem);
       left: 0;
       right: 0;
-      z-index: 80;
+      z-index: 85;
       pointer-events: none;
     }
 
     .hud-bar {
       pointer-events: auto;
-      width: min(100% - (var(--gutter) * 1.4), 76rem);
+      width: min(100% - (var(--gutter) * 1.3), 76rem);
       margin-inline: auto;
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 0.45rem 0.55rem 0.45rem 1.25rem;
+      padding: 0.42rem 0.48rem 0.42rem 1.35rem;
       border-radius: var(--radius-pill);
-      background: rgba(20, 35, 27, 0.48);
+      background: rgba(18, 32, 24, 0.42);
       border: 1px solid rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(20px) saturate(140%);
-      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      box-shadow: 0 1px 0 rgba(255, 255, 255, 0.16) inset, 0 16px 36px -18px rgba(0, 0, 0, 0.42);
+      backdrop-filter: blur(22px) saturate(145%);
+      -webkit-backdrop-filter: blur(22px) saturate(145%);
       color: var(--text-on-dark);
       transition:
-        background-color 0.35s var(--ease-architectural),
-        border-color 0.35s var(--ease-architectural),
-        color 0.35s var(--ease-architectural),
-        box-shadow 0.35s var(--ease-architectural);
+        background-color 0.42s var(--ease-architectural),
+        border-color 0.42s var(--ease-architectural),
+        color 0.42s var(--ease-architectural),
+        box-shadow 0.42s var(--ease-architectural);
     }
 
     .hud-header.is-scrolled .hud-bar {
-      background: rgba(255, 255, 255, 0.84);
+      background: rgba(255, 255, 255, 0.86);
       border-color: rgba(226, 230, 227, 0.92);
       color: var(--text-primary);
-      box-shadow: var(--shadow-hud);
+      box-shadow: var(--elev-hud);
     }
 
     .hud-brand {
       display: inline-flex;
       align-items: center;
-      gap: 0.6rem;
+      gap: 0.65rem;
       font-weight: 500;
       font-size: 0.96rem;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.022em;
       white-space: nowrap;
+      min-height: 44px;
     }
 
-    .hud-brand__dot {
-      width: 8px;
-      height: 8px;
+    .hud-brand__mark {
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       background: var(--accent-sage);
-      transition: background-color 0.35s var(--ease-architectural);
+      box-shadow: 0 0 0 3px rgba(167, 196, 177, 0.22);
+      transition: background-color 0.4s ease, box-shadow 0.4s ease;
     }
 
-    .hud-header.is-scrolled .hud-brand__dot {
+    .hud-header.is-scrolled .hud-brand__mark {
       background: var(--bg-forest);
+      box-shadow: 0 0 0 3px rgba(20, 35, 27, 0.1);
     }
 
     .hud-nav {
       display: flex;
       align-items: center;
-      gap: 0.25rem;
+      gap: 0.2rem;
     }
 
     .hud-nav a {
-      padding: 0.5rem 0.9rem;
+      padding: 0.52rem 0.95rem;
       border-radius: var(--radius-pill);
       font-size: 0.875rem;
       font-weight: 400;
-      color: rgba(246, 247, 245, 0.86);
-      transition: background-color 0.22s ease, color 0.22s ease;
+      color: rgba(246, 247, 245, 0.88);
+      transition: background-color 0.24s ease, color 0.24s ease;
     }
 
     .hud-nav a:hover {
@@ -510,7 +586,7 @@
     }
 
     .hud-header.is-scrolled .hud-nav a:hover {
-      background: var(--bg-subtle);
+      background: var(--bg-linen);
       color: var(--text-primary);
     }
 
@@ -521,11 +597,12 @@
     }
 
     .hud-cta {
-      min-height: 40px;
-      padding: 0.5rem 1.1rem;
-      font-size: 0.85rem;
+      min-height: 44px;
+      padding: 0.55rem 1.2rem;
+      font-size: 0.855rem;
       background: var(--bg-white);
       color: var(--text-primary);
+      box-shadow: none;
     }
 
     .hud-cta:hover {
@@ -538,21 +615,21 @@
     }
 
     .hud-header.is-scrolled .hud-cta:hover {
-      background: #1D3327;
+      background: #1D3528;
     }
 
     .hud-menu-toggle {
       display: none;
       align-items: center;
       justify-content: center;
-      width: 40px;
-      height: 40px;
+      width: 44px;
+      height: 44px;
       border-radius: var(--radius-pill);
-      border: 1px solid currentColor;
-      border-color: rgba(255, 255, 255, 0.24);
+      border: 1px solid rgba(255, 255, 255, 0.26);
       background: transparent;
       color: inherit;
       cursor: pointer;
+      transition: background-color 0.2s ease, border-color 0.2s ease;
     }
 
     .hud-header.is-scrolled .hud-menu-toggle {
@@ -561,15 +638,14 @@
 
     .hud-mobile-drawer {
       pointer-events: auto;
-      width: min(100% - (var(--gutter) * 1.4), 76rem);
-      margin: 0.5rem auto 0;
-      padding: 1rem;
+      width: min(100% - (var(--gutter) * 1.3), 76rem);
+      margin: 0.55rem auto 0;
+      padding: 0.85rem;
       border-radius: var(--radius-card);
       background: rgba(255, 255, 255, 0.96);
-      border: 1px solid var(--border-hairline);
-      backdrop-filter: blur(20px);
-      -webkit-backdrop-filter: blur(20px);
-      box-shadow: var(--shadow-hud);
+      box-shadow: var(--elev-hud);
+      backdrop-filter: blur(22px);
+      -webkit-backdrop-filter: blur(22px);
       color: var(--text-primary);
     }
 
@@ -586,10 +662,12 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      padding: 0.85rem 1rem;
+      min-height: 48px;
+      padding: 0.75rem 1rem;
       border-radius: var(--radius-inner);
       font-weight: 500;
       font-size: 0.98rem;
+      transition: background-color 0.2s ease;
     }
 
     .hud-mobile-drawer a:hover {
@@ -613,6 +691,7 @@
       position: absolute;
       inset: 0;
       z-index: 0;
+      overflow: hidden;
     }
 
     .hero__media picture,
@@ -623,24 +702,24 @@
       object-position: 62% center;
     }
 
-    /* Directional soft forest scrim on left — reveals daylight forest on right, WCAG AA+ (> 7:1) */
+    /* Daylight forest remains luminous on right; rich architectural scrim on left (> 7:1 contrast) */
     .hero__scrim {
       position: absolute;
       inset: 0;
       z-index: 1;
       background:
         linear-gradient(
-          100deg,
-          rgba(16, 29, 22, 0.88) 0%,
-          rgba(20, 35, 27, 0.72) 40%,
-          rgba(20, 35, 27, 0.28) 72%,
-          rgba(20, 35, 27, 0.08) 100%
+          98deg,
+          rgba(14, 25, 19, 0.88) 0%,
+          rgba(20, 35, 27, 0.72) 38%,
+          rgba(20, 35, 27, 0.24) 70%,
+          rgba(20, 35, 27, 0.04) 100%
         ),
         linear-gradient(
           180deg,
-          rgba(16, 29, 22, 0.42) 0%,
-          rgba(16, 29, 22, 0) 26%,
-          rgba(16, 29, 22, 0.52) 100%
+          rgba(14, 25, 19, 0.42) 0%,
+          rgba(14, 25, 19, 0) 24%,
+          rgba(14, 25, 19, 0.56) 100%
         );
     }
 
@@ -650,27 +729,27 @@
       display: flex;
       flex-direction: column;
       justify-content: center;
-      padding-top: clamp(6.5rem, 12vh, 9rem);
-      padding-bottom: clamp(2.5rem, 6vh, 4rem);
-      max-width: 48rem;
+      padding-top: clamp(7rem, 13vh, 9.5rem);
+      padding-bottom: clamp(3rem, 7vh, 5rem);
+      max-width: 52rem;
     }
 
     .hero__tag {
       display: inline-flex;
       align-items: center;
-      gap: 0.65rem;
+      gap: 0.7rem;
       width: fit-content;
-      padding: 0.42rem 0.9rem;
+      padding: 0.48rem 1.05rem;
       border-radius: var(--radius-pill);
       background: rgba(246, 247, 245, 0.1);
       border: 1px solid rgba(246, 247, 245, 0.22);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
       font-size: 0.8rem;
       font-weight: 500;
       letter-spacing: 0.03em;
       color: var(--text-on-dark);
-      margin-bottom: 1.75rem;
+      margin-bottom: 2rem;
     }
 
     .hero__tag-dot {
@@ -681,9 +760,9 @@
     }
 
     .hero__lead {
-      margin-top: 1.6rem;
-      max-width: 46ch;
-      font-size: clamp(1.03rem, 1.3vw, 1.22rem);
+      margin-top: 1.85rem;
+      max-width: 45ch;
+      font-size: clamp(1.04rem, 1.35vw, 1.24rem);
       line-height: 1.58;
       color: rgba(246, 247, 245, 0.9);
       font-weight: 400;
@@ -693,97 +772,95 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.85rem;
-      margin-top: 2.25rem;
+      gap: 0.9rem;
+      margin-top: 2.5rem;
     }
 
     .hero__meta-strip {
       position: relative;
       z-index: 2;
       border-top: 1px solid rgba(246, 247, 245, 0.16);
-      background: rgba(16, 29, 22, 0.34);
-      backdrop-filter: blur(14px);
-      -webkit-backdrop-filter: blur(14px);
+      background: rgba(14, 25, 19, 0.36);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
     }
 
     .hero__specs {
       display: grid;
       grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 1rem;
-      padding-block: 1.15rem;
+      padding-block: 1.2rem;
     }
 
     .hero__spec {
       display: flex;
       flex-direction: column;
-      gap: 0.2rem;
+      gap: 0.22rem;
+      padding-inline: 1.25rem;
+      border-left: 1px solid rgba(246, 247, 245, 0.14);
+    }
+
+    .hero__spec:first-child {
+      padding-left: 0;
+      border-left: 0;
     }
 
     .hero__spec-label {
-      font-size: 0.72rem;
-      letter-spacing: 0.08em;
+      font-size: 0.7rem;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--accent-sage);
     }
 
     .hero__spec-value {
-      font-size: 0.9rem;
+      font-size: 0.91rem;
       color: var(--text-on-dark);
       font-weight: 400;
     }
 
     /* ==========================================================================
-       9. ACT 2 — LIGHT ARCHITECTURAL BENTO GRID (SUBGRID + @CONTAINER)
+       9. ACT 2 — ARCHITECTURAL BENTO (SUBGRID, @CONTAINER, SLIDING PILL, AXIS)
        ========================================================================== */
     .bento-grid {
       display: grid;
       grid-template-columns: repeat(12, minmax(0, 1fr));
-      gap: clamp(1rem, 1.6vw, 1.35rem);
+      gap: clamp(1.1rem, 1.8vw, 1.5rem);
     }
 
     .bento-card {
       container-type: inline-size;
       background: var(--bg-white);
-      border: 1px solid var(--border-hairline);
       border-radius: var(--radius-card);
-      padding: clamp(1.5rem, 2.8vw, 2.35rem);
-      box-shadow: var(--shadow-card);
+      padding: clamp(1.65rem, 3vw, 2.6rem);
+      box-shadow: var(--elev-card);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 1.5rem;
+      gap: 1.65rem;
     }
 
     .bento-card--forest {
       background: var(--bg-forest);
-      border-color: var(--bg-forest);
       color: var(--text-on-dark);
+      box-shadow: 0 24px 48px -24px rgba(14, 25, 19, 0.55);
     }
 
-    .bento-card--selector {
-      grid-column: span 8;
-    }
-
-    .bento-card--manifest {
-      grid-column: span 4;
-    }
-
-    .bento-card--timeline {
-      grid-column: span 5;
-    }
-
-    .bento-card--pricing {
-      grid-column: span 4;
-    }
-
+    .bento-card--selector { grid-column: span 8; }
+    .bento-card--manifest { grid-column: span 4; }
+    .bento-card--timeline { grid-column: span 12; }
+    .bento-card--pricing  { grid-column: span 7; }
     .bento-card--standard {
-      grid-column: span 3;
+      grid-column: span 5;
+      background: transparent;
+      box-shadow: none;
+      border-top: 1px solid var(--border-strong);
+      border-radius: 0;
+      padding-inline: 0.5rem;
     }
 
     .bento-kicker {
-      font-size: 0.75rem;
+      font-size: 0.73rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-secondary);
     }
@@ -793,138 +870,177 @@
     }
 
     .bento-title {
-      font-size: clamp(1.35rem, 2vw, 1.78rem);
+      font-size: clamp(1.45rem, 2.2vw, 1.95rem);
       font-weight: 400;
-      line-height: 1.14;
-      letter-spacing: -0.03em;
+      line-height: 1.12;
+      letter-spacing: -0.032em;
       text-wrap: balance;
     }
 
-    /* Interactive Starting-Point Selector (View Transitions) */
-    .pill-tabs {
+    /* Physics Sliding Pill Tabs (Starting Points) */
+    .sliding-tabs {
+      position: relative;
       display: flex;
       flex-wrap: wrap;
-      gap: 0.5rem;
+      gap: 0.35rem;
+      padding: 0.35rem;
+      border-radius: 18px;
+      background: var(--bg-alabaster);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.06) inset;
+      width: fit-content;
+      max-width: 100%;
+    }
+
+    .sliding-indicator {
+      position: absolute;
+      top: 0;
+      left: 0;
+      z-index: 0;
+      border-radius: var(--radius-pill);
+      background: var(--bg-forest);
+      box-shadow: 0 6px 16px -6px rgba(20, 35, 27, 0.45);
+      pointer-events: none;
+      transform: translate3d(var(--ind-x, 0px), var(--ind-y, 0px), 0);
+      width: var(--ind-w, 0px);
+      height: var(--ind-h, 0px);
+      opacity: 0;
+      transition:
+        transform 0.42s var(--ease-out-expo),
+        width 0.42s var(--ease-out-expo),
+        height 0.42s var(--ease-out-expo),
+        opacity 0.2s ease;
+      will-change: transform, width, height;
+    }
+
+    .sliding-indicator.is-ready {
+      opacity: 1;
+    }
+
+    .sliding-indicator.no-transition {
+      transition: none !important;
     }
 
     .pill-tab {
-      min-height: 40px;
-      padding: 0.5rem 1.05rem;
+      position: relative;
+      z-index: 1;
+      min-height: 44px;
+      padding: 0.55rem 1.15rem;
       border-radius: var(--radius-pill);
-      border: 1px solid var(--border-hairline);
-      background: var(--bg-alabaster);
+      border: 0;
+      background: transparent;
       color: var(--text-secondary);
       font-size: 0.875rem;
       font-weight: 500;
       cursor: pointer;
-      transition:
-        background-color 0.25s var(--ease-architectural),
-        color 0.25s var(--ease-architectural),
-        border-color 0.25s var(--ease-architectural);
+      transition: color 0.3s var(--ease-architectural), transform 0.18s var(--ease-tactile);
     }
 
     .pill-tab:hover {
-      border-color: var(--border-strong);
       color: var(--text-primary);
     }
 
-    .pill-tab[aria-selected="true"],
-    .pill-tab[aria-pressed="true"] {
-      background: var(--bg-forest);
-      border-color: var(--bg-forest);
+    .pill-tab:active {
+      transform: scale(0.985);
+    }
+
+    .pill-tab[aria-selected="true"] {
       color: var(--text-on-dark);
     }
 
     .selector-stage {
       view-transition-name: starting-point-panel;
       display: grid;
-      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
-      gap: 1.5rem;
-      padding-top: 1.5rem;
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
+      gap: 2rem;
+      padding-top: 1.75rem;
       border-top: 1px solid var(--border-hairline);
     }
 
-    @container (max-width: 560px) {
+    @container (max-width: 580px) {
       .selector-stage {
         grid-template-columns: 1fr;
+        gap: 1.35rem;
       }
     }
 
     .selector-stage__headline {
-      font-size: clamp(1.2rem, 1.8vw, 1.55rem);
+      font-size: clamp(1.25rem, 1.9vw, 1.62rem);
       font-weight: 500;
-      letter-spacing: -0.025em;
-      line-height: 1.22;
-      margin-bottom: 0.75rem;
+      letter-spacing: -0.028em;
+      line-height: 1.2;
+      margin-bottom: 0.85rem;
     }
 
     .selector-stage__copy {
       color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.62;
+      font-size: 0.96rem;
+      line-height: 1.64;
     }
 
     .selector-stage__list {
       display: grid;
-      gap: 0.65rem;
+      gap: 0.85rem;
       align-content: start;
-      padding: 1.15rem;
-      border-radius: var(--radius-inner);
-      background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
+      padding-left: 1.5rem;
+      border-left: 1px solid var(--border-hairline);
+    }
+
+    @container (max-width: 580px) {
+      .selector-stage__list {
+        padding-left: 0;
+        padding-top: 1.25rem;
+        border-left: 0;
+        border-top: 1px solid var(--border-hairline);
+      }
     }
 
     .selector-stage__list-label {
       font-size: 0.72rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.09em;
       text-transform: uppercase;
-      color: var(--text-secondary);
-      margin-bottom: 0.2rem;
+      color: var(--bg-forest);
     }
 
     .selector-stage__list li {
       display: flex;
       align-items: flex-start;
-      gap: 0.6rem;
-      font-size: 0.89rem;
-      line-height: 1.45;
+      gap: 0.75rem;
+      font-size: 0.91rem;
+      line-height: 1.48;
       color: var(--text-primary);
     }
 
     .selector-stage__list li::before {
       content: "";
-      width: 6px;
-      height: 6px;
-      margin-top: 0.5rem;
-      border-radius: 50%;
+      width: 14px;
+      height: 1px;
+      margin-top: 0.72em;
       background: var(--bg-forest);
       flex: none;
     }
 
     .selector-stage__note {
       grid-column: 1 / -1;
-      font-size: 0.84rem;
+      font-size: 0.85rem;
       color: var(--text-secondary);
-      padding: 0.75rem 1rem;
-      border-radius: var(--radius-inner);
-      background: var(--bg-subtle);
-      border-left: 2px solid var(--bg-forest);
+      padding-top: 1rem;
+      border-top: 1px dashed var(--border-hairline);
     }
 
     /* Forest Manifest Card */
     .manifest-quote {
-      font-size: clamp(1.3rem, 1.9vw, 1.65rem);
-      line-height: 1.24;
-      letter-spacing: -0.025em;
+      font-size: clamp(1.38rem, 2.05vw, 1.78rem);
+      line-height: 1.22;
+      letter-spacing: -0.028em;
       color: var(--text-on-dark);
       font-weight: 400;
     }
 
     .manifest-points {
       display: grid;
-      gap: 0.75rem;
-      padding-top: 1.25rem;
+      gap: 0.85rem;
+      padding-top: 1.4rem;
       border-top: 1px solid var(--border-dark);
     }
 
@@ -933,159 +1049,236 @@
       justify-content: space-between;
       align-items: baseline;
       gap: 1rem;
-      font-size: 0.875rem;
+      font-size: 0.88rem;
       color: var(--text-on-dark-muted);
     }
 
     .manifest-points strong {
       font-weight: 500;
       color: var(--text-on-dark);
+      text-align: right;
     }
 
-    /* 12-Week Timeline Subgrid */
-    .timeline-subgrid {
+    /* ARCHITECTURAL 12-WEEK AXIS (T01 -> T06 -> T12) — Connected Precision Track */
+    .axis-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1rem 2rem;
+    }
+
+    .axis-subtitle {
+      color: var(--text-secondary);
+      font-size: 0.92rem;
+      max-width: 44ch;
+    }
+
+    .axis-instrument {
+      position: relative;
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.85rem;
+      gap: clamp(1.5rem, 3vw, 2.75rem);
+      padding-top: 0.5rem;
     }
 
-    @container (max-width: 440px) {
-      .timeline-subgrid {
-        grid-template-columns: 1fr;
-      }
+    .axis-track-line {
+      position: absolute;
+      top: 1.65rem;
+      left: 0.75rem;
+      right: 16%;
+      height: 1px;
+      background: linear-gradient(90deg, var(--bg-forest) 0%, #587D67 52%, var(--border-strong) 100%);
+      pointer-events: none;
     }
 
-    .timeline-node {
+    .axis-checkpoint {
+      position: relative;
       display: grid;
-      grid-template-rows: auto auto 1fr;
-      gap: 0.45rem;
-      padding: 1rem;
-      border-radius: var(--radius-inner);
-      background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
+      grid-template-rows: subgrid;
+      grid-row: span 3;
+      gap: 0.65rem;
     }
 
-    .timeline-node__code {
+    .axis-marker-row {
+      display: flex;
+      align-items: center;
+      gap: 0.85rem;
+      margin-bottom: 0.6rem;
+    }
+
+    .axis-node-dot {
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: var(--bg-white);
+      border: 2px solid var(--bg-forest);
+      box-shadow: 0 0 0 5px var(--bg-white);
+      flex: none;
+      z-index: 1;
+    }
+
+    .axis-checkpoint--end .axis-node-dot {
+      background: var(--bg-forest);
+      box-shadow: 0 0 0 5px var(--bg-white), 0 0 0 7px rgba(20, 35, 27, 0.16);
+    }
+
+    .axis-code {
       display: inline-flex;
       align-items: center;
-      gap: 0.4rem;
-      font-size: 0.78rem;
-      font-weight: 500;
-      color: var(--bg-forest);
-    }
-
-    .timeline-node__title {
-      font-size: 0.96rem;
-      font-weight: 500;
-      letter-spacing: -0.015em;
-    }
-
-    .timeline-node__desc {
-      font-size: 0.83rem;
-      line-height: 1.5;
-      color: var(--text-secondary);
-    }
-
-    /* Pricing Subgrid Card */
-    .price-list {
-      display: grid;
-      gap: 0.7rem;
-    }
-
-    .price-row {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) auto;
-      align-items: baseline;
-      gap: 0.75rem;
-      padding: 0.85rem 1rem;
-      border-radius: var(--radius-inner);
+      padding: 0.22rem 0.65rem;
+      border-radius: var(--radius-pill);
       background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
+      font-size: 0.76rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--bg-forest);
+      z-index: 1;
     }
 
-    .price-row__name {
-      font-size: 0.9rem;
+    .axis-title {
+      font-size: 1.15rem;
       font-weight: 500;
+      letter-spacing: -0.022em;
       color: var(--text-primary);
     }
 
-    .price-row__meta {
-      display: block;
-      font-size: 0.78rem;
+    .axis-desc {
+      font-size: 0.9rem;
+      line-height: 1.58;
       color: var(--text-secondary);
-      margin-top: 0.15rem;
+      max-width: 34ch;
     }
 
-    .price-row__amount {
-      font-size: 1.05rem;
+    @container (max-width: 680px) {
+      .axis-instrument {
+        grid-template-columns: 1fr;
+        gap: 1.75rem;
+        padding-left: 1.5rem;
+      }
+
+      .axis-track-line {
+        top: 0.9rem;
+        bottom: 1.5rem;
+        left: 0.42rem;
+        right: auto;
+        width: 1px;
+        height: auto;
+        background: linear-gradient(180deg, var(--bg-forest) 0%, var(--border-strong) 100%);
+      }
+
+      .axis-checkpoint {
+        grid-row: auto;
+        grid-template-rows: auto;
+      }
+
+      .axis-node-dot {
+        position: absolute;
+        left: -1.5rem;
+        top: 0.25rem;
+      }
+    }
+
+    /* Swiss Ledger Pricing Card */
+    .price-ledger {
+      display: grid;
+    }
+
+    .price-ledger__row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+      gap: 1rem;
+      padding-block: 1.05rem;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    .price-ledger__row:last-child {
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .price-ledger__name {
+      font-size: 1rem;
       font-weight: 500;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+    }
+
+    .price-ledger__meta {
+      display: block;
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+      margin-top: 0.2rem;
+    }
+
+    .price-ledger__amount {
+      font-size: clamp(1.1rem, 1.7vw, 1.32rem);
+      font-weight: 500;
+      letter-spacing: -0.025em;
       color: var(--bg-forest);
       text-align: right;
       white-space: nowrap;
     }
 
     .price-footnote {
-      font-size: 0.8rem;
-      color: var(--text-secondary);
-      line-height: 1.5;
-    }
-
-    /* Standard ~15 lat Card */
-    .standard-metric {
-      font-size: clamp(2.8rem, 4.5vw, 3.8rem);
-      font-weight: 400;
-      line-height: 0.95;
-      letter-spacing: -0.045em;
-      color: var(--bg-forest);
-    }
-
-    .standard-sub {
-      font-size: 0.9rem;
+      font-size: 0.84rem;
       color: var(--text-secondary);
       line-height: 1.55;
     }
 
-    /* ==========================================================================
-       10. ACT 3 — RHYTHM PLANNER + 3-PHASE FIRST MEETING STEPPER
-       ========================================================================== */
-    .architecture-stack {
-      display: grid;
-      gap: clamp(1.5rem, 2.5vw, 2.25rem);
+    /* Open Architectural ~15 lat Editorial Column */
+    .standard-metric {
+      font-size: clamp(3.6rem, 6.2vw, 5.4rem);
+      font-weight: 400;
+      line-height: 0.92;
+      letter-spacing: -0.05em;
+      color: var(--bg-forest);
     }
 
-    .planner-shell,
-    .stepper-shell {
+    .standard-sub {
+      font-size: 0.96rem;
+      color: var(--text-secondary);
+      line-height: 1.62;
+      max-width: 38ch;
+    }
+
+    /* ==========================================================================
+       10. ACT 3 — PRECISION RHYTHM INSTRUMENT & 3-PHASE FIRST MEETING STEPPER
+       ========================================================================== */
+    .instrument-shell {
       container-type: inline-size;
       background: var(--bg-white);
-      border: 1px solid var(--border-hairline);
       border-radius: var(--radius-card);
-      padding: clamp(1.6rem, 3.2vw, 2.75rem);
-      box-shadow: var(--shadow-card);
+      padding: clamp(1.75rem, 3.6vw, 3.2rem);
+      box-shadow: var(--elev-instrument);
     }
 
-    .planner-top {
+    .instrument-top {
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
       justify-content: space-between;
       gap: 1.5rem;
-      padding-bottom: 1.75rem;
+      padding-bottom: 2rem;
       border-bottom: 1px solid var(--border-hairline);
     }
 
-    .segmented-control {
-      display: inline-flex;
-      padding: 0.3rem;
+    /* Segmented Switch with Physics Sliding Pill */
+    .segmented-switch {
+      position: relative;
+      display: inline-grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      padding: 0.32rem;
       border-radius: var(--radius-pill);
       background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
-      gap: 0.25rem;
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.08) inset;
     }
 
     .segmented-btn {
-      min-height: 42px;
-      padding: 0.5rem 1.25rem;
+      position: relative;
+      z-index: 1;
+      min-height: 44px;
+      padding: 0.55rem 1.4rem;
       border-radius: var(--radius-pill);
       border: 0;
       background: transparent;
@@ -1093,190 +1286,315 @@
       font-size: 0.9rem;
       font-weight: 500;
       cursor: pointer;
-      transition: background-color 0.25s var(--ease-architectural), color 0.25s var(--ease-architectural);
+      white-space: nowrap;
+      transition: color 0.3s var(--ease-architectural), transform 0.18s var(--ease-tactile);
+    }
+
+    .segmented-btn:active {
+      transform: scale(0.985);
     }
 
     .segmented-btn[aria-pressed="true"] {
-      background: var(--bg-forest);
       color: var(--text-on-dark);
     }
 
-    .planner-body {
-      view-transition-name: rhythm-planner-panel;
+    .instrument-body {
       display: grid;
-      grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
-      gap: clamp(1.5rem, 3vw, 2.5rem);
-      padding-top: 1.75rem;
+      grid-template-columns: minmax(0, 1.5fr) minmax(0, 0.85fr);
+      gap: clamp(1.75rem, 3.5vw, 3rem);
+      padding-top: 2rem;
       align-items: stretch;
     }
 
-    @container (max-width: 820px) {
-      .planner-body {
+    @container (max-width: 880px) {
+      .instrument-body {
         grid-template-columns: 1fr;
       }
     }
 
-    .week-grid {
+    /* 7-Day Watch-Grade Telemetry Grid */
+    .horology-grid {
+      view-transition-name: rhythm-week-grid;
       display: grid;
       grid-template-columns: repeat(7, minmax(0, 1fr));
-      grid-template-rows: auto 1fr;
-      gap: 0.55rem;
+      grid-template-rows: auto auto 1fr;
+      gap: 0.65rem;
     }
 
-    @container (max-width: 640px) {
-      .week-grid {
+    @container (max-width: 680px) {
+      .horology-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        grid-template-rows: auto;
       }
     }
 
-    .day-cell {
+    .day-dial {
       display: grid;
       grid-template-rows: subgrid;
-      grid-row: span 2;
-      gap: 0.65rem;
-      padding: 0.9rem 0.7rem;
-      border-radius: var(--radius-inner);
+      grid-row: span 3;
+      gap: 0.7rem;
+      padding: 1rem 0.78rem;
+      border-radius: 16px;
       background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
-      transition: background-color 0.25s ease, border-color 0.25s ease;
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.055) inset;
+      transition: transform 0.3s var(--ease-architectural), box-shadow 0.3s ease;
     }
 
-    .day-cell--studio {
+    @container (max-width: 680px) {
+      .day-dial {
+        grid-row: auto;
+        grid-template-rows: auto auto 1fr;
+      }
+    }
+
+    .day-dial--studio {
       background: var(--bg-forest);
-      border-color: var(--bg-forest);
       color: var(--text-on-dark);
+      box-shadow: 0 14px 28px -14px rgba(20, 35, 27, 0.6), 0 1px 0 rgba(255, 255, 255, 0.14) inset;
     }
 
-    .day-cell--home {
+    .day-dial--home {
       background: #EDF3EE;
-      border-color: #CFE0D4;
+      box-shadow: 0 0 0 1px rgba(20, 35, 27, 0.12) inset;
     }
 
-    .day-cell__name {
-      font-size: 0.74rem;
+    .day-dial__head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.35rem;
+    }
+
+    .day-dial__name {
+      font-size: 0.72rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--text-secondary);
     }
 
-    .day-cell--studio .day-cell__name {
+    .day-dial--studio .day-dial__name {
       color: var(--accent-sage);
     }
 
-    .day-cell__content {
+    .day-dial__signal {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border-strong);
+    }
+
+    .day-dial--studio .day-dial__signal {
+      background: var(--accent-sage);
+      box-shadow: 0 0 0 3px rgba(167, 196, 177, 0.25);
+    }
+
+    .day-dial--home .day-dial__signal {
+      background: #4F7861;
+    }
+
+    .day-dial__bar {
+      height: 3px;
+      width: 100%;
+      border-radius: 99px;
+      background: rgba(15, 22, 18, 0.08);
+      overflow: hidden;
+    }
+
+    .day-dial__bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      background: var(--border-strong);
+      width: 24%;
+    }
+
+    .day-dial--studio .day-dial__bar {
+      background: rgba(255, 255, 255, 0.14);
+    }
+
+    .day-dial--studio .day-dial__bar-fill {
+      width: 100%;
+      background: var(--accent-sage);
+    }
+
+    .day-dial--home .day-dial__bar-fill {
+      width: 52%;
+      background: #4F7861;
+    }
+
+    .day-dial__body {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 0.5rem;
+      gap: 0.55rem;
     }
 
-    .day-cell__title {
-      font-size: 0.84rem;
+    .day-dial__title {
+      font-size: 0.85rem;
       font-weight: 500;
-      line-height: 1.28;
+      line-height: 1.26;
+      letter-spacing: -0.01em;
     }
 
-    .day-cell__time {
-      font-size: 0.75rem;
+    .day-dial__meta {
+      font-size: 0.74rem;
+      line-height: 1.35;
       color: var(--text-secondary);
     }
 
-    .day-cell--studio .day-cell__time {
+    .day-dial--studio .day-dial__meta {
       color: var(--text-on-dark-muted);
     }
 
-    .planner-summary {
+    .instrument-legend {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem 1.5rem;
+      margin-top: 1.25rem;
+      padding-top: 1.15rem;
+      border-top: 1px solid var(--border-hairline);
+      font-size: 0.83rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-swatches {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .legend-swatch {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+    }
+
+    .legend-swatch i {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      display: inline-block;
+    }
+
+    /* Readout Panel */
+    .readout-panel {
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 1.25rem;
-      padding: 1.45rem;
-      border-radius: var(--radius-inner);
+      gap: 1.4rem;
+      padding: 1.65rem;
+      border-radius: 18px;
       background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.06) inset;
     }
 
-    .planner-price-main {
-      font-size: clamp(2rem, 3.2vw, 2.75rem);
+    .readout-figure {
+      font-size: clamp(2.45rem, 3.8vw, 3.25rem);
       font-weight: 400;
-      letter-spacing: -0.04em;
-      line-height: 1.02;
-      color: var(--text-primary);
+      letter-spacing: -0.045em;
+      line-height: 0.98;
+      color: var(--bg-forest);
+      margin-top: 0.55rem;
     }
 
-    .planner-price-unit {
-      font-size: 0.9rem;
+    .readout-unit {
+      font-size: 0.88rem;
       color: var(--text-secondary);
-      margin-top: 0.35rem;
+      margin-top: 0.4rem;
     }
 
-    .planner-breakdown {
+    .readout-specs {
       display: grid;
-      gap: 0.65rem;
-      padding-block: 1rem;
+      gap: 0.75rem;
+      padding-block: 1.15rem;
       border-block: 1px solid var(--border-hairline);
-      font-size: 0.875rem;
+      font-size: 0.88rem;
     }
 
-    .planner-breakdown div {
+    .readout-specs div {
       display: flex;
       justify-content: space-between;
       gap: 1rem;
     }
 
-    .planner-breakdown dt {
+    .readout-specs dt {
       color: var(--text-secondary);
     }
 
-    .planner-breakdown dd {
+    .readout-specs dd {
       font-weight: 500;
       color: var(--text-primary);
       text-align: right;
     }
 
-    .planner-promise {
+    .readout-note {
       font-size: 0.82rem;
-      line-height: 1.5;
+      line-height: 1.55;
       color: var(--text-secondary);
     }
 
-    /* 3-Phase First Meeting Stepper */
+    /* 3-PHASE FIRST MEETING STEPPER — Editorial Sheet directly on Open Canvas */
+    .stepper-band {
+      margin-top: clamp(4.5rem, 8vw, 7.5rem);
+      padding-top: clamp(3rem, 5vw, 4.5rem);
+      border-top: 1px solid var(--border-strong);
+      container-type: inline-size;
+    }
+
     .stepper-header {
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 1.25rem;
-      margin-bottom: 1.75rem;
+      gap: 1.5rem;
+      margin-bottom: 2.25rem;
     }
 
-    .stepper-badge {
+    .stepper-price-tag {
       display: inline-flex;
       align-items: baseline;
-      gap: 0.5rem;
-      padding: 0.55rem 1.1rem;
+      gap: 0.6rem;
+      padding: 0.65rem 1.25rem;
       border-radius: var(--radius-pill);
-      background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
+      background: var(--bg-white);
+      box-shadow: var(--elev-card);
       font-size: 0.88rem;
       color: var(--text-secondary);
     }
 
-    .stepper-badge strong {
-      font-size: 1.05rem;
+    .stepper-price-tag strong {
+      font-size: 1.12rem;
       font-weight: 500;
       color: var(--bg-forest);
+    }
+
+    .stepper-progress-rail {
+      height: 2px;
+      background: var(--border-hairline);
+      border-radius: 99px;
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+    }
+
+    .stepper-progress-bar {
+      height: 100%;
+      width: 33.333%;
+      background: var(--bg-forest);
+      transition: width 0.45s var(--ease-out-expo);
     }
 
     .stepper-nav {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 0.75rem;
+      gap: 0.85rem;
       margin-bottom: 1.5rem;
     }
 
-    @container (max-width: 680px) {
+    @container (max-width: 720px) {
       .stepper-nav {
         grid-template-columns: 1fr;
       }
@@ -1286,48 +1604,55 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 0.75rem;
+      gap: 1rem;
       text-align: left;
-      padding: 1.05rem 1.2rem;
-      border-radius: var(--radius-inner);
-      border: 1px solid var(--border-hairline);
-      background: var(--bg-alabaster);
+      min-height: 64px;
+      padding: 1.05rem 1.3rem;
+      border-radius: 16px;
+      border: 0;
+      background: var(--bg-white);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.07);
       color: var(--text-secondary);
       cursor: pointer;
       transition:
-        background-color 0.25s var(--ease-architectural),
-        border-color 0.25s var(--ease-architectural),
-        color 0.25s var(--ease-architectural);
+        background-color 0.3s var(--ease-architectural),
+        color 0.3s var(--ease-architectural),
+        box-shadow 0.3s var(--ease-architectural),
+        transform 0.2s var(--ease-tactile);
     }
 
     .step-trigger:hover {
-      border-color: var(--border-strong);
       color: var(--text-primary);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.18);
+    }
+
+    .step-trigger:active {
+      transform: scale(0.985);
     }
 
     .step-trigger[aria-selected="true"] {
       background: var(--bg-forest);
-      border-color: var(--bg-forest);
       color: var(--text-on-dark);
+      box-shadow: 0 14px 28px -16px rgba(20, 35, 27, 0.55);
     }
 
     .step-trigger__num {
-      font-size: 0.76rem;
+      font-size: 0.72rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
-      opacity: 0.75;
+      letter-spacing: 0.1em;
+      opacity: 0.72;
       display: block;
-      margin-bottom: 0.2rem;
+      margin-bottom: 0.22rem;
     }
 
     .step-trigger__title {
-      font-size: 0.96rem;
+      font-size: 0.98rem;
       font-weight: 500;
       display: block;
     }
 
     .step-trigger__dur {
-      font-size: 0.78rem;
+      font-size: 0.8rem;
       white-space: nowrap;
       opacity: 0.8;
     }
@@ -1335,12 +1660,12 @@
     .stepper-stage {
       view-transition-name: first-meeting-stage;
       display: grid;
-      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
-      gap: 1.5rem;
-      padding: 1.5rem;
-      border-radius: var(--radius-inner);
-      background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.9fr);
+      gap: clamp(1.5rem, 3vw, 2.5rem);
+      padding: clamp(1.5rem, 3vw, 2.25rem);
+      border-radius: var(--radius-card);
+      background: var(--bg-white);
+      box-shadow: var(--elev-card);
     }
 
     @container (max-width: 720px) {
@@ -1350,47 +1675,56 @@
     }
 
     .stepper-stage__title {
-      font-size: clamp(1.2rem, 1.9vw, 1.5rem);
+      font-size: clamp(1.28rem, 2vw, 1.65rem);
       font-weight: 500;
-      letter-spacing: -0.025em;
-      margin-bottom: 0.65rem;
+      letter-spacing: -0.028em;
+      line-height: 1.2;
+      margin-bottom: 0.8rem;
     }
 
     .stepper-stage__desc {
       color: var(--text-secondary);
-      font-size: 0.95rem;
-      line-height: 1.62;
+      font-size: 0.96rem;
+      line-height: 1.65;
     }
 
-    .stepper-stage__detail {
+    .stepper-stage__aside {
       display: flex;
       flex-direction: column;
       justify-content: center;
       gap: 0.6rem;
-      padding: 1.15rem;
-      border-radius: 12px;
-      background: var(--bg-white);
-      border: 1px solid var(--border-hairline);
-      font-size: 0.88rem;
+      padding-left: 1.75rem;
+      border-left: 1px solid var(--border-hairline);
+      font-size: 0.9rem;
       color: var(--text-secondary);
     }
 
-    .stepper-stage__detail strong {
-      color: var(--text-primary);
+    @container (max-width: 720px) {
+      .stepper-stage__aside {
+        padding-left: 0;
+        padding-top: 1.25rem;
+        border-left: 0;
+        border-top: 1px solid var(--border-hairline);
+      }
+    }
+
+    .stepper-stage__aside strong {
+      color: var(--bg-forest);
+      font-size: 0.78rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
       font-weight: 500;
     }
 
     .takeaway-strip {
-      margin-top: 1.35rem;
-      padding-top: 1.35rem;
-      border-top: 1px solid var(--border-hairline);
+      margin-top: 1.5rem;
       display: grid;
       grid-template-columns: auto minmax(0, 1fr);
-      gap: 1.25rem;
+      gap: 1.25rem 2rem;
       align-items: center;
     }
 
-    @container (max-width: 760px) {
+    @container (max-width: 820px) {
       .takeaway-strip {
         grid-template-columns: 1fr;
         gap: 0.85rem;
@@ -1398,9 +1732,9 @@
     }
 
     .takeaway-strip__label {
-      font-size: 0.78rem;
+      font-size: 0.74rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--bg-forest);
       white-space: nowrap;
@@ -1412,7 +1746,7 @@
       gap: 0.75rem;
     }
 
-    @container (max-width: 680px) {
+    @container (max-width: 720px) {
       .takeaway-items {
         grid-template-columns: 1fr;
       }
@@ -1421,12 +1755,12 @@
     .takeaway-item {
       display: flex;
       align-items: center;
-      gap: 0.6rem;
-      padding: 0.75rem 1rem;
+      gap: 0.65rem;
+      padding: 0.85rem 1.05rem;
       border-radius: var(--radius-inner);
-      background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
-      font-size: 0.86rem;
+      background: var(--bg-white);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.06);
+      font-size: 0.875rem;
       color: var(--text-primary);
     }
 
@@ -1435,29 +1769,29 @@
     }
 
     /* ==========================================================================
-       11. ACT 4 — WIDE TACTILE SPACE GALLERY (SCROLL-SNAP, PURE WHITE BG)
+       11. ACT 4 — CINEMATIC SPACE GALLERY (PURE WHITE, FOCUS DIMMING)
        ========================================================================== */
     .gallery-controls-row {
       display: flex;
       flex-wrap: wrap;
       align-items: flex-end;
       justify-content: space-between;
-      gap: 1.5rem;
-      margin-bottom: 2rem;
+      gap: 1.75rem;
+      margin-bottom: 2.5rem;
     }
 
     .gallery-hud {
       display: flex;
       align-items: center;
-      gap: 1rem;
+      gap: 1.15rem;
     }
 
     .gallery-counter {
-      font-size: 0.92rem;
+      font-size: 0.94rem;
       font-weight: 500;
-      letter-spacing: 0.04em;
+      letter-spacing: 0.05em;
       color: var(--text-primary);
-      min-width: 4.5ch;
+      min-width: 5ch;
     }
 
     .gallery-counter span {
@@ -1466,7 +1800,7 @@
     }
 
     .gallery-progress-track {
-      width: clamp(6rem, 12vw, 10rem);
+      width: clamp(6.5rem, 13vw, 11rem);
       height: 2px;
       background: var(--border-hairline);
       border-radius: 99px;
@@ -1477,26 +1811,31 @@
       height: 100%;
       width: 33.333%;
       background: var(--bg-forest);
-      transition: width 0.35s var(--ease-architectural);
+      transition: width 0.45s var(--ease-out-expo);
     }
 
     .gallery-arrows {
       display: inline-flex;
-      gap: 0.45rem;
+      gap: 0.5rem;
     }
 
     .gallery-arrow {
       display: inline-flex;
       align-items: center;
       justify-content: center;
-      width: 44px;
-      height: 44px;
+      width: 46px;
+      height: 46px;
       border-radius: 50%;
       border: 1px solid var(--border-hairline);
       background: var(--bg-white);
       color: var(--text-primary);
       cursor: pointer;
-      transition: background-color 0.22s ease, border-color 0.22s ease, opacity 0.22s ease;
+      transition:
+        background-color 0.25s var(--ease-architectural),
+        border-color 0.25s ease,
+        color 0.25s ease,
+        transform 0.2s var(--ease-tactile),
+        opacity 0.25s ease;
     }
 
     .gallery-arrow:hover:not(:disabled) {
@@ -1505,21 +1844,37 @@
       color: var(--text-on-dark);
     }
 
+    .gallery-arrow:active:not(:disabled) {
+      transform: scale(0.95);
+    }
+
+    .gallery-arrow svg {
+      transition: transform 0.28s var(--ease-out-expo);
+    }
+
+    .gallery-arrow--prev:hover:not(:disabled) svg {
+      transform: translateX(-3px);
+    }
+
+    .gallery-arrow--next:hover:not(:disabled) svg {
+      transform: translateX(3px);
+    }
+
     .gallery-arrow:disabled {
-      opacity: 0.38;
+      opacity: 0.34;
       cursor: not-allowed;
     }
 
     .gallery-track {
       display: grid;
       grid-auto-flow: column;
-      grid-auto-columns: min(86%, 56rem);
-      gap: clamp(1rem, 2vw, 1.75rem);
+      grid-auto-columns: min(86%, 60rem);
+      gap: clamp(1.1rem, 2.2vw, 2rem);
       overflow-x: auto;
       scroll-snap-type: x mandatory;
-      scroll-padding-inline: var(--gutter);
+      scroll-padding-inline: max(var(--gutter), calc((100vw - var(--container-max)) / 2));
       padding-inline: max(var(--gutter), calc((100vw - var(--container-max)) / 2));
-      padding-bottom: 0.5rem;
+      padding-bottom: 0.75rem;
       scrollbar-width: none;
       -webkit-overflow-scrolling: touch;
       cursor: grab;
@@ -1537,42 +1892,46 @@
       scroll-snap-align: start;
       display: flex;
       flex-direction: column;
-      gap: 1rem;
+      gap: 1.15rem;
+      opacity: 0.52;
+      transform: scale(0.985);
+      transform-origin: left center;
+      transition: opacity 0.55s var(--ease-architectural), transform 0.55s var(--ease-architectural);
+    }
+
+    .gallery-slide.is-active {
+      opacity: 1;
+      transform: scale(1);
     }
 
     .gallery-frame {
       position: relative;
-      aspect-ratio: 16 / 10;
+      aspect-ratio: 16 / 9.8;
       border-radius: var(--radius-card);
       overflow: hidden;
       background: #DCE2DE;
-      border: 1px solid var(--border-hairline);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.07), 0 24px 52px -34px rgba(15, 22, 18, 0.28);
     }
 
     .gallery-frame img {
       width: 100%;
       height: 100%;
       object-fit: cover;
-      transition: transform 0.8s var(--ease-architectural);
-    }
-
-    .gallery-slide:hover .gallery-frame img {
-      transform: scale(1.02);
     }
 
     .gallery-badge {
       position: absolute;
-      top: 1rem;
-      left: 1rem;
-      max-width: calc(100% - 2rem);
-      padding: 0.5rem 0.95rem;
+      top: 1.15rem;
+      left: 1.15rem;
+      max-width: calc(100% - 2.3rem);
+      padding: 0.52rem 1.05rem;
       border-radius: var(--radius-pill);
-      background: rgba(20, 35, 27, 0.86);
+      background: rgba(20, 35, 27, 0.88);
       color: var(--text-on-dark);
-      border: 1px solid rgba(167, 196, 177, 0.35);
-      backdrop-filter: blur(12px);
-      -webkit-backdrop-filter: blur(12px);
-      font-size: 0.78rem;
+      border: 1px solid rgba(167, 196, 177, 0.36);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      font-size: 0.79rem;
       font-weight: 500;
       line-height: 1.35;
     }
@@ -1582,42 +1941,38 @@
       flex-wrap: wrap;
       align-items: baseline;
       justify-content: space-between;
-      gap: 0.75rem 1.5rem;
+      gap: 0.6rem 1.5rem;
       padding-inline: 0.25rem;
     }
 
     .gallery-caption__title {
-      font-size: 1.05rem;
+      font-size: 1.06rem;
       font-weight: 500;
       letter-spacing: -0.02em;
       color: var(--text-primary);
     }
 
     .gallery-caption__desc {
-      font-size: 0.88rem;
+      font-size: 0.89rem;
       color: var(--text-secondary);
     }
 
     /* ==========================================================================
-       12. ACT 5 — COACH BIO, LEGAL BOUNDARY, LOCATION MONOLITH & FAQ
+       12. ACT 5 — EDITORIAL COACH BIO, FOREST MONOLITH & SILKY NATIVE FAQ
        ========================================================================== */
-    .trust-grid {
+    .trust-layout {
       display: grid;
       grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
-      gap: clamp(1.25rem, 2.4vw, 1.75rem);
-      align-items: stretch;
+      gap: clamp(2rem, 4.5vw, 4.5rem);
+      align-items: start;
     }
 
-    .coach-card {
-      background: var(--bg-white);
-      border: 1px solid var(--border-hairline);
-      border-radius: var(--radius-card);
-      padding: clamp(1.6rem, 3vw, 2.6rem);
-      box-shadow: var(--shadow-card);
+    /* Open Editorial Bio — breaks SaaS box monotony */
+    .coach-editorial {
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      gap: 1.75rem;
+      gap: 2rem;
+      padding-top: 0.5rem;
     }
 
     .coach-header {
@@ -1626,38 +1981,37 @@
       align-items: baseline;
       justify-content: space-between;
       gap: 0.75rem;
-      padding-bottom: 1.25rem;
-      border-bottom: 1px solid var(--border-hairline);
+      padding-bottom: 1.4rem;
+      border-bottom: 1px solid var(--border-strong);
     }
 
     .coach-name {
-      font-size: clamp(1.65rem, 2.8vw, 2.3rem);
+      font-size: clamp(1.9rem, 3.2vw, 2.75rem);
       font-weight: 400;
-      letter-spacing: -0.035em;
-      line-height: 1.08;
+      letter-spacing: -0.038em;
+      line-height: 1.04;
     }
 
     .coach-role {
-      font-size: 0.84rem;
+      font-size: 0.82rem;
       font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
       color: var(--bg-forest);
-      padding: 0.35rem 0.8rem;
-      border-radius: var(--radius-pill);
-      background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
     }
 
     .coach-credentials {
       display: grid;
-      gap: 0.85rem;
     }
 
     .coach-credentials li {
       display: grid;
-      grid-template-columns: auto 1fr;
-      gap: 0.85rem;
+      grid-template-columns: 2.25rem minmax(0, 1fr);
+      gap: 0.75rem;
       align-items: baseline;
-      font-size: 0.94rem;
+      padding-block: 1.05rem;
+      border-bottom: 1px solid var(--border-hairline);
+      font-size: 0.96rem;
       color: var(--text-secondary);
     }
 
@@ -1667,33 +2021,33 @@
     }
 
     .credential-index {
-      font-size: 0.76rem;
+      font-size: 0.78rem;
       font-weight: 500;
       color: var(--bg-forest);
-      opacity: 0.7;
+      opacity: 0.68;
     }
 
     .boundary-box {
-      padding: 1.25rem 1.35rem;
-      border-radius: var(--radius-inner);
-      background: var(--bg-alabaster);
-      border: 1px solid var(--border-hairline);
+      padding: 1.4rem 1.6rem;
+      border-radius: 16px;
+      background: var(--bg-white);
+      box-shadow: var(--elev-card);
       border-left: 3px solid var(--bg-forest);
       display: grid;
-      gap: 0.45rem;
+      gap: 0.5rem;
     }
 
     .boundary-box__label {
-      font-size: 0.74rem;
+      font-size: 0.72rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--bg-forest);
     }
 
     .boundary-box p {
-      font-size: 0.88rem;
-      line-height: 1.58;
+      font-size: 0.89rem;
+      line-height: 1.6;
       color: var(--text-secondary);
     }
 
@@ -1702,18 +2056,18 @@
       font-weight: 500;
     }
 
-    /* Location Monolith (#14231B) */
+    /* Sculpted Deep Forest Location Monolith (#14231B + Grain) */
     .monolith-card {
       container-type: inline-size;
       background: var(--bg-forest);
       color: var(--text-on-dark);
       border-radius: var(--radius-card);
-      padding: clamp(1.6rem, 3vw, 2.6rem);
+      padding: clamp(1.8rem, 3.2vw, 2.85rem);
+      box-shadow: 0 28px 60px -24px rgba(14, 25, 19, 0.55);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 1.75rem;
-      position: relative;
+      gap: 2rem;
       overflow: hidden;
     }
 
@@ -1721,41 +2075,37 @@
       content: "";
       position: absolute;
       inset: 0;
-      background: radial-gradient(circle at 88% 12%, rgba(167, 196, 177, 0.14), transparent 55%);
+      background: radial-gradient(circle at 88% 10%, rgba(167, 196, 177, 0.14), transparent 56%);
       pointer-events: none;
-    }
-
-    .monolith-card > * {
-      position: relative;
-      z-index: 1;
+      z-index: 0;
     }
 
     .monolith-address {
-      font-size: clamp(1.5rem, 2.5vw, 2.05rem);
+      font-size: clamp(1.55rem, 2.5vw, 2.1rem);
       font-weight: 400;
       line-height: 1.15;
       letter-spacing: -0.03em;
-      margin-top: 0.6rem;
+      margin-top: 0.65rem;
     }
 
     .monolith-facts {
       display: grid;
-      gap: 0.9rem;
-      padding-block: 1.35rem;
+      gap: 1rem;
+      padding-block: 1.4rem;
       border-block: 1px solid var(--border-dark);
     }
 
     .monolith-fact {
       display: flex;
       align-items: flex-start;
-      gap: 0.8rem;
-      font-size: 0.9rem;
+      gap: 0.85rem;
+      font-size: 0.91rem;
       color: var(--text-on-dark-muted);
     }
 
     .monolith-fact svg {
       color: var(--accent-sage);
-      margin-top: 0.15rem;
+      margin-top: 0.18rem;
     }
 
     .monolith-fact strong {
@@ -1769,29 +2119,43 @@
       gap: 0.65rem;
     }
 
-    /* Native Exclusive FAQ Accordion */
+    /* Silky Native Exclusive FAQ Accordion (<details name="faq"> + interpolate-size) */
     .faq-block {
-      margin-top: clamp(3rem, 6vw, 5rem);
+      margin-top: clamp(4.5rem, 8vw, 7.5rem);
+      padding-top: clamp(3rem, 5vw, 4.5rem);
+      border-top: 1px solid var(--border-strong);
       display: grid;
-      grid-template-columns: minmax(0, 0.68fr) minmax(0, 1.32fr);
-      gap: clamp(1.5rem, 4vw, 4rem);
+      grid-template-columns: minmax(0, 0.72fr) minmax(0, 1.28fr);
+      gap: clamp(2rem, 4.5vw, 4.5rem);
       align-items: start;
     }
 
     .faq-list {
       display: grid;
-      gap: 0.75rem;
     }
 
     .faq-item {
-      background: var(--bg-white);
-      border: 1px solid var(--border-hairline);
-      border-radius: var(--radius-card);
-      transition: border-color 0.25s ease;
+      border-top: 1px solid var(--border-hairline);
+      overflow: hidden;
     }
 
-    .faq-item[open] {
-      border-color: var(--border-strong);
+    .faq-item:last-child {
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .faq-item::details-content {
+      block-size: 0;
+      opacity: 0;
+      overflow: clip;
+      transition:
+        block-size 0.44s var(--ease-out-expo),
+        opacity 0.34s ease,
+        content-visibility 0.44s allow-discrete;
+    }
+
+    .faq-item[open]::details-content {
+      block-size: auto;
+      opacity: 1;
     }
 
     .faq-item summary {
@@ -1799,13 +2163,19 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      gap: 1.25rem;
-      padding: 1.25rem 1.5rem;
+      gap: 1.5rem;
+      min-height: 64px;
+      padding-block: 1.35rem;
       cursor: pointer;
-      font-size: 1.02rem;
+      font-size: clamp(1rem, 1.2vw, 1.12rem);
       font-weight: 500;
-      letter-spacing: -0.015em;
+      letter-spacing: -0.018em;
       color: var(--text-primary);
+      transition: color 0.22s ease;
+    }
+
+    .faq-item summary:hover {
+      color: var(--bg-forest);
     }
 
     .faq-item summary::-webkit-details-marker {
@@ -1813,16 +2183,20 @@
     }
 
     .faq-plus {
-      width: 28px;
-      height: 28px;
+      width: 34px;
+      height: 34px;
       border-radius: 50%;
-      border: 1px solid var(--border-hairline);
+      border: 1px solid var(--border-strong);
       display: inline-flex;
       align-items: center;
       justify-content: center;
       flex: none;
       color: var(--bg-forest);
-      transition: transform 0.3s var(--ease-architectural), background-color 0.25s ease, color 0.25s ease;
+      transition:
+        transform 0.38s var(--ease-out-expo),
+        background-color 0.25s ease,
+        border-color 0.25s ease,
+        color 0.25s ease;
     }
 
     .faq-item[open] .faq-plus {
@@ -1833,22 +2207,23 @@
     }
 
     .faq-body {
-      padding: 0 1.5rem 1.4rem;
+      padding: 0 2.5rem 1.65rem 0;
       color: var(--text-secondary);
-      font-size: 0.94rem;
-      line-height: 1.65;
-      max-width: 66ch;
+      font-size: 0.95rem;
+      line-height: 1.66;
+      max-width: 64ch;
     }
 
     /* ==========================================================================
-       13. ACT 6 — CALM CONTACT FINALE (#14231B) & FOOTER
+       13. ACT 6 — CALM CONTACT FINALE (#14231B + GRAIN) & FOOTER
        ========================================================================== */
     .contact-finale {
       background: var(--bg-forest);
       color: var(--text-on-dark);
-      padding-top: clamp(4.5rem, 9vw, 8rem);
+      padding-top: clamp(5rem, 10vw, 8.5rem);
       padding-bottom: clamp(2.5rem, 5vw, 3.5rem);
       scroll-margin-top: 3rem;
+      overflow: hidden;
     }
 
     .contact-hero-box {
@@ -1856,38 +2231,38 @@
       grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
       gap: clamp(2rem, 5vw, 4.5rem);
       align-items: end;
-      padding-bottom: clamp(2.75rem, 5vw, 4rem);
+      padding-bottom: clamp(3rem, 5.5vw, 4.5rem);
       border-bottom: 1px solid var(--border-dark);
     }
 
     .contact-lead {
-      margin-top: 1.25rem;
+      margin-top: 1.35rem;
       color: var(--text-on-dark-muted);
-      font-size: 1.03rem;
+      font-size: 1.04rem;
       max-width: 48ch;
-      line-height: 1.62;
+      line-height: 1.64;
     }
 
     .contact-primary-wrap {
       display: flex;
       flex-direction: column;
       align-items: flex-start;
-      gap: 0.85rem;
+      gap: 0.9rem;
       justify-self: end;
       width: 100%;
-      max-width: 28rem;
+      max-width: 29rem;
     }
 
     .contact-primary-cta {
       width: 100%;
-      min-height: 58px;
+      min-height: 60px;
       padding: 1rem 1.75rem;
       font-size: 0.98rem;
       justify-content: space-between;
     }
 
     .contact-primary-note {
-      font-size: 0.83rem;
+      font-size: 0.84rem;
       color: var(--text-on-dark-muted);
     }
 
@@ -1895,31 +2270,31 @@
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 1.25rem;
-      padding-block: clamp(2rem, 4vw, 3rem);
+      padding-block: clamp(2.25rem, 4.5vw, 3.25rem);
       border-bottom: 1px solid var(--border-dark);
     }
 
     .channel-card {
-      padding: 1.5rem;
+      padding: clamp(1.35rem, 2.5vw, 1.75rem);
       border-radius: var(--radius-card);
       background: var(--bg-forest-elevated);
       border: 1px solid var(--border-dark);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
-      gap: 1.15rem;
+      gap: 1.25rem;
     }
 
     .channel-label {
-      font-size: 0.74rem;
+      font-size: 0.73rem;
       font-weight: 500;
-      letter-spacing: 0.08em;
+      letter-spacing: 0.1em;
       text-transform: uppercase;
       color: var(--accent-sage);
     }
 
     .channel-value {
-      font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+      font-size: clamp(1.22rem, 2.2vw, 1.68rem);
       font-weight: 400;
       letter-spacing: -0.025em;
       color: var(--text-on-dark);
@@ -1937,16 +2312,19 @@
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      min-height: 38px;
-      padding: 0.4rem 0.95rem;
+      min-height: 44px;
+      padding: 0.45rem 1rem;
       border-radius: var(--radius-pill);
       border: 1px solid var(--border-dark-strong);
       background: rgba(246, 247, 245, 0.05);
       color: var(--text-on-dark);
-      font-size: 0.84rem;
+      font-size: 0.85rem;
       font-weight: 500;
       cursor: pointer;
-      transition: background-color 0.22s ease, border-color 0.22s ease;
+      transition:
+        background-color 0.24s var(--ease-architectural),
+        border-color 0.24s ease,
+        transform 0.18s var(--ease-tactile);
     }
 
     .channel-pill:hover {
@@ -1954,14 +2332,18 @@
       border-color: var(--accent-sage);
     }
 
+    .channel-pill:active {
+      transform: scale(0.985);
+    }
+
     .site-footer {
-      padding-top: 2rem;
+      padding-top: 2.25rem;
       display: flex;
       flex-wrap: wrap;
       align-items: center;
       justify-content: space-between;
       gap: 1rem 2rem;
-      font-size: 0.83rem;
+      font-size: 0.84rem;
       color: var(--text-on-dark-muted);
     }
 
@@ -1969,15 +2351,16 @@
       display: flex;
       flex-wrap: wrap;
       align-items: center;
-      gap: 0.5rem 1.25rem;
+      gap: 0.5rem 1.35rem;
     }
 
     .footer-link-btn {
       background: transparent;
       border: 0;
+      min-height: 44px;
       padding: 0.25rem 0;
       color: var(--text-on-dark-muted);
-      font-size: 0.83rem;
+      font-size: 0.84rem;
       cursor: pointer;
       text-decoration: underline;
       text-underline-offset: 4px;
@@ -1999,21 +2382,20 @@
       left: 0.75rem;
       right: 0.75rem;
       bottom: max(0.75rem, env(safe-area-inset-bottom));
-      z-index: 75;
+      z-index: 80;
       height: 56px;
-      padding: 0.35rem;
+      padding: 0.32rem;
       border-radius: var(--radius-pill);
-      background: rgba(255, 255, 255, 0.86);
-      border: 1px solid rgba(226, 230, 227, 0.95);
+      background: rgba(255, 255, 255, 0.88);
+      box-shadow: 0 0 0 1px rgba(226, 230, 227, 0.95), 0 12px 30px -10px rgba(15, 22, 18, 0.24);
       backdrop-filter: blur(12px);
       -webkit-backdrop-filter: blur(12px);
-      box-shadow: 0 10px 28px -8px rgba(15, 22, 18, 0.2);
       grid-template-columns: 1fr auto;
-      gap: 0.4rem;
+      gap: 0.38rem;
       align-items: center;
       opacity: 1;
       transform: translateY(0);
-      transition: opacity 0.28s var(--ease-architectural), transform 0.28s var(--ease-architectural);
+      transition: opacity 0.3s var(--ease-architectural), transform 0.3s var(--ease-architectural);
     }
 
     .mobile-dock.is-hidden {
@@ -2025,18 +2407,19 @@
     .mobile-dock__primary {
       height: 100%;
       min-height: 0;
-      padding: 0 1.1rem;
-      font-size: 0.86rem;
+      padding: 0 1rem;
+      font-size: 0.85rem;
     }
 
     .mobile-dock__call {
       height: 100%;
       min-height: 0;
-      padding: 0 1rem;
+      padding: 0 1.05rem;
       font-size: 0.85rem;
       background: var(--bg-alabaster);
       border: 1px solid var(--border-hairline);
       color: var(--text-primary);
+      box-shadow: none;
     }
 
     /* ==========================================================================
@@ -2046,18 +2429,18 @@
       width: min(100% - 2rem, 44rem);
       max-height: min(86svh, 46rem);
       padding: 0;
-      border: 1px solid var(--border-hairline);
+      border: 0;
       border-radius: var(--radius-card);
       background: var(--bg-white);
       color: var(--text-primary);
-      box-shadow: 0 28px 70px -20px rgba(15, 22, 18, 0.35);
+      box-shadow: 0 0 0 1px rgba(15, 22, 18, 0.08), 0 32px 80px -24px rgba(15, 22, 18, 0.42);
       overflow: hidden;
     }
 
     dialog.legal-dialog::backdrop {
-      background: rgba(15, 22, 18, 0.52);
-      backdrop-filter: blur(8px);
-      -webkit-backdrop-filter: blur(8px);
+      background: rgba(14, 25, 19, 0.56);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
     }
 
     .dialog-shell {
@@ -2071,7 +2454,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 1rem;
-      padding: 1.35rem 1.6rem;
+      padding: 1.35rem 1.65rem;
       border-bottom: 1px solid var(--border-hairline);
     }
 
@@ -2082,8 +2465,8 @@
     }
 
     .dialog-close {
-      width: 38px;
-      height: 38px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
       border: 1px solid var(--border-hairline);
       background: var(--bg-alabaster);
@@ -2092,6 +2475,7 @@
       align-items: center;
       justify-content: center;
       cursor: pointer;
+      transition: background-color 0.2s ease, color 0.2s ease, transform 0.18s var(--ease-tactile);
     }
 
     .dialog-close:hover {
@@ -2100,18 +2484,22 @@
       color: var(--text-on-dark);
     }
 
+    .dialog-close:active {
+      transform: scale(0.95);
+    }
+
     .dialog-body {
-      padding: 1.5rem 1.6rem;
+      padding: 1.5rem 1.65rem;
       overflow-y: auto;
       display: grid;
       gap: 1rem;
-      font-size: 0.92rem;
-      line-height: 1.64;
+      font-size: 0.93rem;
+      line-height: 1.65;
       color: var(--text-secondary);
     }
 
     .dialog-body h3 {
-      font-size: 0.96rem;
+      font-size: 0.97rem;
       font-weight: 500;
       color: var(--text-primary);
       margin-top: 0.35rem;
@@ -2123,7 +2511,7 @@
     }
 
     .dialog-foot {
-      padding: 1rem 1.6rem;
+      padding: 1rem 1.65rem;
       border-top: 1px solid var(--border-hairline);
       background: var(--bg-alabaster);
       display: flex;
@@ -2133,19 +2521,20 @@
     .toast {
       position: fixed;
       left: 50%;
-      bottom: 5rem;
+      bottom: 5.25rem;
       z-index: 95;
       transform: translate(-50%, 16px);
-      padding: 0.65rem 1.2rem;
+      padding: 0.7rem 1.3rem;
       border-radius: var(--radius-pill);
       background: var(--bg-forest);
       color: var(--text-on-dark);
       border: 1px solid var(--border-dark-strong);
+      box-shadow: 0 14px 32px -12px rgba(14, 25, 19, 0.5);
       font-size: 0.85rem;
       font-weight: 500;
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.25s ease, transform 0.25s var(--ease-architectural);
+      transition: opacity 0.25s ease, transform 0.25s var(--ease-out-expo);
     }
 
     .toast.is-visible {
@@ -2154,17 +2543,16 @@
     }
 
     /* ==========================================================================
-       16. RESPONSIVE BREAKPOINTS
+       16. RESPONSIVE BREAKPOINTS (MOBILE 375-430PX EQUAL EXCELLENCE)
        ========================================================================== */
     @media (max-width: 1080px) {
       .bento-card--selector { grid-column: span 12; }
-      .bento-card--manifest { grid-column: span 6; }
-      .bento-card--standard { grid-column: span 6; }
-      .bento-card--timeline { grid-column: span 12; }
-      .bento-card--pricing { grid-column: span 12; }
+      .bento-card--manifest { grid-column: span 12; }
+      .bento-card--pricing  { grid-column: span 12; }
+      .bento-card--standard { grid-column: span 12; }
 
       .section-header,
-      .trust-grid,
+      .trust-layout,
       .faq-block,
       .contact-hero-box {
         grid-template-columns: 1fr;
@@ -2187,6 +2575,12 @@
 
       .hero__specs {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 1rem 1.25rem;
+      }
+
+      .hero__spec {
+        padding-inline: 0;
+        border-left: 0;
       }
 
       .direct-channels {
@@ -2195,18 +2589,22 @@
     }
 
     @media (max-width: 767px) {
-      .bento-card--manifest,
-      .bento-card--standard {
-        grid-column: span 12;
-      }
-
       .hud-bar {
         padding-left: 1rem;
       }
 
       .hud-cta {
-        padding-inline: 0.9rem;
-        font-size: 0.8rem;
+        padding-inline: 0.95rem;
+        font-size: 0.82rem;
+      }
+
+      .sliding-tabs {
+        width: 100%;
+      }
+
+      .pill-tab {
+        flex: 1 1 auto;
+        text-align: center;
       }
 
       .mobile-dock {
@@ -2214,7 +2612,7 @@
       }
 
       .contact-finale {
-        padding-bottom: 5.5rem;
+        padding-bottom: 5.75rem;
       }
     }
 
@@ -2245,7 +2643,7 @@
   <header class="hud-header" id="hudHeader">
     <div class="hud-bar">
       <a href="#start" class="hud-brand" aria-label="Studio Las — początek strony">
-        <span class="hud-brand__dot" aria-hidden="true"></span>
+        <span class="hud-brand__mark" aria-hidden="true"></span>
         <span>Studio Las</span>
       </a>
 
@@ -2322,7 +2720,7 @@
         <div class="hero__actions">
           <a href="#kontakt" class="btn btn--light tabular">
             <span>Umów rozmowę wstępną · 0 zł</span>
-            <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+            <svg class="icon icon--sm icon-arrow" viewBox="0 0 24 24" aria-hidden="true">
               <path d="M5 12h14"></path>
               <path d="m13 6 6 6-6 6"></path>
             </svg>
@@ -2356,7 +2754,7 @@
     </section>
 
     <!-- ====================================================================
-         ACT 2 — LIGHT ARCHITECTURAL BENTO GRID
+         ACT 2 — ARCHITECTURAL BENTO (SLIDING PILL, AXIS, LEDGER, STANDARD)
          ==================================================================== -->
     <section class="section section--alabaster" id="metoda" aria-labelledby="metoda-title">
       <div class="container">
@@ -2373,7 +2771,7 @@
         </div>
 
         <div class="bento-grid">
-          <!-- CARD 1: Interactive 4 Starting Points Selector -->
+          <!-- CARD 1: Interactive 4 Starting Points Selector with Physics Sliding Pill -->
           <article class="bento-card bento-card--selector reveal" aria-labelledby="selector-heading">
             <div>
               <p class="bento-kicker">Wybierz swój punkt wyjścia</p>
@@ -2382,7 +2780,8 @@
               </h3>
             </div>
 
-            <div class="pill-tabs" role="tablist" aria-label="Punkty wyjścia do treningu">
+            <div class="sliding-tabs" id="profileTabsTrack" role="tablist" aria-label="Punkty wyjścia do treningu">
+              <div class="sliding-indicator" id="profileIndicator" aria-hidden="true"></div>
               <button type="button" class="pill-tab" role="tab" id="tab-przerwa" aria-selected="true" aria-controls="panel-punkt-wyjscia" data-profile="przerwa">
                 Powrót po przerwie
               </button>
@@ -2420,11 +2819,11 @@
             </div>
           </article>
 
-          <!-- CARD 2: Deep Forest Contrast Manifest Card -->
-          <article class="bento-card bento-card--forest bento-card--manifest surface-dark reveal">
+          <!-- CARD 2: Deep Forest Contrast Manifest Card with SVG Micro-Grain -->
+          <article class="bento-card bento-card--forest bento-card--manifest surface-dark has-grain reveal">
             <div>
               <p class="bento-kicker">Manifest przestrzeni</p>
-              <p class="manifest-quote" style="margin-top: 0.9rem;">
+              <p class="manifest-quote" style="margin-top: 1rem;">
                 Cisza, dzienne światło i cała sala na wyłączność. Zero tłumów, zero presji i pełny bufor czasowy między wizytami.
               </p>
             </div>
@@ -2437,64 +2836,88 @@
             </ul>
           </article>
 
-          <!-- CARD 3: 12-Week Axis (T01 -> T06 -> T12) -->
-          <article class="bento-card bento-card--timeline reveal">
-            <div>
-              <p class="bento-kicker">Architektura procesu</p>
-              <h3 class="bento-title" style="margin-top: 0.45rem;">
-                Oś <span class="tabular">12</span> tygodni: <span class="tabular">T01 → T06 → T12</span>
-              </h3>
+          <!-- CARD 3: Connected Precision 12-Week Axis (T01 -> T06 -> T12) -->
+          <article class="bento-card bento-card--timeline reveal" aria-labelledby="axis-heading">
+            <div class="axis-header">
+              <div>
+                <p class="bento-kicker">Architektura procesu</p>
+                <h3 class="bento-title" id="axis-heading" style="margin-top: 0.45rem;">
+                  Oś <span class="tabular">12</span> tygodni: <span class="tabular">T01 → T06 → T12</span>
+                </h3>
+              </div>
+              <p class="axis-subtitle">
+                12 tygodni to okres planowania i przeglądu postępów — bez umów abonamentowych z góry.
+              </p>
             </div>
 
-            <div class="timeline-subgrid">
-              <div class="timeline-node">
-                <span class="timeline-node__code tabular">T01 · Start</span>
-                <strong class="timeline-node__title">Baza i wzorce</strong>
-                <p class="timeline-node__desc">Ustalamy punkty odniesienia, zakresy ruchu i bezpieczny poziom wyjściowy obciążeń.</p>
+            <div class="axis-instrument">
+              <div class="axis-track-line" aria-hidden="true"></div>
+
+              <div class="axis-checkpoint">
+                <div class="axis-marker-row">
+                  <span class="axis-node-dot" aria-hidden="true"></span>
+                  <span class="axis-code tabular">T01 · Start</span>
+                </div>
+                <strong class="axis-title">Baza i wzorce ruchu</strong>
+                <p class="axis-desc">
+                  Ustalamy punkty odniesienia, komfortowe zakresy ruchu oraz bezpieczny poziom wyjściowy obciążeń.
+                </p>
               </div>
-              <div class="timeline-node">
-                <span class="timeline-node__code tabular">T06 · Przegląd</span>
-                <strong class="timeline-node__title">Korekta i progres</strong>
-                <p class="timeline-node__desc">Sprawdzamy odczucia w codziennym życiu i płynnie dokładamy kolejne parametry siłowe.</p>
+
+              <div class="axis-checkpoint">
+                <div class="axis-marker-row">
+                  <span class="axis-node-dot" aria-hidden="true"></span>
+                  <span class="axis-code tabular">T06 · Przegląd</span>
+                </div>
+                <strong class="axis-title">Korekta i progres</strong>
+                <p class="axis-desc">
+                  Oceniamy samopoczucie w codziennej pracy i płynnie dokładamy kolejne parametry siłowe.
+                </p>
               </div>
-              <div class="timeline-node">
-                <span class="timeline-node__code tabular">T12 · Podsumowanie</span>
-                <strong class="timeline-node__title">Mierzalny efekt</strong>
-                <p class="timeline-node__desc">Porównujemy wyniki z tygodniem 01 i wspólnie decydujemy o kolejnym kroku.</p>
+
+              <div class="axis-checkpoint axis-checkpoint--end">
+                <div class="axis-marker-row">
+                  <span class="axis-node-dot" aria-hidden="true"></span>
+                  <span class="axis-code tabular">T12 · Podsumowanie</span>
+                </div>
+                <strong class="axis-title">Mierzalny efekt</strong>
+                <p class="axis-desc">
+                  Porównujemy wyniki z tygodniem pierwszym i wspólnie decydujemy o kolejnym bloku.
+                </p>
               </div>
             </div>
           </article>
 
-          <!-- CARD 4: Clear Gross Pricing (Zero Ranges) -->
-          <article class="bento-card bento-card--pricing reveal">
+          <!-- CARD 4: Swiss Ledger Pricing (Zero Ranges) -->
+          <article class="bento-card bento-card--pricing reveal" aria-labelledby="pricing-heading">
             <div>
               <p class="bento-kicker">Jednoznaczny cennik brutto</p>
-              <h3 class="bento-title" style="margin-top: 0.45rem;">
+              <h3 class="bento-title" id="pricing-heading" style="margin-top: 0.45rem;">
                 Pełna przejrzystość bez widełek.
               </h3>
             </div>
 
-            <div class="price-list">
-              <div class="price-row">
+            <div class="price-ledger">
+              <div class="price-ledger__row">
                 <div>
-                  <span class="price-row__name">Rozmowa wstępna</span>
-                  <span class="price-row__meta tabular">ok. 15 min · telefonicznie, bez zobowiązań</span>
+                  <span class="price-ledger__name">Rozmowa wstępna</span>
+                  <span class="price-ledger__meta tabular">ok. 15 min · telefonicznie, bez zobowiązań</span>
                 </div>
-                <span class="price-row__amount tabular">0 zł</span>
+                <span class="price-ledger__amount tabular">0 zł</span>
               </div>
-              <div class="price-row">
+              <div class="price-ledger__row">
                 <div>
-                  <span class="price-row__name">Spotkanie wprowadzające</span>
-                  <span class="price-row__meta tabular">60–75 min · jednorazowo, na pustej sali</span>
+                  <span class="price-ledger__name">Spotkanie wprowadzające</span>
+                  <span class="price-ledger__meta tabular">60–75 min · jednorazowo, na pustej sali</span>
                 </div>
-                <span class="price-row__amount tabular">220 zł brutto</span>
+                <span class="price-ledger__amount tabular">220 zł brutto</span>
               </div>
-              <div class="price-row">
+              <div class="price-ledger__row">
                 <div>
-                  <span class="price-row__name">Prowadzenie 1:1 (cykl 12 tyg.)</span>
-                  <span class="price-row__meta tabular">sesja 60 min · rytm 1× lub 2× w tyg.</span>
+                  <span class="price-ledger__name">Prowadzenie 1:1 w cyklu 12 tygodni</span>
+                  <span class="price-ledger__meta tabular">sesja 60 min · rytm 1× lub 2× w tygodniu</span>
                 </div>
-                <span class="price-row__amount tabular">250 zł brutto</span>
+                <span class="price-ledger__amount tabular">250 zł brutto</span>
               </div>
             </div>
 
@@ -2503,17 +2926,21 @@
             </p>
           </article>
 
-          <!-- CARD 5: Standard ~15 lat -->
-          <article class="bento-card bento-card--standard reveal">
-            <p class="bento-kicker">Standard prowadzenia</p>
+          <!-- CARD 5: Open Architectural Standard ~15 lat (Unboxed Editorial Rhythm) -->
+          <article class="bento-card bento-card--standard reveal" aria-labelledby="standard-heading">
+            <p class="bento-kicker" id="standard-heading">Standard prowadzenia</p>
             <div>
               <p class="standard-metric tabular">~15 lat</p>
-              <p class="standard-sub" style="margin-top: 0.85rem;">
+              <p class="standard-sub" style="margin-top: 1.15rem;">
                 Regularnej edukacji zawodowej i praktyki 1:1. Wykształcenie AWF Warszawa oraz studia podyplomowe uzupełniające warsztat trenerski.
               </p>
             </div>
             <a href="#prowadzacy" class="btn btn--outline-dark btn--sm" style="width: fit-content;">
               <span>Poznaj prowadzącego</span>
+              <svg class="icon icon--sm icon-arrow" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14"></path>
+                <path d="m13 6 6 6-6 6"></path>
+              </svg>
             </a>
           </article>
         </div>
@@ -2521,7 +2948,7 @@
     </section>
 
     <!-- ====================================================================
-         ACT 3 — INTERACTIVE RHYTHM PLANNER & 3-PHASE FIRST MEETING STEPPER
+         ACT 3 — PRECISION RHYTHM INSTRUMENT & 3-PHASE FIRST MEETING STEPPER
          ==================================================================== -->
     <section class="section section--alabaster" id="plan-i-cennik" aria-labelledby="plan-title" style="padding-top: 0;">
       <div class="container">
@@ -2537,203 +2964,246 @@
           </p>
         </div>
 
-        <div class="architecture-stack">
-          <!-- INTERACTIVE RHYTHM PLANNER (1x vs 2x) -->
-          <div class="planner-shell reveal">
-            <div class="planner-top">
-              <div>
-                <p class="bento-kicker">Interaktywny planer rytmu · 12 tygodni</p>
-                <h3 class="bento-title" style="margin-top: 0.4rem;">
-                  Jak układamy tydzień przy prowadzeniu 1:1?
-                </h3>
-              </div>
-
-              <div class="segmented-control" role="group" aria-label="Wybierz rytm treningowy w tygodniu">
-                <button type="button" class="segmented-btn tabular" id="rhythm1Btn" aria-pressed="true" data-rhythm="1">
-                  1× w tygodniu
-                </button>
-                <button type="button" class="segmented-btn tabular" id="rhythm2Btn" aria-pressed="false" data-rhythm="2">
-                  2× w tygodniu
-                </button>
-              </div>
+        <!-- PRECISION RHYTHM INSTRUMENT (1x vs 2x with Sliding Pill) -->
+        <div class="instrument-shell reveal">
+          <div class="instrument-top">
+            <div>
+              <p class="bento-kicker">Instrument rytmu · 12 tygodni</p>
+              <h3 class="bento-title" style="margin-top: 0.45rem;">
+                Jak układamy tydzień przy prowadzeniu 1:1?
+              </h3>
             </div>
 
-            <div class="planner-body" aria-live="polite">
-              <div>
-                <div class="week-grid" id="weekGrid" aria-label="Przykładowy rozkład tygodnia">
-                  <!-- Populated cleanly & kept in sync via JS; SSR default 1x below -->
-                  <div class="day-cell">
-                    <span class="day-cell__name">PN</span>
-                    <div class="day-cell__content">
-                      <span class="day-cell__title">Codzienny ruch</span>
-                      <span class="day-cell__time">Spacer / lekka aktywność</span>
-                    </div>
-                  </div>
-                  <div class="day-cell day-cell--studio">
-                    <span class="day-cell__name">WT</span>
-                    <div class="day-cell__content">
-                      <span class="day-cell__title">Studio Las 1:1</span>
-                      <span class="day-cell__time tabular">60 min · sala na wyłączność</span>
-                    </div>
-                  </div>
-                  <div class="day-cell">
-                    <span class="day-cell__name">ŚR</span>
-                    <div class="day-cell__content">
-                      <span class="day-cell__title">Odpoczynek</span>
-                      <span class="day-cell__time">Regeneracja tkanek</span>
-                    </div>
-                  </div>
-                  <div class="day-cell day-cell--home">
-                    <span class="day-cell__name">CZ</span>
-                    <div class="day-cell__content">
-                      <span class="day-cell__title">Zestaw domowy</span>
-                      <span class="day-cell__time tabular">10 min · ruchomość</span>
-                    </div>
-                  </div>
-                  <div class="day-cell">
-                    <span class="day-cell__name">PT</span>
-                    <div class="day-cell__content">
-                      <span class="day-cell__title">Codzienny ruch</span>
-                      <span class="day-cell__time">Naturalny rytm dnia</span>
-                    </div>
-                  </div>
-                  <div class="day-cell day-cell--home">
-                    <span class="day-cell__name">SO</span>
-                    <div class="day-cell__content">
-                      <span class="day-cell__title">Zestaw domowy</span>
-                      <span class="day-cell__time tabular">10 min + spacer</span>
-                    </div>
-                  </div>
-                  <div class="day-cell">
-                    <span class="day-cell__name">ND</span>
-                    <div class="day-cell__content">
-                      <span class="day-cell__title">Spokojny dzień</span>
-                      <span class="day-cell__time">Pełny luz</span>
-                    </div>
-                  </div>
-                </div>
-                <p style="margin-top: 1rem; font-size: 0.84rem; color: var(--text-secondary);" id="rhythmCaption">
-                  Rytm 1× w tygodniu sprawdza się przy napiętym kalendarzu zawodowym lub jako solidna baza łączona z aktywnością własną.
-                </p>
-              </div>
-
-              <div class="planner-summary">
-                <div>
-                  <p class="bento-kicker">Kalkulacja brutto</p>
-                  <p class="planner-price-main tabular" id="plannerMonthly" style="margin-top: 0.5rem;">1 000 zł</p>
-                  <p class="planner-price-unit tabular" id="plannerMonthlySub">brutto / 4 tygodnie (4 sesje po 60 min)</p>
-                </div>
-
-                <dl class="planner-breakdown">
-                  <div>
-                    <dt>Stawka za sesję 60 min</dt>
-                    <dd class="tabular">250 zł brutto</dd>
-                  </div>
-                  <div>
-                    <dt>Liczba sesji w cyklu 12 tyg.</dt>
-                    <dd class="tabular" id="plannerSessions">12 sesji</dd>
-                  </div>
-                  <div>
-                    <dt>Łącznie w cyklu 12 tyg.</dt>
-                    <dd class="tabular" id="plannerCycleTotal">3 000 zł brutto</dd>
-                  </div>
-                  <div>
-                    <dt>Rozliczanie</dt>
-                    <dd>Bez umów abonamentowych z góry</dd>
-                  </div>
-                </dl>
-
-                <p class="planner-promise">
-                  12 tygodni to okres planowania i przeglądu postępów — bez umów abonamentowych z góry. Konkretny dzień tygodnia dobieramy pod Twój grafik.
-                </p>
-              </div>
+            <div class="segmented-switch" id="rhythmSwitchTrack" role="group" aria-label="Wybierz rytm treningowy w tygodniu">
+              <div class="sliding-indicator" id="rhythmIndicator" aria-hidden="true"></div>
+              <button type="button" class="segmented-btn tabular" id="rhythm1Btn" aria-pressed="true" data-rhythm="1">
+                1× w tygodniu
+              </button>
+              <button type="button" class="segmented-btn tabular" id="rhythm2Btn" aria-pressed="false" data-rhythm="2">
+                2× w tygodniu
+              </button>
             </div>
           </div>
 
-          <!-- INTERACTIVE 3-PHASE FIRST MEETING STEPPER (220 zł) -->
-          <div class="stepper-shell reveal" aria-labelledby="stepper-heading">
-            <div class="stepper-header">
+          <div class="instrument-body" aria-live="polite">
+            <div>
+              <div class="horology-grid" id="weekGrid" aria-label="Przykładowy rozkład tygodnia">
+                <div class="day-dial">
+                  <div class="day-dial__head">
+                    <span class="day-dial__name">PN</span>
+                    <span class="day-dial__signal" aria-hidden="true"></span>
+                  </div>
+                  <div class="day-dial__bar" aria-hidden="true"><div class="day-dial__bar-fill"></div></div>
+                  <div class="day-dial__body">
+                    <span class="day-dial__title">Codzienny ruch</span>
+                    <span class="day-dial__meta">Spacer / lekka aktywność</span>
+                  </div>
+                </div>
+
+                <div class="day-dial day-dial--studio">
+                  <div class="day-dial__head">
+                    <span class="day-dial__name">WT</span>
+                    <span class="day-dial__signal" aria-hidden="true"></span>
+                  </div>
+                  <div class="day-dial__bar" aria-hidden="true"><div class="day-dial__bar-fill"></div></div>
+                  <div class="day-dial__body">
+                    <span class="day-dial__title">Studio Las 1:1</span>
+                    <span class="day-dial__meta tabular">60 min · wyłączność</span>
+                  </div>
+                </div>
+
+                <div class="day-dial">
+                  <div class="day-dial__head">
+                    <span class="day-dial__name">ŚR</span>
+                    <span class="day-dial__signal" aria-hidden="true"></span>
+                  </div>
+                  <div class="day-dial__bar" aria-hidden="true"><div class="day-dial__bar-fill"></div></div>
+                  <div class="day-dial__body">
+                    <span class="day-dial__title">Odpoczynek</span>
+                    <span class="day-dial__meta">Regeneracja tkanek</span>
+                  </div>
+                </div>
+
+                <div class="day-dial day-dial--home">
+                  <div class="day-dial__head">
+                    <span class="day-dial__name">CZ</span>
+                    <span class="day-dial__signal" aria-hidden="true"></span>
+                  </div>
+                  <div class="day-dial__bar" aria-hidden="true"><div class="day-dial__bar-fill"></div></div>
+                  <div class="day-dial__body">
+                    <span class="day-dial__title">Zestaw domowy</span>
+                    <span class="day-dial__meta tabular">10 min · ruchomość</span>
+                  </div>
+                </div>
+
+                <div class="day-dial">
+                  <div class="day-dial__head">
+                    <span class="day-dial__name">PT</span>
+                    <span class="day-dial__signal" aria-hidden="true"></span>
+                  </div>
+                  <div class="day-dial__bar" aria-hidden="true"><div class="day-dial__bar-fill"></div></div>
+                  <div class="day-dial__body">
+                    <span class="day-dial__title">Codzienny ruch</span>
+                    <span class="day-dial__meta">Naturalny rytm dnia</span>
+                  </div>
+                </div>
+
+                <div class="day-dial day-dial--home">
+                  <div class="day-dial__head">
+                    <span class="day-dial__name">SO</span>
+                    <span class="day-dial__signal" aria-hidden="true"></span>
+                  </div>
+                  <div class="day-dial__bar" aria-hidden="true"><div class="day-dial__bar-fill"></div></div>
+                  <div class="day-dial__body">
+                    <span class="day-dial__title">Zestaw domowy</span>
+                    <span class="day-dial__meta tabular">10 min + spacer</span>
+                  </div>
+                </div>
+
+                <div class="day-dial">
+                  <div class="day-dial__head">
+                    <span class="day-dial__name">ND</span>
+                    <span class="day-dial__signal" aria-hidden="true"></span>
+                  </div>
+                  <div class="day-dial__bar" aria-hidden="true"><div class="day-dial__bar-fill"></div></div>
+                  <div class="day-dial__body">
+                    <span class="day-dial__title">Spokojny dzień</span>
+                    <span class="day-dial__meta">Pełny luz</span>
+                  </div>
+                </div>
+              </div>
+
+              <div class="instrument-legend">
+                <span id="rhythmCaption">
+                  Rytm 1× w tygodniu sprawdza się przy napiętym kalendarzu zawodowym lub jako solidna baza łączona z aktywnością własną.
+                </span>
+                <div class="legend-swatches" aria-hidden="true">
+                  <span class="legend-swatch"><i style="background: var(--bg-forest);"></i>Studio Las 1:1</span>
+                  <span class="legend-swatch"><i style="background: #4F7861;"></i>Zestaw domowy 10 min</span>
+                </div>
+              </div>
+            </div>
+
+            <div class="readout-panel">
               <div>
-                <p class="bento-kicker">Pierwsza wizyta w Studio Las</p>
-                <h3 class="bento-title" id="stepper-heading" style="margin-top: 0.4rem;">
-                  Spotkanie wprowadzające — 3 spokojne etapy
-                </h3>
+                <p class="bento-kicker">Kalkulacja brutto</p>
+                <p class="readout-figure tabular" id="plannerMonthly">1 000 zł</p>
+                <p class="readout-unit tabular" id="plannerMonthlySub">brutto / 4 tygodnie (4 sesje po 60 min)</p>
               </div>
 
-              <div class="stepper-badge tabular">
-                <strong>220 zł brutto</strong>
-                <span>· 60–75 min · jednorazowo</span>
-              </div>
+              <dl class="readout-specs">
+                <div>
+                  <dt>Stawka za sesję 60 min</dt>
+                  <dd class="tabular">250 zł brutto</dd>
+                </div>
+                <div>
+                  <dt>Sesje w cyklu 12 tyg.</dt>
+                  <dd class="tabular" id="plannerSessions">12 sesji</dd>
+                </div>
+                <div>
+                  <dt>Łącznie w cyklu 12 tyg.</dt>
+                  <dd class="tabular" id="plannerCycleTotal">3 000 zł brutto</dd>
+                </div>
+                <div>
+                  <dt>Rozliczanie</dt>
+                  <dd>Bez umów z góry</dd>
+                </div>
+              </dl>
+
+              <p class="readout-note">
+                12 tygodni to okres planowania i przeglądu postępów — bez umów abonamentowych z góry. Konkretny dzień dobieramy pod Twój grafik.
+              </p>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3-PHASE FIRST MEETING STEPPER (220 zł) -->
+        <div class="stepper-band reveal" aria-labelledby="stepper-heading">
+          <div class="stepper-header">
+            <div>
+              <p class="bento-kicker">Pierwsza wizyta w Studio Las</p>
+              <h3 class="bento-title" id="stepper-heading" style="margin-top: 0.45rem;">
+                Spotkanie wprowadzające — 3 spokojne etapy
+              </h3>
             </div>
 
-            <div class="stepper-nav" role="tablist" aria-label="Etapy spotkania wprowadzającego">
-              <button type="button" class="step-trigger" role="tab" id="step-tab-1" aria-selected="true" aria-controls="step-panel" data-step="1">
-                <span>
-                  <span class="step-trigger__num tabular">ETAP 01</span>
-                  <span class="step-trigger__title">Rozmowa przy stole</span>
-                </span>
-                <span class="step-trigger__dur tabular">~20 min</span>
-              </button>
-
-              <button type="button" class="step-trigger" role="tab" id="step-tab-2" aria-selected="false" aria-controls="step-panel" data-step="2">
-                <span>
-                  <span class="step-trigger__num tabular">ETAP 02</span>
-                  <span class="step-trigger__title">Spokojne sprawdzenie ruchu</span>
-                </span>
-                <span class="step-trigger__dur tabular">~35 min</span>
-              </button>
-
-              <button type="button" class="step-trigger" role="tab" id="step-tab-3" aria-selected="false" aria-controls="step-panel" data-step="3">
-                <span>
-                  <span class="step-trigger__num tabular">ETAP 03</span>
-                  <span class="step-trigger__title">Podsumowanie i plan</span>
-                </span>
-                <span class="step-trigger__dur tabular">~15 min</span>
-              </button>
+            <div class="stepper-price-tag tabular">
+              <strong>220 zł brutto</strong>
+              <span>· 60–75 min · jednorazowo</span>
             </div>
+          </div>
 
-            <div class="stepper-stage" id="step-panel" role="tabpanel" aria-labelledby="step-tab-1" aria-live="polite">
-              <div>
-                <h4 class="stepper-stage__title" id="stepTitle">
-                  Spokojna rozmowa przy stole — bez pośpiechu i bez formularza w biegu
-                </h4>
-                <p class="stepper-stage__desc" id="stepDesc">
-                  Zaczynamy od herbaty lub wody przy stole. Omawiamy Twoją dotychczasową aktywność, codzienny tryb pracy, realną ilość czasu w tygodniu oraz ewentualne zalecenia od lekarza lub fizjoterapeuty, z którymi przychodzisz.
-                </p>
-              </div>
-              <div class="stepper-stage__detail">
-                <strong id="stepHighlightLabel">Po co ten etap?</strong>
-                <p id="stepHighlightText">
-                  Żeby plan pasował do Twojego kalendarza, snu i regeneracji — a nie odwrotnie. Jeśli z rozmowy wyniknie, że najpierw warto skonsultować się z lekarzem lub fizjoterapeutą, mówię o tym wprost.
-                </p>
-              </div>
+          <div class="stepper-progress-rail" aria-hidden="true">
+            <div class="stepper-progress-bar" id="stepperProgressBar"></div>
+          </div>
+
+          <div class="stepper-nav" role="tablist" aria-label="Etapy spotkania wprowadzającego">
+            <button type="button" class="step-trigger" role="tab" id="step-tab-1" aria-selected="true" aria-controls="step-panel" data-step="1">
+              <span>
+                <span class="step-trigger__num tabular">ETAP 01</span>
+                <span class="step-trigger__title">Rozmowa przy stole</span>
+              </span>
+              <span class="step-trigger__dur tabular">~20 min</span>
+            </button>
+
+            <button type="button" class="step-trigger" role="tab" id="step-tab-2" aria-selected="false" aria-controls="step-panel" data-step="2">
+              <span>
+                <span class="step-trigger__num tabular">ETAP 02</span>
+                <span class="step-trigger__title">Spokojne sprawdzenie ruchu</span>
+              </span>
+              <span class="step-trigger__dur tabular">~35 min</span>
+            </button>
+
+            <button type="button" class="step-trigger" role="tab" id="step-tab-3" aria-selected="false" aria-controls="step-panel" data-step="3">
+              <span>
+                <span class="step-trigger__num tabular">ETAP 03</span>
+                <span class="step-trigger__title">Podsumowanie i plan</span>
+              </span>
+              <span class="step-trigger__dur tabular">~15 min</span>
+            </button>
+          </div>
+
+          <div class="stepper-stage" id="step-panel" role="tabpanel" aria-labelledby="step-tab-1" aria-live="polite">
+            <div>
+              <h4 class="stepper-stage__title" id="stepTitle">
+                Spokojna rozmowa przy stole — bez pośpiechu i bez formularza w biegu
+              </h4>
+              <p class="stepper-stage__desc" id="stepDesc">
+                Zaczynamy od herbaty lub wody przy stole. Omawiamy Twoją dotychczasową aktywność, codzienny tryb pracy, realną ilość czasu w tygodniu oraz ewentualne zalecenia od lekarza lub fizjoterapeuty, z którymi przychodzisz.
+              </p>
             </div>
+            <div class="stepper-stage__aside">
+              <strong id="stepHighlightLabel">Po co ten etap?</strong>
+              <p id="stepHighlightText">
+                Żeby plan pasował do Twojego kalendarza, snu i regeneracji — a nie odwrotnie. Jeśli z rozmowy wyniknie, że najpierw warto skonsultować się z lekarzem lub fizjoterapeutą, mówię o tym wprost.
+              </p>
+            </div>
+          </div>
 
-            <div class="takeaway-strip">
-              <span class="takeaway-strip__label">Co zabierasz ze sobą</span>
-              <div class="takeaway-items">
-                <div class="takeaway-item">
-                  <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <path d="M14 2v6h6"></path>
-                    <path d="M8 13h8"></path>
-                    <path d="M8 17h5"></path>
-                  </svg>
-                  <span>Pisemne podsumowanie po spotkaniu</span>
-                </div>
-                <div class="takeaway-item">
-                  <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
-                    <circle cx="12" cy="12" r="9"></circle>
-                    <path d="M12 7v5l3 2"></path>
-                  </svg>
-                  <span class="tabular">10-minutowy zestaw domowy</span>
-                </div>
-                <div class="takeaway-item">
-                  <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M20 6 9 17l-5-5"></path>
-                  </svg>
-                  <span>Rekomendację rytmu 1× lub 2× bez presji</span>
-                </div>
+          <div class="takeaway-strip">
+            <span class="takeaway-strip__label">Co zabierasz ze sobą</span>
+            <div class="takeaway-items">
+              <div class="takeaway-item">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                  <path d="M14 2v6h6"></path>
+                  <path d="M8 13h8"></path>
+                  <path d="M8 17h5"></path>
+                </svg>
+                <span>Pisemne podsumowanie po spotkaniu</span>
+              </div>
+              <div class="takeaway-item">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 7v5l3 2"></path>
+                </svg>
+                <span class="tabular">10-minutowy zestaw domowy</span>
+              </div>
+              <div class="takeaway-item">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M20 6 9 17l-5-5"></path>
+                </svg>
+                <span>Rekomendację rytmu 1× lub 2× bez presji</span>
               </div>
             </div>
           </div>
@@ -2742,7 +3212,7 @@
     </section>
 
     <!-- ====================================================================
-         ACT 4 — WIDE TACTILE SPACE GALLERY (PURE WHITE BACKGROUND)
+         ACT 4 — CINEMATIC SPACE GALLERY (PURE WHITE, FOCUS DIMMING)
          ==================================================================== -->
     <section class="section section--white" id="przestrzen" aria-labelledby="przestrzen-title">
       <div class="container">
@@ -2762,13 +3232,13 @@
               <div class="gallery-progress-fill" id="galleryProgress"></div>
             </div>
             <div class="gallery-arrows">
-              <button type="button" class="gallery-arrow" id="galleryPrev" aria-label="Poprzednie zdjęcie" disabled>
+              <button type="button" class="gallery-arrow gallery-arrow--prev" id="galleryPrev" aria-label="Poprzednie zdjęcie" disabled>
                 <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M19 12H5"></path>
                   <path d="m11 18-6-6 6-6"></path>
                 </svg>
               </button>
-              <button type="button" class="gallery-arrow" id="galleryNext" aria-label="Następne zdjęcie">
+              <button type="button" class="gallery-arrow gallery-arrow--next" id="galleryNext" aria-label="Następne zdjęcie">
                 <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M5 12h14"></path>
                   <path d="m13 6 6 6-6 6"></path>
@@ -2781,9 +3251,10 @@
 
       <div class="gallery-track" id="galleryTrack" tabindex="0" role="region" aria-roledescription="karuzela" aria-label="Galeria otoczenia i kierunku wnętrza Studio Las">
         <!-- Slide 01 -->
-        <figure class="gallery-slide" data-slide="1">
+        <figure class="gallery-slide is-active" data-slide="1">
           <div class="gallery-frame">
             <img
+              class="media-settle"
               src="./images/las-detal.webp"
               alt="Naturalny detal leśnego otoczenia wokół Studio Las w Pracach Dużych"
               width="1400"
@@ -2802,6 +3273,7 @@
         <figure class="gallery-slide" data-slide="2">
           <div class="gallery-frame">
             <img
+              class="media-settle"
               src="./images/studio-drewno.webp"
               alt="Wizualizacja kierunku wnętrza sali treningowej Studio Las w jasnym drewnie i minimalistycznej estetyce"
               width="1400"
@@ -2823,6 +3295,7 @@
         <figure class="gallery-slide" data-slide="3">
           <div class="gallery-frame">
             <img
+              class="media-settle"
               src="./images/las-sciezka.webp"
               alt="Leśna ścieżka w bezpośrednim sąsiedztwie Studio Las"
               width="1400"
@@ -2840,7 +3313,7 @@
     </section>
 
     <!-- ====================================================================
-         ACT 5 — COACH BIO, BOUNDARY, LOCATION MONOLITH & NATIVE FAQ
+         ACT 5 — EDITORIAL COACH BIO, FOREST MONOLITH & SILKY NATIVE FAQ
          ==================================================================== -->
     <section class="section section--alabaster" id="prowadzacy" aria-labelledby="prowadzacy-title">
       <div class="container">
@@ -2856,30 +3329,28 @@
           </p>
         </div>
 
-        <div class="trust-grid">
-          <!-- Coach Bio + Legal Boundary -->
-          <article class="coach-card reveal">
-            <div>
-              <div class="coach-header">
-                <h3 class="coach-name">Damian Krawiec</h3>
-                <span class="coach-role">Prowadzący · Studio Las</span>
-              </div>
-
-              <ul class="coach-credentials" style="margin-top: 1.4rem;">
-                <li>
-                  <span class="credential-index tabular">01</span>
-                  <span><strong>Magister wychowania fizycznego (AWF Warszawa)</strong> — solidna baza w metodyce treningu siłowego, ruchowego i planowaniu obciążeń.</span>
-                </li>
-                <li>
-                  <span class="credential-index tabular">02</span>
-                  <span><strong>Studia podyplomowe „Fizjoterapia w sporcie”</strong> — świadome uzupełnienie warsztatu trenerskiego, pomocne w bezpiecznym doborze ćwiczeń i współpracy z zaleceniami specjalistów.</span>
-                </li>
-                <li>
-                  <span class="credential-index tabular">03</span>
-                  <span><strong class="tabular">~15 lat regularnej edukacji zawodowej i praktyki 1:1</strong> — wieloletnia praca z dorosłymi, którzy cenią spokój, konkret i mierzalny postęp bez skrajności.</span>
-                </li>
-              </ul>
+        <div class="trust-layout">
+          <!-- Open Editorial Bio + Legal Boundary -->
+          <article class="coach-editorial reveal">
+            <div class="coach-header">
+              <h3 class="coach-name">Damian Krawiec</h3>
+              <span class="coach-role">Prowadzący · Studio Las</span>
             </div>
+
+            <ul class="coach-credentials">
+              <li>
+                <span class="credential-index tabular">01</span>
+                <span><strong>Magister wychowania fizycznego (AWF Warszawa)</strong> — solidna baza w metodyce treningu siłowego, ruchowego i planowaniu obciążeń.</span>
+              </li>
+              <li>
+                <span class="credential-index tabular">02</span>
+                <span><strong>Studia podyplomowe „Fizjoterapia w sporcie”</strong> — świadome uzupełnienie warsztatu trenerskiego, pomocne w bezpiecznym doborze ćwiczeń i współpracy z zaleceniami specjalistów.</span>
+              </li>
+              <li>
+                <span class="credential-index tabular">03</span>
+                <span><strong class="tabular">~15 lat regularnej edukacji zawodowej i praktyki 1:1</strong> — wieloletnia praca z dorosłymi, którzy cenią spokój, konkret i mierzalny postęp bez skrajności.</span>
+              </li>
+            </ul>
 
             <div class="boundary-box" role="note" aria-label="Granica kompetencji Studio Las">
               <span class="boundary-box__label">Granica kompetencji i bezpieczeństwo</span>
@@ -2892,8 +3363,8 @@
             </div>
           </article>
 
-          <!-- Deep Forest Location Monolith -->
-          <aside class="monolith-card surface-dark reveal" aria-labelledby="lokalizacja-heading">
+          <!-- Deep Forest Location Monolith with SVG Micro-Grain -->
+          <aside class="monolith-card surface-dark has-grain reveal" aria-labelledby="lokalizacja-heading">
             <div>
               <p class="bento-kicker">Lokalizacja · Prywatna sala</p>
               <h3 class="monolith-address" id="lokalizacja-heading">
@@ -2934,7 +3405,7 @@
                 class="btn btn--light btn--sm"
               >
                 <span>Otwórz w Google Maps</span>
-                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                <svg class="icon icon--sm icon-arrow-diag" viewBox="0 0 24 24" aria-hidden="true">
                   <path d="M7 17 17 7"></path>
                   <path d="M8 7h9v9"></path>
                 </svg>
@@ -2951,11 +3422,11 @@
           </aside>
         </div>
 
-        <!-- Native Exclusive FAQ Accordion (<details name="faq">) -->
+        <!-- Silky Native Exclusive FAQ Accordion (<details name="faq">) -->
         <div class="faq-block reveal" id="faq">
           <div>
             <p class="section-eyebrow">Akt 05 · Najczęstsze pytania</p>
-            <h2 class="display-h2" style="font-size: clamp(1.85rem, 3.1vw, 2.75rem);">
+            <h2 class="display-h2" style="font-size: clamp(1.95rem, 3.2vw, 2.85rem);">
               Konkretne <span class="editorial-italic">odpowiedzi</span> przed pierwszą rozmową.
             </h2>
           </div>
@@ -3026,9 +3497,9 @@
     </section>
 
     <!-- ====================================================================
-         ACT 6 — CALM CONTACT FINALE (#14231B) & FOOTER
+         ACT 6 — CALM CONTACT FINALE (#14231B + GRAIN) & FOOTER
          ==================================================================== -->
-    <section class="contact-finale surface-dark" id="kontakt" aria-labelledby="kontakt-title">
+    <section class="contact-finale surface-dark has-grain" id="kontakt" aria-labelledby="kontakt-title">
       <div class="container">
         <div class="contact-hero-box">
           <div>
@@ -3044,7 +3515,7 @@
           <div class="contact-primary-wrap">
             <a href="./ankieta-kontakt.html#ankieta" class="btn btn--light contact-primary-cta">
               <span>Przejdź do 1-minutowego formularza kontaktu</span>
-              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+              <svg class="icon icon-arrow" viewBox="0 0 24 24" aria-hidden="true">
                 <path d="M5 12h14"></path>
                 <path d="m13 6 6 6-6 6"></path>
               </svg>
@@ -3234,6 +3705,53 @@
       };
 
       /* ====================================================================
+         PHYSICS SLIDING PILL HELPER (ZERO EXTERNAL LIBRARIES)
+         ==================================================================== */
+      const createSlidingPill = (trackEl, indicatorEl, getActiveEl) => {
+        if (!trackEl || !indicatorEl) return () => {};
+
+        const positionIndicator = (instant = false) => {
+          const activeEl = getActiveEl();
+          if (!activeEl) return;
+
+          const x = activeEl.offsetLeft;
+          const y = activeEl.offsetTop;
+          const w = activeEl.offsetWidth;
+          const h = activeEl.offsetHeight;
+
+          if (instant) {
+            indicatorEl.classList.add("no-transition");
+          }
+
+          indicatorEl.style.setProperty("--ind-x", `${x}px`);
+          indicatorEl.style.setProperty("--ind-y", `${y}px`);
+          indicatorEl.style.setProperty("--ind-w", `${w}px`);
+          indicatorEl.style.setProperty("--ind-h", `${h}px`);
+          indicatorEl.classList.add("is-ready");
+
+          if (instant) {
+            void indicatorEl.offsetWidth;
+            indicatorEl.classList.remove("no-transition");
+          }
+        };
+
+        requestAnimationFrame(() => positionIndicator(true));
+
+        if ("ResizeObserver" in window) {
+          const ro = new ResizeObserver(() => positionIndicator(true));
+          ro.observe(trackEl);
+        } else {
+          window.addEventListener("resize", () => positionIndicator(true), { passive: true });
+        }
+
+        if (document.fonts && document.fonts.ready) {
+          document.fonts.ready.then(() => positionIndicator(true));
+        }
+
+        return () => positionIndicator(false);
+      };
+
+      /* ====================================================================
          1. FLOATING HUD SCROLL ADAPTATION & MOBILE MENU DRAWER
          ==================================================================== */
       const hudHeader = document.getElementById("hudHeader");
@@ -3244,8 +3762,7 @@
       if (hudHeader && heroSection && "IntersectionObserver" in window) {
         const hudObserver = new IntersectionObserver(
           (entries) => {
-            const entry = entries[0];
-            hudHeader.classList.toggle("is-scrolled", !entry.isIntersecting);
+            hudHeader.classList.toggle("is-scrolled", !entries[0].isIntersecting);
           },
           { rootMargin: "-90px 0px 0px 0px", threshold: 0.05 }
         );
@@ -3277,7 +3794,7 @@
       }
 
       /* ====================================================================
-         2. ACT 2 — BENTO STARTING-POINT SELECTOR (VIEW TRANSITIONS API)
+         2. ACT 2 — BENTO STARTING-POINT SELECTOR (SLIDING PILL + VIEW TRANSITION)
          ==================================================================== */
       const profileData = {
         przerwa: {
@@ -3322,6 +3839,8 @@
         }
       };
 
+      const profileTabsTrack = document.getElementById("profileTabsTrack");
+      const profileIndicator = document.getElementById("profileIndicator");
       const profileTabs = Array.from(document.querySelectorAll('[role="tab"][data-profile]'));
       const profilePanel = document.getElementById("panel-punkt-wyjscia");
       const profileTitle = document.getElementById("profileTitle");
@@ -3329,21 +3848,29 @@
       const profilePoints = document.getElementById("profilePoints");
       const profileNote = document.getElementById("profileNote");
 
+      const moveProfileIndicator = createSlidingPill(
+        profileTabsTrack,
+        profileIndicator,
+        () => profileTabs.find((t) => t.getAttribute("aria-selected") === "true")
+      );
+
       const selectProfile = (key, focusTab = false) => {
         const data = profileData[key];
         if (!data || !profilePanel) return;
 
-        withViewTransition(() => {
-          profileTabs.forEach((tab) => {
-            const active = tab.dataset.profile === key;
-            tab.setAttribute("aria-selected", String(active));
-            tab.tabIndex = active ? 0 : -1;
-            if (active) {
-              profilePanel.setAttribute("aria-labelledby", tab.id);
-              if (focusTab) tab.focus();
-            }
-          });
+        profileTabs.forEach((tab) => {
+          const active = tab.dataset.profile === key;
+          tab.setAttribute("aria-selected", String(active));
+          tab.tabIndex = active ? 0 : -1;
+          if (active) {
+            profilePanel.setAttribute("aria-labelledby", tab.id);
+            if (focusTab) tab.focus();
+          }
+        });
 
+        moveProfileIndicator();
+
+        withViewTransition(() => {
           profileTitle.textContent = data.headline;
           profileCopy.textContent = data.copy;
           profilePoints.innerHTML = data.points.map((item) => `<li>${item}</li>`).join("");
@@ -3364,7 +3891,7 @@
       });
 
       /* ====================================================================
-         3. ACT 3 — INTERACTIVE RHYTHM PLANNER (1x vs 2x)
+         3. ACT 3 — PRECISION RHYTHM INSTRUMENT (SLIDING PILL + HOROLOGY GRID)
          ==================================================================== */
       const rhythmConfigs = {
         1: {
@@ -3375,7 +3902,7 @@
           caption: "Rytm 1× w tygodniu sprawdza się przy napiętym kalendarzu zawodowym lub jako solidna baza łączona z aktywnością własną.",
           days: [
             { name: "PN", type: "rest", title: "Codzienny ruch", time: "Spacer / lekka aktywność" },
-            { name: "WT", type: "studio", title: "Studio Las 1:1", time: "60 min · sala na wyłączność" },
+            { name: "WT", type: "studio", title: "Studio Las 1:1", time: "60 min · wyłączność" },
             { name: "ŚR", type: "rest", title: "Odpoczynek", time: "Regeneracja tkanek" },
             { name: "CZ", type: "home", title: "Zestaw domowy", time: "10 min · ruchomość" },
             { name: "PT", type: "rest", title: "Codzienny ruch", time: "Naturalny rytm dnia" },
@@ -3401,6 +3928,8 @@
         }
       };
 
+      const rhythmSwitchTrack = document.getElementById("rhythmSwitchTrack");
+      const rhythmIndicator = document.getElementById("rhythmIndicator");
       const rhythmBtns = Array.from(document.querySelectorAll("[data-rhythm]"));
       const weekGrid = document.getElementById("weekGrid");
       const plannerMonthly = document.getElementById("plannerMonthly");
@@ -3409,29 +3938,41 @@
       const plannerCycleTotal = document.getElementById("plannerCycleTotal");
       const rhythmCaption = document.getElementById("rhythmCaption");
 
+      const moveRhythmIndicator = createSlidingPill(
+        rhythmSwitchTrack,
+        rhythmIndicator,
+        () => rhythmBtns.find((b) => b.getAttribute("aria-pressed") === "true")
+      );
+
       const updateRhythm = (rate) => {
         const cfg = rhythmConfigs[rate];
         if (!cfg || !weekGrid) return;
 
-        withViewTransition(() => {
-          rhythmBtns.forEach((btn) => {
-            btn.setAttribute("aria-pressed", String(btn.dataset.rhythm === String(rate)));
-          });
+        rhythmBtns.forEach((btn) => {
+          btn.setAttribute("aria-pressed", String(btn.dataset.rhythm === String(rate)));
+        });
 
+        moveRhythmIndicator();
+
+        withViewTransition(() => {
           weekGrid.innerHTML = cfg.days
             .map((day) => {
               const cls =
                 day.type === "studio"
-                  ? "day-cell day-cell--studio"
+                  ? "day-dial day-dial--studio"
                   : day.type === "home"
-                  ? "day-cell day-cell--home"
-                  : "day-cell";
+                  ? "day-dial day-dial--home"
+                  : "day-dial";
               return `
                 <div class="${cls}">
-                  <span class="day-cell__name">${day.name}</span>
-                  <div class="day-cell__content">
-                    <span class="day-cell__title">${day.title}</span>
-                    <span class="day-cell__time tabular">${day.time}</span>
+                  <div class="day-dial__head">
+                    <span class="day-dial__name">${day.name}</span>
+                    <span class="day-dial__signal" aria-hidden="true"></span>
+                  </div>
+                  <div class="day-dial__bar" aria-hidden="true"><div class="day-dial__bar-fill"></div></div>
+                  <div class="day-dial__body">
+                    <span class="day-dial__title">${day.title}</span>
+                    <span class="day-dial__meta tabular">${day.time}</span>
                   </div>
                 </div>`;
             })
@@ -3450,7 +3991,7 @@
       });
 
       /* ====================================================================
-         4. ACT 3 — 3-PHASE FIRST MEETING STEPPER (220 zł)
+         4. ACT 3 — 3-PHASE FIRST MEETING STEPPER (220 zł + PROGRESS RAIL)
          ==================================================================== */
       const stepData = {
         1: {
@@ -3479,10 +4020,15 @@
       const stepDesc = document.getElementById("stepDesc");
       const stepHighlightLabel = document.getElementById("stepHighlightLabel");
       const stepHighlightText = document.getElementById("stepHighlightText");
+      const stepperProgressBar = document.getElementById("stepperProgressBar");
 
       const selectStep = (stepNum, focusTab = false) => {
         const data = stepData[stepNum];
         if (!data || !stepPanel) return;
+
+        if (stepperProgressBar) {
+          stepperProgressBar.style.width = `${(Number(stepNum) / 3) * 100}%`;
+        }
 
         withViewTransition(() => {
           stepTabs.forEach((tab) => {
@@ -3515,7 +4061,7 @@
       });
 
       /* ====================================================================
-         5. ACT 4 — TACTILE SCROLL-SNAP GALLERY (COUNTER + PROGRESS + ARROWS)
+         5. ACT 4 — CINEMATIC GALLERY (ACTIVE FOCUS DIMMING + PROGRESS + DRAG)
          ==================================================================== */
       const galleryTrack = document.getElementById("galleryTrack");
       const galleryCounter = document.getElementById("galleryCounter");
@@ -3533,6 +4079,10 @@
           currentSlideIndex = Math.max(0, Math.min(totalSlides - 1, index));
           const displayNum = String(currentSlideIndex + 1).padStart(2, "0");
           const totalNum = String(totalSlides).padStart(2, "0");
+
+          slides.forEach((slide, idx) => {
+            slide.classList.toggle("is-active", idx === currentSlideIndex);
+          });
 
           if (galleryCounter) {
             galleryCounter.innerHTML = `${displayNum} <span>/ ${totalNum}</span>`;
@@ -3592,7 +4142,6 @@
           }
         });
 
-        // Subtle pointer drag support for desktop mouse users
         let isDragging = false;
         let dragStartX = 0;
         let dragStartScroll = 0;
