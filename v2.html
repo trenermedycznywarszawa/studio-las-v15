@@ -1919,6 +1919,13 @@
       object-fit: cover;
     }
 
+    .crop-watermark {
+      transform: scale(1.06);
+      transform-origin: left top;
+      object-fit: cover;
+      object-position: left top;
+    }
+
     .gallery-badge {
       position: absolute;
       top: 1.15rem;
@@ -1975,14 +1982,45 @@
       padding-top: 0.5rem;
     }
 
+    .coach-profile-row {
+      display: grid;
+      grid-template-columns: 7.5rem minmax(0, 1fr);
+      gap: 1.4rem;
+      align-items: center;
+      padding-bottom: 1.4rem;
+      border-bottom: 1px solid var(--border-strong);
+    }
+
+    .coach-portrait-thumb {
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      aspect-ratio: 4 / 5;
+      background: var(--bg-linen);
+      box-shadow: var(--elev-card);
+    }
+
+    .coach-portrait-thumb img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+    }
+
     .coach-header {
       display: flex;
       flex-wrap: wrap;
       align-items: baseline;
       justify-content: space-between;
       gap: 0.75rem;
-      padding-bottom: 1.4rem;
-      border-bottom: 1px solid var(--border-strong);
+    }
+
+    @media (max-width: 520px) {
+      .coach-profile-row {
+        grid-template-columns: 1fr;
+      }
+      .coach-portrait-thumb {
+        max-width: 10rem;
+      }
     }
 
     .coach-name {
@@ -3275,11 +3313,11 @@
         <figure class="gallery-slide" data-slide="2">
           <div class="gallery-frame">
             <img
-              class="media-settle"
-              src="./images/studio-drewno.webp"
+              class="crop-watermark"
+              src="./images/cc1b1c61-5f7d-44ce-abbc-595be3017fb0.webp"
               alt="Wizualizacja kierunku wnętrza sali treningowej Studio Las w jasnym drewnie i minimalistycznej estetyce"
-              width="1400"
-              height="875"
+              width="2240"
+              height="5120"
               loading="lazy"
               decoding="async"
             >
@@ -3297,11 +3335,11 @@
         <figure class="gallery-slide" data-slide="3">
           <div class="gallery-frame">
             <img
-              class="media-settle"
-              src="./images/las-sciezka.webp"
-              alt="Leśna ścieżka w bezpośrednim sąsiedztwie Studio Las"
-              width="1400"
-              height="875"
+              class="crop-watermark"
+              src="./images/las.webp"
+              alt="Leśna ścieżka w bezpośrednim sąsiedztwie Studio Las w Pracach Dużych"
+              width="1195"
+              height="896"
               loading="lazy"
               decoding="async"
             >
@@ -3334,9 +3372,21 @@
         <div class="trust-layout">
           <!-- Open Editorial Bio + Legal Boundary -->
           <article class="coach-editorial reveal">
-            <div class="coach-header">
-              <h3 class="coach-name">Damian Krawiec</h3>
-              <span class="coach-role">Prowadzący · Studio Las</span>
+            <div class="coach-profile-row">
+              <div class="coach-portrait-thumb">
+                <img
+                  src="./images/damian-profilowe.webp"
+                  alt="Damian Krawiec — prowadzący Studio Las"
+                  width="1000"
+                  height="700"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </div>
+              <div class="coach-header">
+                <h3 class="coach-name">Damian Krawiec</h3>
+                <span class="coach-role">Prowadzący · Studio Las</span>
+              </div>
             </div>
 
             <ul class="coach-credentials">

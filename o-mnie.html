@@ -606,9 +606,109 @@
 
     .about-hero__grid {
       display: grid;
-      grid-template-columns: minmax(0, 1.28fr) minmax(0, 0.72fr);
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
       gap: clamp(2rem, 5vw, 4.75rem);
-      align-items: end;
+      align-items: start;
+    }
+
+    .about-hero__aside {
+      display: grid;
+      gap: 1.5rem;
+    }
+
+    .about-portrait-card {
+      background: var(--bg-white);
+      border-radius: var(--radius-card);
+      padding: 0.75rem 0.75rem 1.25rem;
+      box-shadow: var(--elev-instrument);
+      display: grid;
+      gap: 1rem;
+    }
+
+    .about-portrait-frame {
+      border-radius: 16px;
+      overflow: hidden;
+      aspect-ratio: 4 / 5;
+      background: var(--bg-linen);
+    }
+
+    .about-portrait-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 20%;
+    }
+
+    .about-portrait-caption {
+      padding-inline: 0.5rem;
+      font-size: 0.87rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    .crop-watermark {
+      transform: scale(1.06);
+      transform-origin: left top;
+      object-fit: cover;
+      object-position: left top;
+    }
+
+    /* 2-column architectural space strip before Value Contrast */
+    .space-strip-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.5rem;
+    }
+
+    .space-strip-card {
+      display: grid;
+      gap: 1rem;
+      align-content: start;
+    }
+
+    .space-strip-frame {
+      position: relative;
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+      background: #DCE2DE;
+      box-shadow: var(--elev-card);
+    }
+
+    .space-strip-frame img {
+      width: 100%;
+      height: 100%;
+    }
+
+    .space-strip-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      max-width: calc(100% - 2rem);
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius-pill);
+      background: rgba(20, 35, 27, 0.88);
+      color: var(--text-on-dark);
+      border: 1px solid rgba(167, 196, 177, 0.36);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+      font-size: 0.78rem;
+      font-weight: 500;
+      line-height: 1.35;
+      z-index: 2;
+    }
+
+    .space-strip-caption {
+      font-size: 0.91rem;
+      line-height: 1.55;
+      color: var(--text-secondary);
+      padding-inline: 0.25rem;
+    }
+
+    @media (max-width: 860px) {
+      .space-strip-grid {
+        grid-template-columns: 1fr;
+      }
     }
 
     .about-hero__lead {
@@ -1398,31 +1498,49 @@
             </p>
           </div>
 
-          <aside class="about-facts-panel" aria-label="Kluczowe fakty o prowadzącym">
-            <div class="about-facts-panel__head">
-              <span class="about-facts-panel__name">Damian Krawiec</span>
-              <span class="about-facts-panel__badge">1:1 · Studio Las</span>
-            </div>
+          <div class="about-hero__aside">
+            <figure class="about-portrait-card">
+              <div class="about-portrait-frame">
+                <img
+                  src="./images/damian-profilowe.webp"
+                  alt="Damian Krawiec — prowadzący Studio Las w Pracach Dużych"
+                  width="1000"
+                  height="700"
+                  loading="lazy"
+                  decoding="async"
+                >
+              </div>
+              <figcaption class="about-portrait-caption">
+                Damian Krawiec — prowadzący Studio Las. 15 lat edukacji i pracy 1:1 z ruchem.
+              </figcaption>
+            </figure>
 
-            <dl class="about-facts-list">
-              <div>
-                <dt>Wykształcenie bazowe</dt>
-                <dd>mgr wychowania fizycznego AWF Warszawa</dd>
+            <aside class="about-facts-panel" aria-label="Kluczowe fakty o prowadzącym">
+              <div class="about-facts-panel__head">
+                <span class="about-facts-panel__name">Damian Krawiec</span>
+                <span class="about-facts-panel__badge">1:1 · Studio Las</span>
               </div>
-              <div>
-                <dt>Uzupełnienie warsztatu</dt>
-                <dd>studia podyplomowe „Fizjoterapia w sporcie”</dd>
-              </div>
-              <div>
-                <dt>Doświadczenie</dt>
-                <dd class="tabular">~15 lat praktyki 1:1</dd>
-              </div>
-              <div>
-                <dt>Miejsce prowadzenia</dt>
-                <dd class="tabular">Prace Duże · ul. Pracka 1J</dd>
-              </div>
-            </dl>
-          </aside>
+
+              <dl class="about-facts-list">
+                <div>
+                  <dt>Wykształcenie bazowe</dt>
+                  <dd>mgr wychowania fizycznego AWF Warszawa</dd>
+                </div>
+                <div>
+                  <dt>Uzupełnienie warsztatu</dt>
+                  <dd>studia podyplomowe „Fizjoterapia w sporcie”</dd>
+                </div>
+                <div>
+                  <dt>Doświadczenie</dt>
+                  <dd class="tabular">~15 lat praktyki 1:1</dd>
+                </div>
+                <div>
+                  <dt>Miejsce prowadzenia</dt>
+                  <dd class="tabular">Prace Duże · ul. Pracka 1J</dd>
+                </div>
+              </dl>
+            </aside>
+          </div>
         </div>
       </div>
     </section>
@@ -1484,6 +1602,52 @@
               Regularne przeglądy w cyklu <span class="tabular">12</span> tygodni (<span class="tabular">T01 → T06 → T12</span>) i świadoma decyzja o kolejnym kroku.
             </p>
           </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         SPACE STRIP — FOREST ENVIRONMENT & INTERIOR CONCEPT
+         ==================================================================== -->
+    <section class="section section--alabaster" aria-label="Przestrzeń i otoczenie Studio Las" style="padding-bottom: 0;">
+      <div class="container">
+        <div class="space-strip-grid">
+          <figure class="space-strip-card reveal">
+            <div class="space-strip-frame">
+              <img
+                class="crop-watermark"
+                src="./images/IMG_4469.webp"
+                alt="Kamienna ścieżka wśród zieleni w otoczeniu Studio Las w Pracach Dużych"
+                width="1195"
+                height="896"
+                loading="lazy"
+                decoding="async"
+              >
+            </div>
+            <figcaption class="space-strip-caption">
+              Otoczenie Studio Las w Pracach Dużych — kamienna ścieżka wśród zieleni, 5 min od S7.
+            </figcaption>
+          </figure>
+
+          <figure class="space-strip-card reveal">
+            <div class="space-strip-frame">
+              <img
+                class="crop-watermark"
+                src="./images/cc1b1c61-5f7d-44ce-abbc-595be3017fb0.webp"
+                alt="Wizualizacja kierunku wnętrza sali treningowej Studio Las w jasnej, architektonicznej estetyce"
+                width="2240"
+                height="5120"
+                loading="lazy"
+                decoding="async"
+              >
+              <span class="space-strip-badge">
+                Wizualizacja kierunku wnętrza — zdjęcia gotowej sali w przygotowaniu
+              </span>
+            </div>
+            <figcaption class="space-strip-caption">
+              Wizualizacja kierunku wnętrza — zdjęcia gotowej sali w przygotowaniu
+            </figcaption>
+          </figure>
         </div>
       </div>
     </section>
