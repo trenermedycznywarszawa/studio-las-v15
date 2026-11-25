@@ -29,7 +29,7 @@
   <link rel="preload" as="image" href="./images/las-hero-mobile-780.webp" media="(max-width: 767px)" type="image/webp">
 
   <!-- Inline SVG Favicon -->
-  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23080C0A'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23A7C4B1' font-family='system-ui, sans-serif' font-weight='500' font-size='24' letter-spacing='-1'%3ESL%3C/text%3E%3C/svg%3E">
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%2314231B'/%3E%3Ctext x='50%25' y='54%25' dominant-baseline='middle' text-anchor='middle' fill='%23A7C4B1' font-family='system-ui, sans-serif' font-weight='500' font-size='24' letter-spacing='-1'%3ESL%3C/text%3E%3C/svg%3E">
 
   <!-- Lokalne SEO: JSON-LD (LocalBusiness / HealthClub) -->
   <script type="application/ld+json">
@@ -113,23 +113,22 @@
     }
 
     :root {
-      --obsidian: #080C0A;
-      --obsidian-card: #111814;
-      --obsidian-card-hi: #16201B;
-      --obsidian-border: rgba(244, 246, 244, 0.08);
-      --obsidian-hairline: rgba(244, 246, 244, 0.12);
+      --forest: #14231B;
+      --forest-hi: #1B2E24;
+      --forest-border: rgba(244, 246, 244, 0.10);
+      --forest-hairline: rgba(244, 246, 244, 0.14);
 
       --alabaster: #F6F7F5;
       --alabaster-card: #FFFFFF;
-      --alabaster-border: #E4E6E3;
+      --alabaster-border: #E2E6E3;
 
       --ink-dark: #F4F6F4;
-      --muted-dark: #96A49B;
-      --ink-light: #0D120F;
-      --muted-light: #556059;
+      --muted-dark: #B6C3BA;
+      --ink-light: #0F1612;
+      --muted-light: #525E57;
 
       --sage-glow: #A7C4B1;
-      --sage-deep: #24382D;
+      --sage-on-light: #244233;
 
       --font-sans: 'Inter Local', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
       --font-serif: 'Newsreader Local', Georgia, 'Iowan Old Style', serif;
@@ -147,7 +146,7 @@
     html {
       scroll-behavior: smooth;
       scroll-padding-top: 96px;
-      background-color: var(--obsidian);
+      background-color: var(--alabaster);
     }
 
     body {
@@ -155,8 +154,8 @@
       font-family: var(--font-sans);
       font-size: 16px;
       line-height: 1.65;
-      color: var(--ink-dark);
-      background-color: var(--obsidian);
+      color: var(--ink-light);
+      background-color: var(--alabaster);
       -webkit-font-smoothing: antialiased;
       -moz-osx-font-smoothing: grayscale;
       font-synthesis-weight: none;
@@ -250,12 +249,18 @@
     }
 
     .act-dark {
-      background-color: var(--obsidian);
+      background-color: var(--forest);
       color: var(--ink-dark);
     }
     .act-light {
       background-color: var(--alabaster);
       color: var(--ink-light);
+    }
+    .act-white {
+      background-color: var(--alabaster-card);
+      color: var(--ink-light);
+      border-top: 1px solid var(--alabaster-border);
+      border-bottom: 1px solid var(--alabaster-border);
     }
 
     /* Typografia: 90% Engineered Inter + 10% Surgical Newsreader Italic */
@@ -314,8 +319,9 @@
       align-items: center;
       gap: 10px;
     }
-    .act-light .eyebrow {
-      color: var(--muted-light);
+    .act-light .eyebrow,
+    .act-white .eyebrow {
+      color: var(--sage-on-light);
     }
     .eyebrow-dot {
       width: 6px;
@@ -324,8 +330,9 @@
       background-color: var(--sage-glow);
       flex-shrink: 0;
     }
-    .act-light .eyebrow-dot {
-      background-color: var(--ink-light);
+    .act-light .eyebrow-dot,
+    .act-white .eyebrow-dot {
+      background-color: var(--forest);
     }
 
     .lead {
@@ -335,7 +342,8 @@
       max-width: 600px;
       margin: 0 0 28px;
     }
-    .act-light .lead { color: var(--muted-light); }
+    .act-light .lead,
+    .act-white .lead { color: var(--muted-light); }
 
     /* Przyciski-kapsuły */
     .btn {
@@ -358,25 +366,25 @@
 
     .btn-sage {
       background-color: var(--sage-glow);
-      color: var(--obsidian);
+      color: var(--forest);
     }
     .btn-sage:hover { background-color: #BDD6C6; }
 
     .btn-ghost-dark {
-      background-color: rgba(244, 246, 244, 0.04);
+      background-color: rgba(244, 246, 244, 0.06);
       color: var(--ink-dark);
-      border-color: rgba(244, 246, 244, 0.2);
+      border-color: rgba(244, 246, 244, 0.28);
     }
     .btn-ghost-dark:hover {
-      background-color: rgba(244, 246, 244, 0.1);
-      border-color: rgba(244, 246, 244, 0.45);
+      background-color: rgba(244, 246, 244, 0.14);
+      border-color: rgba(244, 246, 244, 0.55);
     }
 
     .btn-obsidian {
-      background-color: var(--ink-light);
-      color: var(--alabaster);
+      background-color: var(--forest);
+      color: var(--alabaster-card);
     }
-    .btn-obsidian:hover { background-color: #1F2A23; }
+    .btn-obsidian:hover { background-color: var(--forest-hi); }
 
     .btn-sm {
       min-height: 42px;
@@ -425,16 +433,44 @@
       min-height: 58px;
       padding: 6px 8px 6px 20px;
       border-radius: var(--radius-pill);
-      background-color: rgba(12, 18, 15, 0.72);
+      background-color: rgba(20, 35, 27, 0.72);
       -webkit-backdrop-filter: blur(20px) saturate(140%);
       backdrop-filter: blur(20px) saturate(140%);
-      border: 1px solid rgba(244, 246, 244, 0.12);
-      box-shadow: 0 12px 36px rgba(0, 0, 0, 0.28), inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(244, 246, 244, 0.16);
+      box-shadow: 0 10px 30px rgba(14, 26, 20, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.08);
       color: var(--ink-dark);
       display: flex;
       align-items: center;
       justify-content: space-between;
       gap: 16px;
+      transition: background-color 0.28s ease, color 0.28s ease, border-color 0.28s ease;
+    }
+    .hud-bar.is-scrolled {
+      background-color: rgba(246, 247, 245, 0.88);
+      border-color: rgba(15, 22, 18, 0.10);
+      box-shadow: 0 10px 28px rgba(15, 22, 18, 0.08);
+      color: var(--ink-light);
+    }
+    .hud-bar.is-scrolled .brand-dot {
+      background-color: var(--forest);
+    }
+    .hud-bar.is-scrolled .nav-desktop a:not(.btn) {
+      color: var(--muted-light);
+    }
+    .hud-bar.is-scrolled .nav-desktop a:not(.btn):hover {
+      color: var(--ink-light);
+    }
+    .hud-bar.is-scrolled .hud-cta {
+      background-color: var(--forest);
+      color: var(--alabaster-card);
+    }
+    .hud-bar.is-scrolled .hud-cta:hover {
+      background-color: var(--forest-hi);
+    }
+    .hud-bar.is-scrolled .menu-toggle {
+      border-color: rgba(15, 22, 18, 0.18);
+      background: rgba(15, 22, 18, 0.04);
+      color: var(--ink-light);
     }
 
     .brand {
@@ -491,11 +527,12 @@
       margin: 10px auto 0;
       padding: 16px 20px 20px;
       border-radius: var(--radius-bento);
-      background-color: rgba(14, 21, 17, 0.96);
+      background-color: rgba(246, 247, 245, 0.96);
       -webkit-backdrop-filter: blur(20px);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(244, 246, 244, 0.14);
-      color: var(--ink-dark);
+      border: 1px solid var(--alabaster-border);
+      box-shadow: 0 16px 40px rgba(15, 22, 18, 0.14);
+      color: var(--ink-light);
     }
     .nav-mobile.is-open { display: block; }
     .nav-mobile a:not(.btn) {
@@ -503,9 +540,9 @@
       align-items: center;
       min-height: 48px;
       padding: 8px 4px;
-      border-bottom: 1px solid var(--obsidian-hairline);
+      border-bottom: 1px solid var(--alabaster-border);
       text-decoration: none;
-      color: var(--ink-dark);
+      color: var(--ink-light);
       font-size: 15px;
     }
     .nav-mobile a.btn {
@@ -519,7 +556,7 @@
     }
 
     /* =========================================================
-       AKT I — KINOWY HERO FULL-BLEED (100SVH, #080C0A)
+       AKT I — KINOWY HERO FULL-BLEED (100SVH, DEEP FOREST)
        ========================================================= */
     .hero {
       position: relative;
@@ -528,7 +565,7 @@
       flex-direction: column;
       justify-content: flex-end;
       padding: 120px 0 0;
-      background-color: var(--obsidian);
+      background-color: var(--forest);
       color: var(--ink-dark);
       overflow: hidden;
     }
@@ -544,21 +581,21 @@
       height: 100%;
       object-fit: cover;
       object-position: 65% 42%;
-      filter: saturate(0.88) contrast(1.06);
+      filter: saturate(0.92) contrast(1.02) brightness(1.06);
       opacity: 0;
       transition: opacity 0.6s ease;
     }
     .hero-bg img.is-loaded { opacity: 1; }
     .hero-bg img.is-hidden { display: none; }
 
-    /* Wielowarstwowy scrim: mocniejszy po lewej dla kontrastu >4.5:1, więcej światła lasu po prawej */
+    /* Wielowarstwowy scrim na głębokiej zieleni: kontrast >4.5:1 po lewej, więcej światła lasu po prawej */
     .hero-overlay {
       position: absolute;
       inset: 0;
       z-index: 1;
       background:
-        linear-gradient(90deg, rgba(8, 12, 10, 0.90) 0%, rgba(8, 12, 10, 0.72) 48%, rgba(8, 12, 10, 0.26) 100%),
-        linear-gradient(180deg, rgba(8, 12, 10, 0.58) 0%, rgba(8, 12, 10, 0.14) 44%, rgba(8, 12, 10, 0.92) 100%);
+        linear-gradient(90deg, rgba(14, 26, 20, 0.88) 0%, rgba(14, 26, 20, 0.62) 48%, rgba(14, 26, 20, 0.16) 100%),
+        linear-gradient(180deg, rgba(14, 26, 20, 0.44) 0%, rgba(14, 26, 20, 0.08) 45%, rgba(14, 26, 20, 0.84) 100%);
     }
 
     .hero-grid {
@@ -605,10 +642,10 @@
       display: none;
       padding: 24px 26px;
       border-radius: var(--radius-bento);
-      background: rgba(14, 21, 17, 0.62);
+      background: rgba(20, 35, 27, 0.58);
       -webkit-backdrop-filter: blur(20px) saturate(140%);
       backdrop-filter: blur(20px) saturate(140%);
-      border: 1px solid rgba(244, 246, 244, 0.12);
+      border: 1px solid rgba(244, 246, 244, 0.16);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
     }
     @media (min-width: 1024px) {
@@ -620,7 +657,7 @@
       align-items: baseline;
       gap: 12px;
       padding: 11px 0;
-      border-bottom: 1px solid rgba(244, 246, 244, 0.09);
+      border-bottom: 1px solid rgba(244, 246, 244, 0.12);
       font-size: 14px;
     }
     .glass-row:last-child { border-bottom: none; padding-bottom: 0; }
@@ -631,8 +668,8 @@
     .telemetry-bar {
       position: relative;
       z-index: 2;
-      border-top: 1px solid rgba(244, 246, 244, 0.12);
-      background-color: rgba(8, 12, 10, 0.72);
+      border-top: 1px solid rgba(244, 246, 244, 0.16);
+      background-color: rgba(14, 26, 20, 0.68);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
     }
@@ -670,7 +707,7 @@
     }
 
     /* =========================================================
-       AKT II — OBSIDIAN BENTO SYSTEM (12 KOLUMN, RADIUS 22PX)
+       AKT II — LIGHT BENTO SYSTEM (#F6F7F5, BIAŁE KARTY + 1 AKCENT #14231B)
        ========================================================= */
     .bento-grid {
       display: grid;
@@ -690,9 +727,9 @@
     .bento-card {
       position: relative;
       border-radius: var(--radius-bento);
-      background: linear-gradient(160deg, var(--obsidian-card) 0%, var(--obsidian-card-hi) 100%);
-      border: 1px solid var(--obsidian-border);
-      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.07);
+      background-color: var(--alabaster-card);
+      border: 1px solid var(--alabaster-border);
+      color: var(--ink-light);
       padding: 28px 24px;
       overflow: hidden;
       display: flex;
@@ -714,7 +751,7 @@
         transition: opacity 0.3s ease;
         background: radial-gradient(
           460px circle at var(--mx, 50%) var(--my, 50%),
-          rgba(167, 196, 177, 0.11),
+          rgba(20, 35, 27, 0.045),
           transparent 55%
         );
       }
@@ -739,28 +776,28 @@
       min-height: 44px;
       padding: 8px 16px;
       border-radius: var(--radius-pill);
-      border: 1px solid rgba(244, 246, 244, 0.14);
-      background-color: rgba(244, 246, 244, 0.03);
-      color: var(--muted-dark);
+      border: 1px solid var(--alabaster-border);
+      background-color: var(--alabaster);
+      color: var(--muted-light);
       font-size: 13.5px;
       font-weight: 500;
       cursor: pointer;
       transition: background-color 0.2s ease, color 0.2s ease, border-color 0.2s ease;
     }
     .pill-tab:hover {
-      color: var(--ink-dark);
-      border-color: rgba(244, 246, 244, 0.3);
+      color: var(--ink-light);
+      border-color: #B4BDB7;
     }
     .pill-tab[aria-selected="true"] {
-      background-color: var(--sage-glow);
-      border-color: var(--sage-glow);
-      color: var(--obsidian);
+      background-color: var(--forest);
+      border-color: var(--forest);
+      color: var(--alabaster-card);
     }
 
     .bento-scenario-stage {
       view-transition-name: bento-scenario;
       padding-top: 18px;
-      border-top: 1px solid var(--obsidian-hairline);
+      border-top: 1px solid var(--alabaster-border);
     }
     .scenario-cols {
       display: grid;
@@ -776,14 +813,22 @@
       font-size: 11.5px;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      color: var(--sage-glow);
+      color: var(--sage-on-light);
       margin: 0 0 6px;
     }
+    .act-dark .mini-label {
+      color: var(--sage-glow);
+    }
 
-    /* Karta 2: Wizualny Manifest ze zdjęciem las-detal.webp w tle */
+    /* Karta 2: Wizualny Manifest ze zdjęciem las-detal.webp (jedyna ciemna karta w Bento) */
     .bento-manifest {
       min-height: 320px;
-      background: var(--obsidian-card);
+      background-color: var(--forest);
+      border-color: var(--forest-border);
+      color: var(--ink-dark);
+    }
+    .bento-manifest .eyebrow {
+      color: var(--sage-glow);
     }
     .bento-manifest-bg {
       position: absolute;
@@ -797,13 +842,13 @@
       opacity: 0;
       transition: opacity 0.5s ease;
     }
-    .bento-manifest-bg img.is-loaded { opacity: 0.42; }
+    .bento-manifest-bg img.is-loaded { opacity: 0.45; }
     .bento-manifest-bg img.is-hidden { display: none; }
     .bento-manifest-scrim {
       position: absolute;
       inset: 0;
       z-index: 0;
-      background: linear-gradient(180deg, rgba(8, 12, 10, 0.65) 0%, rgba(8, 12, 10, 0.88) 100%);
+      background: linear-gradient(180deg, rgba(14, 26, 20, 0.62) 0%, rgba(14, 26, 20, 0.88) 100%);
     }
     .manifesto-quote {
       font-size: clamp(1.35rem, 2.2vw, 1.75rem);
@@ -827,12 +872,12 @@
       grid-template-columns: 44px 1fr;
       gap: 12px;
       padding-top: 14px;
-      border-top: 1px solid var(--obsidian-hairline);
+      border-top: 1px solid var(--alabaster-border);
     }
     .axis-code {
       font-family: var(--font-mono);
       font-size: 13px;
-      color: var(--sage-glow);
+      color: var(--sage-on-light);
       font-weight: 500;
     }
 
@@ -848,13 +893,13 @@
       align-items: baseline;
       gap: 12px;
       padding-top: 14px;
-      border-top: 1px solid var(--obsidian-hairline);
+      border-top: 1px solid var(--alabaster-border);
     }
     .price-num {
       font-size: 1.25rem;
       font-weight: 500;
       letter-spacing: -0.03em;
-      color: var(--ink-dark);
+      color: var(--ink-light);
       white-space: nowrap;
     }
 
@@ -909,8 +954,8 @@
       transition: background-color 0.2s ease, color 0.2s ease;
     }
     .rhythm-btn[aria-pressed="true"] {
-      background-color: var(--ink-light);
-      color: var(--alabaster);
+      background-color: var(--forest);
+      color: var(--alabaster-card);
     }
 
     .planner-grid {
@@ -960,9 +1005,9 @@
       align-items: center;
     }
     .day-cell.is-studio {
-      background-color: var(--ink-light);
-      border-color: var(--ink-light);
-      color: var(--alabaster);
+      background-color: var(--forest);
+      border-color: var(--forest);
+      color: var(--alabaster-card);
     }
     .day-cell.is-home {
       background-color: var(--alabaster-card);
@@ -1013,9 +1058,9 @@
     }
     .step-btn:hover { border-color: #B4BDB7; }
     .step-btn[aria-selected="true"] {
-      background-color: var(--ink-light);
-      border-color: var(--ink-light);
-      color: var(--alabaster);
+      background-color: var(--forest);
+      border-color: var(--forest);
+      color: var(--alabaster-card);
     }
     .step-time {
       font-family: var(--font-mono);
@@ -1042,12 +1087,15 @@
     .takeaway-dark {
       margin-top: 24px;
       border-radius: var(--radius-bento);
-      background: linear-gradient(160deg, var(--obsidian-card) 0%, var(--obsidian-card-hi) 100%);
+      background: linear-gradient(160deg, var(--forest) 0%, var(--forest-hi) 100%);
       color: var(--ink-dark);
       padding: 28px 24px;
       display: flex;
       flex-direction: column;
       gap: 18px;
+    }
+    .takeaway-dark .eyebrow {
+      color: var(--sage-glow);
     }
     @media (min-width: 820px) {
       .takeaway-dark {
@@ -1091,7 +1139,7 @@
     }
 
     /* =========================================================
-       AKT IV — FULL-BLEED GALERIA PRZESTRZENI (#080C0A)
+       AKT IV — FULL-BLEED GALERIA PRZESTRZENI (LIGHT #FFFFFF)
        ========================================================= */
     .gallery-top {
       display: flex;
@@ -1110,15 +1158,15 @@
       font-family: var(--font-mono);
       font-size: 13px;
       letter-spacing: 0.1em;
-      color: var(--sage-glow);
+      color: var(--sage-on-light);
     }
     .gallery-btn {
       min-width: 44px;
       min-height: 44px;
       border-radius: var(--radius-pill);
-      border: 1px solid rgba(244, 246, 244, 0.2);
-      background-color: rgba(244, 246, 244, 0.04);
-      color: var(--ink-dark);
+      border: 1px solid var(--alabaster-border);
+      background-color: var(--alabaster);
+      color: var(--ink-light);
       cursor: pointer;
       display: inline-flex;
       align-items: center;
@@ -1127,8 +1175,8 @@
       transition: border-color 0.2s ease, background-color 0.2s ease;
     }
     .gallery-btn:hover {
-      border-color: var(--sage-glow);
-      background-color: rgba(167, 196, 177, 0.12);
+      border-color: var(--forest);
+      background-color: var(--alabaster-card);
     }
 
     .gallery-track {
@@ -1161,8 +1209,8 @@
       aspect-ratio: 16 / 9;
       overflow: hidden;
       border-radius: var(--radius-bento);
-      background-color: var(--obsidian-card);
-      border: 1px solid var(--obsidian-border);
+      background-color: var(--alabaster);
+      border: 1px solid var(--alabaster-border);
     }
     .photo-frame img {
       width: 100%;
@@ -1195,10 +1243,10 @@
       z-index: 2;
       padding: 6px 14px;
       border-radius: var(--radius-pill);
-      background: rgba(8, 12, 10, 0.72);
+      background: rgba(20, 35, 27, 0.80);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(244, 246, 244, 0.16);
+      border: 1px solid rgba(244, 246, 244, 0.22);
       color: var(--ink-dark);
       font-family: var(--font-mono);
       font-size: 11.5px;
@@ -1210,7 +1258,8 @@
       display: none;
       position: absolute;
       inset: 0;
-      background: linear-gradient(145deg, #111814 0%, #19251E 100%);
+      background: linear-gradient(145deg, #EAECE9 0%, #DCE2DD 100%);
+      color: var(--ink-light);
       padding: 24px;
       flex-direction: column;
       justify-content: flex-end;
@@ -1220,7 +1269,7 @@
     figcaption {
       margin-top: 12px;
       font-size: 13.5px;
-      color: var(--muted-dark);
+      color: var(--muted-light);
     }
 
     .gallery-progress {
@@ -1233,14 +1282,14 @@
     }
     .gallery-track-bar {
       width: 100%;
-      height: 1px;
-      background-color: rgba(244, 246, 244, 0.14);
+      height: 2px;
+      background-color: var(--alabaster-border);
       overflow: hidden;
     }
     .gallery-progress-fill {
       height: 100%;
       width: 33.333%;
-      background-color: var(--sage-glow);
+      background-color: var(--forest);
       transform-origin: left center;
       transition: transform 0.25s ease;
     }
@@ -1275,14 +1324,17 @@
 
     .monolith-card {
       border-radius: var(--radius-bento);
-      background: linear-gradient(160deg, var(--obsidian) 0%, #131E18 100%);
+      background: linear-gradient(160deg, var(--forest) 0%, var(--forest-hi) 100%);
       color: var(--ink-dark);
       padding: 32px 28px;
-      border: 1px solid var(--obsidian-border);
+      border: 1px solid var(--forest-border);
       box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
+    }
+    .monolith-card .eyebrow {
+      color: var(--sage-glow);
     }
     .info-dl {
       margin: 18px 0 28px;
@@ -1291,7 +1343,7 @@
     }
     .info-dl div + div {
       padding-top: 16px;
-      border-top: 1px solid var(--obsidian-hairline);
+      border-top: 1px solid var(--forest-hairline);
     }
     .info-dl dt {
       font-family: var(--font-mono);
@@ -1351,9 +1403,9 @@
     }
     .faq-details[open] .faq-plus {
       transform: rotate(45deg);
-      background-color: var(--ink-light);
-      color: var(--alabaster);
-      border-color: var(--ink-light);
+      background-color: var(--forest);
+      color: var(--alabaster-card);
+      border-color: var(--forest);
     }
     .faq-answer {
       margin: 0 0 20px;
@@ -1363,7 +1415,7 @@
     }
 
     /* =========================================================
-       AKT VI — OBSYDIANOWY FINAŁ KONTAKTU (#080C0A)
+       AKT VI — DEEP FOREST FINAŁ KONTAKTU (#14231B)
        ========================================================= */
     .contact-finale {
       max-width: 820px;
@@ -1372,7 +1424,7 @@
     .contact-direct {
       margin-top: 40px;
       padding-top: 28px;
-      border-top: 1px solid var(--obsidian-hairline);
+      border-top: 1px solid var(--forest-hairline);
       display: grid;
       grid-template-columns: 1fr;
       gap: 16px;
@@ -1383,8 +1435,8 @@
     .direct-action {
       padding: 18px 20px;
       border-radius: 16px;
-      background-color: var(--obsidian-card);
-      border: 1px solid var(--obsidian-border);
+      background-color: var(--forest-hi);
+      border: 1px solid var(--forest-border);
       display: flex;
       flex-direction: column;
       justify-content: space-between;
@@ -1406,8 +1458,8 @@
        STOPKA
        ========================================================= */
     .site-footer {
-      background-color: var(--obsidian);
-      border-top: 1px solid var(--obsidian-hairline);
+      background-color: var(--forest);
+      border-top: 1px solid var(--forest-hairline);
       padding: 36px 0 88px;
       font-size: 13.5px;
       color: var(--muted-dark);
@@ -1460,10 +1512,10 @@
       bottom: 12px;
       height: 56px;
       z-index: 45;
-      background-color: rgba(14, 21, 17, 0.88);
+      background-color: rgba(20, 35, 27, 0.92);
       -webkit-backdrop-filter: blur(12px);
       backdrop-filter: blur(12px);
-      border: 1px solid rgba(244, 246, 244, 0.14);
+      border: 1px solid rgba(244, 246, 244, 0.16);
       border-radius: var(--radius-pill);
       color: var(--ink-dark);
       padding: 0 8px 0 20px;
@@ -1490,7 +1542,7 @@
       min-height: 40px;
       padding: 8px 20px;
       background-color: var(--sage-glow);
-      color: var(--obsidian);
+      color: var(--forest);
       border-radius: var(--radius-pill);
       font-size: 13.5px;
       font-weight: 500;
@@ -1520,7 +1572,7 @@
       transition: opacity 0.22s ease, transform 0.22s ease, display 0.22s allow-discrete, overlay 0.22s allow-discrete;
     }
     dialog.legal-dialog::backdrop {
-      background-color: rgba(8, 12, 10, 0.72);
+      background-color: rgba(14, 26, 20, 0.68);
       -webkit-backdrop-filter: blur(6px);
       backdrop-filter: blur(6px);
       transition: opacity 0.22s ease, display 0.22s allow-discrete, overlay 0.22s allow-discrete;
@@ -1571,8 +1623,9 @@
       right: 20px;
       bottom: 80px;
       z-index: 100;
-      background-color: var(--sage-glow);
-      color: var(--obsidian);
+      background-color: var(--forest);
+      color: var(--alabaster-card);
+      border: 1px solid rgba(244, 246, 244, 0.16);
       font-family: var(--font-mono);
       font-size: 12.5px;
       font-weight: 500;
@@ -1629,7 +1682,7 @@
        NAWIGACJA HUD
        ========================================================= -->
   <header class="hud-wrap">
-    <div class="hud-bar">
+    <div id="hud-bar" class="hud-bar">
       <a href="#" class="brand">
         <span class="brand-dot" aria-hidden="true"></span>
         <span>Studio Las</span>
@@ -1640,7 +1693,7 @@
         <a href="#rytm-i-cennik">Rytm i cennik</a>
         <a href="#przestrzen">Przestrzeń</a>
         <a href="#kontakt">Kontakt</a>
-        <a href="#kontakt" class="btn btn-sage btn-sm tabular">Rozmowa wstępna &middot; 0 zł</a>
+        <a href="#kontakt" class="btn btn-sage btn-sm hud-cta tabular">Rozmowa wstępna &middot; 0 zł</a>
       </nav>
 
       <button
@@ -1665,14 +1718,14 @@
       <a href="#rytm-i-cennik" class="mobile-link">Rytm i cennik</a>
       <a href="#przestrzen" class="mobile-link">Przestrzeń</a>
       <a href="#kontakt" class="mobile-link">Kontakt</a>
-      <a href="#kontakt" class="btn btn-sage mobile-link tabular">Rozmowa wstępna &middot; 0 zł</a>
+      <a href="#kontakt" class="btn btn-obsidian mobile-link tabular">Rozmowa wstępna &middot; 0 zł</a>
     </nav>
   </header>
 
   <main id="tresc">
 
     <!-- =========================================================
-         AKT I — KINOWY HERO FULL-BLEED (100SVH, #080C0A)
+         AKT I — KINOWY HERO FULL-BLEED (100SVH, #14231B)
          ========================================================= -->
     <section id="hero" class="hero">
       <div class="hero-bg" aria-hidden="true">
@@ -1744,9 +1797,9 @@
     </section>
 
     <!-- =========================================================
-         AKT II — OBSIDIAN BENTO SYSTEM (#080C0A, 12 KOLUMN)
+         AKT II — LIGHT BENTO SYSTEM (#F6F7F5, 12 KOLUMN)
          ========================================================= -->
-    <section id="bento" class="act-dark">
+    <section id="bento" class="act-light">
       <div class="container">
         <div style="max-width:680px;margin-bottom:36px;">
           <p class="eyebrow"><span class="eyebrow-dot" aria-hidden="true"></span>01 / Metoda i standard</p>
@@ -1769,22 +1822,22 @@
             </div>
 
             <div id="bento-scenario-stage" class="bento-scenario-stage" role="tabpanel" aria-labelledby="tab-przerwa">
-              <h4 id="sc-title" style="font-size:1.35rem;color:var(--ink-dark);">Powrót do ruchu po dłuższej przerwie</h4>
+              <h4 id="sc-title" style="font-size:1.35rem;color:var(--ink-light);">Powrót do ruchu po dłuższej przerwie</h4>
               <div class="scenario-cols">
                 <div>
                   <p class="mini-label">Typowy start</p>
-                  <p id="sc-start" style="margin:0;font-size:14.5px;color:var(--muted-dark);">Od spokojnej rozmowy i prostych prób ruchowych bez presji. Zamiast wyczerpania budujemy pewność stawów i podstawową siłę, dzięki której wychodzisz z energią.</p>
+                  <p id="sc-start" style="margin:0;font-size:14.5px;color:var(--muted-light);">Od spokojnej rozmowy i prostych prób ruchowych bez presji. Zamiast wyczerpania budujemy pewność stawów i podstawową siłę, dzięki której wychodzisz z energią.</p>
                 </div>
                 <div>
                   <p class="mini-label">Rytm w tygodniu</p>
-                  <p id="sc-rhythm" style="margin:0;font-size:14.5px;color:var(--muted-dark);">1–2 spotkania 1:1 w tygodniu plus prosty, 10-minutowy zestaw domowy między wizytami.</p>
+                  <p id="sc-rhythm" style="margin:0;font-size:14.5px;color:var(--muted-light);">1–2 spotkania 1:1 w tygodniu plus prosty, 10-minutowy zestaw domowy między wizytami.</p>
                 </div>
               </div>
-              <p id="sc-goal" style="margin:16px 0 0;font-size:14px;color:var(--sage-glow);font-weight:500;">Kierunek celu: powrót do swobodnego ruchu bez wielodniowego przemęczenia.</p>
+              <p id="sc-goal" style="margin:16px 0 0;font-size:14px;color:var(--sage-on-light);font-weight:500;">Kierunek celu: powrót do swobodnego ruchu bez wielodniowego przemęczenia.</p>
             </div>
           </article>
 
-          <!-- Karta 2 (5 kolumn): Wizualny Manifest z las-detal.webp -->
+          <!-- Karta 2 (5 kolumn): Wizualny Manifest z las-detal.webp (ciemny akcent) -->
           <article class="bento-card bento-manifest span-5">
             <div class="bento-manifest-bg" aria-hidden="true">
               <img
@@ -1821,21 +1874,21 @@
                 <span class="axis-code tabular">T01</span>
                 <div>
                   <strong style="display:block;font-size:14.5px;font-weight:500;">Rozmowa i punkt wyjścia</strong>
-                  <span style="font-size:13.5px;color:var(--muted-dark);">Spokojne sprawdzenie wzorców i realistyczny plan startowy.</span>
+                  <span style="font-size:13.5px;color:var(--muted-light);">Spokojne sprawdzenie wzorców i realistyczny plan startowy.</span>
                 </div>
               </div>
               <div class="axis-item">
                 <span class="axis-code tabular">T06</span>
                 <div>
                   <strong style="display:block;font-size:14.5px;font-weight:500;">Półmetek i korekta</strong>
-                  <span style="font-size:13.5px;color:var(--muted-dark);">Dostrajamy obciążenia do realnego grafiku i wyjazdów.</span>
+                  <span style="font-size:13.5px;color:var(--muted-light);">Dostrajamy obciążenia do realnego grafiku i wyjazdów.</span>
                 </div>
               </div>
               <div class="axis-item">
                 <span class="axis-code tabular">T12</span>
                 <div>
                   <strong style="display:block;font-size:14.5px;font-weight:500;">Przegląd kwartalny</strong>
-                  <span style="font-size:13.5px;color:var(--muted-dark);">Zestawienie zmian w sile i spokojna decyzja o kolejnym kwartale.</span>
+                  <span style="font-size:13.5px;color:var(--muted-light);">Zestawienie zmian w sile i spokojna decyzja o kolejnym kwartale.</span>
                 </div>
               </div>
             </div>
@@ -1850,19 +1903,19 @@
             <div>
               <div class="price-rows">
                 <div class="price-row">
-                  <span style="font-size:14px;color:var(--muted-dark);">Rozmowa wstępna (15 min)</span>
+                  <span style="font-size:14px;color:var(--muted-light);">Rozmowa wstępna (15 min)</span>
                   <span class="price-num tabular">0 zł</span>
                 </div>
                 <div class="price-row">
-                  <span style="font-size:14px;color:var(--muted-dark);">Spotkanie startowe (60–75 min)</span>
+                  <span style="font-size:14px;color:var(--muted-light);">Spotkanie startowe (60–75 min)</span>
                   <span class="price-num tabular">220 zł</span>
                 </div>
                 <div class="price-row">
-                  <span style="font-size:14px;color:var(--muted-dark);">Prowadzenie 1:1 (sesja 60 min)</span>
+                  <span style="font-size:14px;color:var(--muted-light);">Prowadzenie 1:1 (sesja 60 min)</span>
                   <span class="price-num tabular">250 zł</span>
                 </div>
               </div>
-              <p style="margin:14px 0 0;font-size:13px;color:var(--muted-dark);">
+              <p style="margin:14px 0 0;font-size:13px;color:var(--muted-light);">
                 12 tygodni to okres planowania i przeglądu postępów — zasady rozliczeń otrzymasz przed startem.
               </p>
             </div>
@@ -1873,12 +1926,12 @@
             <div>
               <p class="eyebrow">Standard i granice</p>
               <h3 class="tabular">~15 lat edukacji i praktyki</h3>
-              <p style="margin:10px 0 0;font-size:14px;color:var(--muted-dark);">
+              <p style="margin:10px 0 0;font-size:14px;color:var(--muted-light);">
                 Magister wychowania fizycznego (AWF Warszawa) oraz studia podyplomowe „Fizjoterapia w sporcie” jako uzupełnienie warsztatu trenerskiego.
               </p>
             </div>
-            <p style="margin:18px 0 0;padding-top:14px;border-top:1px solid var(--obsidian-hairline);font-size:13.5px;color:var(--muted-dark);">
-              <strong style="color:var(--ink-dark);font-weight:500;">Granica kompetencji:</strong> nie wykonuję zawodu fizjoterapeuty ani działalności leczniczej. W stanach ostrych kieruję najpierw do lekarza lub fizjoterapeuty.
+            <p style="margin:18px 0 0;padding-top:14px;border-top:1px solid var(--alabaster-border);font-size:13.5px;color:var(--muted-light);">
+              <strong style="color:var(--ink-light);font-weight:500;">Granica kompetencji:</strong> nie wykonuję zawodu fizjoterapeuty ani działalności leczniczej. W stanach ostrych kieruję najpierw do lekarza lub fizjoterapeuty.
             </p>
           </article>
         </div>
@@ -2007,9 +2060,9 @@
     </section>
 
     <!-- =========================================================
-         AKT IV — FULL-BLEED GALERIA PRZESTRZENI (#080C0A)
+         AKT IV — FULL-BLEED GALERIA PRZESTRZENI (LIGHT #FFFFFF)
          ========================================================= -->
-    <section id="przestrzen" class="act-dark">
+    <section id="przestrzen" class="act-white">
       <div class="container">
         <div class="gallery-top">
           <div>
@@ -2041,7 +2094,7 @@
             >
             <div class="photo-fallback" aria-hidden="true">
               <strong style="font-size:18px;">Cisza za oknem</strong>
-              <span style="font-size:13px;color:var(--muted-dark);">ul. Pracka 1J, Prace Duże</span>
+              <span style="font-size:13px;color:var(--muted-light);">ul. Pracka 1J, Prace Duże</span>
             </div>
           </div>
           <figcaption>Cisza za oknem &middot; ul. Pracka 1J, Prace Duże &middot; gmina Tarczyn</figcaption>
@@ -2064,7 +2117,7 @@
             >
             <div class="photo-fallback" aria-hidden="true">
               <strong style="font-size:18px;">Wnętrze Studio Las</strong>
-              <span style="font-size:13px;color:var(--muted-dark);">Wizualizacja kierunku wnętrza</span>
+              <span style="font-size:13px;color:var(--muted-light);">Wizualizacja kierunku wnętrza</span>
             </div>
           </div>
           <figcaption>Wizualizacja kierunku wnętrza — docelowe zdjęcia sali w Pracach Dużych opublikuję po zakończeniu aranżacji.</figcaption>
@@ -2086,7 +2139,7 @@
             >
             <div class="photo-fallback" aria-hidden="true">
               <strong style="font-size:18px;">Otoczenie lasu</strong>
-              <span style="font-size:13px;color:var(--muted-dark);">Bezpośrednie sąsiedztwo lasu w Pracach Dużych</span>
+              <span style="font-size:13px;color:var(--muted-light);">Bezpośrednie sąsiedztwo lasu w Pracach Dużych</span>
             </div>
           </div>
           <figcaption>Otoczenie lasu w Pracach Dużych — chwila wyciszenia przed i po spotkaniu</figcaption>
@@ -2203,7 +2256,7 @@
     </section>
 
     <!-- =========================================================
-         AKT VI — OBSYDIANOWY FINAŁ KONTAKTU (#080C0A)
+         AKT VI — DEEP FOREST FINAŁ KONTAKTU (#14231B)
          ========================================================= -->
     <section id="kontakt" class="act-dark">
       <div class="container">
@@ -2370,19 +2423,22 @@
         }
       }
 
-      /* 1. FALLBACK PASKA POSTĘPU GDY BRAK CSS SCROLL TIMELINE */
+      /* 1. HUD SCROLL STATE + FALLBACK PASKA POSTĘPU GDY BRAK CSS SCROLL TIMELINE */
+      var hudBar = document.getElementById('hud-bar');
       var progressBar = document.getElementById('scroll-progress');
       var supportsScrollTimeline = window.CSS && CSS.supports && CSS.supports('animation-timeline', 'scroll()');
-      if (progressBar && !supportsScrollTimeline) {
-        var onScrollProgress = function () {
-          var top = window.scrollY || document.documentElement.scrollTop;
+
+      function onScrollHud() {
+        var top = window.scrollY || document.documentElement.scrollTop;
+        if (hudBar) hudBar.classList.toggle('is-scrolled', top > 48);
+        if (progressBar && !supportsScrollTimeline) {
           var height = document.documentElement.scrollHeight - window.innerHeight;
           var ratio = height > 0 ? Math.min(1, top / height) : 0;
           progressBar.style.transform = 'scaleX(' + ratio.toFixed(4) + ')';
-        };
-        window.addEventListener('scroll', onScrollProgress, { passive: true });
-        onScrollProgress();
+        }
       }
+      window.addEventListener('scroll', onScrollHud, { passive: true });
+      onScrollHud();
 
       /* 2. MENU MOBILNE */
       var menuBtn = document.getElementById('mobile-menu-btn');
