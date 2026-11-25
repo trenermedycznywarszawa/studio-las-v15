@@ -1,0 +1,3733 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Studio Las — Prywatny trening siłowy i ruchowy 1:1 przy lesie | Prace Duże</title>
+  <meta name="description" content="Studio Las — prywatne studio treningu siłowego i ruchowego 1:1 przy lesie dla dorosłych 35–60+. Spokojna sala na wyłączność w Pracach Dużych, 5 min od S7. Prowadzenie: Damian Krawiec.">
+  <meta name="theme-color" content="#F6F7F5">
+  <meta name="color-scheme" content="light">
+
+  <link rel="preload" href="./fonts/inter-regular.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/inter-medium.woff2" as="font" type="font/woff2" crossorigin>
+  <link rel="preload" href="./fonts/newsreader-italic.woff2" as="font" type="font/woff2" crossorigin>
+
+  <style>
+    /* ==========================================================================
+       1. VIEW TRANSITIONS & LOCAL TYPOGRAPHY
+       ========================================================================== */
+    @view-transition {
+      navigation: auto;
+    }
+
+    @font-face {
+      font-family: "Inter";
+      src: url("./fonts/inter-regular.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Inter";
+      src: url("./fonts/inter-medium.woff2") format("woff2");
+      font-weight: 500;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Newsreader";
+      src: url("./fonts/newsreader-italic.woff2") format("woff2");
+      font-weight: 400;
+      font-style: italic;
+      font-display: swap;
+    }
+
+    /* ==========================================================================
+       2. DESIGN TOKENS — LIGHT-FIRST ARCHITECTURAL LUXURY 2026
+       ========================================================================== */
+    :root {
+      --bg-alabaster: #F6F7F5;
+      --bg-white: #FFFFFF;
+      --bg-subtle: #EEF1EE;
+      --bg-forest: #14231B;
+      --bg-forest-elevated: #1C2F25;
+      --bg-forest-soft: rgba(20, 35, 27, 0.055);
+
+      --border-hairline: #E2E6E3;
+      --border-strong: #CBD3CD;
+      --border-dark: rgba(167, 196, 177, 0.22);
+      --border-dark-strong: rgba(167, 196, 177, 0.42);
+
+      --text-primary: #0F1612;
+      --text-secondary: #525E57;
+      --text-on-dark: #F6F7F5;
+      --text-on-dark-muted: #B8C8BE;
+      --accent-sage: #A7C4B1;
+
+      --font-sans: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      --font-serif: "Newsreader", Georgia, "Times New Roman", serif;
+
+      --container-max: 86rem; /* 1376px */
+      --gutter: clamp(1.25rem, 4vw, 3rem);
+      --section-pad: clamp(4.5rem, 9vw, 8.5rem);
+
+      --radius-card: 22px;
+      --radius-inner: 14px;
+      --radius-pill: 999px;
+
+      --ease-architectural: cubic-bezier(0.22, 1, 0.36, 1);
+      --shadow-hud: 0 12px 36px -12px rgba(15, 22, 18, 0.14), 0 1px 0 rgba(255, 255, 255, 0.65) inset;
+      --shadow-card: 0 1px 2px rgba(15, 22, 18, 0.03), 0 12px 32px -20px rgba(15, 22, 18, 0.08);
+    }
+
+    /* ==========================================================================
+       3. RESET, BASE & ACCESSIBILITY
+       ========================================================================== */
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    html {
+      scroll-behavior: smooth;
+      -webkit-text-size-adjust: 100%;
+      background-color: var(--bg-alabaster);
+      color: var(--text-primary);
+      font-family: var(--font-sans);
+      font-synthesis-weight: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+    }
+
+    body {
+      margin: 0;
+      background-color: var(--bg-alabaster);
+      color: var(--text-primary);
+      font-size: clamp(0.96875rem, 0.94rem + 0.14vw, 1.03125rem);
+      line-height: 1.62;
+      overflow-x: clip;
+    }
+
+    img, picture, svg {
+      display: block;
+      max-width: 100%;
+    }
+
+    button, input, select, textarea {
+      font: inherit;
+      color: inherit;
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none;
+    }
+
+    h1, h2, h3, h4, p, ul, ol, dl, dd, figure {
+      margin: 0;
+    }
+
+    ul, ol {
+      padding: 0;
+      list-style: none;
+    }
+
+    :focus-visible {
+      outline: 2px solid var(--bg-forest);
+      outline-offset: 3px;
+    }
+
+    .surface-dark :focus-visible,
+    .hero :focus-visible,
+    .hud-header:not(.is-scrolled) :focus-visible {
+      outline-color: var(--accent-sage);
+    }
+
+    .skip-link {
+      position: fixed;
+      top: 1rem;
+      left: 1rem;
+      z-index: 1000;
+      padding: 0.75rem 1.25rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+      font-size: 0.875rem;
+      font-weight: 500;
+      transform: translateY(-220%);
+      transition: transform 0.25s var(--ease-architectural);
+    }
+
+    .skip-link:focus {
+      transform: translateY(0);
+    }
+
+    .sr-only {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      padding: 0;
+      margin: -1px;
+      overflow: hidden;
+      clip: rect(0, 0, 0, 0);
+      white-space: nowrap;
+      border: 0;
+    }
+
+    .tabular {
+      font-family: var(--font-sans);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* ==========================================================================
+       4. SCROLL PROGRESS BAR (CSS SCROLL-DRIVEN ANIMATION)
+       ========================================================================== */
+    .scroll-progress {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      z-index: 90;
+      pointer-events: none;
+      background: transparent;
+    }
+
+    .scroll-progress__bar {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, var(--bg-forest) 0%, #3F6651 100%);
+      transform-origin: 0 50%;
+      transform: scaleX(0);
+    }
+
+    @supports (animation-timeline: scroll()) {
+      .scroll-progress__bar {
+        animation: scroll-progress-grow linear both;
+        animation-timeline: scroll(root);
+      }
+      @keyframes scroll-progress-grow {
+        from { transform: scaleX(0); }
+        to { transform: scaleX(1); }
+      }
+    }
+
+    /* ==========================================================================
+       5. LAYOUT & TYPOGRAPHY PRIMITIVES
+       ========================================================================== */
+    .container {
+      width: min(100% - (var(--gutter) * 2), var(--container-max));
+      margin-inline: auto;
+    }
+
+    .section {
+      padding-block: var(--section-pad);
+      scroll-margin-top: 5.5rem;
+    }
+
+    .section--white {
+      background-color: var(--bg-white);
+      border-block: 1px solid var(--border-hairline);
+    }
+
+    .section--alabaster {
+      background-color: var(--bg-alabaster);
+    }
+
+    .section-eyebrow {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.625rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 1.25rem;
+    }
+
+    .section-eyebrow::before {
+      content: "";
+      width: 18px;
+      height: 1px;
+      background: currentColor;
+      opacity: 0.55;
+    }
+
+    .surface-dark .section-eyebrow {
+      color: var(--accent-sage);
+    }
+
+    .display-h1 {
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: clamp(2.85rem, 6.2vw, 5.65rem);
+      line-height: 0.99;
+      letter-spacing: -0.042em;
+      text-wrap: balance;
+    }
+
+    .display-h2 {
+      font-family: var(--font-sans);
+      font-weight: 400;
+      font-size: clamp(2.1rem, 4.1vw, 3.65rem);
+      line-height: 1.03;
+      letter-spacing: -0.04em;
+      text-wrap: balance;
+      color: var(--text-primary);
+    }
+
+    .surface-dark .display-h2 {
+      color: var(--text-on-dark);
+    }
+
+    .editorial-italic {
+      font-family: var(--font-serif);
+      font-style: italic;
+      font-weight: 400;
+      letter-spacing: -0.015em;
+      padding-right: 0.04em;
+    }
+
+    .section-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1.35fr) minmax(0, 0.85fr);
+      gap: clamp(1.25rem, 3vw, 3rem);
+      align-items: end;
+      margin-bottom: clamp(2.5rem, 5vw, 4rem);
+    }
+
+    .section-lead {
+      color: var(--text-secondary);
+      font-size: clamp(0.98rem, 1.1vw, 1.08rem);
+      line-height: 1.65;
+      max-width: 46ch;
+      justify-self: end;
+    }
+
+    /* Buttons */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.6rem;
+      min-height: 48px;
+      padding: 0.78rem 1.5rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid transparent;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      letter-spacing: -0.01em;
+      line-height: 1.2;
+      cursor: pointer;
+      white-space: nowrap;
+      transition:
+        background-color 0.28s var(--ease-architectural),
+        color 0.28s var(--ease-architectural),
+        border-color 0.28s var(--ease-architectural),
+        transform 0.28s var(--ease-architectural);
+    }
+
+    .btn:active {
+      transform: scale(0.985);
+    }
+
+    .btn--forest {
+      background-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .btn--forest:hover {
+      background-color: #1D3327;
+    }
+
+    .btn--light {
+      background-color: var(--bg-white);
+      color: var(--text-primary);
+    }
+
+    .btn--light:hover {
+      background-color: #EBF0EC;
+    }
+
+    .btn--outline-dark {
+      background-color: transparent;
+      color: var(--text-primary);
+      border-color: var(--border-strong);
+    }
+
+    .btn--outline-dark:hover {
+      background-color: var(--bg-subtle);
+      border-color: var(--text-primary);
+    }
+
+    .btn--outline-light {
+      background-color: rgba(255, 255, 255, 0.08);
+      color: var(--text-on-dark);
+      border-color: rgba(255, 255, 255, 0.28);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+    }
+
+    .btn--outline-light:hover {
+      background-color: rgba(255, 255, 255, 0.16);
+      border-color: rgba(255, 255, 255, 0.55);
+    }
+
+    .btn--sm {
+      min-height: 38px;
+      padding: 0.45rem 1rem;
+      font-size: 0.85rem;
+    }
+
+    .icon {
+      width: 18px;
+      height: 18px;
+      flex: none;
+      stroke: currentColor;
+      fill: none;
+      stroke-width: 1.6;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .icon--sm {
+      width: 15px;
+      height: 15px;
+    }
+
+    /* ==========================================================================
+       6. VIEW-TIMELINE SCROLL REVEAL (PROGRESSIVE ENHANCEMENT)
+       ========================================================================== */
+    @media (prefers-reduced-motion: no-preference) {
+      @supports (animation-timeline: view()) {
+        .reveal {
+          animation: reveal-up linear both;
+          animation-timeline: view();
+          animation-range: entry 0% cover 22%;
+        }
+
+        @keyframes reveal-up {
+          from {
+            opacity: 0;
+            transform: translateY(24px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+      }
+    }
+
+    /* ==========================================================================
+       7. FLOATING HUD NAVIGATION
+       ========================================================================== */
+    .hud-header {
+      position: fixed;
+      top: clamp(0.75rem, 2vw, 1.25rem);
+      left: 0;
+      right: 0;
+      z-index: 80;
+      pointer-events: none;
+    }
+
+    .hud-bar {
+      pointer-events: auto;
+      width: min(100% - (var(--gutter) * 1.4), 76rem);
+      margin-inline: auto;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 0.45rem 0.55rem 0.45rem 1.25rem;
+      border-radius: var(--radius-pill);
+      background: rgba(20, 35, 27, 0.48);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(20px) saturate(140%);
+      -webkit-backdrop-filter: blur(20px) saturate(140%);
+      color: var(--text-on-dark);
+      transition:
+        background-color 0.35s var(--ease-architectural),
+        border-color 0.35s var(--ease-architectural),
+        color 0.35s var(--ease-architectural),
+        box-shadow 0.35s var(--ease-architectural);
+    }
+
+    .hud-header.is-scrolled .hud-bar {
+      background: rgba(255, 255, 255, 0.84);
+      border-color: rgba(226, 230, 227, 0.92);
+      color: var(--text-primary);
+      box-shadow: var(--shadow-hud);
+    }
+
+    .hud-brand {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.6rem;
+      font-weight: 500;
+      font-size: 0.96rem;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .hud-brand__dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent-sage);
+      transition: background-color 0.35s var(--ease-architectural);
+    }
+
+    .hud-header.is-scrolled .hud-brand__dot {
+      background: var(--bg-forest);
+    }
+
+    .hud-nav {
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .hud-nav a {
+      padding: 0.5rem 0.9rem;
+      border-radius: var(--radius-pill);
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: rgba(246, 247, 245, 0.86);
+      transition: background-color 0.22s ease, color 0.22s ease;
+    }
+
+    .hud-nav a:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: #FFFFFF;
+    }
+
+    .hud-header.is-scrolled .hud-nav a {
+      color: var(--text-secondary);
+    }
+
+    .hud-header.is-scrolled .hud-nav a:hover {
+      background: var(--bg-subtle);
+      color: var(--text-primary);
+    }
+
+    .hud-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .hud-cta {
+      min-height: 40px;
+      padding: 0.5rem 1.1rem;
+      font-size: 0.85rem;
+      background: var(--bg-white);
+      color: var(--text-primary);
+    }
+
+    .hud-cta:hover {
+      background: #E8EEEA;
+    }
+
+    .hud-header.is-scrolled .hud-cta {
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .hud-header.is-scrolled .hud-cta:hover {
+      background: #1D3327;
+    }
+
+    .hud-menu-toggle {
+      display: none;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius-pill);
+      border: 1px solid currentColor;
+      border-color: rgba(255, 255, 255, 0.24);
+      background: transparent;
+      color: inherit;
+      cursor: pointer;
+    }
+
+    .hud-header.is-scrolled .hud-menu-toggle {
+      border-color: var(--border-hairline);
+    }
+
+    .hud-mobile-drawer {
+      pointer-events: auto;
+      width: min(100% - (var(--gutter) * 1.4), 76rem);
+      margin: 0.5rem auto 0;
+      padding: 1rem;
+      border-radius: var(--radius-card);
+      background: rgba(255, 255, 255, 0.96);
+      border: 1px solid var(--border-hairline);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      box-shadow: var(--shadow-hud);
+      color: var(--text-primary);
+    }
+
+    .hud-mobile-drawer[hidden] {
+      display: none;
+    }
+
+    .hud-mobile-drawer nav {
+      display: grid;
+      gap: 0.25rem;
+    }
+
+    .hud-mobile-drawer a {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-inner);
+      font-weight: 500;
+      font-size: 0.98rem;
+    }
+
+    .hud-mobile-drawer a:hover {
+      background: var(--bg-alabaster);
+    }
+
+    /* ==========================================================================
+       8. ACT 1 — CINEMATIC HERO (100SVH)
+       ========================================================================== */
+    .hero {
+      position: relative;
+      min-height: 100svh;
+      display: grid;
+      grid-template-rows: 1fr auto;
+      overflow: hidden;
+      background-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .hero__media {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+    }
+
+    .hero__media picture,
+    .hero__media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 62% center;
+    }
+
+    /* Directional soft forest scrim on left — reveals daylight forest on right, WCAG AA+ (> 7:1) */
+    .hero__scrim {
+      position: absolute;
+      inset: 0;
+      z-index: 1;
+      background:
+        linear-gradient(
+          100deg,
+          rgba(16, 29, 22, 0.88) 0%,
+          rgba(20, 35, 27, 0.72) 40%,
+          rgba(20, 35, 27, 0.28) 72%,
+          rgba(20, 35, 27, 0.08) 100%
+        ),
+        linear-gradient(
+          180deg,
+          rgba(16, 29, 22, 0.42) 0%,
+          rgba(16, 29, 22, 0) 26%,
+          rgba(16, 29, 22, 0.52) 100%
+        );
+    }
+
+    .hero__content {
+      position: relative;
+      z-index: 2;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      padding-top: clamp(6.5rem, 12vh, 9rem);
+      padding-bottom: clamp(2.5rem, 6vh, 4rem);
+      max-width: 48rem;
+    }
+
+    .hero__tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.65rem;
+      width: fit-content;
+      padding: 0.42rem 0.9rem;
+      border-radius: var(--radius-pill);
+      background: rgba(246, 247, 245, 0.1);
+      border: 1px solid rgba(246, 247, 245, 0.22);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-size: 0.8rem;
+      font-weight: 500;
+      letter-spacing: 0.03em;
+      color: var(--text-on-dark);
+      margin-bottom: 1.75rem;
+    }
+
+    .hero__tag-dot {
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: var(--accent-sage);
+    }
+
+    .hero__lead {
+      margin-top: 1.6rem;
+      max-width: 46ch;
+      font-size: clamp(1.03rem, 1.3vw, 1.22rem);
+      line-height: 1.58;
+      color: rgba(246, 247, 245, 0.9);
+      font-weight: 400;
+    }
+
+    .hero__actions {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.85rem;
+      margin-top: 2.25rem;
+    }
+
+    .hero__meta-strip {
+      position: relative;
+      z-index: 2;
+      border-top: 1px solid rgba(246, 247, 245, 0.16);
+      background: rgba(16, 29, 22, 0.34);
+      backdrop-filter: blur(14px);
+      -webkit-backdrop-filter: blur(14px);
+    }
+
+    .hero__specs {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 1rem;
+      padding-block: 1.15rem;
+    }
+
+    .hero__spec {
+      display: flex;
+      flex-direction: column;
+      gap: 0.2rem;
+    }
+
+    .hero__spec-label {
+      font-size: 0.72rem;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-sage);
+    }
+
+    .hero__spec-value {
+      font-size: 0.9rem;
+      color: var(--text-on-dark);
+      font-weight: 400;
+    }
+
+    /* ==========================================================================
+       9. ACT 2 — LIGHT ARCHITECTURAL BENTO GRID (SUBGRID + @CONTAINER)
+       ========================================================================== */
+    .bento-grid {
+      display: grid;
+      grid-template-columns: repeat(12, minmax(0, 1fr));
+      gap: clamp(1rem, 1.6vw, 1.35rem);
+    }
+
+    .bento-card {
+      container-type: inline-size;
+      background: var(--bg-white);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-card);
+      padding: clamp(1.5rem, 2.8vw, 2.35rem);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.5rem;
+    }
+
+    .bento-card--forest {
+      background: var(--bg-forest);
+      border-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .bento-card--selector {
+      grid-column: span 8;
+    }
+
+    .bento-card--manifest {
+      grid-column: span 4;
+    }
+
+    .bento-card--timeline {
+      grid-column: span 5;
+    }
+
+    .bento-card--pricing {
+      grid-column: span 4;
+    }
+
+    .bento-card--standard {
+      grid-column: span 3;
+    }
+
+    .bento-kicker {
+      font-size: 0.75rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .bento-card--forest .bento-kicker {
+      color: var(--accent-sage);
+    }
+
+    .bento-title {
+      font-size: clamp(1.35rem, 2vw, 1.78rem);
+      font-weight: 400;
+      line-height: 1.14;
+      letter-spacing: -0.03em;
+      text-wrap: balance;
+    }
+
+    /* Interactive Starting-Point Selector (View Transitions) */
+    .pill-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .pill-tab {
+      min-height: 40px;
+      padding: 0.5rem 1.05rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-alabaster);
+      color: var(--text-secondary);
+      font-size: 0.875rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition:
+        background-color 0.25s var(--ease-architectural),
+        color 0.25s var(--ease-architectural),
+        border-color 0.25s var(--ease-architectural);
+    }
+
+    .pill-tab:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    .pill-tab[aria-selected="true"],
+    .pill-tab[aria-pressed="true"] {
+      background: var(--bg-forest);
+      border-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .selector-stage {
+      view-transition-name: starting-point-panel;
+      display: grid;
+      grid-template-columns: minmax(0, 1.25fr) minmax(0, 0.95fr);
+      gap: 1.5rem;
+      padding-top: 1.5rem;
+      border-top: 1px solid var(--border-hairline);
+    }
+
+    @container (max-width: 560px) {
+      .selector-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .selector-stage__headline {
+      font-size: clamp(1.2rem, 1.8vw, 1.55rem);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      line-height: 1.22;
+      margin-bottom: 0.75rem;
+    }
+
+    .selector-stage__copy {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.62;
+    }
+
+    .selector-stage__list {
+      display: grid;
+      gap: 0.65rem;
+      align-content: start;
+      padding: 1.15rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .selector-stage__list-label {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+      margin-bottom: 0.2rem;
+    }
+
+    .selector-stage__list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.6rem;
+      font-size: 0.89rem;
+      line-height: 1.45;
+      color: var(--text-primary);
+    }
+
+    .selector-stage__list li::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      margin-top: 0.5rem;
+      border-radius: 50%;
+      background: var(--bg-forest);
+      flex: none;
+    }
+
+    .selector-stage__note {
+      grid-column: 1 / -1;
+      font-size: 0.84rem;
+      color: var(--text-secondary);
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-subtle);
+      border-left: 2px solid var(--bg-forest);
+    }
+
+    /* Forest Manifest Card */
+    .manifest-quote {
+      font-size: clamp(1.3rem, 1.9vw, 1.65rem);
+      line-height: 1.24;
+      letter-spacing: -0.025em;
+      color: var(--text-on-dark);
+      font-weight: 400;
+    }
+
+    .manifest-points {
+      display: grid;
+      gap: 0.75rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border-dark);
+    }
+
+    .manifest-points li {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      gap: 1rem;
+      font-size: 0.875rem;
+      color: var(--text-on-dark-muted);
+    }
+
+    .manifest-points strong {
+      font-weight: 500;
+      color: var(--text-on-dark);
+    }
+
+    /* 12-Week Timeline Subgrid */
+    .timeline-subgrid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.85rem;
+    }
+
+    @container (max-width: 440px) {
+      .timeline-subgrid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .timeline-node {
+      display: grid;
+      grid-template-rows: auto auto 1fr;
+      gap: 0.45rem;
+      padding: 1rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .timeline-node__code {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--bg-forest);
+    }
+
+    .timeline-node__title {
+      font-size: 0.96rem;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+    }
+
+    .timeline-node__desc {
+      font-size: 0.83rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    /* Pricing Subgrid Card */
+    .price-list {
+      display: grid;
+      gap: 0.7rem;
+    }
+
+    .price-row {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: baseline;
+      gap: 0.75rem;
+      padding: 0.85rem 1rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .price-row__name {
+      font-size: 0.9rem;
+      font-weight: 500;
+      color: var(--text-primary);
+    }
+
+    .price-row__meta {
+      display: block;
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      margin-top: 0.15rem;
+    }
+
+    .price-row__amount {
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--bg-forest);
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .price-footnote {
+      font-size: 0.8rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* Standard ~15 lat Card */
+    .standard-metric {
+      font-size: clamp(2.8rem, 4.5vw, 3.8rem);
+      font-weight: 400;
+      line-height: 0.95;
+      letter-spacing: -0.045em;
+      color: var(--bg-forest);
+    }
+
+    .standard-sub {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    /* ==========================================================================
+       10. ACT 3 — RHYTHM PLANNER + 3-PHASE FIRST MEETING STEPPER
+       ========================================================================== */
+    .architecture-stack {
+      display: grid;
+      gap: clamp(1.5rem, 2.5vw, 2.25rem);
+    }
+
+    .planner-shell,
+    .stepper-shell {
+      container-type: inline-size;
+      background: var(--bg-white);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-card);
+      padding: clamp(1.6rem, 3.2vw, 2.75rem);
+      box-shadow: var(--shadow-card);
+    }
+
+    .planner-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.5rem;
+      padding-bottom: 1.75rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .segmented-control {
+      display: inline-flex;
+      padding: 0.3rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+      gap: 0.25rem;
+    }
+
+    .segmented-btn {
+      min-height: 42px;
+      padding: 0.5rem 1.25rem;
+      border-radius: var(--radius-pill);
+      border: 0;
+      background: transparent;
+      color: var(--text-secondary);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.25s var(--ease-architectural), color 0.25s var(--ease-architectural);
+    }
+
+    .segmented-btn[aria-pressed="true"] {
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .planner-body {
+      view-transition-name: rhythm-planner-panel;
+      display: grid;
+      grid-template-columns: minmax(0, 1.45fr) minmax(0, 0.85fr);
+      gap: clamp(1.5rem, 3vw, 2.5rem);
+      padding-top: 1.75rem;
+      align-items: stretch;
+    }
+
+    @container (max-width: 820px) {
+      .planner-body {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .week-grid {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(0, 1fr));
+      grid-template-rows: auto 1fr;
+      gap: 0.55rem;
+    }
+
+    @container (max-width: 640px) {
+      .week-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    .day-cell {
+      display: grid;
+      grid-template-rows: subgrid;
+      grid-row: span 2;
+      gap: 0.65rem;
+      padding: 0.9rem 0.7rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+      transition: background-color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .day-cell--studio {
+      background: var(--bg-forest);
+      border-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .day-cell--home {
+      background: #EDF3EE;
+      border-color: #CFE0D4;
+    }
+
+    .day-cell__name {
+      font-size: 0.74rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text-secondary);
+    }
+
+    .day-cell--studio .day-cell__name {
+      color: var(--accent-sage);
+    }
+
+    .day-cell__content {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.5rem;
+    }
+
+    .day-cell__title {
+      font-size: 0.84rem;
+      font-weight: 500;
+      line-height: 1.28;
+    }
+
+    .day-cell__time {
+      font-size: 0.75rem;
+      color: var(--text-secondary);
+    }
+
+    .day-cell--studio .day-cell__time {
+      color: var(--text-on-dark-muted);
+    }
+
+    .planner-summary {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.25rem;
+      padding: 1.45rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .planner-price-main {
+      font-size: clamp(2rem, 3.2vw, 2.75rem);
+      font-weight: 400;
+      letter-spacing: -0.04em;
+      line-height: 1.02;
+      color: var(--text-primary);
+    }
+
+    .planner-price-unit {
+      font-size: 0.9rem;
+      color: var(--text-secondary);
+      margin-top: 0.35rem;
+    }
+
+    .planner-breakdown {
+      display: grid;
+      gap: 0.65rem;
+      padding-block: 1rem;
+      border-block: 1px solid var(--border-hairline);
+      font-size: 0.875rem;
+    }
+
+    .planner-breakdown div {
+      display: flex;
+      justify-content: space-between;
+      gap: 1rem;
+    }
+
+    .planner-breakdown dt {
+      color: var(--text-secondary);
+    }
+
+    .planner-breakdown dd {
+      font-weight: 500;
+      color: var(--text-primary);
+      text-align: right;
+    }
+
+    .planner-promise {
+      font-size: 0.82rem;
+      line-height: 1.5;
+      color: var(--text-secondary);
+    }
+
+    /* 3-Phase First Meeting Stepper */
+    .stepper-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.25rem;
+      margin-bottom: 1.75rem;
+    }
+
+    .stepper-badge {
+      display: inline-flex;
+      align-items: baseline;
+      gap: 0.5rem;
+      padding: 0.55rem 1.1rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .stepper-badge strong {
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--bg-forest);
+    }
+
+    .stepper-nav {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    @container (max-width: 680px) {
+      .stepper-nav {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .step-trigger {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      text-align: left;
+      padding: 1.05rem 1.2rem;
+      border-radius: var(--radius-inner);
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-alabaster);
+      color: var(--text-secondary);
+      cursor: pointer;
+      transition:
+        background-color 0.25s var(--ease-architectural),
+        border-color 0.25s var(--ease-architectural),
+        color 0.25s var(--ease-architectural);
+    }
+
+    .step-trigger:hover {
+      border-color: var(--border-strong);
+      color: var(--text-primary);
+    }
+
+    .step-trigger[aria-selected="true"] {
+      background: var(--bg-forest);
+      border-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .step-trigger__num {
+      font-size: 0.76rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      opacity: 0.75;
+      display: block;
+      margin-bottom: 0.2rem;
+    }
+
+    .step-trigger__title {
+      font-size: 0.96rem;
+      font-weight: 500;
+      display: block;
+    }
+
+    .step-trigger__dur {
+      font-size: 0.78rem;
+      white-space: nowrap;
+      opacity: 0.8;
+    }
+
+    .stepper-stage {
+      view-transition-name: first-meeting-stage;
+      display: grid;
+      grid-template-columns: minmax(0, 1.3fr) minmax(0, 0.9fr);
+      gap: 1.5rem;
+      padding: 1.5rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+    }
+
+    @container (max-width: 720px) {
+      .stepper-stage {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .stepper-stage__title {
+      font-size: clamp(1.2rem, 1.9vw, 1.5rem);
+      font-weight: 500;
+      letter-spacing: -0.025em;
+      margin-bottom: 0.65rem;
+    }
+
+    .stepper-stage__desc {
+      color: var(--text-secondary);
+      font-size: 0.95rem;
+      line-height: 1.62;
+    }
+
+    .stepper-stage__detail {
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      gap: 0.6rem;
+      padding: 1.15rem;
+      border-radius: 12px;
+      background: var(--bg-white);
+      border: 1px solid var(--border-hairline);
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    .stepper-stage__detail strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .takeaway-strip {
+      margin-top: 1.35rem;
+      padding-top: 1.35rem;
+      border-top: 1px solid var(--border-hairline);
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr);
+      gap: 1.25rem;
+      align-items: center;
+    }
+
+    @container (max-width: 760px) {
+      .takeaway-strip {
+        grid-template-columns: 1fr;
+        gap: 0.85rem;
+      }
+    }
+
+    .takeaway-strip__label {
+      font-size: 0.78rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--bg-forest);
+      white-space: nowrap;
+    }
+
+    .takeaway-items {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.75rem;
+    }
+
+    @container (max-width: 680px) {
+      .takeaway-items {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .takeaway-item {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      padding: 0.75rem 1rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+      font-size: 0.86rem;
+      color: var(--text-primary);
+    }
+
+    .takeaway-item svg {
+      color: var(--bg-forest);
+    }
+
+    /* ==========================================================================
+       11. ACT 4 — WIDE TACTILE SPACE GALLERY (SCROLL-SNAP, PURE WHITE BG)
+       ========================================================================== */
+    .gallery-controls-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: flex-end;
+      justify-content: space-between;
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .gallery-hud {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .gallery-counter {
+      font-size: 0.92rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+      color: var(--text-primary);
+      min-width: 4.5ch;
+    }
+
+    .gallery-counter span {
+      color: var(--text-secondary);
+      font-weight: 400;
+    }
+
+    .gallery-progress-track {
+      width: clamp(6rem, 12vw, 10rem);
+      height: 2px;
+      background: var(--border-hairline);
+      border-radius: 99px;
+      overflow: hidden;
+    }
+
+    .gallery-progress-fill {
+      height: 100%;
+      width: 33.333%;
+      background: var(--bg-forest);
+      transition: width 0.35s var(--ease-architectural);
+    }
+
+    .gallery-arrows {
+      display: inline-flex;
+      gap: 0.45rem;
+    }
+
+    .gallery-arrow {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-white);
+      color: var(--text-primary);
+      cursor: pointer;
+      transition: background-color 0.22s ease, border-color 0.22s ease, opacity 0.22s ease;
+    }
+
+    .gallery-arrow:hover:not(:disabled) {
+      background: var(--bg-forest);
+      border-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .gallery-arrow:disabled {
+      opacity: 0.38;
+      cursor: not-allowed;
+    }
+
+    .gallery-track {
+      display: grid;
+      grid-auto-flow: column;
+      grid-auto-columns: min(86%, 56rem);
+      gap: clamp(1rem, 2vw, 1.75rem);
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      scroll-padding-inline: var(--gutter);
+      padding-inline: max(var(--gutter), calc((100vw - var(--container-max)) / 2));
+      padding-bottom: 0.5rem;
+      scrollbar-width: none;
+      -webkit-overflow-scrolling: touch;
+      cursor: grab;
+    }
+
+    .gallery-track:active {
+      cursor: grabbing;
+    }
+
+    .gallery-track::-webkit-scrollbar {
+      display: none;
+    }
+
+    .gallery-slide {
+      scroll-snap-align: start;
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+
+    .gallery-frame {
+      position: relative;
+      aspect-ratio: 16 / 10;
+      border-radius: var(--radius-card);
+      overflow: hidden;
+      background: #DCE2DE;
+      border: 1px solid var(--border-hairline);
+    }
+
+    .gallery-frame img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      transition: transform 0.8s var(--ease-architectural);
+    }
+
+    .gallery-slide:hover .gallery-frame img {
+      transform: scale(1.02);
+    }
+
+    .gallery-badge {
+      position: absolute;
+      top: 1rem;
+      left: 1rem;
+      max-width: calc(100% - 2rem);
+      padding: 0.5rem 0.95rem;
+      border-radius: var(--radius-pill);
+      background: rgba(20, 35, 27, 0.86);
+      color: var(--text-on-dark);
+      border: 1px solid rgba(167, 196, 177, 0.35);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      font-size: 0.78rem;
+      font-weight: 500;
+      line-height: 1.35;
+    }
+
+    .gallery-caption {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem 1.5rem;
+      padding-inline: 0.25rem;
+    }
+
+    .gallery-caption__title {
+      font-size: 1.05rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--text-primary);
+    }
+
+    .gallery-caption__desc {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+    }
+
+    /* ==========================================================================
+       12. ACT 5 — COACH BIO, LEGAL BOUNDARY, LOCATION MONOLITH & FAQ
+       ========================================================================== */
+    .trust-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: clamp(1.25rem, 2.4vw, 1.75rem);
+      align-items: stretch;
+    }
+
+    .coach-card {
+      background: var(--bg-white);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-card);
+      padding: clamp(1.6rem, 3vw, 2.6rem);
+      box-shadow: var(--shadow-card);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.75rem;
+    }
+
+    .coach-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: baseline;
+      justify-content: space-between;
+      gap: 0.75rem;
+      padding-bottom: 1.25rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .coach-name {
+      font-size: clamp(1.65rem, 2.8vw, 2.3rem);
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      line-height: 1.08;
+    }
+
+    .coach-role {
+      font-size: 0.84rem;
+      font-weight: 500;
+      color: var(--bg-forest);
+      padding: 0.35rem 0.8rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+    }
+
+    .coach-credentials {
+      display: grid;
+      gap: 0.85rem;
+    }
+
+    .coach-credentials li {
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 0.85rem;
+      align-items: baseline;
+      font-size: 0.94rem;
+      color: var(--text-secondary);
+    }
+
+    .coach-credentials li strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .credential-index {
+      font-size: 0.76rem;
+      font-weight: 500;
+      color: var(--bg-forest);
+      opacity: 0.7;
+    }
+
+    .boundary-box {
+      padding: 1.25rem 1.35rem;
+      border-radius: var(--radius-inner);
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+      border-left: 3px solid var(--bg-forest);
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .boundary-box__label {
+      font-size: 0.74rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--bg-forest);
+    }
+
+    .boundary-box p {
+      font-size: 0.88rem;
+      line-height: 1.58;
+      color: var(--text-secondary);
+    }
+
+    .boundary-box strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    /* Location Monolith (#14231B) */
+    .monolith-card {
+      container-type: inline-size;
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+      border-radius: var(--radius-card);
+      padding: clamp(1.6rem, 3vw, 2.6rem);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.75rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .monolith-card::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 88% 12%, rgba(167, 196, 177, 0.14), transparent 55%);
+      pointer-events: none;
+    }
+
+    .monolith-card > * {
+      position: relative;
+      z-index: 1;
+    }
+
+    .monolith-address {
+      font-size: clamp(1.5rem, 2.5vw, 2.05rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.03em;
+      margin-top: 0.6rem;
+    }
+
+    .monolith-facts {
+      display: grid;
+      gap: 0.9rem;
+      padding-block: 1.35rem;
+      border-block: 1px solid var(--border-dark);
+    }
+
+    .monolith-fact {
+      display: flex;
+      align-items: flex-start;
+      gap: 0.8rem;
+      font-size: 0.9rem;
+      color: var(--text-on-dark-muted);
+    }
+
+    .monolith-fact svg {
+      color: var(--accent-sage);
+      margin-top: 0.15rem;
+    }
+
+    .monolith-fact strong {
+      color: var(--text-on-dark);
+      font-weight: 500;
+    }
+
+    .monolith-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.65rem;
+    }
+
+    /* Native Exclusive FAQ Accordion */
+    .faq-block {
+      margin-top: clamp(3rem, 6vw, 5rem);
+      display: grid;
+      grid-template-columns: minmax(0, 0.68fr) minmax(0, 1.32fr);
+      gap: clamp(1.5rem, 4vw, 4rem);
+      align-items: start;
+    }
+
+    .faq-list {
+      display: grid;
+      gap: 0.75rem;
+    }
+
+    .faq-item {
+      background: var(--bg-white);
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-card);
+      transition: border-color 0.25s ease;
+    }
+
+    .faq-item[open] {
+      border-color: var(--border-strong);
+    }
+
+    .faq-item summary {
+      list-style: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.25rem;
+      padding: 1.25rem 1.5rem;
+      cursor: pointer;
+      font-size: 1.02rem;
+      font-weight: 500;
+      letter-spacing: -0.015em;
+      color: var(--text-primary);
+    }
+
+    .faq-item summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq-plus {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1px solid var(--border-hairline);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      flex: none;
+      color: var(--bg-forest);
+      transition: transform 0.3s var(--ease-architectural), background-color 0.25s ease, color 0.25s ease;
+    }
+
+    .faq-item[open] .faq-plus {
+      transform: rotate(45deg);
+      background: var(--bg-forest);
+      border-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .faq-body {
+      padding: 0 1.5rem 1.4rem;
+      color: var(--text-secondary);
+      font-size: 0.94rem;
+      line-height: 1.65;
+      max-width: 66ch;
+    }
+
+    /* ==========================================================================
+       13. ACT 6 — CALM CONTACT FINALE (#14231B) & FOOTER
+       ========================================================================== */
+    .contact-finale {
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+      padding-top: clamp(4.5rem, 9vw, 8rem);
+      padding-bottom: clamp(2.5rem, 5vw, 3.5rem);
+      scroll-margin-top: 3rem;
+    }
+
+    .contact-hero-box {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(0, 0.85fr);
+      gap: clamp(2rem, 5vw, 4.5rem);
+      align-items: end;
+      padding-bottom: clamp(2.75rem, 5vw, 4rem);
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    .contact-lead {
+      margin-top: 1.25rem;
+      color: var(--text-on-dark-muted);
+      font-size: 1.03rem;
+      max-width: 48ch;
+      line-height: 1.62;
+    }
+
+    .contact-primary-wrap {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.85rem;
+      justify-self: end;
+      width: 100%;
+      max-width: 28rem;
+    }
+
+    .contact-primary-cta {
+      width: 100%;
+      min-height: 58px;
+      padding: 1rem 1.75rem;
+      font-size: 0.98rem;
+      justify-content: space-between;
+    }
+
+    .contact-primary-note {
+      font-size: 0.83rem;
+      color: var(--text-on-dark-muted);
+    }
+
+    .direct-channels {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1.25rem;
+      padding-block: clamp(2rem, 4vw, 3rem);
+      border-bottom: 1px solid var(--border-dark);
+    }
+
+    .channel-card {
+      padding: 1.5rem;
+      border-radius: var(--radius-card);
+      background: var(--bg-forest-elevated);
+      border: 1px solid var(--border-dark);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 1.15rem;
+    }
+
+    .channel-label {
+      font-size: 0.74rem;
+      font-weight: 500;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--accent-sage);
+    }
+
+    .channel-value {
+      font-size: clamp(1.2rem, 2.2vw, 1.65rem);
+      font-weight: 400;
+      letter-spacing: -0.025em;
+      color: var(--text-on-dark);
+      word-break: break-word;
+      margin-top: 0.35rem;
+    }
+
+    .channel-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+    }
+
+    .channel-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.45rem;
+      min-height: 38px;
+      padding: 0.4rem 0.95rem;
+      border-radius: var(--radius-pill);
+      border: 1px solid var(--border-dark-strong);
+      background: rgba(246, 247, 245, 0.05);
+      color: var(--text-on-dark);
+      font-size: 0.84rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: background-color 0.22s ease, border-color 0.22s ease;
+    }
+
+    .channel-pill:hover {
+      background: rgba(246, 247, 245, 0.14);
+      border-color: var(--accent-sage);
+    }
+
+    .site-footer {
+      padding-top: 2rem;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem 2rem;
+      font-size: 0.83rem;
+      color: var(--text-on-dark-muted);
+    }
+
+    .footer-legal-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem 1.25rem;
+    }
+
+    .footer-link-btn {
+      background: transparent;
+      border: 0;
+      padding: 0.25rem 0;
+      color: var(--text-on-dark-muted);
+      font-size: 0.83rem;
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 4px;
+      text-decoration-color: rgba(167, 196, 177, 0.35);
+      transition: color 0.2s ease, text-decoration-color 0.2s ease;
+    }
+
+    .footer-link-btn:hover {
+      color: var(--text-on-dark);
+      text-decoration-color: var(--accent-sage);
+    }
+
+    /* ==========================================================================
+       14. FLOATING MOBILE BOTTOM BAR (56PX, BLUR 12PX, INTERSECTION + INERT)
+       ========================================================================== */
+    .mobile-dock {
+      display: none;
+      position: fixed;
+      left: 0.75rem;
+      right: 0.75rem;
+      bottom: max(0.75rem, env(safe-area-inset-bottom));
+      z-index: 75;
+      height: 56px;
+      padding: 0.35rem;
+      border-radius: var(--radius-pill);
+      background: rgba(255, 255, 255, 0.86);
+      border: 1px solid rgba(226, 230, 227, 0.95);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      box-shadow: 0 10px 28px -8px rgba(15, 22, 18, 0.2);
+      grid-template-columns: 1fr auto;
+      gap: 0.4rem;
+      align-items: center;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 0.28s var(--ease-architectural), transform 0.28s var(--ease-architectural);
+    }
+
+    .mobile-dock.is-hidden {
+      opacity: 0;
+      transform: translateY(140%);
+      pointer-events: none;
+    }
+
+    .mobile-dock__primary {
+      height: 100%;
+      min-height: 0;
+      padding: 0 1.1rem;
+      font-size: 0.86rem;
+    }
+
+    .mobile-dock__call {
+      height: 100%;
+      min-height: 0;
+      padding: 0 1rem;
+      font-size: 0.85rem;
+      background: var(--bg-alabaster);
+      border: 1px solid var(--border-hairline);
+      color: var(--text-primary);
+    }
+
+    /* ==========================================================================
+       15. NATIVE <DIALOG> MODALS (RODO & UŚUDE) + TOAST
+       ========================================================================== */
+    dialog.legal-dialog {
+      width: min(100% - 2rem, 44rem);
+      max-height: min(86svh, 46rem);
+      padding: 0;
+      border: 1px solid var(--border-hairline);
+      border-radius: var(--radius-card);
+      background: var(--bg-white);
+      color: var(--text-primary);
+      box-shadow: 0 28px 70px -20px rgba(15, 22, 18, 0.35);
+      overflow: hidden;
+    }
+
+    dialog.legal-dialog::backdrop {
+      background: rgba(15, 22, 18, 0.52);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+    }
+
+    .dialog-shell {
+      display: grid;
+      grid-template-rows: auto minmax(0, 1fr) auto;
+      max-height: min(86svh, 46rem);
+    }
+
+    .dialog-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1rem;
+      padding: 1.35rem 1.6rem;
+      border-bottom: 1px solid var(--border-hairline);
+    }
+
+    .dialog-head h2 {
+      font-size: 1.18rem;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+    }
+
+    .dialog-close {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      border: 1px solid var(--border-hairline);
+      background: var(--bg-alabaster);
+      color: var(--text-primary);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+    }
+
+    .dialog-close:hover {
+      background: var(--bg-forest);
+      border-color: var(--bg-forest);
+      color: var(--text-on-dark);
+    }
+
+    .dialog-body {
+      padding: 1.5rem 1.6rem;
+      overflow-y: auto;
+      display: grid;
+      gap: 1rem;
+      font-size: 0.92rem;
+      line-height: 1.64;
+      color: var(--text-secondary);
+    }
+
+    .dialog-body h3 {
+      font-size: 0.96rem;
+      font-weight: 500;
+      color: var(--text-primary);
+      margin-top: 0.35rem;
+    }
+
+    .dialog-body strong {
+      color: var(--text-primary);
+      font-weight: 500;
+    }
+
+    .dialog-foot {
+      padding: 1rem 1.6rem;
+      border-top: 1px solid var(--border-hairline);
+      background: var(--bg-alabaster);
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .toast {
+      position: fixed;
+      left: 50%;
+      bottom: 5rem;
+      z-index: 95;
+      transform: translate(-50%, 16px);
+      padding: 0.65rem 1.2rem;
+      border-radius: var(--radius-pill);
+      background: var(--bg-forest);
+      color: var(--text-on-dark);
+      border: 1px solid var(--border-dark-strong);
+      font-size: 0.85rem;
+      font-weight: 500;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease, transform 0.25s var(--ease-architectural);
+    }
+
+    .toast.is-visible {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
+
+    /* ==========================================================================
+       16. RESPONSIVE BREAKPOINTS
+       ========================================================================== */
+    @media (max-width: 1080px) {
+      .bento-card--selector { grid-column: span 12; }
+      .bento-card--manifest { grid-column: span 6; }
+      .bento-card--standard { grid-column: span 6; }
+      .bento-card--timeline { grid-column: span 12; }
+      .bento-card--pricing { grid-column: span 12; }
+
+      .section-header,
+      .trust-grid,
+      .faq-block,
+      .contact-hero-box {
+        grid-template-columns: 1fr;
+      }
+
+      .section-lead,
+      .contact-primary-wrap {
+        justify-self: start;
+      }
+    }
+
+    @media (max-width: 860px) {
+      .hud-nav {
+        display: none;
+      }
+
+      .hud-menu-toggle {
+        display: inline-flex;
+      }
+
+      .hero__specs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .direct-channels {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .bento-card--manifest,
+      .bento-card--standard {
+        grid-column: span 12;
+      }
+
+      .hud-bar {
+        padding-left: 1rem;
+      }
+
+      .hud-cta {
+        padding-inline: 0.9rem;
+        font-size: 0.8rem;
+      }
+
+      .mobile-dock {
+        display: grid;
+      }
+
+      .contact-finale {
+        padding-bottom: 5.5rem;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      html {
+        scroll-behavior: auto;
+      }
+
+      *, *::before, *::after {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+      }
+    }
+  </style>
+</head>
+<body>
+  <a class="skip-link" href="#tresc-glowna">Przejdź do treści głównej</a>
+
+  <!-- Scroll Progress Bar (animation-timeline: scroll(root)) -->
+  <div class="scroll-progress" aria-hidden="true">
+    <div class="scroll-progress__bar"></div>
+  </div>
+
+  <!-- ======================================================================
+       FLOATING HUD NAVIGATION
+       ====================================================================== -->
+  <header class="hud-header" id="hudHeader">
+    <div class="hud-bar">
+      <a href="#start" class="hud-brand" aria-label="Studio Las — początek strony">
+        <span class="hud-brand__dot" aria-hidden="true"></span>
+        <span>Studio Las</span>
+      </a>
+
+      <nav class="hud-nav" aria-label="Nawigacja główna">
+        <a href="#metoda">Metoda</a>
+        <a href="#plan-i-cennik">Plan i cennik</a>
+        <a href="#przestrzen">Przestrzeń</a>
+        <a href="#prowadzacy">Prowadzący</a>
+      </nav>
+
+      <div class="hud-actions">
+        <a href="#kontakt" class="btn hud-cta tabular">Rozmowa wstępna · 0 zł</a>
+        <button
+          type="button"
+          class="hud-menu-toggle"
+          id="mobileMenuToggle"
+          aria-expanded="false"
+          aria-controls="mobileMenuDrawer"
+          aria-label="Otwórz menu nawigacji"
+        >
+          <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+            <line x1="4" y1="8" x2="20" y2="8"></line>
+            <line x1="4" y1="16" x2="20" y2="16"></line>
+          </svg>
+        </button>
+      </div>
+    </div>
+
+    <div class="hud-mobile-drawer" id="mobileMenuDrawer" hidden>
+      <nav aria-label="Nawigacja mobilna">
+        <a href="#metoda">Metoda i punkty wyjścia</a>
+        <a href="#plan-i-cennik">Plan 12 tygodni i cennik</a>
+        <a href="#przestrzen">Przestrzeń przy lesie</a>
+        <a href="#prowadzacy">Prowadzący i lokalizacja</a>
+        <a href="#kontakt">Kontakt · Rozmowa 0 zł</a>
+      </nav>
+    </div>
+  </header>
+
+  <main id="tresc-glowna">
+    <!-- ====================================================================
+         ACT 1 — CINEMATIC HERO (100SVH)
+         ==================================================================== -->
+    <section class="hero" id="start" aria-labelledby="hero-title">
+      <div class="hero__media" aria-hidden="true">
+        <picture>
+          <source media="(min-width: 768px)" srcset="./images/las-hero-desktop-1600.webp" type="image/webp">
+          <img
+            src="./images/las-hero-mobile-780.webp"
+            alt="Naturalne światło dzienne w lesie przy Studio Las w Pracach Dużych"
+            width="1600"
+            height="1000"
+            fetchpriority="high"
+            decoding="async"
+          >
+        </picture>
+      </div>
+      <div class="hero__scrim" aria-hidden="true"></div>
+
+      <div class="container hero__content">
+        <div class="hero__tag">
+          <span class="hero__tag-dot" aria-hidden="true"></span>
+          <span>Prywatne studio 1:1 przy lesie · Prace Duże, 5 min od S7</span>
+        </div>
+
+        <h1 class="display-h1" id="hero-title">
+          Siła i ruch, które <span class="editorial-italic">zostają</span> na lata.
+        </h1>
+
+        <p class="hero__lead">
+          Spokojny trening siłowy i ruchowy 1:1 dla dorosłych 35–60+. Cała sala na wyłączność z buforem czasowym między wizytami, jasny plan na 12 tygodni i prowadzenie bez tłumu, pośpiechu i przypadkowych obciążeń.
+        </p>
+
+        <div class="hero__actions">
+          <a href="#kontakt" class="btn btn--light tabular">
+            <span>Umów rozmowę wstępną · 0 zł</span>
+            <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+              <path d="M5 12h14"></path>
+              <path d="m13 6 6 6-6 6"></path>
+            </svg>
+          </a>
+          <a href="#plan-i-cennik" class="btn btn--outline-light">
+            <span>Zobacz plan i cennik brutto</span>
+          </a>
+        </div>
+      </div>
+
+      <div class="hero__meta-strip">
+        <div class="container hero__specs">
+          <div class="hero__spec">
+            <span class="hero__spec-label">Format</span>
+            <span class="hero__spec-value">Wyłącznie 1:1 · pusta sala</span>
+          </div>
+          <div class="hero__spec">
+            <span class="hero__spec-label">Dla kogo</span>
+            <span class="hero__spec-value tabular">Dorośli 35–60+</span>
+          </div>
+          <div class="hero__spec">
+            <span class="hero__spec-label">Dojazd</span>
+            <span class="hero__spec-value tabular">5 min od S7 · parking pod drzwiami</span>
+          </div>
+          <div class="hero__spec">
+            <span class="hero__spec-label">Pierwszy krok</span>
+            <span class="hero__spec-value tabular">Rozmowa 0 zł · Wprowadzenie 220 zł</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         ACT 2 — LIGHT ARCHITECTURAL BENTO GRID
+         ==================================================================== -->
+    <section class="section section--alabaster" id="metoda" aria-labelledby="metoda-title">
+      <div class="container">
+        <div class="section-header reveal">
+          <div>
+            <p class="section-eyebrow">Akt 01 · Metoda i punkty wyjścia</p>
+            <h2 class="display-h2" id="metoda-title">
+              Trening dobrany do <span class="editorial-italic">realnego</span> życia, nie do mody.
+            </h2>
+          </div>
+          <p class="section-lead">
+            Zamiast ogólnych schematów z dużych klubów — spokojna praca w rytmie, który da się utrzymać przy intensywnej pracy zawodowej, rodzinie i codziennych obowiązkach.
+          </p>
+        </div>
+
+        <div class="bento-grid">
+          <!-- CARD 1: Interactive 4 Starting Points Selector -->
+          <article class="bento-card bento-card--selector reveal" aria-labelledby="selector-heading">
+            <div>
+              <p class="bento-kicker">Wybierz swój punkt wyjścia</p>
+              <h3 class="bento-title" id="selector-heading" style="margin-top: 0.45rem;">
+                Od czego zaczynamy w praktyce?
+              </h3>
+            </div>
+
+            <div class="pill-tabs" role="tablist" aria-label="Punkty wyjścia do treningu">
+              <button type="button" class="pill-tab" role="tab" id="tab-przerwa" aria-selected="true" aria-controls="panel-punkt-wyjscia" data-profile="przerwa">
+                Powrót po przerwie
+              </button>
+              <button type="button" class="pill-tab" role="tab" id="tab-siedzaca" aria-selected="false" aria-controls="panel-punkt-wyjscia" data-profile="siedzaca">
+                Praca siedząca
+              </button>
+              <button type="button" class="pill-tab" role="tab" id="tab-rehabilitacja" aria-selected="false" aria-controls="panel-punkt-wyjscia" data-profile="rehabilitacja">
+                Po zakończonej rehabilitacji
+              </button>
+              <button type="button" class="pill-tab" role="tab" id="tab-sila" aria-selected="false" aria-controls="panel-punkt-wyjscia" data-profile="sila">
+                Siła 40+/50+
+              </button>
+            </div>
+
+            <div class="selector-stage" id="panel-punkt-wyjscia" role="tabpanel" aria-labelledby="tab-przerwa" aria-live="polite">
+              <div>
+                <h4 class="selector-stage__headline" id="profileTitle">
+                  Bezpieczny powrót do regularności — bez zakwasów na tydzień
+                </h4>
+                <p class="selector-stage__copy" id="profileCopy">
+                  Gdy ostatni regularny trening był kilka lat temu, najgorszym pomysłem jest ostry start. Budujemy tolerancję na obciążenie krok po kroku, w spokojnym tempie i przy pełnej uwadze 1:1.
+                </p>
+              </div>
+              <div class="selector-stage__list">
+                <span class="selector-stage__list-label">Na czym skupiamy pierwsze tygodnie</span>
+                <ul id="profilePoints">
+                  <li>Opanowanie podstawowych wzorców siłowych bez pośpiechu</li>
+                  <li>Dobór ciężaru, po którym następnego dnia normalnie pracujesz</li>
+                  <li>Prosty, 10-minutowy zestaw domowy podtrzymujący nawyk</li>
+                </ul>
+              </div>
+              <p class="selector-stage__note" id="profileNote">
+                W Studio Las nie gonimy tętna dla samego zmęczenia. Celem jest trwały powrót do sprawności i pewności w ruchu.
+              </p>
+            </div>
+          </article>
+
+          <!-- CARD 2: Deep Forest Contrast Manifest Card -->
+          <article class="bento-card bento-card--forest bento-card--manifest surface-dark reveal">
+            <div>
+              <p class="bento-kicker">Manifest przestrzeni</p>
+              <p class="manifest-quote" style="margin-top: 0.9rem;">
+                Cisza, dzienne światło i cała sala na wyłączność. Zero tłumów, zero presji i pełny bufor czasowy między wizytami.
+              </p>
+            </div>
+
+            <ul class="manifest-points">
+              <li><span>Obecność na sali</span><strong>Wyłącznie 1:1</strong></li>
+              <li><span>Bufor między sesjami</span><strong>Spokojne wejście i wyjście</strong></li>
+              <li><span>Parking</span><strong>Prywatny, pod drzwiami</strong></li>
+              <li><span>Otoczenie</span><strong>Bezpośrednio przy lesie</strong></li>
+            </ul>
+          </article>
+
+          <!-- CARD 3: 12-Week Axis (T01 -> T06 -> T12) -->
+          <article class="bento-card bento-card--timeline reveal">
+            <div>
+              <p class="bento-kicker">Architektura procesu</p>
+              <h3 class="bento-title" style="margin-top: 0.45rem;">
+                Oś <span class="tabular">12</span> tygodni: <span class="tabular">T01 → T06 → T12</span>
+              </h3>
+            </div>
+
+            <div class="timeline-subgrid">
+              <div class="timeline-node">
+                <span class="timeline-node__code tabular">T01 · Start</span>
+                <strong class="timeline-node__title">Baza i wzorce</strong>
+                <p class="timeline-node__desc">Ustalamy punkty odniesienia, zakresy ruchu i bezpieczny poziom wyjściowy obciążeń.</p>
+              </div>
+              <div class="timeline-node">
+                <span class="timeline-node__code tabular">T06 · Przegląd</span>
+                <strong class="timeline-node__title">Korekta i progres</strong>
+                <p class="timeline-node__desc">Sprawdzamy odczucia w codziennym życiu i płynnie dokładamy kolejne parametry siłowe.</p>
+              </div>
+              <div class="timeline-node">
+                <span class="timeline-node__code tabular">T12 · Podsumowanie</span>
+                <strong class="timeline-node__title">Mierzalny efekt</strong>
+                <p class="timeline-node__desc">Porównujemy wyniki z tygodniem 01 i wspólnie decydujemy o kolejnym kroku.</p>
+              </div>
+            </div>
+          </article>
+
+          <!-- CARD 4: Clear Gross Pricing (Zero Ranges) -->
+          <article class="bento-card bento-card--pricing reveal">
+            <div>
+              <p class="bento-kicker">Jednoznaczny cennik brutto</p>
+              <h3 class="bento-title" style="margin-top: 0.45rem;">
+                Pełna przejrzystość bez widełek.
+              </h3>
+            </div>
+
+            <div class="price-list">
+              <div class="price-row">
+                <div>
+                  <span class="price-row__name">Rozmowa wstępna</span>
+                  <span class="price-row__meta tabular">ok. 15 min · telefonicznie, bez zobowiązań</span>
+                </div>
+                <span class="price-row__amount tabular">0 zł</span>
+              </div>
+              <div class="price-row">
+                <div>
+                  <span class="price-row__name">Spotkanie wprowadzające</span>
+                  <span class="price-row__meta tabular">60–75 min · jednorazowo, na pustej sali</span>
+                </div>
+                <span class="price-row__amount tabular">220 zł brutto</span>
+              </div>
+              <div class="price-row">
+                <div>
+                  <span class="price-row__name">Prowadzenie 1:1 (cykl 12 tyg.)</span>
+                  <span class="price-row__meta tabular">sesja 60 min · rytm 1× lub 2× w tyg.</span>
+                </div>
+                <span class="price-row__amount tabular">250 zł brutto</span>
+              </div>
+            </div>
+
+            <p class="price-footnote">
+              12 tygodni to okres planowania i przeglądu postępów — bez umów abonamentowych z góry.
+            </p>
+          </article>
+
+          <!-- CARD 5: Standard ~15 lat -->
+          <article class="bento-card bento-card--standard reveal">
+            <p class="bento-kicker">Standard prowadzenia</p>
+            <div>
+              <p class="standard-metric tabular">~15 lat</p>
+              <p class="standard-sub" style="margin-top: 0.85rem;">
+                Regularnej edukacji zawodowej i praktyki 1:1. Wykształcenie AWF Warszawa oraz studia podyplomowe uzupełniające warsztat trenerski.
+              </p>
+            </div>
+            <a href="#prowadzacy" class="btn btn--outline-dark btn--sm" style="width: fit-content;">
+              <span>Poznaj prowadzącego</span>
+            </a>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         ACT 3 — INTERACTIVE RHYTHM PLANNER & 3-PHASE FIRST MEETING STEPPER
+         ==================================================================== -->
+    <section class="section section--alabaster" id="plan-i-cennik" aria-labelledby="plan-title" style="padding-top: 0;">
+      <div class="container">
+        <div class="section-header reveal">
+          <div>
+            <p class="section-eyebrow">Akt 02 · Rytm i pierwsze spotkanie</p>
+            <h2 class="display-h2" id="plan-title">
+              Sprawdź swój <span class="editorial-italic">rytm</span> tygodnia i dokładny koszt.
+            </h2>
+          </div>
+          <p class="section-lead">
+            Porównaj dwa sprawdzone rytmy prowadzenia w cyklu 12 tygodni oraz zobacz krok po kroku, jak wygląda jednorazowe spotkanie wprowadzające.
+          </p>
+        </div>
+
+        <div class="architecture-stack">
+          <!-- INTERACTIVE RHYTHM PLANNER (1x vs 2x) -->
+          <div class="planner-shell reveal">
+            <div class="planner-top">
+              <div>
+                <p class="bento-kicker">Interaktywny planer rytmu · 12 tygodni</p>
+                <h3 class="bento-title" style="margin-top: 0.4rem;">
+                  Jak układamy tydzień przy prowadzeniu 1:1?
+                </h3>
+              </div>
+
+              <div class="segmented-control" role="group" aria-label="Wybierz rytm treningowy w tygodniu">
+                <button type="button" class="segmented-btn tabular" id="rhythm1Btn" aria-pressed="true" data-rhythm="1">
+                  1× w tygodniu
+                </button>
+                <button type="button" class="segmented-btn tabular" id="rhythm2Btn" aria-pressed="false" data-rhythm="2">
+                  2× w tygodniu
+                </button>
+              </div>
+            </div>
+
+            <div class="planner-body" aria-live="polite">
+              <div>
+                <div class="week-grid" id="weekGrid" aria-label="Przykładowy rozkład tygodnia">
+                  <!-- Populated cleanly & kept in sync via JS; SSR default 1x below -->
+                  <div class="day-cell">
+                    <span class="day-cell__name">PN</span>
+                    <div class="day-cell__content">
+                      <span class="day-cell__title">Codzienny ruch</span>
+                      <span class="day-cell__time">Spacer / lekka aktywność</span>
+                    </div>
+                  </div>
+                  <div class="day-cell day-cell--studio">
+                    <span class="day-cell__name">WT</span>
+                    <div class="day-cell__content">
+                      <span class="day-cell__title">Studio Las 1:1</span>
+                      <span class="day-cell__time tabular">60 min · sala na wyłączność</span>
+                    </div>
+                  </div>
+                  <div class="day-cell">
+                    <span class="day-cell__name">ŚR</span>
+                    <div class="day-cell__content">
+                      <span class="day-cell__title">Odpoczynek</span>
+                      <span class="day-cell__time">Regeneracja tkanek</span>
+                    </div>
+                  </div>
+                  <div class="day-cell day-cell--home">
+                    <span class="day-cell__name">CZ</span>
+                    <div class="day-cell__content">
+                      <span class="day-cell__title">Zestaw domowy</span>
+                      <span class="day-cell__time tabular">10 min · ruchomość</span>
+                    </div>
+                  </div>
+                  <div class="day-cell">
+                    <span class="day-cell__name">PT</span>
+                    <div class="day-cell__content">
+                      <span class="day-cell__title">Codzienny ruch</span>
+                      <span class="day-cell__time">Naturalny rytm dnia</span>
+                    </div>
+                  </div>
+                  <div class="day-cell day-cell--home">
+                    <span class="day-cell__name">SO</span>
+                    <div class="day-cell__content">
+                      <span class="day-cell__title">Zestaw domowy</span>
+                      <span class="day-cell__time tabular">10 min + spacer</span>
+                    </div>
+                  </div>
+                  <div class="day-cell">
+                    <span class="day-cell__name">ND</span>
+                    <div class="day-cell__content">
+                      <span class="day-cell__title">Spokojny dzień</span>
+                      <span class="day-cell__time">Pełny luz</span>
+                    </div>
+                  </div>
+                </div>
+                <p style="margin-top: 1rem; font-size: 0.84rem; color: var(--text-secondary);" id="rhythmCaption">
+                  Rytm 1× w tygodniu sprawdza się przy napiętym kalendarzu zawodowym lub jako solidna baza łączona z aktywnością własną.
+                </p>
+              </div>
+
+              <div class="planner-summary">
+                <div>
+                  <p class="bento-kicker">Kalkulacja brutto</p>
+                  <p class="planner-price-main tabular" id="plannerMonthly" style="margin-top: 0.5rem;">1 000 zł</p>
+                  <p class="planner-price-unit tabular" id="plannerMonthlySub">brutto / 4 tygodnie (4 sesje po 60 min)</p>
+                </div>
+
+                <dl class="planner-breakdown">
+                  <div>
+                    <dt>Stawka za sesję 60 min</dt>
+                    <dd class="tabular">250 zł brutto</dd>
+                  </div>
+                  <div>
+                    <dt>Liczba sesji w cyklu 12 tyg.</dt>
+                    <dd class="tabular" id="plannerSessions">12 sesji</dd>
+                  </div>
+                  <div>
+                    <dt>Łącznie w cyklu 12 tyg.</dt>
+                    <dd class="tabular" id="plannerCycleTotal">3 000 zł brutto</dd>
+                  </div>
+                  <div>
+                    <dt>Rozliczanie</dt>
+                    <dd>Bez umów abonamentowych z góry</dd>
+                  </div>
+                </dl>
+
+                <p class="planner-promise">
+                  12 tygodni to okres planowania i przeglądu postępów — bez umów abonamentowych z góry. Konkretny dzień tygodnia dobieramy pod Twój grafik.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <!-- INTERACTIVE 3-PHASE FIRST MEETING STEPPER (220 zł) -->
+          <div class="stepper-shell reveal" aria-labelledby="stepper-heading">
+            <div class="stepper-header">
+              <div>
+                <p class="bento-kicker">Pierwsza wizyta w Studio Las</p>
+                <h3 class="bento-title" id="stepper-heading" style="margin-top: 0.4rem;">
+                  Spotkanie wprowadzające — 3 spokojne etapy
+                </h3>
+              </div>
+
+              <div class="stepper-badge tabular">
+                <strong>220 zł brutto</strong>
+                <span>· 60–75 min · jednorazowo</span>
+              </div>
+            </div>
+
+            <div class="stepper-nav" role="tablist" aria-label="Etapy spotkania wprowadzającego">
+              <button type="button" class="step-trigger" role="tab" id="step-tab-1" aria-selected="true" aria-controls="step-panel" data-step="1">
+                <span>
+                  <span class="step-trigger__num tabular">ETAP 01</span>
+                  <span class="step-trigger__title">Rozmowa przy stole</span>
+                </span>
+                <span class="step-trigger__dur tabular">~20 min</span>
+              </button>
+
+              <button type="button" class="step-trigger" role="tab" id="step-tab-2" aria-selected="false" aria-controls="step-panel" data-step="2">
+                <span>
+                  <span class="step-trigger__num tabular">ETAP 02</span>
+                  <span class="step-trigger__title">Spokojne sprawdzenie ruchu</span>
+                </span>
+                <span class="step-trigger__dur tabular">~35 min</span>
+              </button>
+
+              <button type="button" class="step-trigger" role="tab" id="step-tab-3" aria-selected="false" aria-controls="step-panel" data-step="3">
+                <span>
+                  <span class="step-trigger__num tabular">ETAP 03</span>
+                  <span class="step-trigger__title">Podsumowanie i plan</span>
+                </span>
+                <span class="step-trigger__dur tabular">~15 min</span>
+              </button>
+            </div>
+
+            <div class="stepper-stage" id="step-panel" role="tabpanel" aria-labelledby="step-tab-1" aria-live="polite">
+              <div>
+                <h4 class="stepper-stage__title" id="stepTitle">
+                  Spokojna rozmowa przy stole — bez pośpiechu i bez formularza w biegu
+                </h4>
+                <p class="stepper-stage__desc" id="stepDesc">
+                  Zaczynamy od herbaty lub wody przy stole. Omawiamy Twoją dotychczasową aktywność, codzienny tryb pracy, realną ilość czasu w tygodniu oraz ewentualne zalecenia od lekarza lub fizjoterapeuty, z którymi przychodzisz.
+                </p>
+              </div>
+              <div class="stepper-stage__detail">
+                <strong id="stepHighlightLabel">Po co ten etap?</strong>
+                <p id="stepHighlightText">
+                  Żeby plan pasował do Twojego kalendarza, snu i regeneracji — a nie odwrotnie. Jeśli z rozmowy wyniknie, że najpierw warto skonsultować się z lekarzem lub fizjoterapeutą, mówię o tym wprost.
+                </p>
+              </div>
+            </div>
+
+            <div class="takeaway-strip">
+              <span class="takeaway-strip__label">Co zabierasz ze sobą</span>
+              <div class="takeaway-items">
+                <div class="takeaway-item">
+                  <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
+                    <path d="M14 2v6h6"></path>
+                    <path d="M8 13h8"></path>
+                    <path d="M8 17h5"></path>
+                  </svg>
+                  <span>Pisemne podsumowanie po spotkaniu</span>
+                </div>
+                <div class="takeaway-item">
+                  <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <circle cx="12" cy="12" r="9"></circle>
+                    <path d="M12 7v5l3 2"></path>
+                  </svg>
+                  <span class="tabular">10-minutowy zestaw domowy</span>
+                </div>
+                <div class="takeaway-item">
+                  <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M20 6 9 17l-5-5"></path>
+                  </svg>
+                  <span>Rekomendację rytmu 1× lub 2× bez presji</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         ACT 4 — WIDE TACTILE SPACE GALLERY (PURE WHITE BACKGROUND)
+         ==================================================================== -->
+    <section class="section section--white" id="przestrzen" aria-labelledby="przestrzen-title">
+      <div class="container">
+        <div class="gallery-controls-row reveal">
+          <div>
+            <p class="section-eyebrow">Akt 03 · Przestrzeń i otoczenie</p>
+            <h2 class="display-h2" id="przestrzen-title">
+              Światło dzienne, drewno i <span class="editorial-italic">spokój</span> lasu.
+            </h2>
+          </div>
+
+          <div class="gallery-hud" aria-label="Sterowanie galerią przestrzeni">
+            <div class="gallery-counter tabular" id="galleryCounter" aria-live="polite">
+              01 <span>/ 03</span>
+            </div>
+            <div class="gallery-progress-track" aria-hidden="true">
+              <div class="gallery-progress-fill" id="galleryProgress"></div>
+            </div>
+            <div class="gallery-arrows">
+              <button type="button" class="gallery-arrow" id="galleryPrev" aria-label="Poprzednie zdjęcie" disabled>
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M19 12H5"></path>
+                  <path d="m11 18-6-6 6-6"></path>
+                </svg>
+              </button>
+              <button type="button" class="gallery-arrow" id="galleryNext" aria-label="Następne zdjęcie">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M5 12h14"></path>
+                  <path d="m13 6 6 6-6 6"></path>
+                </svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="gallery-track" id="galleryTrack" tabindex="0" role="region" aria-roledescription="karuzela" aria-label="Galeria otoczenia i kierunku wnętrza Studio Las">
+        <!-- Slide 01 -->
+        <figure class="gallery-slide" data-slide="1">
+          <div class="gallery-frame">
+            <img
+              src="./images/las-detal.webp"
+              alt="Naturalny detal leśnego otoczenia wokół Studio Las w Pracach Dużych"
+              width="1400"
+              height="875"
+              loading="lazy"
+              decoding="async"
+            >
+          </div>
+          <figcaption class="gallery-caption">
+            <span class="gallery-caption__title">01 · Otoczenie w Pracach Dużych</span>
+            <span class="gallery-caption__desc">Zieleń za oknem i naturalne światło zamiast piwnicznej siłowni z ekranami.</span>
+          </figcaption>
+        </figure>
+
+        <!-- Slide 02 (MANDATORY BADGE & CAPTION) -->
+        <figure class="gallery-slide" data-slide="2">
+          <div class="gallery-frame">
+            <img
+              src="./images/studio-drewno.webp"
+              alt="Wizualizacja kierunku wnętrza sali treningowej Studio Las w jasnym drewnie i minimalistycznej estetyce"
+              width="1400"
+              height="875"
+              loading="lazy"
+              decoding="async"
+            >
+            <span class="gallery-badge">
+              Wizualizacja kierunku wnętrza — zdjęcia gotowej sali w przygotowaniu
+            </span>
+          </div>
+          <figcaption class="gallery-caption">
+            <span class="gallery-caption__title">02 · Wizualizacja kierunku wnętrza — zdjęcia gotowej sali w przygotowaniu</span>
+            <span class="gallery-caption__desc">Naturalne drewno, uporządkowany sprzęt siłowy i przestrzeń wyłącznie dla jednej osoby.</span>
+          </figcaption>
+        </figure>
+
+        <!-- Slide 03 -->
+        <figure class="gallery-slide" data-slide="3">
+          <div class="gallery-frame">
+            <img
+              src="./images/las-sciezka.webp"
+              alt="Leśna ścieżka w bezpośrednim sąsiedztwie Studio Las"
+              width="1400"
+              height="875"
+              loading="lazy"
+              decoding="async"
+            >
+          </div>
+          <figcaption class="gallery-caption">
+            <span class="gallery-caption__title">03 · Ścieżka tuż obok studia</span>
+            <span class="gallery-caption__desc">Pięć minut od trasy S7, a od razu po wyjściu z auta zostawiasz miejski zgiełk za sobą.</span>
+          </figcaption>
+        </figure>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         ACT 5 — COACH BIO, BOUNDARY, LOCATION MONOLITH & NATIVE FAQ
+         ==================================================================== -->
+    <section class="section section--alabaster" id="prowadzacy" aria-labelledby="prowadzacy-title">
+      <div class="container">
+        <div class="section-header reveal">
+          <div>
+            <p class="section-eyebrow">Akt 04 · Prowadzący, granice i adres</p>
+            <h2 class="display-h2" id="prowadzacy-title">
+              Rzetelny warsztat i <span class="editorial-italic">uczciwe</span> granice.
+            </h2>
+          </div>
+          <p class="section-lead">
+            Wiesz dokładnie, z kim pracujesz, na czym opiera się metoda prowadzenia i gdzie przebiega jasna granica między treningiem a opieką specjalistyczną.
+          </p>
+        </div>
+
+        <div class="trust-grid">
+          <!-- Coach Bio + Legal Boundary -->
+          <article class="coach-card reveal">
+            <div>
+              <div class="coach-header">
+                <h3 class="coach-name">Damian Krawiec</h3>
+                <span class="coach-role">Prowadzący · Studio Las</span>
+              </div>
+
+              <ul class="coach-credentials" style="margin-top: 1.4rem;">
+                <li>
+                  <span class="credential-index tabular">01</span>
+                  <span><strong>Magister wychowania fizycznego (AWF Warszawa)</strong> — solidna baza w metodyce treningu siłowego, ruchowego i planowaniu obciążeń.</span>
+                </li>
+                <li>
+                  <span class="credential-index tabular">02</span>
+                  <span><strong>Studia podyplomowe „Fizjoterapia w sporcie”</strong> — świadome uzupełnienie warsztatu trenerskiego, pomocne w bezpiecznym doborze ćwiczeń i współpracy z zaleceniami specjalistów.</span>
+                </li>
+                <li>
+                  <span class="credential-index tabular">03</span>
+                  <span><strong class="tabular">~15 lat regularnej edukacji zawodowej i praktyki 1:1</strong> — wieloletnia praca z dorosłymi, którzy cenią spokój, konkret i mierzalny postęp bez skrajności.</span>
+                </li>
+              </ul>
+            </div>
+
+            <div class="boundary-box" role="note" aria-label="Granica kompetencji Studio Las">
+              <span class="boundary-box__label">Granica kompetencji i bezpieczeństwo</span>
+              <p>
+                <strong>Studio Las nie jest podmiotem leczniczym i nie wykonuje zawodu fizjoterapeuty; w ostrym bólu lub po świeżym urazie pierwszym adresem jest lekarz lub fizjoterapeuta.</strong>
+              </p>
+              <p>
+                Prowadzimy trening siłowy i ruchowy, w tym trening po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty.
+              </p>
+            </div>
+          </article>
+
+          <!-- Deep Forest Location Monolith -->
+          <aside class="monolith-card surface-dark reveal" aria-labelledby="lokalizacja-heading">
+            <div>
+              <p class="bento-kicker">Lokalizacja · Prywatna sala</p>
+              <h3 class="monolith-address" id="lokalizacja-heading">
+                ul. Pracka 1J<br>
+                <span class="tabular">05-504</span> Prace Duże (gm. Tarczyn)
+              </h3>
+            </div>
+
+            <div class="monolith-facts">
+              <div class="monolith-fact">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M12 22s7-6.2 7-12a7 7 0 1 0-14 0c0 5.8 7 12 7 12Z"></path>
+                  <circle cx="12" cy="10" r="2.5"></circle>
+                </svg>
+                <span><strong class="tabular">5 min od trasy S7</strong> — sprawny dojazd z południowej Warszawy, Piaseczna, Tarczyna i okolic.</span>
+              </div>
+              <div class="monolith-fact">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                  <path d="M9 15V9h3.5a2 2 0 0 1 0 4H9"></path>
+                </svg>
+                <span><strong>Prywatny parking pod drzwiami</strong> — bez szukania miejsca i bez przechodzenia przez zatłoczoną recepcję.</span>
+              </div>
+              <div class="monolith-fact">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <circle cx="12" cy="12" r="9"></circle>
+                  <path d="M12 7v5l3 2"></path>
+                </svg>
+                <span><strong>Cała sala na wyłączność z buforem czasowym</strong> — między wizytami zachowujemy odstęp, więc trenujesz w pełnym spokoju.</span>
+              </div>
+            </div>
+
+            <div class="monolith-actions">
+              <a
+                href="https://maps.google.com/?q=ul.+Pracka+1J,+05-504+Prace+Du%C5%BCe"
+                target="_blank"
+                rel="noopener noreferrer"
+                class="btn btn--light btn--sm"
+              >
+                <span>Otwórz w Google Maps</span>
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M7 17 17 7"></path>
+                  <path d="M8 7h9v9"></path>
+                </svg>
+              </a>
+              <button
+                type="button"
+                class="btn btn--outline-light btn--sm"
+                data-copy="ul. Pracka 1J, 05-504 Prace Duże"
+                data-copy-label="Skopiowano adres"
+              >
+                <span>Kopiuj adres</span>
+              </button>
+            </div>
+          </aside>
+        </div>
+
+        <!-- Native Exclusive FAQ Accordion (<details name="faq">) -->
+        <div class="faq-block reveal" id="faq">
+          <div>
+            <p class="section-eyebrow">Akt 05 · Najczęstsze pytania</p>
+            <h2 class="display-h2" style="font-size: clamp(1.85rem, 3.1vw, 2.75rem);">
+              Konkretne <span class="editorial-italic">odpowiedzi</span> przed pierwszą rozmową.
+            </h2>
+          </div>
+
+          <div class="faq-list">
+            <details class="faq-item" name="faq" open>
+              <summary>
+                <span>Czy muszę mieć dobrą kondycję, żeby zacząć w Studio Las?</span>
+                <span class="faq-plus" aria-hidden="true">
+                  <svg class="icon icon--sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                </span>
+              </summary>
+              <div class="faq-body">
+                Nie. Większość osób trafia tu po dłuższej przerwie od ruchu albo przy wielogodzinnej pracy siedzącej. Podczas spotkania wprowadzającego (220 zł brutto, 60–75 min) spokojnie sprawdzamy Twój aktualny punkt startowy i dobieramy obciążenia dokładnie do obecnych możliwości.
+              </div>
+            </details>
+
+            <details class="faq-item" name="faq">
+              <summary>
+                <span>Czy mogę trenować po zakończonej rehabilitacji?</span>
+                <span class="faq-plus" aria-hidden="true">
+                  <svg class="icon icon--sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                </span>
+              </summary>
+              <div class="faq-body">
+                Tak — prowadzimy trening po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty. Proszę zabrać ze sobą ewentualne zalecenia na spotkanie wprowadzające. Jednocześnie przypominam: Studio Las nie jest podmiotem leczniczym i nie wykonuje zawodu fizjoterapeuty; w ostrym bólu lub po świeżym urazie pierwszym adresem jest lekarz lub fizjoterapeuta.
+              </div>
+            </details>
+
+            <details class="faq-item" name="faq">
+              <summary>
+                <span>Czy cykl 12 tygodni oznacza umowę lub opłatę z góry?</span>
+                <span class="faq-plus" aria-hidden="true">
+                  <svg class="icon icon--sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                </span>
+              </summary>
+              <div class="faq-body">
+                Nie. 12 tygodni to okres planowania i przeglądu postępów (T01 → T06 → T12) — bez umów abonamentowych z góry. Stawka jest stała i jednoznaczna: 250 zł brutto za sesję 60 min (co przy rytmie 1× w tyg. daje 1 000 zł / 4 tyg., a przy 2× w tyg. 2 000 zł / 4 tyg.).
+              </div>
+            </details>
+
+            <details class="faq-item" name="faq">
+              <summary>
+                <span>Czy w trakcie mojej sesji na sali są inne osoby?</span>
+                <span class="faq-plus" aria-hidden="true">
+                  <svg class="icon icon--sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                </span>
+              </summary>
+              <div class="faq-body">
+                Nie. Pracujemy wyłącznie 1:1, a cała sala jest w tym czasie do Twojej dyspozycji. Między kolejnymi wizytami utrzymujemy bufor czasowy, dzięki czemu nie mijasz się w drzwiach z kolejnymi osobami i masz prywatny parking bezpośrednio przy wejściu.
+              </div>
+            </details>
+
+            <details class="faq-item" name="faq">
+              <summary>
+                <span>Jak wygląda pierwszy krok i ile czasu zajmuje?</span>
+                <span class="faq-plus" aria-hidden="true">
+                  <svg class="icon icon--sm" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"></path></svg>
+                </span>
+              </summary>
+              <div class="faq-body">
+                Pierwszy krok to krótka rozmowa wstępna (0 zł, ok. 15 min, telefonicznie i bez zobowiązań). Możesz wypełnić 1-minutowy formularz kontaktu albo zadzwonić bezpośrednio na numer 503 975 998. Sprawdzimy, czy Studio Las jest dobrym miejscem dla Twojego celu i ustalimy dogodny termin spotkania wprowadzającego.
+              </div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================================
+         ACT 6 — CALM CONTACT FINALE (#14231B) & FOOTER
+         ==================================================================== -->
+    <section class="contact-finale surface-dark" id="kontakt" aria-labelledby="kontakt-title">
+      <div class="container">
+        <div class="contact-hero-box">
+          <div>
+            <p class="section-eyebrow">Akt 06 · Kontakt · Bez zobowiązań</p>
+            <h2 class="display-h2" id="kontakt-title">
+              Zacznijmy od <span class="editorial-italic">spokojnej</span> rozmowy.
+            </h2>
+            <p class="contact-lead">
+              Rozmowa wstępna trwa ok. 15 minut, odbywa się telefonicznie i kosztuje 0 zł. Ustalimy Twój punkt wyjścia, odpowiem na pytania i sprawdzimy, czy wybrany rytm pasuje do Twojego tygodnia.
+            </p>
+          </div>
+
+          <div class="contact-primary-wrap">
+            <a href="./ankieta-kontakt.html#ankieta" class="btn btn--light contact-primary-cta">
+              <span>Przejdź do 1-minutowego formularza kontaktu</span>
+              <svg class="icon" viewBox="0 0 24 24" aria-hidden="true">
+                <path d="M5 12h14"></path>
+                <path d="m13 6 6 6-6 6"></path>
+              </svg>
+            </a>
+            <p class="contact-primary-note">
+              Krótki formularz (ok. 60 s) pozwala mi dobrze przygotować się do rozmowy i oddzwonić o wybranej porze.
+            </p>
+          </div>
+        </div>
+
+        <div class="direct-channels" aria-label="Bezpośrednie kanały kontaktu">
+          <!-- Phone -->
+          <div class="channel-card">
+            <div>
+              <span class="channel-label">Telefon · Rozmowa wstępna 0 zł</span>
+              <p class="channel-value tabular">503 975 998</p>
+            </div>
+            <div class="channel-actions">
+              <a href="tel:+48503975998" class="channel-pill">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92Z"></path>
+                </svg>
+                <span>Zadzwoń</span>
+              </a>
+              <a href="sms:+48503975998" class="channel-pill">
+                <span>SMS</span>
+              </a>
+              <a href="https://wa.me/48503975998" target="_blank" rel="noopener noreferrer" class="channel-pill">
+                <span>WhatsApp</span>
+              </a>
+              <button type="button" class="channel-pill" data-copy="503 975 998" data-copy-label="Skopiowano numer telefonu">
+                <span>Kopiuj</span>
+              </button>
+            </div>
+          </div>
+
+          <!-- Email -->
+          <div class="channel-card">
+            <div>
+              <span class="channel-label">Wiadomość e-mail</span>
+              <p class="channel-value">trenermedycznywarszawa@gmail.com</p>
+            </div>
+            <div class="channel-actions">
+              <a href="mailto:trenermedycznywarszawa@gmail.com" class="channel-pill">
+                <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+                  <rect x="3" y="5" width="18" height="14" rx="2"></rect>
+                  <path d="m3 7 9 6 9-6"></path>
+                </svg>
+                <span>Napisz</span>
+              </a>
+              <button type="button" class="channel-pill" data-copy="trenermedycznywarszawa@gmail.com" data-copy-label="Skopiowano adres e-mail">
+                <span>Kopiuj</span>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <footer class="site-footer">
+          <div>
+            <span>Damian Krawiec — Studio Las</span>
+            <!-- TODO: NIP/CEIDG przed uruchomieniem -->
+            <span> · ul. Pracka 1J, 05-504 Prace Duże (gm. Tarczyn)</span>
+          </div>
+
+          <div class="footer-legal-links">
+            <button type="button" class="footer-link-btn" data-open-dialog="dialog-rodo">
+              Polityka prywatności (RODO)
+            </button>
+            <button type="button" class="footer-link-btn" data-open-dialog="dialog-usude">
+              Informacje prawne (UŚUDE)
+            </button>
+          </div>
+        </footer>
+      </div>
+    </section>
+  </main>
+
+  <!-- ======================================================================
+       FLOATING MOBILE BOTTOM BAR (56px, BLUR 12px, INTERSECTION + INERT)
+       ====================================================================== -->
+  <aside class="mobile-dock is-hidden" id="mobileDock" aria-label="Szybki kontakt" inert>
+    <a href="./ankieta-kontakt.html#ankieta" class="btn btn--forest mobile-dock__primary">
+      <span>Formularz · 1 min</span>
+    </a>
+    <a href="tel:+48503975998" class="btn mobile-dock__call tabular" aria-label="Zadzwoń pod numer 503 975 998">
+      <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.96.36 1.9.7 2.81a2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.91.34 1.85.58 2.81.7A2 2 0 0 1 22 16.92Z"></path>
+      </svg>
+      <span>Zadzwoń</span>
+    </a>
+  </aside>
+
+  <!-- Accessible Live Toast for Copy Actions -->
+  <div class="toast" id="copyToast" role="status" aria-live="polite" aria-atomic="true"></div>
+
+  <!-- ======================================================================
+       NATIVE <DIALOG> MODALS — RODO & UŚUDE
+       ====================================================================== -->
+  <dialog class="legal-dialog" id="dialog-rodo" aria-labelledby="rodo-title">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <h2 id="rodo-title">Polityka prywatności i informacja RODO</h2>
+        <button type="button" class="dialog-close" data-close-dialog aria-label="Zamknij okno RODO">
+          <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <p>
+          <strong>Administrator danych osobowych:</strong> Damian Krawiec — Studio Las, ul. Pracka 1J, 05-504 Prace Duże (gm. Tarczyn).
+          <!-- TODO: NIP/CEIDG przed uruchomieniem -->
+          Kontakt w sprawach ochrony danych: <span class="tabular">503 975 998</span> oraz trenermedycznywarszawa@gmail.com.
+        </p>
+
+        <h3>1. Zakres i cel przetwarzania</h3>
+        <p>
+          Dane przekazywane dobrowolnie podczas kontaktu telefonicznego, mailowego, przez SMS/WhatsApp lub 1-minutowy formularz kontaktu przetwarzane są wyłącznie w celu udzielenia odpowiedzi, umówienia rozmowy wstępnej (0 zł) lub spotkania wprowadzającego oraz organizacji treningów 1:1 (art. 6 ust. 1 lit. b oraz lit. f RODO).
+        </p>
+
+        <h3>2. Czas przechowywania i odbiorcy</h3>
+        <p>
+          Dane kontaktowe przechowywane są przez okres niezbędny do obsługi zapytania lub prowadzenia współpracy, a następnie przez czas wynikający z obowiązków rachunkowych lub przedawnienia roszczeń. Strona nie korzysta z zewnętrznych narzędzi śledzących, reklamowych ani profilowania marketingowego.
+        </p>
+
+        <h3>3. Twoje prawa</h3>
+        <p>
+          Przysługuje Ci prawo dostępu do swoich danych, ich sprostowania, usunięcia, ograniczenia przetwarzania, przenoszenia danych, wniesienia sprzeciwu oraz wniesienia skargi do Prezesa Urzędu Ochrony Danych Osobowych (UODO).
+        </p>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn btn--forest btn--sm" data-close-dialog>Zamknij</button>
+      </div>
+    </div>
+  </dialog>
+
+  <dialog class="legal-dialog" id="dialog-usude" aria-labelledby="usude-title">
+    <div class="dialog-shell">
+      <div class="dialog-head">
+        <h2 id="usude-title">Informacje prawne (UŚUDE) i charakter usług</h2>
+        <button type="button" class="dialog-close" data-close-dialog aria-label="Zamknij okno informacji prawnych">
+          <svg class="icon icon--sm" viewBox="0 0 24 24" aria-hidden="true">
+            <path d="M18 6 6 18M6 6l12 12"></path>
+          </svg>
+        </button>
+      </div>
+      <div class="dialog-body">
+        <p>
+          <strong>Usługodawca:</strong> Damian Krawiec — Studio Las, ul. Pracka 1J, 05-504 Prace Duże (gm. Tarczyn).
+          <!-- TODO: NIP/CEIDG przed uruchomieniem -->
+          Telefon: <span class="tabular">503 975 998</span>, e-mail: trenermedycznywarszawa@gmail.com.
+        </p>
+
+        <h3>1. Usługi świadczone drogą elektroniczną</h3>
+        <p>
+          Niniejsza strona internetowa ma charakter informacyjny — umożliwia zapoznanie się z zasadami prowadzenia treningów 1:1, cennikiem brutto oraz przejście do formularza kontaktu. Korzystanie ze strony jest bezpłatne i wymaga standardowej, aktualnej przeglądarki internetowej.
+        </p>
+
+        <h3>2. Charakter działalności i granica kompetencji</h3>
+        <p>
+          Studio Las świadczy usługi treningu siłowego i ruchowego 1:1, w tym trening po zakończonej rehabilitacji zgodnie z zaleceniami lekarza lub fizjoterapeuty. <strong>Studio Las nie jest podmiotem leczniczym i nie wykonuje zawodu fizjoterapeuty; w ostrym bólu lub po świeżym urazie pierwszym adresem jest lekarz lub fizjoterapeuta.</strong>
+        </p>
+
+        <h3>3. Warunki cennika i reklamacje</h3>
+        <p>
+          Wszystkie ceny podane na stronie są cenami brutto w złotych polskich (PLN). Cykl 12 tygodni stanowi ramę planowania i przeglądu postępów i nie wiąże się z umowami abonamentowymi opłacanymi z góry. Ewentualne uwagi lub reklamacje dotyczące funkcjonowania strony można zgłaszać na adres trenermedycznywarszawa@gmail.com (odpowiedź w terminie do 14 dni).
+        </p>
+      </div>
+      <div class="dialog-foot">
+        <button type="button" class="btn btn--forest btn--sm" data-close-dialog>Zamknij</button>
+      </div>
+    </div>
+  </dialog>
+
+  <script>
+    (() => {
+      "use strict";
+
+      const prefersReducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+      const withViewTransition = (updateFn) => {
+        if (typeof document.startViewTransition === "function" && !prefersReducedMotion.matches) {
+          document.startViewTransition(updateFn);
+        } else {
+          updateFn();
+        }
+      };
+
+      /* ====================================================================
+         1. FLOATING HUD SCROLL ADAPTATION & MOBILE MENU DRAWER
+         ==================================================================== */
+      const hudHeader = document.getElementById("hudHeader");
+      const heroSection = document.getElementById("start");
+      const mobileMenuToggle = document.getElementById("mobileMenuToggle");
+      const mobileMenuDrawer = document.getElementById("mobileMenuDrawer");
+
+      if (hudHeader && heroSection && "IntersectionObserver" in window) {
+        const hudObserver = new IntersectionObserver(
+          (entries) => {
+            const entry = entries[0];
+            hudHeader.classList.toggle("is-scrolled", !entry.isIntersecting);
+          },
+          { rootMargin: "-90px 0px 0px 0px", threshold: 0.05 }
+        );
+        hudObserver.observe(heroSection);
+      }
+
+      if (mobileMenuToggle && mobileMenuDrawer) {
+        const closeDrawer = () => {
+          mobileMenuToggle.setAttribute("aria-expanded", "false");
+          mobileMenuDrawer.hidden = true;
+        };
+
+        mobileMenuToggle.addEventListener("click", () => {
+          const isOpen = mobileMenuToggle.getAttribute("aria-expanded") === "true";
+          mobileMenuToggle.setAttribute("aria-expanded", String(!isOpen));
+          mobileMenuDrawer.hidden = isOpen;
+        });
+
+        mobileMenuDrawer.querySelectorAll("a").forEach((link) => {
+          link.addEventListener("click", closeDrawer);
+        });
+
+        document.addEventListener("keydown", (event) => {
+          if (event.key === "Escape" && !mobileMenuDrawer.hidden) {
+            closeDrawer();
+            mobileMenuToggle.focus();
+          }
+        });
+      }
+
+      /* ====================================================================
+         2. ACT 2 — BENTO STARTING-POINT SELECTOR (VIEW TRANSITIONS API)
+         ==================================================================== */
+      const profileData = {
+        przerwa: {
+          headline: "Bezpieczny powrót do regularności — bez zakwasów na tydzień",
+          copy: "Gdy ostatni regularny trening był kilka lat temu, najgorszym pomysłem jest ostry start. Budujemy tolerancję na obciążenie krok po kroku, w spokojnym tempie i przy pełnej uwadze 1:1.",
+          points: [
+            "Opanowanie podstawowych wzorców siłowych bez pośpiechu",
+            "Dobór ciężaru, po którym następnego dnia normalnie pracujesz",
+            "Prosty, 10-minutowy zestaw domowy podtrzymujący nawyk"
+          ],
+          note: "W Studio Las nie gonimy tętna dla samego zmęczenia. Celem jest trwały powrót do sprawności i pewności w ruchu."
+        },
+        siedzaca: {
+          headline: "Przeciwwaga dla 8–10 godzin przy biurku i za kierownicą",
+          copy: "Wielogodzinne siedzenie odbiera zakres w biodrach, barkach i odcinku piersiowym, a osłabia mięśnie odpowiadające za stabilność. Wzmacniamy dokładnie te obszary, które dźwigają Twój dzień.",
+          points: [
+            "Ruchomość bioder, klatki piersiowej i obręczy barkowej połączona z siłą",
+            "Wzmocnienie pleców, pośladków i tułowia pod realne obciążenia dnia",
+            "Krótki, 10-minutowy zestaw do wykonania między spotkaniami w domu"
+          ],
+          note: "Zamiast przypadkowego rozciągania budujemy silne, sprawne ciało, które dobrze znosi wymagający tydzień pracy."
+        },
+        rehabilitacja: {
+          headline: "Trening po zakończonej rehabilitacji zgodnie z zaleceniami",
+          copy: "Zakończyłeś pracę ze specjalistą i chcesz bezpiecznie wrócić do normalnego obciążenia oraz siły w codziennych czynnościach? Układamy spokojny, stopniowy plan zgodny z otrzymanymi wytycznymi.",
+          points: [
+            "Uwzględnienie pisemnych lub ustnych zaleceń lekarza lub fizjoterapeuty",
+            "Kontrolowane, stopniowe zwiększanie obciążeń bez ryzykownych skoków",
+            "Stały przegląd odczuć z sesji na sesję w warunkach 1:1"
+          ],
+          note: "Przypomnienie: Studio Las nie jest podmiotem leczniczym i nie wykonuje zawodu fizjoterapeuty; w ostrym bólu lub po świeżym urazie pierwszym adresem jest lekarz lub fizjoterapeuta."
+        },
+        sila: {
+          headline: "Sprawność i rezerwa siłowa 40+/50+ na kolejne dekady",
+          copy: "Po 40. roku życia trening siłowy staje się najważniejszą inwestycją w samodzielność, gęstość tkanek i codzienną energię. Pracujemy mądrze, ciężarem dobranym precyzyjnie do techniki.",
+          points: [
+            "Planowana progresja siłowa mierzona w cyklach T01 → T06 → T12",
+            "Równowaga między budowaniem siły, zakresem ruchu a regeneracją",
+            "Spokojna praca bez presji grupowych zajęć i przypadkowych obwodów"
+          ],
+          note: "Konsekwentny, dobrze zaplanowany trening 1–2 razy w tygodniu daje wyraźną różnicę w sile i komforcie codziennego ruchu."
+        }
+      };
+
+      const profileTabs = Array.from(document.querySelectorAll('[role="tab"][data-profile]'));
+      const profilePanel = document.getElementById("panel-punkt-wyjscia");
+      const profileTitle = document.getElementById("profileTitle");
+      const profileCopy = document.getElementById("profileCopy");
+      const profilePoints = document.getElementById("profilePoints");
+      const profileNote = document.getElementById("profileNote");
+
+      const selectProfile = (key, focusTab = false) => {
+        const data = profileData[key];
+        if (!data || !profilePanel) return;
+
+        withViewTransition(() => {
+          profileTabs.forEach((tab) => {
+            const active = tab.dataset.profile === key;
+            tab.setAttribute("aria-selected", String(active));
+            tab.tabIndex = active ? 0 : -1;
+            if (active) {
+              profilePanel.setAttribute("aria-labelledby", tab.id);
+              if (focusTab) tab.focus();
+            }
+          });
+
+          profileTitle.textContent = data.headline;
+          profileCopy.textContent = data.copy;
+          profilePoints.innerHTML = data.points.map((item) => `<li>${item}</li>`).join("");
+          profileNote.textContent = data.note;
+        });
+      };
+
+      profileTabs.forEach((tab, idx) => {
+        tab.addEventListener("click", () => selectProfile(tab.dataset.profile));
+        tab.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+            event.preventDefault();
+            const dir = event.key === "ArrowRight" ? 1 : -1;
+            const next = profileTabs[(idx + dir + profileTabs.length) % profileTabs.length];
+            selectProfile(next.dataset.profile, true);
+          }
+        });
+      });
+
+      /* ====================================================================
+         3. ACT 3 — INTERACTIVE RHYTHM PLANNER (1x vs 2x)
+         ==================================================================== */
+      const rhythmConfigs = {
+        1: {
+          monthly: "1 000 zł",
+          monthlySub: "brutto / 4 tygodnie (4 sesje po 60 min)",
+          sessions: "12 sesji",
+          cycleTotal: "3 000 zł brutto",
+          caption: "Rytm 1× w tygodniu sprawdza się przy napiętym kalendarzu zawodowym lub jako solidna baza łączona z aktywnością własną.",
+          days: [
+            { name: "PN", type: "rest", title: "Codzienny ruch", time: "Spacer / lekka aktywność" },
+            { name: "WT", type: "studio", title: "Studio Las 1:1", time: "60 min · sala na wyłączność" },
+            { name: "ŚR", type: "rest", title: "Odpoczynek", time: "Regeneracja tkanek" },
+            { name: "CZ", type: "home", title: "Zestaw domowy", time: "10 min · ruchomość" },
+            { name: "PT", type: "rest", title: "Codzienny ruch", time: "Naturalny rytm dnia" },
+            { name: "SO", type: "home", title: "Zestaw domowy", time: "10 min + spacer" },
+            { name: "ND", type: "rest", title: "Spokojny dzień", time: "Pełny luz" }
+          ]
+        },
+        2: {
+          monthly: "2 000 zł",
+          monthlySub: "brutto / 4 tygodnie (8 sesji po 60 min)",
+          sessions: "24 sesje",
+          cycleTotal: "6 000 zł brutto",
+          caption: "Rytm 2× w tygodniu zapewnia wyraźnie szybszą adaptację siłową i pełne prowadzenie obu głównych jednostek w Studio Las.",
+          days: [
+            { name: "PN", type: "studio", title: "Studio Las 1:1", time: "60 min · sesja A" },
+            { name: "WT", type: "rest", title: "Odpoczynek", time: "Regeneracja" },
+            { name: "ŚR", type: "home", title: "Zestaw domowy", time: "10 min · mobilność" },
+            { name: "CZ", type: "studio", title: "Studio Las 1:1", time: "60 min · sesja B" },
+            { name: "PT", type: "rest", title: "Odpoczynek", time: "Regeneracja tkanek" },
+            { name: "SO", type: "home", title: "Zestaw domowy", time: "10 min + spacer w lesie" },
+            { name: "ND", type: "rest", title: "Spokojny dzień", time: "Pełny luz" }
+          ]
+        }
+      };
+
+      const rhythmBtns = Array.from(document.querySelectorAll("[data-rhythm]"));
+      const weekGrid = document.getElementById("weekGrid");
+      const plannerMonthly = document.getElementById("plannerMonthly");
+      const plannerMonthlySub = document.getElementById("plannerMonthlySub");
+      const plannerSessions = document.getElementById("plannerSessions");
+      const plannerCycleTotal = document.getElementById("plannerCycleTotal");
+      const rhythmCaption = document.getElementById("rhythmCaption");
+
+      const updateRhythm = (rate) => {
+        const cfg = rhythmConfigs[rate];
+        if (!cfg || !weekGrid) return;
+
+        withViewTransition(() => {
+          rhythmBtns.forEach((btn) => {
+            btn.setAttribute("aria-pressed", String(btn.dataset.rhythm === String(rate)));
+          });
+
+          weekGrid.innerHTML = cfg.days
+            .map((day) => {
+              const cls =
+                day.type === "studio"
+                  ? "day-cell day-cell--studio"
+                  : day.type === "home"
+                  ? "day-cell day-cell--home"
+                  : "day-cell";
+              return `
+                <div class="${cls}">
+                  <span class="day-cell__name">${day.name}</span>
+                  <div class="day-cell__content">
+                    <span class="day-cell__title">${day.title}</span>
+                    <span class="day-cell__time tabular">${day.time}</span>
+                  </div>
+                </div>`;
+            })
+            .join("");
+
+          plannerMonthly.textContent = cfg.monthly;
+          plannerMonthlySub.textContent = cfg.monthlySub;
+          plannerSessions.textContent = cfg.sessions;
+          plannerCycleTotal.textContent = cfg.cycleTotal;
+          rhythmCaption.textContent = cfg.caption;
+        });
+      };
+
+      rhythmBtns.forEach((btn) => {
+        btn.addEventListener("click", () => updateRhythm(btn.dataset.rhythm));
+      });
+
+      /* ====================================================================
+         4. ACT 3 — 3-PHASE FIRST MEETING STEPPER (220 zł)
+         ==================================================================== */
+      const stepData = {
+        1: {
+          title: "Spokojna rozmowa przy stole — bez pośpiechu i bez formularza w biegu",
+          desc: "Zaczynamy od herbaty lub wody przy stole. Omawiamy Twoją dotychczasową aktywność, codzienny tryb pracy, realną ilość czasu w tygodniu oraz ewentualne zalecenia od lekarza lub fizjoterapeuty, z którymi przychodzisz.",
+          label: "Po co ten etap?",
+          highlight: "Żeby plan pasował do Twojego kalendarza, snu i regeneracji — a nie odwrotnie. Jeśli z rozmowy wyniknie, że najpierw warto skonsultować się z lekarzem lub fizjoterapeutą, mówię o tym wprost."
+        },
+        2: {
+          title: "Spokojne sprawdzenie ruchu na pustej sali — w Twoim tempie",
+          desc: "Przechodzimy na pustą salę i wykonujemy kilka podstawowych, komfortowych wzorców ruchowych i siłowych. Bez testów wydolnościowych do granic możliwości — sprawdzamy zakresy, kontrolę i odczucia pod lekkim obciążeniem.",
+          label: "Jak wygląda ta część?",
+          highlight: "Trenujesz w wygodnym stroju, wyłącznie 1:1. Każde ćwiczenie omawiamy na bieżąco, żebyś dokładnie czuł, jak bezpiecznie pracować ciałem i oddechem."
+        },
+        3: {
+          title: "Jasne podsumowanie i konkretny plan na kolejne tygodnie",
+          desc: "Zamykamy spotkanie konkretną propozycją planu: czy lepiej sprawdzi się rytm 1× czy 2× w tygodniu, na jakich 2–3 priorytetach skupimy się w pierwszym bloku i kiedy zrobimy pierwszy przegląd postępów.",
+          label: "Zero presji sprzedaży",
+          highlight: "Po spotkaniu dostajesz pisemne podsumowanie i 10-minutowy zestaw domowy. Decyzję o rozpoczęciu cyklu 12 tygodni podejmujesz na spokojnie."
+        }
+      };
+
+      const stepTabs = Array.from(document.querySelectorAll('[role="tab"][data-step]'));
+      const stepPanel = document.getElementById("step-panel");
+      const stepTitle = document.getElementById("stepTitle");
+      const stepDesc = document.getElementById("stepDesc");
+      const stepHighlightLabel = document.getElementById("stepHighlightLabel");
+      const stepHighlightText = document.getElementById("stepHighlightText");
+
+      const selectStep = (stepNum, focusTab = false) => {
+        const data = stepData[stepNum];
+        if (!data || !stepPanel) return;
+
+        withViewTransition(() => {
+          stepTabs.forEach((tab) => {
+            const active = tab.dataset.step === String(stepNum);
+            tab.setAttribute("aria-selected", String(active));
+            tab.tabIndex = active ? 0 : -1;
+            if (active) {
+              stepPanel.setAttribute("aria-labelledby", tab.id);
+              if (focusTab) tab.focus();
+            }
+          });
+
+          stepTitle.textContent = data.title;
+          stepDesc.textContent = data.desc;
+          stepHighlightLabel.textContent = data.label;
+          stepHighlightText.textContent = data.highlight;
+        });
+      };
+
+      stepTabs.forEach((tab, idx) => {
+        tab.addEventListener("click", () => selectStep(tab.dataset.step));
+        tab.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowRight" || event.key === "ArrowLeft") {
+            event.preventDefault();
+            const dir = event.key === "ArrowRight" ? 1 : -1;
+            const next = stepTabs[(idx + dir + stepTabs.length) % stepTabs.length];
+            selectStep(next.dataset.step, true);
+          }
+        });
+      });
+
+      /* ====================================================================
+         5. ACT 4 — TACTILE SCROLL-SNAP GALLERY (COUNTER + PROGRESS + ARROWS)
+         ==================================================================== */
+      const galleryTrack = document.getElementById("galleryTrack");
+      const galleryCounter = document.getElementById("galleryCounter");
+      const galleryProgress = document.getElementById("galleryProgress");
+      const galleryPrev = document.getElementById("galleryPrev");
+      const galleryNext = document.getElementById("galleryNext");
+
+      if (galleryTrack) {
+        const slides = Array.from(galleryTrack.querySelectorAll(".gallery-slide"));
+        const totalSlides = slides.length;
+        let currentSlideIndex = 0;
+        let rafPending = false;
+
+        const syncGalleryUI = (index) => {
+          currentSlideIndex = Math.max(0, Math.min(totalSlides - 1, index));
+          const displayNum = String(currentSlideIndex + 1).padStart(2, "0");
+          const totalNum = String(totalSlides).padStart(2, "0");
+
+          if (galleryCounter) {
+            galleryCounter.innerHTML = `${displayNum} <span>/ ${totalNum}</span>`;
+          }
+          if (galleryProgress) {
+            galleryProgress.style.width = `${((currentSlideIndex + 1) / totalSlides) * 100}%`;
+          }
+          if (galleryPrev) galleryPrev.disabled = currentSlideIndex === 0;
+          if (galleryNext) galleryNext.disabled = currentSlideIndex === totalSlides - 1;
+        };
+
+        const computeClosestSlide = () => {
+          rafPending = false;
+          const trackLeft = galleryTrack.getBoundingClientRect().left;
+          let closestIdx = 0;
+          let smallestDist = Infinity;
+
+          slides.forEach((slide, idx) => {
+            const dist = Math.abs(slide.getBoundingClientRect().left - trackLeft);
+            if (dist < smallestDist) {
+              smallestDist = dist;
+              closestIdx = idx;
+            }
+          });
+          syncGalleryUI(closestIdx);
+        };
+
+        galleryTrack.addEventListener("scroll", () => {
+          if (!rafPending) {
+            rafPending = true;
+            requestAnimationFrame(computeClosestSlide);
+          }
+        }, { passive: true });
+
+        const scrollToSlide = (targetIdx) => {
+          const clamped = Math.max(0, Math.min(totalSlides - 1, targetIdx));
+          const targetSlide = slides[clamped];
+          if (!targetSlide) return;
+          targetSlide.scrollIntoView({
+            behavior: prefersReducedMotion.matches ? "auto" : "smooth",
+            block: "nearest",
+            inline: "start"
+          });
+          syncGalleryUI(clamped);
+        };
+
+        galleryPrev?.addEventListener("click", () => scrollToSlide(currentSlideIndex - 1));
+        galleryNext?.addEventListener("click", () => scrollToSlide(currentSlideIndex + 1));
+
+        galleryTrack.addEventListener("keydown", (event) => {
+          if (event.key === "ArrowRight") {
+            event.preventDefault();
+            scrollToSlide(currentSlideIndex + 1);
+          } else if (event.key === "ArrowLeft") {
+            event.preventDefault();
+            scrollToSlide(currentSlideIndex - 1);
+          }
+        });
+
+        // Subtle pointer drag support for desktop mouse users
+        let isDragging = false;
+        let dragStartX = 0;
+        let dragStartScroll = 0;
+
+        galleryTrack.addEventListener("pointerdown", (event) => {
+          if (event.pointerType !== "mouse") return;
+          isDragging = true;
+          dragStartX = event.clientX;
+          dragStartScroll = galleryTrack.scrollLeft;
+        });
+
+        window.addEventListener("pointermove", (event) => {
+          if (!isDragging) return;
+          const delta = event.clientX - dragStartX;
+          galleryTrack.scrollLeft = dragStartScroll - delta;
+        });
+
+        window.addEventListener("pointerup", () => {
+          isDragging = false;
+        });
+
+        syncGalleryUI(0);
+      }
+
+      /* ====================================================================
+         6. COPY TO CLIPBOARD + ACCESSIBLE TOAST
+         ==================================================================== */
+      const copyToast = document.getElementById("copyToast");
+      let toastTimer = null;
+
+      const showToast = (message) => {
+        if (!copyToast) return;
+        copyToast.textContent = message;
+        copyToast.classList.add("is-visible");
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => {
+          copyToast.classList.remove("is-visible");
+        }, 2400);
+      };
+
+      const copyText = async (text) => {
+        if (navigator.clipboard && window.isSecureContext) {
+          await navigator.clipboard.writeText(text);
+          return true;
+        }
+        const helper = document.createElement("textarea");
+        helper.value = text;
+        helper.setAttribute("readonly", "");
+        helper.style.position = "fixed";
+        helper.style.opacity = "0";
+        document.body.appendChild(helper);
+        helper.select();
+        const ok = document.execCommand("copy");
+        document.body.removeChild(helper);
+        return ok;
+      };
+
+      document.querySelectorAll("[data-copy]").forEach((button) => {
+        button.addEventListener("click", async () => {
+          const value = button.dataset.copy || "";
+          const toastMsg = button.dataset.copyLabel || "Skopiowano";
+          try {
+            await copyText(value);
+            showToast(toastMsg);
+          } catch {
+            showToast("Nie udało się skopiować — zaznacz tekst ręcznie");
+          }
+        });
+      });
+
+      /* ====================================================================
+         7. FLOATING MOBILE BOTTOM BAR (INTERSECTIONOBSERVER + INERT)
+         ==================================================================== */
+      const mobileDock = document.getElementById("mobileDock");
+      const contactSection = document.getElementById("kontakt");
+
+      if (mobileDock && heroSection && contactSection && "IntersectionObserver" in window) {
+        let heroVisible = true;
+        let contactVisible = false;
+
+        const updateDockVisibility = () => {
+          const shouldHide = heroVisible || contactVisible;
+          mobileDock.classList.toggle("is-hidden", shouldHide);
+          mobileDock.inert = shouldHide;
+        };
+
+        const dockObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.target === heroSection) {
+                heroVisible = entry.isIntersecting;
+              } else if (entry.target === contactSection) {
+                contactVisible = entry.isIntersecting;
+              }
+            });
+            updateDockVisibility();
+          },
+          { threshold: 0.12 }
+        );
+
+        dockObserver.observe(heroSection);
+        dockObserver.observe(contactSection);
+      }
+
+      /* ====================================================================
+         8. NATIVE <DIALOG> MODALS (RODO & UŚUDE)
+         ==================================================================== */
+      document.querySelectorAll("[data-open-dialog]").forEach((trigger) => {
+        trigger.addEventListener("click", () => {
+          const dialogId = trigger.getAttribute("data-open-dialog");
+          const dialog = dialogId ? document.getElementById(dialogId) : null;
+          if (dialog && typeof dialog.showModal === "function") {
+            dialog.showModal();
+          }
+        });
+      });
+
+      document.querySelectorAll("dialog.legal-dialog").forEach((dialog) => {
+        dialog.querySelectorAll("[data-close-dialog]").forEach((closeBtn) => {
+          closeBtn.addEventListener("click", () => dialog.close());
+        });
+
+        dialog.addEventListener("click", (event) => {
+          const rect = dialog.getBoundingClientRect();
+          const inside =
+            event.clientX >= rect.left &&
+            event.clientX <= rect.right &&
+            event.clientY >= rect.top &&
+            event.clientY <= rect.bottom;
+          if (!inside) {
+            dialog.close();
+          }
+        });
+      });
+    })();
+  </script>
+</body>
+</html>
