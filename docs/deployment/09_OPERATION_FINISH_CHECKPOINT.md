@@ -28,9 +28,15 @@ Dostęp odczytowy do Netlify i obu aktywnych baz oraz uprawnienie zapisu w repoz
 
 Błąd z #114 w `tools/client-access-admin.js`: niedostępny lub błędny status nie włącza już zaproszenia ani cofnięcia dostępu. Ponowny udany odczyt przywraca właściwe akcje. Regresja obejmuje odmowę, błąd odświeżenia po aktywnym dostępie, brak konta, niedostępnego klienta i nieoczekiwaną odpowiedź. Test Chromium używa odpowiedzi syntetycznych, a wszystkie żądania poza localhost przechwytuje lokalnie. Przechodzą również trzy istniejące scenariusze sesji.
 
+## Kandydat Etapu 01B
+
+Gałąź QA `codex/operation-finish-01b-qa` łączy wersję wydaniową, #118 i narzędzia #115. Scenariusz pierwszej wskazówki wymaga klienta bez wcześniejszej PWD ani publikacji. Sprawdza odmowę przy braku decyzji i po odroczeniu, następnie zapis szkicu, zatwierdzenie i publikację wersji 1 po nowej decyzji o dalszym prowadzeniu. Test działa przed scenariuszami, które tworzą kolejne wskazówki. Testy kolejki bez sieci korzystają z własnych danych, dzięki czemu bramka rzeczywistych zapisów obowiązuje nadal.
+
+Na pustym PostgreSQL 17.12 odtworzono 64 migracje, z wymaganą zmianą stanu pre-PWD wykonaną wyłącznie na pustej bazie między v3.2 i v3.3. Istniejący `supabase/tests/first_guidance_pwd_gate.sql` przeszedł w jednej sesji z transakcyjnymi danymi syntetycznymi. Po rollback liczby klientów, kont i planów wyniosły zero. Próba używa lokalnego odpowiednika schematu Auth i nie obejmuje usługi Auth, SMTP ani testu współbieżnego.
+
 ## Wznowienie
 
-1. Najpierw przygotować wspólny kandydat aplikacji i migracji 01B w izolowanym QA. `git fetch origin && git fetch origin pull/115/head` pobiera istniejące narzędzia QA. Dla kandydata sprawdzić zgodność z gałęzią poprawki i uruchomić `node scripts/test_first_guidance_gate.mjs` oraz istniejące testy trybu QA z #115.
+1. Pobrać gałąź `codex/operation-finish-01b-qa`. Podgląd uruchamia `node scripts/start_isolated_qa_preview.mjs` lub istniejący launcher PowerShell. Test publikacji wymaga odrębnego celu z czystą kartą syntetyczną oraz dowodem odzyskania po przerwaniu, powiązanym z konkretnym uruchomieniem. Zachować dotychczasowy materiał w trwałym QA.
 2. Najważniejszy test odbiorczy to zaproszenie dla **nowej** syntetycznej tożsamości, rejestracja i droga Kontakt → PWD → pierwsza wskazówka, z pozytywnym przebiegiem i odmową po decyzji odraczającej. Zachować dotychczasowe dane QA i bramkę E2E. Odtworzenie po przerwaniu testu w udokumentowanym, czystym celu jest nadal otwarte.
 3. Przed wydaniem potwierdzić stan kwalifikowanego przeglądu prywatności dla pre-PWD, procedurę odzyskania oraz kolejność wydania migracji i aplikacji. Wymagana jest osobna zgoda na produkcję po testach odbiorczych.
 

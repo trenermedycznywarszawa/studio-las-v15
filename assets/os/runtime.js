@@ -19,7 +19,7 @@ const CANONICAL_PRODUCTION_REF = "ufcumhbnuyernuwepcij";
 const CANONICAL_STAGING_REF = "ulauyoqjoetjqktegeuq";
 
 export function runtimeEnvironmentLabel(mode) {
-  const label = { staging: "WERSJA TESTOWA", production: "PRODUKCJA" }[mode];
+  const label = { staging: "WERSJA TESTOWA", production: "PRODUKCJA", qa: "IZOLOWANE QA" }[mode];
   if (!label) {
     throw new RuntimeConfigurationError("Nieobsługiwane środowisko nie może zostać oznaczone jako aktywne.");
   }
@@ -49,13 +49,24 @@ export function getRuntimeConfig() {
     throw new RuntimeConfigurationError("Brak prawidłowego klucza publicznego Supabase.");
   }
 
-  if (mode !== "production" && mode !== "staging") {
-    throw new RuntimeConfigurationError(
-      "Nieobsługiwane środowisko aplikacji. Wybierz wersję produkcyjną albo testową."
-    );
+  if (mode !== "production" && mode !== "staging" && mode !== "qa") {
+    throw new RuntimeConfigurationError("Nieobsługiwane środowisko aplikacji.");
   }
 
-  const expectedRef = mode === "production" ? CANONICAL_PRODUCTION_REF : CANONICAL_STAGING_REF;
+  // QA is only a local preview of an independently isolated disposable backend.
+  // Normal production/staging remain pinned to their exact canonical refs.
+  if (mode === "qa") {
+    const hostname = String(window.location?.hostname || "").toLowerCase();
+    if (!["localhost", "127.0.0.1", "::1", "[::1]"].includes(hostname)
+      || !/^[a-z][a-z0-9-]{7,39}$/.test(projectRef)
+      || [CANONICAL_PRODUCTION_REF, CANONICAL_STAGING_REF].includes(projectRef)
+      || String(raw.supabase.url || "") !== `https://${projectRef}.supabase.co`) {
+      throw new RuntimeConfigurationError("Izolowane QA wymaga lokalnego podglądu i odrębnego projektu Supabase.");
+    }
+  }
+
+  const expectedRef = mode === "production" ? CANONICAL_PRODUCTION_REF
+    : mode === "staging" ? CANONICAL_STAGING_REF : projectRef;
   if (projectRef !== expectedRef) {
     const environment = mode === "production" ? "wersji produkcyjnej" : "wersji testowej";
     throw new RuntimeConfigurationError(

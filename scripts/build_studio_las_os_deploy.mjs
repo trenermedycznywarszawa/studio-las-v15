@@ -2,6 +2,7 @@ import { execFileSync } from "node:child_process";
 import { createHash } from "node:crypto";
 import { cp, mkdir, readFile, readdir, rm, writeFile } from "node:fs/promises";
 import { dirname, join, relative, resolve, sep } from "node:path";
+import { isolatedQaTarget } from "./e2e_qa_target.mjs";
 
 const root = resolve(process.cwd());
 const output = join(root, ".deploy", "studio-las-os");
@@ -54,6 +55,9 @@ for (const path of directories) {
 }
 
 const staging = process.argv.includes("--staging");
+const qa = process.argv.includes("--qa");
+if (staging && qa) throw new Error("BLOCKED: --qa and --staging are mutually exclusive");
+const qaTarget = qa ? isolatedQaTarget() : null;
 if (staging) {
   const config = {mode: "staging", supabase: {
     projectRef: "ulauyoqjoetjqktegeuq", url: "https://ulauyoqjoetjqktegeuq.supabase.co",
@@ -61,14 +65,21 @@ if (staging) {
   }};
   await writeFile(join(output, "studio-las-config.js"), `window.STUDIO_LAS_CONFIG = Object.freeze(${JSON.stringify(config, null, 2)});\n`);
 }
+if (qa) {
+  const config = { mode: "qa", supabase: {
+    projectRef: qaTarget.ref, url: qaTarget.origin, publishableKey: qaTarget.key
+  }};
+  await writeFile(join(output, "studio-las-config.js"), `window.STUDIO_LAS_CONFIG = Object.freeze(${JSON.stringify(config, null, 2)});\n`);
+}
 const appHtml = await readFile(join(root, "studio-las-os.html"), "utf8");
 await writeFile(join(output, "index.html"), appHtml, "utf8");
-if (staging) {
+if (staging || qa) {
+  const backend = qa ? qaTarget.origin : "https://ulauyoqjoetjqktegeuq.supabase.co";
   for (const file of ["index.html", "studio-las-os.html", "tools/client-access-admin.html"]) {
     const path = join(output, file);
     const html = (await readFile(path, "utf8")).replaceAll(
       "connect-src https://ufcumhbnuyernuwepcij.supabase.co",
-      "connect-src https://ulauyoqjoetjqktegeuq.supabase.co");
+      `connect-src ${backend}`);
     await writeFile(path, html, "utf8");
   }
 }
@@ -96,7 +107,7 @@ const manifest = {
   sourceSha: git("rev-parse", "HEAD"),
   sourceBranch: git("branch", "--show-current"),
   sourceDirty: Boolean(git("status", "--porcelain", "--untracked-files=normal")),
-  environment: staging ? "staging" : "source-config",
+  environment: qa ? "isolated-qa-preview" : staging ? "staging" : "source-config",
   artifactSha256: sha256(JSON.stringify(hashes)),
   artifactHashDefinition: "SHA256 of JSON file-hash map in sorted absolute-path order; excludes this manifest",
   filesSha256: hashes,

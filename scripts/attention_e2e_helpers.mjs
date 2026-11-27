@@ -9,14 +9,12 @@ import {
 } from "../assets/os/trainer-attention-snapshot.js";
 import { freshTotpCode } from "./e2e_trainer_attention_staging.mjs";
 import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
-const origin = "https://ulauyoqjoetjqktegeuq.supabase.co";
+import { isolatedQaTarget } from "./e2e_qa_target.mjs";
 const url = process.env.STUDIO_LAS_E2E_URL;
-const key = process.env.STUDIO_LAS_STAGING_PUBLISHABLE_KEY;
 const dir = process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
 export async function api(path, token, method="GET", body) {
- if (String(method || "GET").toUpperCase() !== "GET" && String(method || "GET").toUpperCase() !== "HEAD") {
-  assertE2eSafetyGate(process.env);
- }
+ assertE2eSafetyGate(process.env);
+ const { origin, key } = isolatedQaTarget();
  const r=await fetch(`${origin}${path}`,{method,headers:{apikey:key,Authorization:`Bearer ${token}`,"Content-Type":"application/json",Prefer:"return=representation"},body:body===undefined?undefined:JSON.stringify(body)});
  const text=await r.text(); assert.ok(r.ok,`${method} ${path.split("?")[0]}: ${r.status} ${text.slice(0,200)}`); return text?JSON.parse(text):null;
 }
@@ -31,7 +29,7 @@ export async function login(page,email,password,trainer=false) {
   await page.getByLabel("Sześciocyfrowy kod jednorazowy").fill(await freshTotpCode(process.env.STUDIO_LAS_QA_TOTP_SECRET));
   await page.getByRole("button",{name:"Potwierdź kod",exact:true}).click();
   await page.getByRole("heading",{name:"Uwaga trenera",exact:true}).waitFor();
- } else await page.getByRole("button",{name:"Mam pytanie / potrzebuję kontaktu",exact:true}).first().waitFor();
+ } else await page.getByRole("heading",{name:/^Dzień dobry, .+/}).waitFor();
  const session=await page.evaluate(()=>JSON.parse(sessionStorage.getItem("studio-las-auth-session")));
  return session.access_token;
 }
@@ -44,13 +42,13 @@ export function questionnaireBacklogKeys(assignments, reviews) {
   return signalInstanceKey({id:"questionnaire-submitted",source:"questionnaire",sourceId:row.id,sourceDate:row.submitted_at,sourceRevision:row.submitted_at});
  }).filter(key=>{const review=reviewed.get(key);return !review || (review.outcome==="contact_required"&&!review.contact_resolved_at);}).sort();
 }
-export async function questionnaireBacklog(token, filterClientId = null) {
+export async function questionnaireBacklog(token, filterClientId = null, read = path => api(path,token)) {
  // Read the current trainer profile through the same auth_user_id projection as
  // the staging verifier. Decoding sub is only query construction, not JWT trust:
  // the server still authorizes every GET with the supplied token and RLS.
  const subject=JSON.parse(Buffer.from(String(token).split(".")[1] || "", "base64url").toString("utf8")).sub;
  assert.match(String(subject || ""), /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i, "Trainer token subject required");
- const profiles=await api(`/rest/v1/profiles?${new URLSearchParams({auth_user_id:`eq.${subject}`,select:"id,role",limit:"2"})}`,token);
+ const profiles=await read(`/rest/v1/profiles?${new URLSearchParams({auth_user_id:`eq.${subject}`,select:"id,role",limit:"2"})}`);
  assert.ok(Array.isArray(profiles) && profiles.length===1,"Exactly one current trainer profile required");
  const profile=profiles[0];
  assert.equal(profile.role,"trainer","Questionnaire baseline requires a trainer profile");
@@ -61,7 +59,7 @@ export async function questionnaireBacklog(token, filterClientId = null) {
   const data=await collectTrainerAttentionPages(({offset,limit})=>{
    const query={...contract.predicates,select:contract.select,order:contract.order,offset:String(offset),limit:String(limit)};
    if(filterClientId) query[source==="clients"?"id":"client_id"]=`eq.${filterClientId}`;
-   return api(`/rest/v1/${contract.table}?${new URLSearchParams(query)}`,token);
+   return read(`/rest/v1/${contract.table}?${new URLSearchParams(query)}`);
   });
   return [source,{data,error:null}];
  }));
