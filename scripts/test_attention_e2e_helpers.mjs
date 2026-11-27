@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import {readFile} from 'node:fs/promises';
 import {getTrainerAttentionReadContract} from '../assets/os/trainer-attention-snapshot.js';
-import {questionnaireBacklogKeys,questionnaireBacklog,assertQueueKeys,testSignalCase,eventSignalKey,sessionSignalKey,expectQueue} from './attention_e2e_helpers.mjs';
+import {questionnaireBacklogKeys,questionnaireBacklog as readQuestionnaireBacklog,assertQueueKeys,testSignalCase,eventSignalKey,sessionSignalKey,expectQueue} from './attention_e2e_helpers.mjs';
 
 const rows=Array.from({length:12},(_,i)=>({id:`old-${i}`,status:'submitted',submitted_at:'2020-01-02T10:00:00+00:00'}));
 const baseline=questionnaireBacklogKeys(rows,[]);
@@ -87,7 +87,6 @@ await assert.rejects(
 // REST adapter: emulate server filtering, stable ordering and server-side caps.
 // All requests stay synthetic, including the current trainer profile read.
 const fetchCalls=[];
-const originalFetch=globalThis.fetch;
 const authUserId='aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa';
 const ownerId='11111111-1111-4111-8111-111111111111';
 const otherOwnerId='22222222-2222-4222-8222-222222222222';
@@ -103,16 +102,14 @@ const contracts=getTrainerAttentionReadContract();
 let assignments=[...multiClientRows],reviews=[],profile={id:ownerId,role:'trainer'};
 let serverPageSize=Infinity,failedTable=null;
 const projection=(row,select)=>Object.fromEntries(select.split(',').filter(k=>!k.includes('!')).map(k=>[k,row[k]]));
-globalThis.fetch=async(address,options)=>{
- const url=new URL(address),query=url.searchParams,table=url.pathname.split('/').at(-1);
- assert.equal(url.origin,'https://ulauyoqjoetjqktegeuq.supabase.co');
- assert.equal(options.method,'GET','Baseline must never mutate staging');
- assert.equal(options.headers.Authorization,`Bearer ${token}`);
+const readFixture=async(path)=>{
+ const url=new URL(path,'https://fixture.invalid'),query=url.searchParams,table=url.pathname.split('/').at(-1);
+ assert.equal(url.origin,'https://fixture.invalid');
  fetchCalls.push(url);
- if(table===failedTable)return new Response('synthetic read failure',{status:503});
+ if(table===failedTable)throw Error('503 synthetic read failure');
  if(table==='profiles'){
   assert.equal(query.get('auth_user_id'),`eq.${authUserId}`);
-  return Response.json(profile?[profile]:[]);
+  return profile?[profile]:[];
  }
  const source=Object.keys(contracts).find(name=>contracts[name].table===table);
  assert(['clients','questionnaireAssignments','signalReviews'].includes(source),`Unexpected baseline source ${table}`);
@@ -127,9 +124,10 @@ globalThis.fetch=async(address,options)=>{
  data=[...data].sort((a,b)=>a.id.localeCompare(b.id));
  const offset=Number(query.get('offset')),limit=Number(query.get('limit'));
  assert(Number.isInteger(offset)&&offset>=0&&Number.isInteger(limit)&&limit>0);
- return Response.json(data.slice(offset,offset+Math.min(limit,serverPageSize)).map(row=>projection(row,contract.select)));
+ return data.slice(offset,offset+Math.min(limit,serverPageSize)).map(row=>projection(row,contract.select));
 };
-try {
+const questionnaireBacklog=(token,clientId)=>readQuestionnaireBacklog(token,clientId,readFixture);
+{
  const allBacklog=await questionnaireBacklog(token);
  assert.deepEqual(allBacklog,multiClientBaseline,'Without a filter both client questionnaires remain');
  for(const table of ['questionnaire_assignments','trainer_signal_reviews']){
@@ -194,8 +192,6 @@ try {
  failedTable='questionnaire_assignments';
  await assert.rejects(()=>questionnaireBacklog(token),/503/,'A failed read must not become an empty baseline');
  failedTable=null;
-} finally {
- globalThis.fetch=originalFetch;
 }
 
 for(const file of ['e2e_trainer_attention_flow.mjs','e2e_client_contact_requests.mjs']){

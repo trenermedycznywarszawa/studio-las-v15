@@ -5,12 +5,15 @@ import { randomUUID } from "node:crypto";
 import { freshTotpCode, studioToday } from "./e2e_trainer_attention_staging.mjs";
 import { api,login,queue,expectQueue,questionnaireBacklog,testSignalCase,eventSignalKey,sessionSignalKey,screenshot } from "./attention_e2e_helpers.mjs";
 import { assertE2eSafetyGate } from "./e2e_safety_gate.mjs";
-const origin="https://ulauyoqjoetjqktegeuq.supabase.co";
+import { isolatedQaTarget } from "./e2e_qa_target.mjs";
+const origin = process.env.STUDIO_LAS_E2E_SUPABASE_URL;
+// Resolved only after the gate passes; no environment can run an E2E without proof.
 const dir=process.env.STUDIO_LAS_E2E_ARTIFACT_DIR || "artifacts/attention";
 const clientId="c7200000-0000-4000-8000-000000000001";
 const results=[];
 const resolutionNote=`Ustalenie wyjaśnione. Dane fikcyjne. ${process.env.STUDIO_LAS_E2E_MARKER || randomUUID()}`;
 assertE2eSafetyGate(process.env);
+isolatedQaTarget(process.env);
 const { chromium } = await import("playwright");
 await mkdir(dir,{recursive:true});
 const browser=await chromium.launch();
