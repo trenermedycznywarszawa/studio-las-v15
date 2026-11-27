@@ -4,14 +4,19 @@ on:
   pull_request:
     paths:
       - "tools/client-access-admin.html"
+      - "tools/client-access-admin.js"
       - "tools/client-access-bootstrap.js"
       - "scripts/build_studio_las_os_deploy.mjs"
       - "scripts/test_client_access_bootstrap.mjs"
+      - "scripts/e2e_client_access_login.mjs"
       - ".github/workflows/client-access-bootstrap-check.yml"
+
+permissions:
+  contents: read
 
 jobs:
   bootstrap-contract:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -19,3 +24,20 @@ jobs:
           node-version: 22
       - run: node scripts/test_client_access_bootstrap.mjs
       - run: node scripts/build_studio_las_os_deploy.mjs
+      - name: Install pinned Playwright runtime
+        run: |
+          npm install --no-save --package-lock=false playwright@1.55.0
+          npx playwright install --only-shell --with-deps chromium
+      - name: Verify client access in a browser with mocked services
+        run: |
+          python3 -m http.server 8790 --bind 127.0.0.1 --directory .deploy/studio-las-os &
+          server_pid=$!
+          trap 'kill "$server_pid"' EXIT
+          for attempt in {1..20}; do
+            if curl -fsS http://127.0.0.1:8790/tools/client-access-admin.html > /dev/null; then
+              node scripts/e2e_client_access_login.mjs
+              exit
+            fi
+            sleep 0.5
+          done
+          exit 1

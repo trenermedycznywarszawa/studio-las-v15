@@ -20,6 +20,13 @@ import {
 import { TrainerMfaController } from "../assets/os/trainer-mfa.js";
 import { renderTrainerMfa } from "../assets/os/ui/trainer-mfa.js";
 
+const accessStatusLabels = new Map([
+  ["active", "Dostęp aktywny"],
+  ["revoked", "Dostęp cofnięty"],
+  ["not_found", "Klient niedostępny"],
+  ["not_invited", "Brak aktywnego konta klienta"]
+]);
+
 const root = document.getElementById("access-admin");
 const state = {
   config: null,
@@ -54,40 +61,42 @@ async function invokeClientAccess(action, clientId, email = "") {
     error.status = response.status;
     throw error;
   }
-  return payload;
+  if (!accessStatusLabels.has(payload?.access?.status)) {
+    throw new Error("Nieprawidłowy status dostępu klienta.");
+  }
+  return payload.access;
 }
 
 async function loadStatus() {
+  state.access = null;
   if (!state.activeClientId) {
-    state.access = null;
     renderAdmin();
     return;
   }
 
   renderLoading(root, "Sprawdzanie dostępu klienta…");
-  const payload = await invokeClientAccess("status", state.activeClientId);
-  state.access = payload.access || null;
+  state.access = await invokeClientAccess("status", state.activeClientId);
   renderAdmin();
 }
 
 async function inviteClient() {
   const client = activeClient();
-  if (!client?.email) throw new Error("Klient nie ma zapisanego adresu poczty elektronicznej.");
+  if (!canInvite(client)) return;
 
   renderLoading(root, "Wysyłanie bezpiecznego zaproszenia…");
-  const payload = await invokeClientAccess("invite", client.id, client.email);
-  state.access = payload.access || null;
+  state.access = null;
+  state.access = await invokeClientAccess("invite", client.id, client.email);
   renderAdmin("Zaproszenie zostało obsłużone przez usługę bezpiecznego logowania.", "ok");
 }
 
 async function revokeClient() {
   const client = activeClient();
-  if (!client) return;
+  if (!client || state.access?.status !== "active") return;
   if (!window.confirm(`Cofnąć dostęp klienta ${client.name}?`)) return;
 
   renderLoading(root, "Cofanie dostępu…");
-  const payload = await invokeClientAccess("revoke", client.id);
-  state.access = payload.access || null;
+  state.access = null;
+  state.access = await invokeClientAccess("revoke", client.id);
   renderAdmin("Dostęp został cofnięty. Aktywna sesja nie daje już dostępu do danych klienta.", "ok");
 }
 
@@ -103,12 +112,8 @@ async function logout() {
   showLogin();
 }
 
-function accessStatusText() {
-  const status = state.access?.status || "not_invited";
-  if (status === "active") return "Dostęp aktywny";
-  if (status === "revoked") return "Dostęp cofnięty";
-  if (status === "not_found") return "Klient niedostępny";
-  return "Brak aktywnego konta klienta";
+function canInvite(client) {
+  return Boolean(client?.email && state.access && state.access.status !== "not_found");
 }
 
 function renderAdmin(message = "", kind = "info") {
@@ -128,7 +133,6 @@ function renderAdmin(message = "", kind = "info") {
   select.value = state.activeClientId;
   select.addEventListener("change", () => {
     state.activeClientId = select.value;
-    state.access = null;
     loadStatus().catch(handleError);
   });
 
@@ -145,14 +149,14 @@ function renderAdmin(message = "", kind = "info") {
       ]),
       create("div", { className: "summary-item" }, [
         create("span", { text: "Stan dostępu" }),
-        create("strong", { text: accessStatusText() })
+        create("strong", { text: accessStatusLabels.get(state.access?.status) || "Nie udało się potwierdzić stanu dostępu. Odśwież status." })
       ])
     ]) : create("p", { className: "muted", text: "Wybierz klienta, aby zarządzać dostępem." }),
     client ? create("div", { className: "form-actions" }, [
       button("Wyślij lub aktywuj zaproszenie", {
         className: "button primary",
         onclick: () => inviteClient().catch(handleError),
-        disabled: !client.email
+        disabled: !canInvite(client)
       }),
       button("Cofnij dostęp", {
         className: "button danger",
