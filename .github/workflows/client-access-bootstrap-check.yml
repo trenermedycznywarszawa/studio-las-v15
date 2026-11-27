@@ -11,9 +11,12 @@ on:
       - "scripts/e2e_client_access_login.mjs"
       - ".github/workflows/client-access-bootstrap-check.yml"
 
+permissions:
+  contents: read
+
 jobs:
   bootstrap-contract:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
@@ -24,7 +27,7 @@ jobs:
       - name: Install pinned Playwright runtime
         run: |
           npm install --no-save --package-lock=false playwright@1.55.0
-          npx playwright install --with-deps chromium
+          npx playwright install --only-shell --with-deps chromium
       - name: Verify client access in a browser with mocked services
         run: |
           python3 -m http.server 8790 --bind 127.0.0.1 --directory .deploy/studio-las-os &
